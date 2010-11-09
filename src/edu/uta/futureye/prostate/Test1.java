@@ -239,8 +239,13 @@ public class Test1 {
 	
 	public static void main(String[] args) {
 		Model model = new Model();
+		
+		model.runAdaptive(1,6,"prostate_test6");
+		//model.runAdaptive(1,1,"prostate_test1");
+		
+		
 		//3*5 => 30*50
-		model.run(1,1,"prostate_test1");
+		//model.run(1,1,"prostate_test1");
 		//3*5 => 10*15
 		//model.run(1,2,"prostate_test2");
 		//3*5 => 15*25

@@ -99,6 +99,10 @@ public class Element {
 		dofList.add(dof);
 	}
 	
+	public void clearDOF() {
+		mapDOFList.clear();
+	}
+	
 	
 	/**
 	 * 局部自由度编号与全局自由度编号转换

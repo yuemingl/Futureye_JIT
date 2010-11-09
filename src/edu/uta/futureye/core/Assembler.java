@@ -37,8 +37,27 @@ public class Assembler {
 			e.adjustVerticeToCounterClockwise();
 			getLocalMatrix(e);
 		}
-		
+		procHangingNode(mesh);
 		return globalMatrix;
+	}
+	
+	//二维：刚度矩阵增加hanging node约束系数
+	// nh - 0.5*n1 - 0.5*n2 = 0
+	public void procHangingNode(Mesh mesh) {
+		
+		for(int i=1;i<=mesh.getNodeList().size();i++) {
+			Node node = mesh.getNodeList().at(i);
+			if(node instanceof NodeRefined) {
+				NodeRefined nRefined = (NodeRefined)node;
+				if(nRefined.isHangingNode()) {
+					globalMatrix.set(nRefined.globalIndex, nRefined.globalIndex, 1.0);
+					globalMatrix.set(nRefined.globalIndex,
+							nRefined.constrainNodes.at(1).globalIndex,-0.5);
+					globalMatrix.set(nRefined.globalIndex,
+							nRefined.constrainNodes.at(2).globalIndex,-0.5);
+				}
+			}
+		}
 	}
 	
 	public Vector getLoadVector() {
@@ -209,13 +228,15 @@ public class Assembler {
 	
 	public void plusToGlobalMatrix(Element e, Matrix local) {
 		
-		local.print();
+		//local.print();
 		
 		Map<Integer,Map<Integer,Double>> m = local.getAll();
 		for(Entry<Integer,Map<Integer,Double>> er : m.entrySet()) {
 			int nRow = er.getKey();
 			int ngRow = e.local2GlobalDOFIndex(nRow);
-			System.out.println(nRow+"->"+ngRow);
+			
+			//System.out.println(nRow+"->"+ngRow);
+			
 			Map<Integer,Double> row = er.getValue();
 			for(Entry<Integer,Double> ec : row.entrySet()) {
 				int nCol = ec.getKey();

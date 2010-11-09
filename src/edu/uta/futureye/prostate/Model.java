@@ -1,7 +1,12 @@
 package edu.uta.futureye.prostate;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 import edu.uta.futureye.algebra.Matrix;
 import edu.uta.futureye.algebra.Solver;
@@ -11,7 +16,9 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
+import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.core.Refiner;
 import edu.uta.futureye.core.WeakFormDerivative;
 import edu.uta.futureye.core.WeakFormL22D;
 import edu.uta.futureye.core.WeakFormLaplace2D;
@@ -30,7 +37,9 @@ import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.test.VectorBasedFunction;
 import edu.uta.futureye.util.Constant;
+import edu.uta.futureye.util.ElementList;
 import edu.uta.futureye.util.NodeList;
+import edu.uta.futureye.util.PairDoubleInteger;
 import edu.uta.futureye.util.Utils;
 
 /**
@@ -529,8 +538,8 @@ public class Model {
 		plotVector(mesh, bkUL, "prostate_test1_bkUL.dat");
 		
 		//Solve forward problem with inclusion
-		setMu_a(2.0, 2.3, 0.3, 
-				0.2, 1);
+		setMu_a(2.0, 2.6, 0.3, 
+				1.0, 1);
 		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real.dat");
 		Vector incUL = solveForwardNeumann(mesh);
 		plotVector(mesh, incUL, "prostate_test1_incUL.dat");
@@ -591,8 +600,8 @@ public class Model {
 		Vector bkUR = solveForwardNeumann(mesh);
 		plotVector(mesh, bkUR, "prostate_test1_bkUR.dat");
 		
-		setMu_a(2.0, 2.3, 0.3, 
-				0.2, 1);
+		setMu_a(2.0, 2.6, 0.3, 
+				1.0, 1);
 		Vector incUR = solveForwardNeumann(mesh);
 	    plotVector(mesh, incUR, "prostate_test1_incUR.dat");
 	    Vector tailUR = computeTailRightLightSource(mesh, bkUR, incUR);
@@ -678,4 +687,263 @@ public class Model {
 		}
 		return rlt;
 	}
+	
+	public void assignLinearShapFunction(Mesh mesh) {
+		ShapeFunction[] shapeFun = null;
+		ShapeFunction[] shapeFunHalf = null;
+		ShapeFunction[] shapeFunRect = null;
+		ShapeFunction[] shapeFunRectHalf = null;
+		
+		mesh.computeNodesBelongToElement();
+		mesh.computeNeiborNode();
+		//Assign degree of freedom to element
+		shapeFun = new SFLinearLocal2D[3];
+		shapeFunHalf = new SFLinearLocal2D[3];
+		for(int i=0;i<3;i++) {
+			shapeFun[i] = new SFLinearLocal2D(i+1);
+			shapeFunHalf[i] = new SFLinearLocal2D(i+1,0.5);
+		}
+		
+		shapeFunRect = new SFBilinearLocal2D[4];
+		shapeFunRectHalf = new SFBilinearLocal2D[4];
+		for(int i=0;i<4;i++) {
+			shapeFunRect[i] = new SFBilinearLocal2D(i+1);
+			shapeFunRectHalf[i] = new SFBilinearLocal2D(i+1,0.5);
+		}
+		
+		//Assign shape function to DOF
+		for(int i=1;i<=mesh.getElementList().size();i++) {
+			Element e = mesh.getElementList().at(i);
+			e.clearDOF();
+			if(e.nodes.size() == 4) {
+				//Asign degree of freedom to element
+				int nDofLocalIndexCounter = 0;
+				for(int j=1;j<=e.nodes.size();j++) {
+					//Asign shape function to DOF
+					if(e.nodes.at(j) instanceof NodeRefined) {
+						NodeRefined nRefined = (NodeRefined)e.nodes.at(j);
+						if(nRefined.isHangingNode()) {
+							DOF dof  = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(1).globalIndex,
+									shapeFunRectHalf[j-1]);
+							e.addDOF(j, dof);
+							DOF dof2 = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(2).globalIndex,
+									shapeFunRectHalf[j-1]);
+							e.addDOF(j, dof2);
+						} else {
+							DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFunRect[j-1]);
+							e.addDOF(j, dof);				
+						}
+					} else {
+						DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFunRect[j-1]);
+						e.addDOF(j, dof);
+					}
+				}
+			} else if(e.nodes.size() == 3) {
+				int nDofLocalIndexCounter = 0;
+				for(int j=1;j<=e.nodes.size();j++) {
+					//Asign shape function to DOF
+					if(e.nodes.at(j) instanceof NodeRefined) {
+						NodeRefined nRefined = (NodeRefined)e.nodes.at(j);
+						if(nRefined.isHangingNode()) {
+							DOF dof  = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(1).globalIndex,
+									shapeFunHalf[j-1]);
+							e.addDOF(j, dof);
+							DOF dof2 = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(2).globalIndex,
+									shapeFunHalf[j-1]);
+							e.addDOF(j, dof2);
+						} else {
+							DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFun[j-1]);
+							e.addDOF(j, dof);				
+						}
+					} else {
+						DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFun[j-1]);
+						e.addDOF(j, dof);
+					}
+				}
+				
+			} else {
+				System.out.println("Error: e.nodes.size()="+e.nodes.size());
+			}
+		}
+	}
+	
+	public void runAdaptive(int elementType, int gridID, String outputFolder) {
+		MeshReader reader = null;
+		reader = new MeshReader("prostate_test"+gridID+".grd");
+		Mesh mesh = reader.read2D();
+		
+		this.outputFolder = outputFolder;
+		
+		if(elementType == 1) {
+			mesh.computeNodesBelongToElement();
+			mesh.computeNeiborNode();
+			mesh.computeNeighborElement();
+			assignLinearShapFunction(mesh);
+		} else {
+			System.out.println("Error: elementType parameter!");
+			return;
+		}
+
+		NodeList list = mesh.getNodeList();
+		int nNode = list.size();
+		
+		//----------------------Begin Left light source ---------------------
+		setDelta(1.0, 2.8);
+		
+		//Solve background forward problem
+		setMu_a(0.0, 0.0, 0.0, 
+				0.1, 1);
+		Vector bkUL = solveForwardNeumann(mesh);
+		plotVector(mesh, bkUL, "prostate_test1_bkUL.dat");
+		
+		//Solve forward problem with inclusion
+		setMu_a(2.0, 2.6, 0.3, 
+				1.0, 1);
+		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real.dat");
+		Vector incUL = solveForwardNeumann(mesh);
+		plotVector(mesh, incUL, "prostate_test1_incUL.dat");
+		//中间不要加入其他代码！
+	    ////Vector tailUL = computeTailLeftLightSource(mesh, bkUL, incUL);
+	    ////plotVector(mesh, tailUL, "prostate_test1_tailUL.dat");
+	    
+	    //incU_x
+		////plotVector(mesh, computeDerivative(mesh,incUL,"x"), "prostate_test1_incUL_x.dat");
+		//Recovery parameter mu_a from solution
+	    Vector alpha_real_cmp = solveParamInverse(mesh,incUL);
+	    plotVector(mesh, alpha_real_cmp, "prostate_test1_alpha_real_cmp.dat");
+
+	    //alpha_real_cmp_smooth_x
+	    ////Vector alpha_real_cmp_smooth = Utils.gaussSmooth(mesh, alpha_real_cmp, 1, 0.5);
+	    ////alpha_real_cmp_smooth = Utils.gaussSmooth(mesh, alpha_real_cmp_smooth, 1, 0.5);
+	    ////Vector alpha_real_cmp_x = computeDerivative(mesh,alpha_real_cmp_smooth,"x");
+		////plotVector(mesh, alpha_real_cmp_x, "prostate_test1_alpha_real_cmp_x.dat");
+
+		//Adaptive refinement
+		ElementList eToRefine = computeRefineElement(mesh, alpha_real_cmp, 0.02);
+		System.out.println("Before refine: Element="+
+				mesh.getElementList().size()+", Node="+
+				mesh.getNodeList().size()
+				);
+		Refiner.refineOnce(mesh, eToRefine);
+		System.out.println("After refine: Element="+
+				mesh.getElementList().size()+", Node="+
+				mesh.getNodeList().size()
+				);
+		//Plot test
+		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real_refine.dat");
+	
+		if(elementType == 1) {
+			assignLinearShapFunction(mesh);
+		} else {
+			System.out.println("Error: elementType parameter!");
+			return;
+		}
+		incUL = solveForwardNeumann(mesh);
+		plotVector(mesh, incUL, "prostate_test1_incUL_refine.dat");
+		
+		
+	    //Recovery parameter mu_a from tail
+	    Vector tailUL_noise = null;////addNoise(tailUL,0.0);
+	    Vector alphaL = solveParamInverse(mesh,tailUL_noise);
+	    //Cut noise
+	    for(int i=1;i<=nNode;i++) {
+	    	Node node = list.at(i);
+	    	if(node.coord(1) <1.3 || node.coord(1)>4.4 || node.coord(2)<2.0) {
+		    //if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
+	    		alphaL.set(node.globalIndex, 0.1);
+	    	}
+		}
+	    plotVector(mesh, alphaL, "prostate_test1_alphaL.dat");
+	    	    
+		//----------------------Begin Right light source ---------------------
+		setDelta(4.0, 2.8);
+		
+		setMu_a(0.0, 0.0, 0.0, 
+				0.1, 1);
+		Vector bkUR = solveForwardNeumann(mesh);
+		plotVector(mesh, bkUR, "prostate_test1_bkUR.dat");
+		
+		setMu_a(2.0, 2.6, 0.3, 
+				1.0, 1);
+		Vector incUR = solveForwardNeumann(mesh);
+	    plotVector(mesh, incUR, "prostate_test1_incUR.dat");
+	    Vector tailUR = computeTailRightLightSource(mesh, bkUR, incUR);
+	    plotVector(mesh, tailUR, "prostate_test1_tailUR.dat");
+//	    tailUR = Utils.gaussSmooth(mesh, tailUR, 1, 0.5);
+//	    tailUR = Utils.gaussSmooth(mesh, tailUR, 1, 0.5);
+//	    tailUR = Utils.gaussSmooth(mesh, tailUR, 1, 0.5);
+//	    tailUR = Utils.gaussSmooth(mesh, tailUR, 1, 0.5);
+//	    plotVector(mesh, tailUR, "prostate_test1_tailUR_smooth.dat");
+	    
+	    Vector alphaR = solveParamInverse(mesh,tailUR);
+	    //Cut noise
+	    for(int i=1;i<=nNode;i++) {
+	    	Node node = list.at(i);
+	    	if(node.coord(1) <0.6 || node.coord(1)>3.7 || node.coord(2)<2.0) {
+		    //if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
+	    		alphaR.set(node.globalIndex, 0.1);
+	    	}
+		}
+	    plotVector(mesh, alphaR, "prostate_test1_alphaR.dat");
+	    
+	    //Smooth...
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
+
+	    Vector alpha_avg = new Vector(nNode);
+	    for(int i=1;i<=nNode;i++) {
+	    	alpha_avg.set(i, (alphaL.get(i)+alphaR.get(i))/2.0);
+	    }
+	    plotVector(mesh, alpha_avg, "prostate_test1_alpha_avg.dat");
+	    
+	    //Smooth...
+	    alpha_avg = Utils.gaussSmooth(mesh, alpha_avg, 2, 0.5);
+	    alpha_avg = Utils.gaussSmooth(mesh, alpha_avg, 2, 0.5);
+	    alpha_avg = Utils.gaussSmooth(mesh, alpha_avg, 2, 0.5);
+	    Vector alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 2, 0.5);
+	    plotVector(mesh, alpha_avg_smooth, "prostate_test1_alpha_avg_smooth.dat");
+	    
+	    Double max = alpha_avg_smooth.normInf();
+	    for(int i=1;i<=alpha_avg_smooth.getDim();i++) {
+	    	if(alpha_avg_smooth.get(i) < 0.8*max)
+	    		alpha_avg_smooth.set(i, 0.1);
+	    }
+	    plotVector(mesh, alpha_avg_smooth, "prostate_test1_alpha_avg_smooth_no_noise.dat");
+	    
+
+	}
+	
+	public ElementList computeRefineElement(Mesh mesh, Vector v, double persent) {
+	    Vector v_smooth = Utils.gaussSmooth(mesh, v, 1, 0.5);
+
+		ElementList eList = mesh.getElementList();
+		ElementList eToRefine = new ElementList();
+
+		List<PairDoubleInteger> list = new ArrayList<PairDoubleInteger>();
+		for(int i=1;i<=eList.size();i++) {
+			Element e = eList.at(i);
+			Vector v1 = new Vector(e.nodes.size());
+			for(int j=1;j<=e.nodes.size();j++) {
+				Node node = e.nodes.at(j);
+				v1.set(j, v.get(node.globalIndex)-v_smooth.get(node.globalIndex));
+			}
+			list.add(new PairDoubleInteger(v1.norm2(),i));
+		}
+		Collections.sort(list, new Comparator<PairDoubleInteger>() {
+			@Override
+			public int compare(PairDoubleInteger o1, PairDoubleInteger o2) {
+				return o1.d < o2.d ? 1 : -1;
+			}
+		});
+		int nThreshold = (int) Math.floor(persent*eList.size());
+		for(int i=1;i<=nThreshold;i++) {
+			eToRefine.add(eList.at(list.get(i).i));
+		}
+		return eToRefine;
+	}
+	
 }
