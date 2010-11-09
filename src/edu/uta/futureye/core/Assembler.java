@@ -38,6 +38,7 @@ public class Assembler {
 			getLocalMatrix(e);
 		}
 		procHangingNode(mesh);
+		
 		return globalMatrix;
 	}
 	
@@ -196,24 +197,27 @@ public class Assembler {
 					for(int i=1;i<=nNode;i++) {
 						for(int j=1;j<=nNode;j++) {
 							DOFList dofListI = be.getDOFList(i);
-							DOFList dofListJ = be.getDOFList(j);			
-							int nDOF = dofListI.size();
-							for(int k=1;k<=nDOF;k++) {
-								DOF dofI = dofListI.at(k);
-								DOF dofJ = dofListJ.at(k);
-								//TODO
-								int lRow = dofI.localIndex;
-								int lCol = dofJ.localIndex;
-								weakForm.setShapeFunction(
-										dofI.getShapeFunction(),dofI.localIndex,
-										dofJ.getShapeFunction(),dofJ.localIndex
-										);
-								
-								Function fun = weakForm.leftHandSide(be, WeakForm.ItemType.Border);
-								if(fun != null) { //TODO 如果返回null，说明此项调用对于该弱形式不适用，不进行刚度矩阵的累加
-									double rlt = fun.value(null);
-									//System.out.println(rlt);
-									localMatrix.plusValue(lRow, lCol, rlt);
+							DOFList dofListJ = be.getDOFList(j);
+							
+							int nDOF1 = dofListI.size();
+							int nDOF2 = dofListJ.size();
+							for(int k1=1;k1<=nDOF1;k1++) {
+								DOF dofI = dofListI.at(k1);
+								for(int k2=1;k2<=nDOF2;k2++) {
+									DOF dofJ = dofListJ.at(k2);
+									//TODO
+									int lRow = dofI.localIndex;
+									int lCol = dofJ.localIndex;
+									weakForm.setShapeFunction(
+											dofI.getShapeFunction(),dofI.localIndex,
+											dofJ.getShapeFunction(),dofJ.localIndex
+											);
+									Function fun = weakForm.leftHandSide(be, WeakForm.ItemType.Border);
+									if(fun != null) { //TODO 如果返回null，说明此项调用对于该弱形式不适用，不进行刚度矩阵的累加
+										double rlt = fun.value(null);
+										//System.out.println(rlt);
+										localMatrix.plusValue(lRow, lCol, rlt);
+									}
 								}
 							}
 						}
@@ -221,7 +225,7 @@ public class Assembler {
 					plusToGlobalMatrix(be, localMatrix);
 				}
 			}
-		}		
+		}
 		return localMatrix;
 	}
 	

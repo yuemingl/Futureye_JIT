@@ -295,8 +295,8 @@ public class Refiner {
 								for(int kk=1;kk<=edges.size();kk++) {
 									if(edges.at(kk).isCoordOnEdge(nRefined.coords())) {
 										NodeList endNodes = edges.at(kk).getEndNodes();
-										System.out.println("Hanging node:"+nRefined.globalIndex+
-												" on "+endNodes.at(1).globalIndex+" "+endNodes.at(2).globalIndex);
+										//System.out.println("Hanging node:"+nRefined.globalIndex+
+										//		" on "+endNodes.at(1).globalIndex+" "+endNodes.at(2).globalIndex);
 										nRefined.addConstrainNode(endNodes.at(1));
 										nRefined.addConstrainNode(endNodes.at(2));
 									}

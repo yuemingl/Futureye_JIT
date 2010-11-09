@@ -76,6 +76,10 @@ public class Mesh {
 			Node node = nodeList.at(i);
 			if(node.belongToElements.size()==0)
 				System.out.println("ERROR: Call computeNodesBelongToElement() first!");
+			else if(node instanceof NodeRefined) {
+				//TODO ???
+				node.setNodeType(NodeType.Inner); 
+			}
 			else {
 				double sum = 0.0;
 				for(int j=1;j<=node.belongToElements.size();j++) {

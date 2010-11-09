@@ -239,11 +239,7 @@ public class Test1 {
 	
 	public static void main(String[] args) {
 		Model model = new Model();
-		
-		model.runAdaptive(1,6,"prostate_test6");
-		//model.runAdaptive(1,1,"prostate_test1");
-		
-		
+				
 		//3*5 => 30*50
 		//model.run(1,1,"prostate_test1");
 		//3*5 => 10*15
@@ -257,6 +253,13 @@ public class Test1 {
 		//model.run(1,5,"prostate_test5_mixed");
 		//3*5 => rectangle
 		//model.run(1,6,"prostate_test6_rectangle");
+		
+		
+		//model.runAdaptive(1,1,"prostate_test1");
+		model.runAdaptive(1,2,"prostate_test2");
+		//model.runAdaptive(1,6,"prostate_test6_rectangle");
+		//model.runAdaptive(1,7,"prostate_test7_rectangle");
+	
 	}
 	
 }

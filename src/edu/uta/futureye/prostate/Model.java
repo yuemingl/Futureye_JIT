@@ -332,7 +332,7 @@ public class Model {
 	    for(int i=1;i<=nNode;i++) {
 	    	Node node = list.at(i);
 	    	rlt.set(i, bkUL.get(i));
-	    	if(node.coord(1) > lightX) {
+	    	if(node.coord(1) > lightX && node.coord(1) < 5.0-lightX) {
 	    		double dis = Math.sqrt( (lightX-node.coord(1))*(lightX-node.coord(1)) +
 	    				(lightY-node.coord(2))*(lightY-node.coord(2)) );
 	    		double[] coord = {lightX+dis, 3.0};
@@ -342,7 +342,7 @@ public class Model {
 			    		NodeList borderNodes = e.getNodesByType(NodeType.Robin);
 			    		if(borderNodes.size()>0) {
 			    			double r = 0.0;
-			    			if(borderNodes.size() == 2) {
+			    			//if(borderNodes.size() == 2 ) {
 				    			Node p1 = borderNodes.at(1);
 				    			Node p2 = borderNodes.at(2);
 				    			Node p = new Node(p1.dim());
@@ -350,17 +350,19 @@ public class Model {
 				    			r = Utils.linearInterpolate(
 				    					p1,p2,p,
 				    					incUL.get(p1.globalIndex), incUL.get(p2.globalIndex));
-			    			} else if(borderNodes.size() == 3){
-			    				Node p1 = borderNodes.at(1);
-				    			Node p2 = borderNodes.at(3); //!!!
-				    			Node p3 = borderNodes.at(2);
-				    			Node p = new Node(p1.dim());
-				    			p.set(0, coord);
-				    			r = Utils.quadraticInterpolate(
-				    					p1,p2,p3,p,
-				    					incUL.get(p1.globalIndex), incUL.get(p2.globalIndex),
-				    					incUL.get(p3.globalIndex));
-			    			}
+				    			
+//				    		//TODO 用结点个数判断是否二次插值，不靠谱！！！
+//			    			} else if(borderNodes.size() == 3){
+//			    				Node p1 = borderNodes.at(1);
+//				    			Node p2 = borderNodes.at(3); //!!!
+//				    			Node p3 = borderNodes.at(2);
+//				    			Node p = new Node(p1.dim());
+//				    			p.set(0, coord);
+//				    			r = Utils.quadraticInterpolate(
+//				    					p1,p2,p3,p,
+//				    					incUL.get(p1.globalIndex), incUL.get(p2.globalIndex),
+//				    					incUL.get(p3.globalIndex));
+//			    			}
 			    			rlt.set(i, r);
 			    		}
 		    		}
@@ -387,7 +389,7 @@ public class Model {
 	    for(int i=1;i<=nNode;i++) {
 	    	Node node = list.at(i);
 	    	rlt.set(i, bkUR.get(i));
-	    	if(node.coord(1) < lightX) {
+	    	if(node.coord(1) < lightX && node.coord(1) > 5.0-lightX) {
 	    		double dis = Math.sqrt( (lightX-node.coord(1))*(lightX-node.coord(1)) +
 	    				(lightY-node.coord(2))*(lightY-node.coord(2)) );
 	    		double[] coord = {lightX-dis, 3.0};
@@ -397,7 +399,7 @@ public class Model {
 			    		NodeList borderNodes = e.getNodesByType(NodeType.Robin);
 			    		if(borderNodes.size()>0) {
 			    			double r = 0.0;
-			    			if(borderNodes.size() == 2) {
+			    			//if(borderNodes.size() == 2) {
 				    			Node p1 = borderNodes.at(1);
 				    			Node p2 = borderNodes.at(2);
 				    			Node p = new Node(p1.dim());
@@ -405,17 +407,17 @@ public class Model {
 				    			r = Utils.linearInterpolate(
 				    					p1,p2,p,
 				    					incUR.get(p1.globalIndex), incUR.get(p2.globalIndex));
-			    			} else if(borderNodes.size() == 3){
-			    				Node p1 = borderNodes.at(1);
-				    			Node p2 = borderNodes.at(3); //!!!
-				    			Node p3 = borderNodes.at(2);
-				    			Node p = new Node(p1.dim());
-				    			p.set(0, coord);
-				    			r = Utils.quadraticInterpolate(
-				    					p1,p2,p3,p,
-				    					incUR.get(p1.globalIndex), incUR.get(p2.globalIndex),
-				    					incUR.get(p3.globalIndex));
-			    			}
+//			    			} else if(borderNodes.size() == 3){
+//			    				Node p1 = borderNodes.at(1);
+//				    			Node p2 = borderNodes.at(3); //!!!
+//				    			Node p3 = borderNodes.at(2);
+//				    			Node p = new Node(p1.dim());
+//				    			p.set(0, coord);
+//				    			r = Utils.quadraticInterpolate(
+//				    					p1,p2,p3,p,
+//				    					incUR.get(p1.globalIndex), incUR.get(p2.globalIndex),
+//				    					incUR.get(p3.globalIndex));
+//			    			}
 			    			rlt.set(i, r);
 			    		}
 		    		}
@@ -694,8 +696,6 @@ public class Model {
 		ShapeFunction[] shapeFunRect = null;
 		ShapeFunction[] shapeFunRectHalf = null;
 		
-		mesh.computeNodesBelongToElement();
-		mesh.computeNeiborNode();
 		//Assign degree of freedom to element
 		shapeFun = new SFLinearLocal2D[3];
 		shapeFunHalf = new SFLinearLocal2D[3];
@@ -767,13 +767,11 @@ public class Model {
 		}
 	}
 	
-	public void runAdaptive(int elementType, int gridID, String outputFolder) {
-		MeshReader reader = null;
-		reader = new MeshReader("prostate_test"+gridID+".grd");
-		Mesh mesh = reader.read2D();
-		
+	
+	
+	public Vector solveAdaptive(Mesh mesh, int elementType, String outputFolder) {
 		this.outputFolder = outputFolder;
-		
+
 		if(elementType == 1) {
 			mesh.computeNodesBelongToElement();
 			mesh.computeNeiborNode();
@@ -781,7 +779,7 @@ public class Model {
 			assignLinearShapFunction(mesh);
 		} else {
 			System.out.println("Error: elementType parameter!");
-			return;
+			return null;
 		}
 
 		NodeList list = mesh.getNodeList();
@@ -797,63 +795,43 @@ public class Model {
 		plotVector(mesh, bkUL, "prostate_test1_bkUL.dat");
 		
 		//Solve forward problem with inclusion
-		setMu_a(2.0, 2.6, 0.3, 
-				1.0, 1);
+		setMu_a(2.5, 2.6, 0.3, 
+				2.0, 1);
 		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real.dat");
 		Vector incUL = solveForwardNeumann(mesh);
 		plotVector(mesh, incUL, "prostate_test1_incUL.dat");
 		//中间不要加入其他代码！
-	    ////Vector tailUL = computeTailLeftLightSource(mesh, bkUL, incUL);
-	    ////plotVector(mesh, tailUL, "prostate_test1_tailUL.dat");
+	    Vector tailUL = computeTailLeftLightSource(mesh, bkUL, incUL);
+	    plotVector(mesh, tailUL, "prostate_test1_tailUL.dat");
 	    
 	    //incU_x
-		////plotVector(mesh, computeDerivative(mesh,incUL,"x"), "prostate_test1_incUL_x.dat");
+		//plotVector(mesh, computeDerivative(mesh,incUL,"x"), "prostate_test1_incUL_x.dat");
 		//Recovery parameter mu_a from solution
 	    Vector alpha_real_cmp = solveParamInverse(mesh,incUL);
 	    plotVector(mesh, alpha_real_cmp, "prostate_test1_alpha_real_cmp.dat");
 
 	    //alpha_real_cmp_smooth_x
-	    ////Vector alpha_real_cmp_smooth = Utils.gaussSmooth(mesh, alpha_real_cmp, 1, 0.5);
-	    ////alpha_real_cmp_smooth = Utils.gaussSmooth(mesh, alpha_real_cmp_smooth, 1, 0.5);
-	    ////Vector alpha_real_cmp_x = computeDerivative(mesh,alpha_real_cmp_smooth,"x");
-		////plotVector(mesh, alpha_real_cmp_x, "prostate_test1_alpha_real_cmp_x.dat");
+	    Vector alpha_real_cmp_x = computeDerivative(mesh,alpha_real_cmp,"x");
+		plotVector(mesh, alpha_real_cmp_x, "prostate_test1_alpha_real_cmp_x.dat");
 
-		//Adaptive refinement
-		ElementList eToRefine = computeRefineElement(mesh, alpha_real_cmp, 0.02);
-		System.out.println("Before refine: Element="+
-				mesh.getElementList().size()+", Node="+
-				mesh.getNodeList().size()
-				);
-		Refiner.refineOnce(mesh, eToRefine);
-		System.out.println("After refine: Element="+
-				mesh.getElementList().size()+", Node="+
-				mesh.getNodeList().size()
-				);
-		//Plot test
-		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real_refine.dat");
-	
-		if(elementType == 1) {
-			assignLinearShapFunction(mesh);
-		} else {
-			System.out.println("Error: elementType parameter!");
-			return;
-		}
-		incUL = solveForwardNeumann(mesh);
-		plotVector(mesh, incUL, "prostate_test1_incUL_refine.dat");
-		
-		
 	    //Recovery parameter mu_a from tail
-	    Vector tailUL_noise = null;////addNoise(tailUL,0.0);
+	    Vector tailUL_noise = addNoise(tailUL,0.0);
 	    Vector alphaL = solveParamInverse(mesh,tailUL_noise);
 	    //Cut noise
 	    for(int i=1;i<=nNode;i++) {
 	    	Node node = list.at(i);
-	    	if(node.coord(1) <1.3 || node.coord(1)>4.4 || node.coord(2)<2.0) {
-		    //if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
+	    	//if(node.coord(1) <1.3 || node.coord(1)>4.4 || node.coord(2)<2.0) {
+		    if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
 	    		alphaL.set(node.globalIndex, 0.1);
 	    	}
 		}
 	    plotVector(mesh, alphaL, "prostate_test1_alphaL.dat");
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
+	    plotVector(mesh, alphaL, "prostate_test1_alphaL_smooth.dat");
+
 	    	    
 		//----------------------Begin Right light source ---------------------
 		setDelta(4.0, 2.8);
@@ -863,58 +841,99 @@ public class Model {
 		Vector bkUR = solveForwardNeumann(mesh);
 		plotVector(mesh, bkUR, "prostate_test1_bkUR.dat");
 		
-		setMu_a(2.0, 2.6, 0.3, 
-				1.0, 1);
+		setMu_a(2.5, 2.6, 0.3, 
+				2.0, 1);
 		Vector incUR = solveForwardNeumann(mesh);
 	    plotVector(mesh, incUR, "prostate_test1_incUR.dat");
 	    Vector tailUR = computeTailRightLightSource(mesh, bkUR, incUR);
 	    plotVector(mesh, tailUR, "prostate_test1_tailUR.dat");
-//	    tailUR = Utils.gaussSmooth(mesh, tailUR, 1, 0.5);
-//	    tailUR = Utils.gaussSmooth(mesh, tailUR, 1, 0.5);
-//	    tailUR = Utils.gaussSmooth(mesh, tailUR, 1, 0.5);
-//	    tailUR = Utils.gaussSmooth(mesh, tailUR, 1, 0.5);
-//	    plotVector(mesh, tailUR, "prostate_test1_tailUR_smooth.dat");
 	    
 	    Vector alphaR = solveParamInverse(mesh,tailUR);
 	    //Cut noise
 	    for(int i=1;i<=nNode;i++) {
 	    	Node node = list.at(i);
-	    	if(node.coord(1) <0.6 || node.coord(1)>3.7 || node.coord(2)<2.0) {
-		    //if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
+	    	//if(node.coord(1) <0.6 || node.coord(1)>3.7 || node.coord(2)<2.0) {
+		    if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
 	    		alphaR.set(node.globalIndex, 0.1);
 	    	}
 		}
 	    plotVector(mesh, alphaR, "prostate_test1_alphaR.dat");
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
+	    plotVector(mesh, alphaR, "prostate_test1_alphaR_smooth.dat");
 	    
-	    //Smooth...
-	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
-	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
-	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
-	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
-	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
-	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
-
 	    Vector alpha_avg = new Vector(nNode);
 	    for(int i=1;i<=nNode;i++) {
 	    	alpha_avg.set(i, (alphaL.get(i)+alphaR.get(i))/2.0);
 	    }
 	    plotVector(mesh, alpha_avg, "prostate_test1_alpha_avg.dat");
 	    
-	    //Smooth...
-	    alpha_avg = Utils.gaussSmooth(mesh, alpha_avg, 2, 0.5);
-	    alpha_avg = Utils.gaussSmooth(mesh, alpha_avg, 2, 0.5);
-	    alpha_avg = Utils.gaussSmooth(mesh, alpha_avg, 2, 0.5);
-	    Vector alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 2, 0.5);
-	    plotVector(mesh, alpha_avg_smooth, "prostate_test1_alpha_avg_smooth.dat");
-	    
-	    Double max = alpha_avg_smooth.normInf();
-	    for(int i=1;i<=alpha_avg_smooth.getDim();i++) {
-	    	if(alpha_avg_smooth.get(i) < 0.8*max)
-	    		alpha_avg_smooth.set(i, 0.1);
-	    }
-	    plotVector(mesh, alpha_avg_smooth, "prostate_test1_alpha_avg_smooth_no_noise.dat");
-	    
+	    return alpha_avg;
+	}
+	
+	
+	
+	public void runAdaptive(int elementType, int gridID, String outputFolder) {
+		MeshReader reader = null;
+		reader = new MeshReader("prostate_test"+gridID+".grd");
+		Mesh mesh = reader.read2D();
 
+		Vector alpha_avg = solveAdaptive(mesh, elementType, outputFolder);
+	    //Smooth...
+		Vector alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg_smooth, 1, 0.5);
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg_smooth, 1, 0.5);
+	    plotVector(mesh, alpha_avg_smooth, "prostate_test1_alpha_avg_smooth.dat");
+		Vector alpha_avg_smooth_no_noise = alpha_avg_smooth.copy();
+	    Double max = alpha_avg_smooth_no_noise.normInf();
+	    for(int i=1;i<=alpha_avg_smooth_no_noise.getDim();i++) {
+	    	if(alpha_avg_smooth_no_noise.get(i) < 0.7*max)
+	    		alpha_avg_smooth_no_noise.set(i, 0.1);
+	    }
+	    plotVector(mesh, alpha_avg_smooth_no_noise, "prostate_test1_alpha_avg_smooth_no_noise.dat");		
+		
+		//Adaptive refinement 1
+		ElementList eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.02);
+		System.out.println("Before refine: Element="+mesh.getElementList().size()+", Node="+mesh.getNodeList().size());
+		Refiner.refineOnce(mesh, eToRefine);
+		System.out.println("After refine: Element="+mesh.getElementList().size()+", Node="+mesh.getNodeList().size());
+		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real_refine.dat");
+	
+		alpha_avg = solveAdaptive(mesh, elementType, outputFolder+"_adaptive");
+		alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
+	    plotVector(mesh, alpha_avg_smooth, "prostate_test1_alpha_avg_smooth.dat");
+	    alpha_avg_smooth_no_noise = alpha_avg_smooth.copy();
+	    max = alpha_avg_smooth_no_noise.normInf();
+	    for(int i=1;i<=alpha_avg_smooth_no_noise.getDim();i++) {
+	    	if(alpha_avg_smooth_no_noise.get(i) < 0.7*max)
+	    		alpha_avg_smooth_no_noise.set(i, 0.1);
+	    }
+	    plotVector(mesh, alpha_avg_smooth_no_noise, "prostate_test1_alpha_avg_smooth_no_noise.dat");		
+		
+		//Adaptive refinement 2
+		eToRefine.clear();
+		eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.03);
+		System.out.println("Before refine: Element="+mesh.getElementList().size()+", Node="+mesh.getNodeList().size());
+		Refiner.refineOnce(mesh, eToRefine);
+		System.out.println("After refine: Element="+mesh.getElementList().size()+", Node="+	mesh.getNodeList().size());
+		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real_refine.dat");
+		
+		alpha_avg = solveAdaptive(mesh, elementType, outputFolder+"_adaptive2");
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
+	    plotVector(mesh, alpha_avg_smooth, "prostate_test1_alpha_avg_smooth.dat");
+	    alpha_avg_smooth_no_noise = alpha_avg_smooth.copy();
+	    max = alpha_avg_smooth_no_noise.normInf();
+	    for(int i=1;i<=alpha_avg_smooth_no_noise.getDim();i++) {
+	    	if(alpha_avg_smooth_no_noise.get(i) < 0.7*max)
+	    		alpha_avg_smooth_no_noise.set(i, 0.1);
+	    }
+	    plotVector(mesh, alpha_avg_smooth_no_noise, "prostate_test1_alpha_avg_smooth_no_noise.dat");		
 	}
 	
 	public ElementList computeRefineElement(Mesh mesh, Vector v, double persent) {
