@@ -372,6 +372,58 @@ public class Model {
 	    return rlt;	
 	}
 
+	
+	public Vector computeTailLeftLightSource2(Mesh mesh,Vector bkUL, Vector incUL) {
+	    double lightX = this.lightSource.get("x");
+	    double lightY = this.lightSource.get("y");
+	    NodeList list = mesh.getNodeList();
+	    int nNode = list.size();
+	    Vector rlt = new Vector(nNode);
+	    for(int i=1;i<=nNode;i++) {
+	    	Node node = list.at(i);
+	    	rlt.set(i, bkUL.get(i));
+	    	if(node.coord(1) > lightX && node.coord(1) < 5.0-lightX) {
+	    		double dis = Math.sqrt( (lightX-node.coord(1))*(lightX-node.coord(1)) +
+	    				(lightY-node.coord(2))*(lightY-node.coord(2)) );
+	    		double[] coord = {lightX+dis, 3.0};
+	    		if(lightX+dis < 5.0) {
+		    		Element e = mesh.getElementByCoord(coord);
+		    		if(e != null) {
+		    			//用顶点的坐标来判断，不再使用边界条件。因为自适应加密网格后，如果边界单元被加密
+		    			//边界上的边上的加密结点是按照内点条件处理的。
+			    		NodeList borderNodes = e.getNodesByType(NodeType.Robin);
+			    		if(borderNodes.size()>0) {
+			    			double r = 0.0;
+			    			//if(borderNodes.size() == 2 ) {
+				    			Node p1 = borderNodes.at(1);
+				    			Node p2 = borderNodes.at(2);
+				    			Node p = new Node(p1.dim());
+				    			p.set(0, coord);
+				    			r = Utils.linearInterpolate(
+				    					p1,p2,p,
+				    					incUL.get(p1.globalIndex), incUL.get(p2.globalIndex));
+				    			
+//				    		//TODO 用结点个数判断是否二次插值，不靠谱！！！
+//			    			} else if(borderNodes.size() == 3){
+//			    				Node p1 = borderNodes.at(1);
+//				    			Node p2 = borderNodes.at(3); //!!!
+//				    			Node p3 = borderNodes.at(2);
+//				    			Node p = new Node(p1.dim());
+//				    			p.set(0, coord);
+//				    			r = Utils.quadraticInterpolate(
+//				    					p1,p2,p3,p,
+//				    					incUL.get(p1.globalIndex), incUL.get(p2.globalIndex),
+//				    					incUL.get(p3.globalIndex));
+//			    			}
+			    			rlt.set(i, r);
+			    		}
+		    		}
+	    		}
+	    	}
+	    }
+	    return rlt;	
+	}
+	
 	/**
 	 * 依赖于mesh的大小！！！
 	 * 依赖于网格边界结点的边界条件标记！！！
@@ -795,7 +847,7 @@ public class Model {
 		plotVector(mesh, bkUL, "prostate_test1_bkUL.dat");
 		
 		//Solve forward problem with inclusion
-		setMu_a(2.5, 2.6, 0.3, 
+		setMu_a(2.5, 2.75, 0.15, 
 				2.0, 1);
 		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real.dat");
 		Vector incUL = solveForwardNeumann(mesh);
@@ -803,6 +855,9 @@ public class Model {
 		//中间不要加入其他代码！
 	    Vector tailUL = computeTailLeftLightSource(mesh, bkUL, incUL);
 	    plotVector(mesh, tailUL, "prostate_test1_tailUL.dat");
+	    plotTopBorder(mesh,incUL, "prostate_test1_incUL_topLine.dat");
+	    
+	    
 	    
 	    //incU_x
 		//plotVector(mesh, computeDerivative(mesh,incUL,"x"), "prostate_test1_incUL_x.dat");
@@ -826,10 +881,10 @@ public class Model {
 	    	}
 		}
 	    plotVector(mesh, alphaL, "prostate_test1_alphaL.dat");
-	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
-	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
-	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
-	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.5);
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.8);
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.8);
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.8);
+	    alphaL = Utils.gaussSmooth(mesh, alphaL, 1, 0.8);
 	    plotVector(mesh, alphaL, "prostate_test1_alphaL_smooth.dat");
 
 	    	    
@@ -841,7 +896,7 @@ public class Model {
 		Vector bkUR = solveForwardNeumann(mesh);
 		plotVector(mesh, bkUR, "prostate_test1_bkUR.dat");
 		
-		setMu_a(2.5, 2.6, 0.3, 
+		setMu_a(2.5, 2.75, 0.15, 
 				2.0, 1);
 		Vector incUR = solveForwardNeumann(mesh);
 	    plotVector(mesh, incUR, "prostate_test1_incUR.dat");
@@ -858,10 +913,10 @@ public class Model {
 	    	}
 		}
 	    plotVector(mesh, alphaR, "prostate_test1_alphaR.dat");
-	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
-	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
-	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
-	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.5);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.8);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.8);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.8);
+	    alphaR = Utils.gaussSmooth(mesh, alphaR, 1, 0.8);
 	    plotVector(mesh, alphaR, "prostate_test1_alphaR_smooth.dat");
 	    
 	    Vector alpha_avg = new Vector(nNode);
@@ -885,6 +940,9 @@ public class Model {
 		Vector alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
 	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg_smooth, 1, 0.5);
 	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg_smooth, 1, 0.5);
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg_smooth, 1, 0.5);
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg_smooth, 1, 0.5);
+	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg_smooth, 1, 0.5);
 	    plotVector(mesh, alpha_avg_smooth, "prostate_test1_alpha_avg_smooth.dat");
 		Vector alpha_avg_smooth_no_noise = alpha_avg_smooth.copy();
 	    Double max = alpha_avg_smooth_no_noise.normInf();
@@ -895,13 +953,16 @@ public class Model {
 	    plotVector(mesh, alpha_avg_smooth_no_noise, "prostate_test1_alpha_avg_smooth_no_noise.dat");		
 		
 		//Adaptive refinement 1
-		ElementList eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.02);
+		ElementList eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.04);
 		System.out.println("Before refine: Element="+mesh.getElementList().size()+", Node="+mesh.getNodeList().size());
 		Refiner.refineOnce(mesh, eToRefine);
 		System.out.println("After refine: Element="+mesh.getElementList().size()+", Node="+mesh.getNodeList().size());
 		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real_refine.dat");
 	
 		alpha_avg = solveAdaptive(mesh, elementType, outputFolder+"_adaptive");
+		alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
+		alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
+		alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
 		alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
 	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
 	    alpha_avg_smooth = Utils.gaussSmooth(mesh, alpha_avg, 1, 0.5);
@@ -916,7 +977,7 @@ public class Model {
 		
 		//Adaptive refinement 2
 		eToRefine.clear();
-		eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.03);
+		eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.06);
 		System.out.println("Before refine: Element="+mesh.getElementList().size()+", Node="+mesh.getNodeList().size());
 		Refiner.refineOnce(mesh, eToRefine);
 		System.out.println("After refine: Element="+mesh.getElementList().size()+", Node="+	mesh.getNodeList().size());
@@ -964,5 +1025,39 @@ public class Model {
 		}
 		return eToRefine;
 	}
-	
+
+	public void plotTopBorder(Mesh mesh, Vector v, String fileName) {
+		NodeList nList = mesh.getNodeList();
+		int nNode = nList.size();
+		List<PairDoubleInteger> pList = new ArrayList<PairDoubleInteger>();
+		for(int i=1;i<=nNode;i++) {
+			if(Math.abs(nList.at(i).coord(2)-3.0)<Constant.eps) {
+				PairDoubleInteger pair = new PairDoubleInteger(nList.at(i).coord(1), i);
+				pList.add(pair);
+			}
+		}
+		Collections.sort(pList, new Comparator<PairDoubleInteger>(){
+			@Override
+			public int compare(PairDoubleInteger o1, PairDoubleInteger o2) {
+				return o1.d>o2.d?1:-1;
+			}
+		});
+	    MeshWriter writer = new MeshWriter(mesh);
+	    if(!outputFolder.isEmpty()) {
+		    File file = new File("./"+outputFolder);
+			if(!file.exists()) {
+				file.mkdirs();
+			}
+	    }
+	    Vector x = new Vector(pList.size());
+	    Vector y = new Vector(pList.size());
+	    for(int i=0;i<pList.size();i++) {
+	    	PairDoubleInteger pair = pList.get(i);
+	    	x.set(i+1, pair.d);
+	    	y.set(i+1, v.get(pair.i));
+	    }
+	    writer.writeTechplotLine("./"+outputFolder+"/"+fileName, x,y);
+		
+		
+	}
 }

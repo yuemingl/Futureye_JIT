@@ -21,7 +21,12 @@ public class NodeRefined extends Node {
 		this.constrainNodes.clear();
 	}	
 	
+	/**
+	 * 判断是否为Hanging node
+	 * @return
+	 */
 	public boolean isHangingNode() {
+		//没有constrain node的加密结点不是hanging node
 		return this.constrainNodes.size()>0;
 	}
 	

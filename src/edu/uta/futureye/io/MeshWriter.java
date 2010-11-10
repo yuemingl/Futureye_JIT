@@ -164,4 +164,24 @@ public class MeshWriter {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	public void writeTechplotLine(String fileName, Vector x, Vector y) {
+		FileOutputStream out;
+		try {
+			File file = new File(fileName);
+			out = new FileOutputStream(file);
+			OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
+			PrintWriter br = new PrintWriter(writer);
+			
+			for(int i=1;i<=x.getDim();i++)
+				br.println(x.get(i)+"\t"+y.get(i));
+				
+			br.close();
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }

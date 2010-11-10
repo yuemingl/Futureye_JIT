@@ -76,7 +76,7 @@ public class Mesh {
 			Node node = nodeList.at(i);
 			if(node.belongToElements.size()==0)
 				System.out.println("ERROR: Call computeNodesBelongToElement() first!");
-			else if(node instanceof NodeRefined) {
+			else if(node instanceof NodeRefined && ((NodeRefined) node).isHangingNode()) {
 				//TODO ???
 				node.setNodeType(NodeType.Inner); 
 			}

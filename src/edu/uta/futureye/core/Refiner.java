@@ -281,18 +281,23 @@ public class Refiner {
 		for(int iToRe=1;iToRe<=eToRefine.size();iToRe++) {
 			ElementList eChilds = eToRefine.at(iToRe).chlids;
 			ElementList eNeighbors = eToRefine.at(iToRe).neighbors;
+			//循环大单元中的每个子单元
 			for(int i=1;i<=eChilds.size();i++) {
 				Element eChild = eChilds.at(i);
+				//循环每个子单元的结点
 				for(int j=1;j<=eChild.nodes.size();j++) {
 					Node nNew = eChild.nodes.at(j);
 					if(nNew.getLevel() == eChild.getLevel()) {
 						NodeRefined nRefined = (NodeRefined)nNew;
+						//循环大单元的相邻单元，判断该节点是否Hanging node，
+						//如果是边界单元的边界上加密，nRefined将没有ConstrainNode，默认为非Hanging node
 						for(int k=1;k<=eNeighbors.size();k++) {
 							Element eNeighbor = eNeighbors.at(k);
 							//!!! 相邻单元没有标记为加密  并且 相邻单元的层次要低于该单元
 							if(!eNeighbor.isRefined() && eNeighbor.getLevel()<eChild.getLevel()) {
 								EdgeList edges = eNeighbors.at(k).getEdgeList();
 								for(int kk=1;kk<=edges.size();kk++) {
+									//判断结点是否在大单元边上
 									if(edges.at(kk).isCoordOnEdge(nRefined.coords())) {
 										NodeList endNodes = edges.at(kk).getEndNodes();
 										//System.out.println("Hanging node:"+nRefined.globalIndex+

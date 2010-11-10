@@ -13,6 +13,7 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
+import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.intf.Point;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAbstract;
@@ -143,8 +144,18 @@ public class Utils {
 	    
 	    if(neighborBand == 1) {
 		    for(int i=1;i<=nNode;i++) {
+		    	NodeList nbList = new NodeList();
 		    	Node node = list.at(i);
-		    	NodeList nbList = node.neighbors;
+		    	//TODO 自适应网格节点需要注意
+		    	if(node instanceof NodeRefined) {
+		    		if(((NodeRefined) node).isHangingNode()) {
+		    			NodeList cns = ((NodeRefined) node).constrainNodes;
+		    			for(int k=1;k<=cns.size();k++) {
+		    				nbList.addAll(cns.at(k).neighbors);
+		    			}
+		    		}
+		    	}
+		    	nbList.addAll(node.neighbors);
 		    	if(nbList.size() == 0) {
 					FutureEyeException e = new FutureEyeException("No beighbors of Node "+node.globalIndex+", call mesh.computeNeiborNode() first!");
 					e.printStackTrace();

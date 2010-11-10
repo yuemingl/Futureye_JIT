@@ -28,6 +28,10 @@ public class NodeList {
 		this.nodes.add(node);
 	}
 	
+	public void addAll(NodeList list) {
+		this.nodes.addAll(list.nodes);
+	}
+	
 	public int size() {
 		return nodes.size();
 	}
