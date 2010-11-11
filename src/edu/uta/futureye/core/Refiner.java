@@ -42,6 +42,9 @@ public class Refiner {
 		
 		for(int i=1;i<=eToRefine.size();i++) {
 			Element e = eToRefine.at(i);
+			//·ÀÖ¹ÖØ¸´refine
+			if(e.isRefined())
+				continue;
 			
 			ElementList eList = new ElementList();
 			List<Vertex> vList = e.getVertexList();

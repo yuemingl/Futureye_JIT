@@ -872,11 +872,14 @@ public class Model {
 	    //Recovery parameter mu_a from tail
 	    Vector tailUL_noise = addNoise(tailUL,0.0);
 	    Vector alphaL = solveParamInverse(mesh,tailUL_noise);
+	    plotVector(mesh, alphaL, "prostate_test1_alphaL_before_cut.dat");
 	    //Cut noise
 	    for(int i=1;i<=nNode;i++) {
 	    	Node node = list.at(i);
 	    	//if(node.coord(1) <1.3 || node.coord(1)>4.4 || node.coord(2)<2.0) {
-		    if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
+		    //if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
+		    //incusion: (2.5,2.75),r=0.15
+			if(node.coord(1) <1.5 || node.coord(1)>3.5 || node.coord(2)<2.0) {
 	    		alphaL.set(node.globalIndex, 0.1);
 	    	}
 		}
@@ -904,11 +907,14 @@ public class Model {
 	    plotVector(mesh, tailUR, "prostate_test1_tailUR.dat");
 	    
 	    Vector alphaR = solveParamInverse(mesh,tailUR);
+	    plotVector(mesh, alphaR, "prostate_test1_alphaR_before_cut.dat");
 	    //Cut noise
 	    for(int i=1;i<=nNode;i++) {
 	    	Node node = list.at(i);
 	    	//if(node.coord(1) <0.6 || node.coord(1)>3.7 || node.coord(2)<2.0) {
-		    if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
+		    //if(node.coord(1) <1.9 || node.coord(1)>2.8 || node.coord(2)<1.5) {
+	    	//incusion: (2.5,2.75),r=0.15
+			if(node.coord(1) <1.5 || node.coord(1)>3.5 || node.coord(2)<2.0) {
 	    		alphaR.set(node.globalIndex, 0.1);
 	    	}
 		}
@@ -953,7 +959,7 @@ public class Model {
 	    plotVector(mesh, alpha_avg_smooth_no_noise, "prostate_test1_alpha_avg_smooth_no_noise.dat");		
 		
 		//Adaptive refinement 1
-		ElementList eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.04);
+		ElementList eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.06);
 		System.out.println("Before refine: Element="+mesh.getElementList().size()+", Node="+mesh.getNodeList().size());
 		Refiner.refineOnce(mesh, eToRefine);
 		System.out.println("After refine: Element="+mesh.getElementList().size()+", Node="+mesh.getNodeList().size());
@@ -977,7 +983,7 @@ public class Model {
 		
 		//Adaptive refinement 2
 		eToRefine.clear();
-		eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.06);
+		eToRefine = computeRefineElement(mesh, alpha_avg_smooth, 0.10);
 		System.out.println("Before refine: Element="+mesh.getElementList().size()+", Node="+mesh.getNodeList().size());
 		Refiner.refineOnce(mesh, eToRefine);
 		System.out.println("After refine: Element="+mesh.getElementList().size()+", Node="+	mesh.getNodeList().size());
