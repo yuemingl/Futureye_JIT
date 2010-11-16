@@ -20,8 +20,6 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.shape.SFBilinearLocal2D;
 import edu.uta.futureye.function.shape.SFLinearLocal2D;
-import edu.uta.futureye.function.shape.SFQuadraticLocal2D;
-import edu.uta.futureye.function.shape.SFQuadraticLocal2DFast;
 import edu.uta.futureye.function.shape.SFSerendipity2D;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;

@@ -126,6 +126,14 @@ public class Vector {
 		return r;
 	}
 	
+	public static Vector ax(double a, Vector x) {
+		Vector rlt = new Vector(x.dim);
+		for(int i=1;i<=x.dim;i++) {
+			rlt.set(i, a*x.get(i));
+		}
+		return rlt;	
+	}
+	
 	public static Vector axpy(double a, Vector x, Vector y) {
 		Vector rlt = new Vector(x.dim);
 		for(int i=1;i<=x.dim;i++) {
@@ -134,4 +142,11 @@ public class Vector {
 		return rlt;
 	}
 	
+	public static Vector axmy(double a, Vector x, Vector y) {
+		Vector rlt = new Vector(x.dim);
+		for(int i=1;i<=x.dim;i++) {
+			rlt.set(i, a*x.get(i)*y.get(i));
+		}
+		return rlt;
+	}
 }

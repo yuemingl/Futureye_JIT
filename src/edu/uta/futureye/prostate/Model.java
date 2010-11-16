@@ -494,6 +494,14 @@ public class Model {
 		return w;
 	}
 	
+	public Vector computeLaplace2D(Mesh mesh, Vector U) {
+		Vector ux = computeDerivative(mesh,U,"x");
+		Vector uy = computeDerivative(mesh,U,"y");
+		Vector uxx = computeDerivative(mesh,ux,"x");
+		Vector uyy = computeDerivative(mesh,uy,"y");
+		Vector LpU = Vector.axpy(1.0, uxx, uyy);
+		return LpU;
+	}
 	
 	public void run(int elementType, int gridID, String outputFolder) {
 		MeshReader reader = null;
@@ -846,9 +854,12 @@ public class Model {
 		Vector bkUL = solveForwardNeumann(mesh);
 		plotVector(mesh, bkUL, "prostate_test1_bkUL.dat");
 		
+		//  \Laplace U
+		//plotVector(mesh, computeLaplace2D(mesh, bkUL), "prostate_test1_bkUL_laplace.dat");
+		
 		//Solve forward problem with inclusion
-		setMu_a(2.5, 2.75, 0.15, 
-				2.0, 1);
+		setMu_a(2.5, 2.6, 0.3, 
+				0.2, 1);
 		plotFunction(mesh, this.mu_a, "prostate_test1_alpha_real.dat");
 		Vector incUL = solveForwardNeumann(mesh);
 		plotVector(mesh, incUL, "prostate_test1_incUL.dat");
@@ -1066,4 +1077,179 @@ public class Model {
 		
 		
 	}
+	
+	Vector getGCMCoef(double sn_1, double sn) {
+		Vector A = new Vector(4);
+		double I0 =  3*(sn_1-sn) - 2*sn_1*(Math.log(sn_1)-Math.log(sn));
+		double A1 = (1.0/I0)*(
+				(-3.0/2.0)*(Math.pow(sn_1, 4)-Math.pow(sn, 4))+
+				(10.0/3.0)*sn_1*(Math.pow(sn_1, 3)-Math.pow(sn, 3))+
+				(-2.0)*sn_1*sn_1*(Math.pow(sn_1, 2)-Math.pow(sn, 2))
+				);
+		double A2 = (1.0/I0)*(
+				(-10.0/3.0)*(Math.pow(sn_1, 3)-Math.pow(sn, 3))+
+				4.0*sn_1*(Math.pow(sn_1, 2)-Math.pow(sn, 2))
+				);
+		double A3 = (-2.0/I0)*(Math.log(sn_1)-Math.log(sn));
+		double A4 = (-2.0/I0)*(Math.pow(sn_1, 2)-Math.pow(sn, 2));
+		A.set(1, A1);
+		A.set(2, A2);
+		A.set(3, A3);
+		A.set(4, A4);
+		return A;
+	}
+	
+	/**
+	 * 
+	 * @param mesh
+	 * @param phi ±ß½çÌõ¼þ
+	 * @param tailT
+	 */
+	public  void runGCM(Mesh mesh, Vector[]phi, Vector tailT) {
+		int N=3;
+		double[]s = new double[N];
+		double h = 0.2;
+		s[0] = 10.0;
+		for(int i=1; i<N; i++)
+			s[i] = s[0] + i*h;
+		
+		int dim = tailT.getDim();
+		
+		Vector sumLaplaceQ = new Vector(dim);
+		Vector sumQ_x= new Vector(dim);
+		Vector sumQ_y= new Vector(dim);
+		Vector[] q = new Vector[N];
+		Vector laplaceT = this.computeLaplace2D(mesh, tailT);
+		Vector T_x = computeDerivative(mesh, tailT, "x");
+		Vector T_y = computeDerivative(mesh, tailT, "y");
+		for(int j=1;j<=N;j++) {
+			q[j-1] = solveGCM(mesh,
+					s[j-1],s[j],
+					sumLaplaceQ,sumQ_x,sumQ_y,
+					laplaceT,T_x,T_y,
+					new VectorBasedFunction(phi[j-1]));
+		
+			//sum_{j=1}^{N-1} \Laplace{q}
+			Vector.axpy(1.0, computeLaplace2D(mesh, q[j-1]), sumLaplaceQ	);
+			Vector.axpy(1.0, computeDerivative(mesh, q[j-1], "x"), sumQ_x);
+			Vector.axpy(1.0, computeDerivative(mesh, q[j-1], "y"), sumQ_y);
+			
+		}
+		
+		Vector v_tidle = new Vector(dim);
+		for(int j=0;j<N;j++) {
+			Vector.axpy(-s[N-1]*s[N-1], q[j], v_tidle);
+		}
+		v_tidle = Vector.axpy(s[N-1]*s[N-1], tailT, v_tidle);
+		
+		Vector u = new Vector(dim);
+		for(int i=1;i<=dim;i++) {
+			u.set(i, Math.pow(Math.E, s[N-1]*s[N-1]*v_tidle.get(i)));
+		}
+		
+		Vector a = solveParamInverse(mesh, u);
+		plotVector(mesh, a, "alpha_recon.dat");
+	}
+	
+	
+	public Vector solveGCM(Mesh mesh,
+			double sn_1, double sn,
+			Vector sumLaplaceQ,
+			Vector sumQ_x, Vector sumQ_y,
+			Vector laplaceT,
+			Vector T_x, Vector T_y,
+			Function diri) {
+		
+		//Mark border type
+		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		mapNTF.clear();
+		mapNTF.put(NodeType.Dirichlet, new FAbstract("x","y"){
+			@Override
+			public double value(Variable v) {
+				double y = v.get("y");
+				if(Math.abs(y - 3.0) < Constant.eps)
+					return 1.0;
+				else
+					return -1.0;
+			}
+		});
+		
+		mapNTF.put(NodeType.Robin, null);
+		mesh.clearBorderNodeMark();
+		mesh.markBorderNode(mapNTF);
+		
+		double h = sn - sn-1;
+		Vector A = getGCMCoef(sn_1,sn);
+		int dim = sumLaplaceQ.getDim();
+		
+		//Right hand side
+		Vector f1 = new Vector(dim); //zero vector
+		f1 = Vector.axpy(A.get(3)*h, sumLaplaceQ,f1);
+		f1 = Vector.axpy(A.get(3), laplaceT,f1);
+		f1 = Vector.axpy(A.get(3), laplaceT,f1);
+		
+		Vector f2x = new Vector(dim); //zero vector
+		f2x = Vector.axpy(h, sumQ_x,f2x);
+		f2x = Vector.axpy(-1.0, T_x,f2x);
+		f2x = Vector.axmy(A.get(4), f2x, f2x);
+		
+		Vector f2y = new Vector(dim); //zero vector
+		f2y = Vector.axpy(h, sumQ_y,f2y);
+		f2y = Vector.axpy(-1.0, T_y,f2y);
+		f2y = Vector.axmy(A.get(4), f2y, f2y);
+		
+		Vector f = Vector.axpy(1.0, f2x, f2y);
+		f = Vector.axpy(1.0, f1, f);
+		
+		//b1, b2
+		Vector q_x_k_1 = new Vector(dim);
+		Vector q_y_k_1 = new Vector(dim);
+		
+		//Nonlinear iteration
+		Vector qn_1 = null;
+		Vector qn = null;
+		for(int iter=1;true;iter++) {
+			Vector b1 = new Vector(dim); //zero vector
+			b1 = Vector.axpy(A.get(2)*h, sumQ_x,b1);
+			b1 = Vector.axpy(A.get(2)*-1.0, T_x,b1);
+			b1 = Vector.axpy(A.get(1), q_x_k_1,b1);
+			Vector b2 = new Vector(dim); //zero vector
+			b2 = Vector.axpy(A.get(2)*h, sumQ_y,b2);
+			b2 = Vector.axpy(A.get(2)*-1.0, T_y,b2);
+			b2 = Vector.axpy(A.get(1), q_y_k_1,b2);
+			
+			WeakFormGCM weakForm = new WeakFormGCM();
+			weakForm.setF(new VectorBasedFunction(f));
+			weakForm.setParam(
+					new FConstant(1.0),
+					new FConstant(0.0),
+					new VectorBasedFunction(b1),
+					new VectorBasedFunction(b2)
+				);
+			
+			Assembler assembler = new Assembler(mesh, weakForm);
+			System.out.println("Begin Assemble...solveForwardDirichlet");
+			Matrix stiff = assembler.getStiffnessMatrix();
+			Vector load = assembler.getLoadVector();
+			//Dirichlet condition
+			assembler.imposeDirichletCondition(diri);
+			System.out.println("Assemble done!");
+	
+			Solver solver = new Solver();
+			qn = solver.solve(stiff, load);
+			
+			q_x_k_1 = computeDerivative(mesh, qn, "x");
+			q_y_k_1 = computeDerivative(mesh, qn, "x");
+			
+			System.out.println("GCM Iteration "+iter);
+			if(iter > 1) {
+				if(Vector.axpy(-1.0, qn_1, qn).norm2()<0.1)
+					break;
+			}
+			qn_1 = qn;
+		
+		}
+		return qn;
+	}
+	
 }

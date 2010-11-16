@@ -1,9 +1,12 @@
 package edu.uta.futureye.function.operator;
 
+import java.util.List;
+
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAbstract;
 import edu.uta.futureye.function.basic.FConstant;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.util.FutureEyeException;
 import edu.uta.futureye.util.Utils;
 
 public class FOBasic {
@@ -19,6 +22,34 @@ public class FOBasic {
 				else if(f2 instanceof FConstant && Double.compare(f2.value(null), 0.0)==0)
 					return f1.toString();
 				return "("+f1.toString()+"  +  "+f2.toString()+")";
+			}
+		};
+	}
+	
+	public static Function PlusAll(final Function ...f) {
+		if(f.length<=1) {
+			FutureEyeException e = new FutureEyeException("Parameter length should > 1");
+			e.printStackTrace();
+			return null;
+		}
+		List<String> names = f[0].varNames();
+		for(int i=1;i<f.length;i++) {
+			names = Utils.mergeList(names, f[i].varNames());
+		}
+		return new FAbstract(names) {
+			@Override
+			public double value(Variable v) {
+				double val = f[0].value(v);
+				for(int i=1;i<f.length;i++) 
+					val += f[i].value(v);
+				return val;
+			}
+			public String toString() {
+				String name = "("+f[0].toString();
+				for(int i=1;i<f.length;i++) 
+					name += " "+f[i].toString();
+				name += ")";
+				return name;
 			}
 		};
 	}

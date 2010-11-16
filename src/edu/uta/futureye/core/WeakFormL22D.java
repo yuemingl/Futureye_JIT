@@ -8,7 +8,6 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.FunctionDerivable;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.function.operator.FOBasic;
-import edu.uta.futureye.function.operator.FOBasicDerivable;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.test.VectorBasedFunction;
 import edu.uta.futureye.util.DOFList;

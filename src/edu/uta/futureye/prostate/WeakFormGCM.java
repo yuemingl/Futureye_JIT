@@ -1,5 +1,6 @@
-package edu.uta.futureye.core;
+package edu.uta.futureye.prostate;
 
+import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.DerivativeIndicator;
 import edu.uta.futureye.function.intf.Function;
@@ -10,24 +11,25 @@ import edu.uta.futureye.util.Utils;
 
 /**
  * Solve
- *   A(u, v) = (f, v)
- * where
- *   A(u, v) = (k*u_x, v_x) + (k*u_y, v_y) + (c*u, v)
- *   k = k(x,y)
- *   c = c(x,y)
+ *  (k*u_x, v_x) + (k*u_y, v_y) + (b1*u_x, v) + (b2*u_y, v) + (c*u, v)= (f, v)
  * 
  * @author liuyueming
  *
  */
-public class WeakFormLaplace2D implements WeakForm {
+public class WeakFormGCM implements WeakForm {
+
 	protected ShapeFunction u = null;
 	protected ShapeFunction v = null;
 	protected int uDOFLocalIndex;
 	protected int vDOFLocalIndex;
 	
 	protected Function g_f = null;
+	
 	protected Function g_k = null;
 	protected Function g_c = null;
+	protected Function g_b1 = null;
+	protected Function g_b2 = null;
+	
 	protected Function g_q = null;
 	protected Function g_d = null;
 
@@ -35,13 +37,18 @@ public class WeakFormLaplace2D implements WeakForm {
 		this.g_f = f;
 	}
 	
-	//Robin: d*u + k*u_n = q
-	public void setParam(Function k,Function c,Function q,Function d) {
+	public void setParam(Function k,Function c,Function b1,Function b2) {
 		this.g_k = k;
 		this.g_c = c;
+		this.g_b1 = b1;
+		this.g_b2 = b2;
+	}
+	
+	//Robin: d*u + k*u_n = q
+	public void setRobin(Function q,Function d) {
 		this.g_q = q;
 		this.g_d = d;
-	}
+	}	
 
 	@Override
 	public Function leftHandSide(Element e, ItemType itemType) {
@@ -53,29 +60,21 @@ public class WeakFormLaplace2D implements WeakForm {
 			DerivativeIndicator di_x = new DerivativeIndicator("x1");
 			DerivativeIndicator di_y = new DerivativeIndicator("y1");
 			Function integrand = null;
-			if(g_k == null) {
-				//System.out.println(u.derivative(di_x));
-				integrand = FOBasic.Plus(
-					FOBasic.Mult(u.derivative(di_x), v.derivative(di_x)),
-					FOBasic.Mult(u.derivative(di_y), v.derivative(di_y))
-					);
-				//Variable v = new Variable();
-				//v.set("r", 0.0);
-				//v.set("s", 0.0);
-				//System.out.println(u.derivative(di_x).value(v));
-			} else {
 				
-				Function fk = Utils.interplateFunctionOnElement(g_k,e);
-				Function fc = Utils.interplateFunctionOnElement(g_c,e);
-				
-				integrand = FOBasic.Plus(
-							FOBasic.Mult(fk, FOBasic.Plus(
-							FOBasic.Mult(u.derivative(di_x), v.derivative(di_x)),
-							FOBasic.Mult(u.derivative(di_y), v.derivative(di_y))
+			Function fk = Utils.interplateFunctionOnElement(g_k,e);
+			Function fc = Utils.interplateFunctionOnElement(g_c,e);
+			Function fb1 = Utils.interplateFunctionOnElement(g_b1,e);
+			Function fb2 = Utils.interplateFunctionOnElement(g_b2,e);
+			
+			integrand = FOBasic.PlusAll(
+						FOBasic.Mult(fk, FOBasic.Plus(
+								FOBasic.Mult(u.derivative(di_x), v.derivative(di_x)),
+								FOBasic.Mult(u.derivative(di_y), v.derivative(di_y))
 						)),
-							FOBasic.Mult(fc, FOBasic.Mult(u, v))
-						);
-			}
+						FOBasic.Mult(fb1,FOBasic.Mult(u.derivative(di_x), v)),
+						FOBasic.Mult(fb2,FOBasic.Mult(u.derivative(di_y), v)),
+						FOBasic.Mult(fc, FOBasic.Mult(u, v))
+					);
 
 			//Numerical integration on element e
 			Function integral = null;
@@ -153,4 +152,6 @@ public class WeakFormLaplace2D implements WeakForm {
 		this.uDOFLocalIndex = trialDofLocalIndex;
 		this.vDOFLocalIndex = testDofLocalIndex;
 	}
+
+
 }

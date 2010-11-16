@@ -255,9 +255,9 @@ public class Test1 {
 		//model.run(1,6,"prostate_test6_rectangle");
 		
 		
-		//model.runAdaptive(1,1,"prostate_test1");
+		model.runAdaptive(1,1,"prostate_test1");
 		//model.runAdaptive(1,2,"prostate_test2");
-		model.runAdaptive(1,3,"prostate_test3");
+		//model.runAdaptive(1,3,"prostate_test3");
 		//model.runAdaptive(1,2,"prostate_test2");
 		//model.runAdaptive(1,6,"prostate_test6_rectangle");
 		//model.runAdaptive(1,7,"prostate_test7_rectangle");
