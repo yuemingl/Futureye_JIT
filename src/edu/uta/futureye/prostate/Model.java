@@ -718,7 +718,9 @@ public class Model {
 
 	    Vector alpha_m1 = alpha_avg_smooth;
 		setDelta(1.0, 2.8);
-		mu_a = new VectorBasedFunction(alpha_m1);
+		setMu_a(2.0, 2.6, 0.3, 
+				1.0, 1);
+		//！！！！！！！！！mu_a = new VectorBasedFunction(alpha_m1);
 		//???边界条件需要满足测量值，而不是Neumann边界
 		Function diri = new VectorBasedFunction(incUL);
 		Vector um1 = solveForwardDirichlet(mesh,diri);
@@ -745,9 +747,11 @@ public class Model {
 		double[]s = new double[N];
 		double h = 0.1;
 		s[0] = 2.0;
+		// 由远到近，s递减
 		for(int i=1; i<N; i++)
-			s[i] = s[0] + i*h;
+			s[i] = s[0] - i*h;
 		Vector tailT = new Vector(um1.getDim());
+		// tail函数（最远处）
 		for(int i=1;i<=tailT.getDim();i++) {
 			tailT.set(i, Math.log(um1.get(i))/(s[0]*s[0]));
 		}
@@ -767,14 +771,35 @@ public class Model {
 		for(int i=0;i<N-1;i++) {
 			int dim = ui[i].getDim();
 			phi[i] = new Vector(dim);
-			for(int j=1;j<=dim;j++)
+			for(int j=1;j<=dim;j++) {
 				phi[i].set(j, 
 						(1.0/h) * 
 						(Math.log(ui[i  ].get(j))/(s[i  ]*s[i  ]) - 
 						 Math.log(ui[i+1].get(j))/(s[i+1]*s[i+1]) 
 						));
+			}
 			plotVector(mesh, phi[i], "GCMphi_"+i+".dat");
 		}
+		
+//		//模拟计算出来的phi除了提供边界条件，区域内部的值也有，可以用来重构真实的a(x)
+//		int dim=um1.getDim();
+//		Vector v_tidle_real = new Vector(dim);
+//		for(int j=0;j<N-1;j++) {
+//			v_tidle_real = Vector.axpy(-s[N-1]*s[N-1]*h, phi[j], v_tidle_real);
+//		}
+//		v_tidle_real = Vector.axpy(s[N-1]*s[N-1], tailT, v_tidle_real);
+//		plotVector(mesh, v_tidle_real, "v_tidle_N_real.dat");
+//		
+//		Vector u_real = new Vector(dim);
+//		for(int i=1;i<=dim;i++) {
+//			u_real.set(i, Math.pow(Math.E, v_tidle_real.get(i)));
+//		}
+//		plotVector(mesh, u_real, "u_N_real.dat");
+//		
+//		Vector a_real = solveParamInverse(mesh, u_real);
+//		plotVector(mesh, a_real, "alpha_recon_N_real.dat");
+		
+		
 		runGCM(mesh, N, s, phi, tailT);
 		
 	}
@@ -1182,7 +1207,7 @@ public class Model {
 		//用最近处光源重构：v_tidle -> u ->　a
 		Vector v_tidle = new Vector(dim);
 		for(int j=0;j<N-1;j++) {
-			double h = s[j+1] - s[j];
+			double h = s[j] - s[j+1];
 			v_tidle = Vector.axpy(-s[N-1]*s[N-1]*h, q[j], v_tidle);
 		}
 		v_tidle = Vector.axpy(s[N-1]*s[N-1], tailT, v_tidle);
@@ -1190,12 +1215,32 @@ public class Model {
 		
 		Vector u = new Vector(dim);
 		for(int i=1;i<=dim;i++) {
-			u.set(i, Math.pow(Math.E, s[N-1]*s[N-1]*v_tidle.get(i)));
+			u.set(i, Math.pow(Math.E, v_tidle.get(i)));
 		}
 		plotVector(mesh, u, "u_N.dat");
 		
 		Vector a = solveParamInverse(mesh, u);
 		plotVector(mesh, a, "alpha_recon_N.dat");
+		
+		
+		//模拟计算出来的phi除了提供边界条件，区域内部的值也有，可以用来重构真实的a(x)
+		Vector v_tidle_real = new Vector(dim);
+		for(int j=0;j<N-1;j++) {
+			double h = s[j] - s[j+1];
+			v_tidle_real = Vector.axpy(-s[N-1]*s[N-1]*h, phi[j], v_tidle_real);
+		}
+		v_tidle_real = Vector.axpy(s[N-1]*s[N-1], tailT, v_tidle_real);
+		plotVector(mesh, v_tidle_real, "v_tidle_N_real.dat");
+		
+		Vector u_real = new Vector(dim);
+		for(int i=1;i<=dim;i++) {
+			u_real.set(i, Math.pow(Math.E, v_tidle_real.get(i)));
+		}
+		plotVector(mesh, u_real, "u_N_real.dat");
+		
+		Vector a_real = solveParamInverse(mesh, u_real);
+		plotVector(mesh, a_real, "alpha_recon_N_real.dat");
+		
 	}
 	
 	
@@ -1237,8 +1282,8 @@ public class Model {
 		
 		//Right hand side
 		Vector f1 = new Vector(dim); //zero vector
-		//f1 = Vector.axpy(A.get(3)*h, sumLaplaceQ,f1);
-		f1 = Vector.axpy(-A.get(3)*h, sumLaplaceQ,f1);
+		f1 = Vector.axpy(A.get(3)*h, sumLaplaceQ,f1);
+		//f1 = Vector.axpy(-A.get(3)*h, sumLaplaceQ,f1);
 		f1 = Vector.axpy(A.get(3), laplaceT,f1);
 		
 		Vector f2x = new Vector(dim); //zero vector
