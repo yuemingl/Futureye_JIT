@@ -245,7 +245,7 @@ public class Test1 {
 		//3*5 => 10*15
 		//model.run(1,2,"prostate_test2");
 		//3*5 => 15*25
-		model.run(1,3,"prostate_test3");
+		//model.run(1,3,"prostate_test3");
 		//3*5 => manual adaptive
 		//model.run(1,4,"prostate_test4_linear");
 		//model.run(2,4,"prostate_test4_quadratic");
@@ -263,6 +263,12 @@ public class Test1 {
 		//model.runAdaptive(1,7,"prostate_test7_rectangle");
 		
 		//model.runAdaptive(1,5,"prostate_test5_mixed");
+		
+		model.runGCMTest(1,
+				"prostate_test3_ex.grd",
+				"prostate_test3.grd",
+				"prostate_test3_gcm");
+
 	
 	}
 	
