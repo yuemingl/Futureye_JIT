@@ -149,7 +149,7 @@ public class Model {
 		weakForm.setF(this.delta);
 
 		weakForm.setParam(
-				this.k, this.mu_a, new FConstant(0.05),null //Robin: d*u + k*u_n = q
+				this.k, this.mu_a, new FConstant(0.01),null //Robin: d*u + k*u_n = q
 			); 
 		
 		Assembler assembler = new Assembler(mesh, weakForm);
@@ -191,7 +191,7 @@ public class Model {
 		weakForm.setF(this.delta);
 
 		weakForm.setParam(
-				this.k, this.mu_a, new FConstant(0.05),null //Robin: d*u + k*u_n = q
+				this.k, this.mu_a, new FConstant(0.01),null //Robin: d*u + k*u_n = q
 			); 
 		
 		Assembler assembler = new Assembler(mesh, weakForm);
@@ -1198,6 +1198,17 @@ public class Model {
 		return A;
 	}
 	
+	/**
+	 * Test for Global Convergence Method 
+	 * 下一步需要做的事情：
+	 * 光源s从最远到最近变化，最远距离选一个足够远的距离，h足够小，迭代足够多的步数后，
+	 * 观察Tail的影响有多大？是否想之前的测试结果，影响很大？
+	 * 
+	 * @param elementType
+	 * @param gridFileForward
+	 * @param gridFileGCM
+	 * @param outputFolder
+	 */
 	public void runGCMTest(int elementType, 
 			String gridFileForward, 
 			String gridFileGCM, 
@@ -1270,7 +1281,7 @@ public class Model {
 
 		double coefK = 0.02;
 		
-		setDelta(1.0, 4.5);
+		setDelta(1.0, 3.5);
 		plotFunction(meshForward, this.delta, "delta.dat");
 		
 		//Solve background forward problem
@@ -1280,8 +1291,8 @@ public class Model {
 		plotVector(meshForward, bkUL, "bkUL.dat");
 		
 		//Solve forward problem with inclusion
-		setMu_a(2.0, 2.6, 0.3, 
-				1.0, 1);
+		setMu_a(2.0, 2.7, 0.3, 
+				2.0, 1);
 		plotFunction(meshForward, this.mu_a, "alpha_real.dat");
 		Vector incUL = solveForwardNeumann(meshForward);
 		plotVector(meshForward, incUL, "incUL.dat");
@@ -1303,10 +1314,12 @@ public class Model {
 		
 		//---------------Global Convergence Method---------------
 		//Number of moving light sources
-		int N=3; 
+		int N=4; 
 		double[]s = new double[N];
-		double h = 0.1;
-		s[0] = 2.0; //s[0]>=1?  =1 NO; =2,4 OK
+		double h = 0.4; 
+		//h越小越好？（由于错误的代码(sn-1 - sn)，h=0.01结果很好，再大结果就很坏）
+		//正确代码：h=0.1没问题,h=0.05要好一些
+		s[0] = 3.0; //s[0]>=1?  =1 NO; =2,4 OK
 		for(int i=1; i<N; i++)
 			s[i] = s[0] - i*h; //由远到近，s递减
 		
@@ -1316,15 +1329,15 @@ public class Model {
 		Vector[] ui = new Vector[N];
 		Vector[] vi = new Vector[N];
 		Vector[] phi = new Vector[N];
-		//实际上，应该来自从tail重构出来的a(x)
-		setMu_a(2.0, 2.6, 0.3, 
-				1.0, 1);
 		
 		//ui[0] ui[1] ui[2]
 		//vi[0] vi[1] vi[2]
 		for(int i=0;i<N;i++) {
+			//实际上，应该来自从tail重构出来的a(x)
+			setMu_a(2.0, 2.7, 0.3, 
+					2.0, 1);
 			
-			setDelta(1.0+i*h, 4.5);
+			setDelta(1.0+i*h, 3.5);
 			
 			ui_ex[i] = solveForwardNeumann(meshForward); //在meshGCM上求解，top边界条件不好确定
 			plotVector(meshForward, ui_ex[i], "GCM_incU_ex_"+i+".dat");
@@ -1348,10 +1361,25 @@ public class Model {
 		}	
 		
 		//Tail function  Tail函数（光源最远处）
-		Vector tailT = vi[0];
+		//Vector tailT = vi[0];//extractData(meshForward, meshGCM, bkUL);
+		//实际上，应该来自从tail重构出来的a(x)
+		//Tail改变高度：超过实际高度，GCM方法会降低部分高度，以达到或接近实际高度
+		//Tail改变位置（实际(2.0,2.7)）：靠下(2.0,2.6)偏高，靠右(3.0,2.6)偏高，结果显示GCM对a(x)没有任何贡献
+		//setMu_a(3.0, 2.6, 0.3, 
+		//		2.0, 1); //假设Mu_a高度只有30%；或高度为200%
+		setMu_a(1.0, 2.7, 0.3, 
+				2.0, 1); //
+		setDelta(1.0, 3.5);
+		Vector u_tail = solveForwardNeumann(meshForward); //在meshGCM上求解，top边界条件不好确定
+		//截取meshForward的部分解到meshGCM上
+		u_tail = extractData(meshForward, meshGCM, u_tail);
+		Vector tailT = new Vector(dimGCM);
+		for(int k=1;k<=dimGCM;k++) {
+			tailT.set(k, Math.log(u_tail.get(k)) / (s[0]*s[0]) );
+		}
 		plotVector(meshGCM, tailT, "tailT.dat");
 
-		
+		/*		
 		//Check \Laplace{v} + s^2*|\Nabla{v}|^2 = a(x)/s^2
 		Vector vecMu_a = discreteFunction(meshGCM,this.mu_a);
 		Vector kMu_a = new Vector(dimGCM);
@@ -1403,9 +1431,10 @@ public class Model {
 		q_equation = Vector.axpy(2.0/s[1], v_laplace, q_equation);
 		//内部为0，边界不为0
 		plotVector(meshGCM, q_equation, "q_equation.dat");
+		*/
 		
 		//TODO ???
-		//setDelta(1.0, 3.5);
+		setDelta(1.0+(N-1)*h, 3.5);
 		solveGCM(meshGCM, N, s, phi, tailT);	
 	}
 	
@@ -1420,6 +1449,9 @@ public class Model {
 		Vector sumLaplaceQ = new Vector(dim);
 		Vector sumQ_x= new Vector(dim);
 		Vector sumQ_y= new Vector(dim);
+		Vector sumLaplaceQ_real = new Vector(dim);
+		Vector sumQ_x_real = new Vector(dim);
+		Vector sumQ_y_real = new Vector(dim);
 		Vector[] q = new Vector[N];
 		Vector T_laplace = computeLaplace2D(mesh, tailT);
 		Vector T_x = computeDerivative(mesh, tailT, "x");
@@ -1433,6 +1465,10 @@ public class Model {
 			q[i] = solveGCM(mesh,i,
 					s[i],s[i+1],
 					sumLaplaceQ,sumQ_x,sumQ_y,
+					//sumLaplaceQ_real,sumQ_x_real,sumQ_y_real,
+					//computeLaplace2D(mesh, sumLaplaceQ_real),
+					//computeDerivative(mesh, sumQ_x_real, "x"),
+					//computeDerivative(mesh, sumQ_y_real, "y"),
 					T_laplace,T_x,T_y,
 					new VectorBasedFunction(phi[i]),
 					q_0,phi[i]);
@@ -1440,17 +1476,28 @@ public class Model {
 			q_0 = q[i];
 			
 			//sum_{j=1}^{N-1} \Laplace{q}
-//			sumLaplaceQ = Vector.axpy(1.0, computeLaplace2D(mesh, q[i]), sumLaplaceQ);
-//			sumQ_x = Vector.axpy(1.0, computeDerivative(mesh, q[i], "x"), sumQ_x);
-//			sumQ_y = Vector.axpy(1.0, computeDerivative(mesh, q[i], "y"), sumQ_y);
-			//TODO !!!TEST!!!
-			sumLaplaceQ = Vector.axpy(1.0, computeLaplace2D(mesh, phi[i]), sumLaplaceQ);
-			sumQ_x = Vector.axpy(1.0, computeDerivative(mesh, phi[i], "x"), sumQ_x);
-			sumQ_y = Vector.axpy(1.0, computeDerivative(mesh, phi[i], "y"), sumQ_y);
+			sumLaplaceQ = Vector.axpy(1.0, computeLaplace2D(mesh, q[i]), sumLaplaceQ);
+			sumQ_x = Vector.axpy(1.0, computeDerivative(mesh, q[i], "x"), sumQ_x);
+			sumQ_y = Vector.axpy(1.0, computeDerivative(mesh, q[i], "y"), sumQ_y);
+			plotVector(mesh, sumLaplaceQ, "GCM_sumLaplaceQ_"+i+".dat");
+			plotVector(mesh, sumQ_x, "GCM_sumQ_x_"+i+".dat");
+			plotVector(mesh, sumQ_y, "GCM_sumQ_y_"+i+".dat");
 			
-			plotVector(mesh, sumLaplaceQ, "sumLaplaceQ_"+i+".dat");
-			plotVector(mesh, sumQ_x, "sumQ_x_"+i+".dat");
-			plotVector(mesh, sumQ_y, "sumQ_y_"+i+".dat");
+			//TODO !!!TEST!!!
+//			sumLaplaceQ_real = Vector.axpy(1.0, computeLaplace2D(mesh, phi[i]), sumLaplaceQ_real);
+//			sumQ_x_real = Vector.axpy(1.0, computeDerivative(mesh, phi[i], "x"), sumQ_x_real);
+//			sumQ_y_real = Vector.axpy(1.0, computeDerivative(mesh, phi[i], "y"), sumQ_y_real);
+//			plotVector(mesh, sumLaplaceQ_real, "GCM_sumLaplaceQ_real_"+i+".dat");
+//			plotVector(mesh, sumQ_x_real, "GCM_sumQ_x_real_"+i+".dat");
+//			plotVector(mesh, sumQ_y_real, "GCM_sumQ_y_real_"+i+".dat");
+			
+//			sumLaplaceQ_real = Vector.axpy(1.0, phi[i], sumLaplaceQ_real);
+//			sumQ_x_real = Vector.axpy(1.0, phi[i], sumQ_x_real);
+//			sumQ_y_real = Vector.axpy(1.0, phi[i], sumQ_y_real);
+//
+//			plotVector(mesh, sumLaplaceQ_real, "GCM_sumLaplaceQ_real_"+i+".dat");
+//			plotVector(mesh, sumQ_x_real, "GCM_sumQ_x_real_"+i+".dat");
+//			plotVector(mesh, sumQ_y_real, "GCM_sumQ_y_real_"+i+".dat");
 			
 		}
 		
@@ -1460,6 +1507,7 @@ public class Model {
 			double h = s[i] - s[i+1];
 			v_tidle = Vector.axpy(-s[N-1]*s[N-1]*h, q[i], v_tidle);
 		}
+		plotVector(mesh, v_tidle, "v_tidle_N_befor_add_tail.dat");
 		v_tidle = Vector.axpy(s[N-1]*s[N-1], tailT, v_tidle);
 		plotVector(mesh, v_tidle, "v_tidle_N.dat");
 		
@@ -1521,7 +1569,7 @@ public class Model {
 //		
 //		//mapNTF.put(NodeType.Robin, null);
 		
-		double h = sn-1 - sn;
+		double h = sn_1 - sn; //错误的写成：sn-1 - sn，导致结果异常，以后变量名称一定不要这样写了
 		Vector A = getGCMCoef(sn_1,sn);
 		System.out.println("----------");
 		for(int i=1;i<=A.getDim();i++) {
@@ -1533,6 +1581,7 @@ public class Model {
 		//Right hand side
 		Vector f1 = new Vector(dim); //zero vector
 		//f1 = Vector.axpy(A.get(3)*h, sumLaplaceQ,f1);
+		//TODO???
 		f1 = Vector.axpy(-A.get(3)*h, sumLaplaceQ,f1);
 		f1 = Vector.axpy(A.get(3), laplaceT,f1);
 		
@@ -1540,16 +1589,16 @@ public class Model {
 		f2x = Vector.axpy(h, sumQ_x,f2x);
 		f2x = Vector.axpy(-1.0, T_x,f2x);
 		f2x = Vector.axmy(A.get(4), f2x, f2x);
-		plotVector(mesh, f2x, "f2x_"+n_1+".dat");
+		plotVector(mesh, f2x, "GCM_f2x_"+n_1+".dat");
 		
 		Vector f2y = new Vector(dim); //zero vector
 		f2y = Vector.axpy(h, sumQ_y,f2y);
 		f2y = Vector.axpy(-1.0, T_y,f2y);
 		f2y = Vector.axmy(A.get(4), f2y, f2y);
-		plotVector(mesh, f2y, "f2y_"+n_1+".dat");
+		plotVector(mesh, f2y, "GCM_f2y_"+n_1+".dat");
 		
 		Vector f = Vector.axpy(1.0, f2x, f2y);
-		plotVector(mesh, f, "f2xpf2y_"+n_1+".dat");
+		plotVector(mesh, f, "GCM_f2xpf2y_"+n_1+".dat");
 		f = Vector.axpy(1.0, f1, f);
 		plotVector(mesh, f, "GCM_"+n_1+"_f.dat");
 		
@@ -1565,8 +1614,8 @@ public class Model {
 			
 			q_x_k_1 = computeDerivative(mesh, qn_1, "x");
 			q_y_k_1 = computeDerivative(mesh, qn_1, "y");
-			plotVector(mesh, q_x_k_1, "q_x_km1_"+n_1+"_"+iter+".dat");
-			plotVector(mesh, q_y_k_1, "q_y_km1_"+n_1+"_"+iter+".dat");
+			plotVector(mesh, q_x_k_1, "GCM_q_x_km1_"+n_1+"_"+iter+".dat");
+			plotVector(mesh, q_y_k_1, "GCM_q_y_km1_"+n_1+"_"+iter+".dat");
 
 			Vector b1 = new Vector(dim); //zero vector
 			b1 = Vector.axpy(A.get(2)*h, sumQ_x,b1);
@@ -1581,6 +1630,7 @@ public class Model {
 			plotVector(mesh, b1, "GCM_"+n_1+"_b1_"+iter+".dat");
 			plotVector(mesh, b2, "GCM_"+n_1+"_b2_"+iter+".dat");
 			
+			//check lhs with rhs
 			if(phi !=  null) {
 				Vector phi_laplace = computeLaplace2D(mesh, phi);
 				Vector phi_x = computeDerivative(mesh, phi, "x");
@@ -1607,15 +1657,15 @@ public class Model {
 				plotVector(mesh, lhs, "GCM_"+n_1+"_lhs_"+iter+".dat");
 				
 				//TODO !!!TEST!!!
-				b1 = b1r;
-				b2 = b2r;
+				//b1 = b1r;
+				//b2 = b2r;
 			}
 			
 			WeakFormGCM weakForm = new WeakFormGCM();
 			weakForm.setF(new VectorBasedFunction(f));
 			weakForm.setParam(
 					new FConstant(-1.0),//注意，有负号!!!
-					new FConstant(0.0),
+					new FConstant(0.0), //-\eps{q_n}!!! \eps-0.1
 					new VectorBasedFunction(b1),
 					new VectorBasedFunction(b2)
 				);
@@ -1631,16 +1681,32 @@ public class Model {
 			//Dirichlet condition
 			assembler.imposeDirichletCondition(diri);
 			System.out.println("Assemble done!");
-	
+
 			Solver solver = new Solver();
 			qn = solver.solve(stiff, load);
-			plotVector(mesh, qn, "qn_"+n_1+"_"+iter+".dat");
+			plotVector(mesh, qn, "GCM_qn_"+n_1+"_"+iter+".dat");
+			
+			
+			Vector q_x_k = computeDerivative(mesh, qn, "x");
+			Vector q_y_k = computeDerivative(mesh, qn, "y");
+			Vector lhs_x = Vector.axmy(1.0, q_x_k, b1);
+			Vector lhs_y = Vector.axmy(1.0, q_y_k, b2);
+			Vector lhs = Vector.axpy(1.0, lhs_x, lhs_y);
+			plotVector(mesh, lhs, "GCM_"+n_1+"_lhsx__lhsy_cmp_"+iter+".dat");
+			Vector qn_laplace = computeLaplace2D(mesh, qn);
+			lhs = Vector.axpy(1.0, qn_laplace, lhs);
+			plotVector(mesh, lhs, "GCM_"+n_1+"_lhs_cmp_"+iter+".dat");
+			Vector qn_equation = Vector.axpy(-1.0, f, lhs);
+			plotVector(mesh, qn_equation, "GCM_"+n_1+"_qn_equation_cmp_"+iter+".dat");
+			
 			
 			System.out.println("GCM Iteration "+iter);
 			if(iter > 1) {
 				double norm = Vector.axpy(-1.0, qn_1, qn).norm2();
-				if(norm < 0.1)
+				if(norm < 0.1) {
+					System.out.println("GCM norm < 1.0, STOP");
 					break;
+				}
 			}
 			qn_1 = qn;
 		}

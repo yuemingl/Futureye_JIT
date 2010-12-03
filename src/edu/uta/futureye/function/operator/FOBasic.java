@@ -47,7 +47,7 @@ public class FOBasic {
 			public String toString() {
 				String name = "("+f[0].toString();
 				for(int i=1;i<f.length;i++) 
-					name += " "+f[i].toString();
+					name += " + "+f[i].toString();
 				name += ")";
 				return name;
 			}

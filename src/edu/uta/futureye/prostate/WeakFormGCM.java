@@ -71,8 +71,9 @@ public class WeakFormGCM implements WeakForm {
 								FOBasic.Mult(u.derivative(di_x), v.derivative(di_x)),
 								FOBasic.Mult(u.derivative(di_y), v.derivative(di_y))
 						)),
-						FOBasic.Mult(fb1,FOBasic.Mult(u.derivative(di_x), v)),
-						FOBasic.Mult(fb2,FOBasic.Mult(u.derivative(di_y), v)),
+						//TODO??? (u_x,v) or (u,v_x) ???
+						FOBasic.Mult(fb1,FOBasic.Mult(u, v.derivative(di_x))),
+						FOBasic.Mult(fb2,FOBasic.Mult(u, v.derivative(di_y))),
 						FOBasic.Mult(fc, FOBasic.Mult(u, v))
 					);
 

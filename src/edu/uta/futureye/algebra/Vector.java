@@ -149,4 +149,11 @@ public class Vector {
 		}
 		return rlt;
 	}
+	
+	public void print() {
+		for(int i=1;i<=dim;i++) {
+			System.out.print(String.format("%8.6f", get(i))+"   ");
+		}
+		System.out.println("");
+	}	
 }

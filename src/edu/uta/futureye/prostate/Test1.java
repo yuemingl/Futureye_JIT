@@ -237,7 +237,86 @@ public class Test1 {
 	    writer.writeTechplot("prostate_test1"+String.format("_alpha.dat"), u2);
 	}
 	
+	public static void testWeakFormGCM() {
+		MeshReader reader = new MeshReader("triangle.grd");
+		Mesh mesh = reader.read2D();
+		mesh.computeNodesBelongToElement();
+		
+		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		mapNTF.put(NodeType.Dirichlet, null);		
+		mesh.markBorderNode(mapNTF);
+
+		SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
+		for(int i=0;i<3;i++)
+			shapeFun[i] = new SFLinearLocal2D(i+1);
+		
+		//Asign degree of freedom to element
+		for(int i=1;i<=mesh.getElementList().size();i++) {
+			Element e = mesh.getElementList().at(i);
+			for(int j=1;j<=e.nodes.size();j++) {
+				//Asign shape function to DOF
+				DOF dof = new DOF(j,e.nodes.at(j).globalIndex,shapeFun[j-1]);
+				e.addDOF(j, dof);
+			}
+		}
+		
+		Function x = new FX("x");
+		Function y = new FX("y");
+		Function x2 = FOBasic.Mult(x,x);
+		Function y2 = FOBasic.Mult(y,y);
+		
+		Function f =
+				FOBasic.PlusAll(
+						FOBasic.Mult(new FConstant(2.0), x2),
+						FOBasic.Mult(new FConstant(2.0), y2),
+						FOBasic.Mult(new FConstant(2.0), FOBasic.Mult(x2,y)),
+						FOBasic.Mult(new FConstant(2.0), FOBasic.Mult(y2,x)),
+						FOBasic.Mult(new FConstant(-18.0), x),
+						FOBasic.Mult(new FConstant(-18.0), y),
+						new FConstant(-36.0)
+				);
+		System.out.println(f);
+		
+		//User defined weak form of PDE (including bounder conditions)
+		//-k*\Delta{u} + b\dot\Nabla{u} + c*u = f
+		//u(x,y)=0, (x,y)\in\partial{\Omega}
+		//k=-1
+		//b=(1 1)'
+		//c=0
+		//f=2*(x^2+y^2) + (2xy-18)*(x+y) -36
+		//u=(x^2-9)*(y^2-9)
+		WeakFormGCM weakForm = new WeakFormGCM();
+		weakForm.setF(f);
+		weakForm.setParam(
+				new FConstant(-1.0),//×¢Òâ£¬ÓÐ¸ººÅ!!!
+				new FConstant(0.0),
+				new FConstant(1.0),
+				new FConstant(1.0)
+			);
+		
+		mesh.clearBorderNodeMark();
+		mesh.markBorderNode(mapNTF);
+
+		Assembler assembler = new Assembler(mesh, weakForm);
+		System.out.println("Begin Assemble...solveGCM");
+		Matrix stiff = assembler.getStiffnessMatrix();
+		Vector load = assembler.getLoadVector();
+		//Dirichlet condition
+		assembler.imposeDirichletCondition(new FConstant(0.0));
+		System.out.println("Assemble done!");
+
+		Solver solver = new Solver();
+		Vector u = solver.solve(stiff, load);
+		
+	    MeshWriter writer = new MeshWriter(mesh);
+	    writer.writeTechplot("testWeakFormGCM.dat", u);
+	}
+	
+	
 	public static void main(String[] args) {
+		
+		//testWeakFormGCM();
+		
 		Model model = new Model();
 				
 		//3*5 => 30*50
@@ -271,5 +350,6 @@ public class Test1 {
 
 	
 	}
+	
 	
 }
