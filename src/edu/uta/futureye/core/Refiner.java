@@ -231,7 +231,7 @@ public class Refiner {
 				}	
 			}
 			
-			e.chlids = eList;
+			e.childs = eList;
 		}
 
 	}
@@ -267,7 +267,7 @@ public class Refiner {
 	//计算hanging node
 	public static void computeHangingNode(ElementList eToRefine) {
 		for(int iToRe=1;iToRe<=eToRefine.size();iToRe++) {
-			ElementList eChilds = eToRefine.at(iToRe).chlids;
+			ElementList eChilds = eToRefine.at(iToRe).childs;
 			for(int i=1;i<=eChilds.size();i++) {
 				Element eChild = eChilds.at(i);
 				for(int j=1;j<=eChild.nodes.size();j++) {
@@ -282,7 +282,7 @@ public class Refiner {
 		}
 		
 		for(int iToRe=1;iToRe<=eToRefine.size();iToRe++) {
-			ElementList eChilds = eToRefine.at(iToRe).chlids;
+			ElementList eChilds = eToRefine.at(iToRe).childs;
 			ElementList eNeighbors = eToRefine.at(iToRe).neighbors;
 			//循环大单元中的每个子单元
 			for(int i=1;i<=eChilds.size();i++) {

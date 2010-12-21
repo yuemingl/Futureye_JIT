@@ -18,7 +18,7 @@ import edu.uta.futureye.util.*;
 public class Test1 {
 	public static void allTest() {
 		MeshReader reader = new MeshReader("prostate_test1.grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodesBelongToElement();
 		
 		//Mark border type
@@ -139,7 +139,7 @@ public class Test1 {
 	
 	public static void paramInverseTest() {
 		MeshReader reader = new MeshReader("prostate_test1.grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodesBelongToElement();
 		
 		//Mark border type
@@ -239,7 +239,7 @@ public class Test1 {
 	
 	public static void testWeakFormGCM() {
 		MeshReader reader = new MeshReader("triangle.grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodesBelongToElement();
 		
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
@@ -342,7 +342,7 @@ public class Test1 {
 		//model.runAdaptive(1,7,"prostate_test7_rectangle");
 		
 		//model.runAdaptive(1,5,"prostate_test5_mixed");
-		
+	
 		model.runGCMTest(1,
 				"prostate_test3_ex.grd",
 				"prostate_test3.grd",

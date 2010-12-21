@@ -231,6 +231,6 @@ public class FunctionTest {
 		composeTest();
 		TriFunction();
 //		fullTest();
-		//serendipityShapFunction();
+		serendipityShapFunction();
 	}
 }

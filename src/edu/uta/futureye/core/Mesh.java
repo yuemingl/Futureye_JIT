@@ -266,4 +266,12 @@ public class Mesh {
 		}
 		return false;
 	}
+	
+	/**
+	 * 
+	 */
+	Mesh copy() {
+		//TODO
+		return null;
+	}
 }

@@ -18,7 +18,7 @@ public class MeshReader {
 		this.file = fileName;
 	}
 	
-	public Mesh read2D() {
+	public Mesh read2DMesh() {
 		FileInputStream in;
 		try {
 			in = new FileInputStream(file);
@@ -95,7 +95,7 @@ public class MeshReader {
 	
 	public static void main(String[] args) {
 		MeshReader r1 = new MeshReader("mixed.grd");
-		Mesh m = r1.read2D();
+		Mesh m = r1.read2DMesh();
 		System.out.println("nodes read: "+m.getNodeList().size());
 		System.out.println("elements read: "+m.getElementList().size());
 		

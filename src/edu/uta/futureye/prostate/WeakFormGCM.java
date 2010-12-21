@@ -1,5 +1,8 @@
 package edu.uta.futureye.prostate;
 
+import java.util.List;
+
+import edu.uta.futureye.algebra.Matrix;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.DerivativeIndicator;
@@ -7,6 +10,7 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.operator.FOIntegrate;
+import edu.uta.futureye.util.PairElementMatrix;
 import edu.uta.futureye.util.Utils;
 
 /**
@@ -152,6 +156,12 @@ public class WeakFormGCM implements WeakForm {
 		v = test;
 		this.uDOFLocalIndex = trialDofLocalIndex;
 		this.vDOFLocalIndex = testDofLocalIndex;
+	}
+
+	@Override
+	public List<PairElementMatrix> associateElement(Element e) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

@@ -1,5 +1,8 @@
 package edu.uta.futureye.core;
 
+import java.util.List;
+
+import edu.uta.futureye.algebra.Matrix;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.DerivativeIndicator;
 import edu.uta.futureye.function.Variable;
@@ -11,6 +14,7 @@ import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.test.VectorBasedFunction;
 import edu.uta.futureye.util.DOFList;
+import edu.uta.futureye.util.PairElementMatrix;
 import edu.uta.futureye.util.Utils;
 
 /**
@@ -139,5 +143,11 @@ public class WeakFormL22D implements WeakForm {
 	public void setParam(Function k,VectorBasedFunction U) {
 		this.g_k = k;
 		this.g_U = U;
+	}
+
+	@Override
+	public List<PairElementMatrix> associateElement(Element e) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

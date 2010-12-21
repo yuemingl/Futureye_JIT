@@ -20,13 +20,15 @@ import edu.uta.futureye.util.NodeList;
 import edu.uta.futureye.util.Utils;
 
 /**
- * 单元
+ * Element of a triangulation
+ * 剖分单元
  * @author liuyueming
  *
  */
 public class Element {
 	/**
 	 * Global index of this element
+	 * 单元全局编号
 	 */
 	public int globalIndex = 0;
 	
@@ -37,13 +39,13 @@ public class Element {
 	public NodeList nodes = new NodeList();
 	
 	/**
-	 * Vertices local index in this element(index in nodes)
+	 * Vertices local index in this element(=index in this.nodes)
 	 * 单元顶点在nodes中的局部编号列表
 	 */
 	public List<Integer> verticesLocalIndex = new ArrayList<Integer>(4);
 	
 	/**
-	 * Neighbors of the element
+	 * Neighbors of this element
 	 * 相邻单元
 	 */
 	public ElementList neighbors = new ElementList();
@@ -83,6 +85,10 @@ public class Element {
 		return dofList;
 	}
 	
+	
+	
+	
+	
 	/**
 	 * 添加一个自由度
 	 * @param localNodeIndex
@@ -97,6 +103,16 @@ public class Element {
 		//2010-10-11 DOF反向索引Node
 		dof.setOwnerNode(this.nodes.at(localNodeIndex));
 		dofList.add(dof);
+	}
+	
+	public void addEdgeDOF() {
+		
+	}
+	public void addFaceDOF() {
+		
+	}
+	public void addVolumnDOF() {
+		
 	}
 	
 	public void clearDOF() {
@@ -128,14 +144,14 @@ public class Element {
 	 * @return
 	 */
 	public int getTotalNumberOfDOF() {
-		int dim = 0;
+		int nTotal = 0;
 		int nNode = nodes.size();
 		for(int i=1;i<=nNode;i++) {
 			DOFList list = mapDOFList.get(i);
 			int nNodeDOF = list.size();
-			dim += nNodeDOF;
+			nTotal += nNodeDOF;
 		}
-		return dim;
+		return nTotal;
 	}
 	
 	/**
@@ -261,7 +277,8 @@ public class Element {
 	}
 	
 	/**
-	 * 计算以node为顶点的夹角角度
+	 * 计算以node为顶点，单元所有点与之形成的夹角角度，
+	 * 如果为360度，就说明是内点
 	 * @param node
 	 * @return
 	 */
@@ -447,7 +464,7 @@ public class Element {
 	/**
 	 * 自适应网格加密用来保存从该单元加密出来的子网格单元
 	 */
-	public ElementList chlids = null;
+	public ElementList childs = null;
 	public Element parent = null;
 	//加密层次
 	protected int level = 1;
@@ -458,7 +475,7 @@ public class Element {
 	 * @return
 	 */
 	public boolean isRefined() {
-		return this.chlids != null;
+		return this.childs != null;
 	}
 	
 	public int getLevel() {

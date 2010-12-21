@@ -150,6 +150,7 @@ public class Model {
 
 		weakForm.setParam(
 				this.k, this.mu_a, new FConstant(0.01),null //Robin: d*u + k*u_n = q
+				//this.k, this.mu_a, new FConstant(0),new FConstant(1) //Robin: d*u + k*u_n = q
 			); 
 		
 		Assembler assembler = new Assembler(mesh, weakForm);
@@ -521,7 +522,7 @@ public class Model {
 	public void run(int elementType, String gridFile, String outputFolder) {
 		MeshReader reader = null;
 		reader = new MeshReader(gridFile);
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		
 		this.outputFolder = outputFolder;
 		
@@ -1029,7 +1030,7 @@ public class Model {
 	public void runAdaptive(int elementType, int gridID, String outputFolder) {
 		MeshReader reader = null;
 		reader = new MeshReader("prostate_test"+gridID+".grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 
 		Vector alpha_avg = solveAdaptive(mesh, elementType, outputFolder);
 	    //Smooth...
@@ -1214,9 +1215,9 @@ public class Model {
 			String gridFileGCM, 
 			String outputFolder) {
 		MeshReader readerForward = new MeshReader(gridFileForward);
-		Mesh meshForward = readerForward.read2D();
+		Mesh meshForward = readerForward.read2DMesh();
 		MeshReader readerGCM = new MeshReader(gridFileGCM);
-		Mesh meshGCM = readerGCM.read2D();
+		Mesh meshGCM = readerGCM.read2DMesh();
 		
 		this.outputFolder = outputFolder;
 		
@@ -1282,6 +1283,7 @@ public class Model {
 		double coefK = 0.02;
 		
 		setDelta(1.0, 3.5);
+		//setDelta(0.0, 4.0);
 		plotFunction(meshForward, this.delta, "delta.dat");
 		
 		//Solve background forward problem
@@ -1291,7 +1293,7 @@ public class Model {
 		plotVector(meshForward, bkUL, "bkUL.dat");
 		
 		//Solve forward problem with inclusion
-		setMu_a(2.0, 2.7, 0.3, 
+		setMu_a(2.0, 2.9, 0.3, 
 				2.0, 1);
 		plotFunction(meshForward, this.mu_a, "alpha_real.dat");
 		Vector incUL = solveForwardNeumann(meshForward);
@@ -1334,7 +1336,7 @@ public class Model {
 		//vi[0] vi[1] vi[2]
 		for(int i=0;i<N;i++) {
 			//实际上，应该来自从tail重构出来的a(x)
-			setMu_a(2.0, 2.7, 0.3, 
+			setMu_a(2.0, 2.9, 0.3, 
 					2.0, 1);
 			
 			setDelta(1.0+i*h, 3.5);
@@ -1367,7 +1369,7 @@ public class Model {
 		//Tail改变位置（实际(2.0,2.7)）：靠下(2.0,2.6)偏高，靠右(3.0,2.6)偏高，结果显示GCM对a(x)没有任何贡献
 		//setMu_a(3.0, 2.6, 0.3, 
 		//		2.0, 1); //假设Mu_a高度只有30%；或高度为200%
-		setMu_a(1.0, 2.7, 0.3, 
+		setMu_a(1.0, 2.9, 0.3, 
 				2.0, 1); //
 		setDelta(1.0, 3.5);
 		Vector u_tail = solveForwardNeumann(meshForward); //在meshGCM上求解，top边界条件不好确定

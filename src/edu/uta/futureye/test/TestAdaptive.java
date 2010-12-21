@@ -35,7 +35,7 @@ public class TestAdaptive {
 //		MeshReader reader = new MeshReader("patch_rectangle.grd");
 		MeshReader reader = new MeshReader("patch_rectangle2.grd");
 //		MeshReader reader = new MeshReader("patch_rectangle_refine.grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 
@@ -254,7 +254,7 @@ public class TestAdaptive {
 		MeshReader reader = new MeshReader("patch_rectangle2.grd");
 //		MeshReader reader = new MeshReader("patch_rectangle_refine.grd");
 	
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 
@@ -373,7 +373,7 @@ public class TestAdaptive {
 	public static void adaptiveTestTriangle() {
 		MeshReader reader = new MeshReader("patch_triangle.grd");
 	
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 

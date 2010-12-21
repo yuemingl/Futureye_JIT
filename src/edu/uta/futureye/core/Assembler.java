@@ -1,5 +1,6 @@
 package edu.uta.futureye.core;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -10,8 +11,8 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.util.DOFList;
 import edu.uta.futureye.util.ElementList;
-import edu.uta.futureye.util.FutureEyeException;
 import edu.uta.futureye.util.NodeList;
+import edu.uta.futureye.util.PairElementMatrix;
 
 public class Assembler {
 	protected Mesh mesh;
@@ -126,17 +127,31 @@ public class Assembler {
 	
 	
 	public Matrix getLocalMatrix(Element e) {
-		int dofDim = e.getTotalNumberOfDOF();
-		Matrix localMatrix = new Matrix(dofDim,dofDim);
 		//System.out.println("Assembling:"+e);
+		Matrix localMatrix = null;
+		List<PairElementMatrix> pemList = weakForm.associateElement(e);
+		
+		int dofDim = 0;
+		if(pemList == null) {
+			dofDim = e.getTotalNumberOfDOF();
+			localMatrix = new Matrix(dofDim,dofDim);
+		} else {
+			for(PairElementMatrix pem : pemList) {
+				plusToGlobalMatrix(pem.element, pem.localMatrix);
+			}
+			return null; //TODO ???
+		}
 		
 		e.updateJacobinLinear2D();
 		int nNode = e.nodes.size();
+		//结点双循环
 		for(int i=1;i<=nNode;i++) {
 			for(int j=1;j<=nNode;j++) {
 				DOFList dofListI = e.getDOFList(i);
 				DOFList dofListJ = e.getDOFList(j);
 				
+				//结点上自由度双循环
+				//不同结点上的自由度个数不一定相同(e.g. adaptive finite element)
 				int nDOF1 = dofListI.size();
 				int nDOF2 = dofListJ.size();
 				for(int k1=1;k1<=nDOF1;k1++) {
@@ -155,32 +170,9 @@ public class Assembler {
 						localMatrix.set(lRow, lCol, val);
 					}
 				}
-				
-//				if(dofListI.size() != dofListJ.size()) {
-//					FutureEyeException ex = new FutureEyeException("Error: Assembler.getLocalMatrix(), dofListI.size() != dofListJ.size()");
-//					ex.printStackTrace();
-//				} else {
-//					int nDOF = dofListI.size();
-//					for(int k=1;k<=nDOF;k++) {
-//						DOF dofI = dofListI.at(k);
-//						DOF dofJ = dofListJ.at(k);
-//						//TODO
-//						int lRow = dofI.localIndex;
-//						int lCol = dofJ.localIndex;
-//						weakForm.setShapeFunction(
-//								dofI.getShapeFunction(),dofI.localIndex,
-//								dofJ.getShapeFunction(),dofJ.localIndex
-//								);
-//						double val = weakForm.leftHandSide(e, WeakForm.ItemType.Domain).value(null);
-//						//System.out.println(e+" "+val);
-//						localMatrix.set(lRow, lCol, val);
-//					}
-//				}
-				
-				
 			}
 		}
-		plusToGlobalMatrix(e, localMatrix);		
+		plusToGlobalMatrix(e, localMatrix);
 		
 		if(e.isBorderElement()) {
 			ElementList beList = e.getSubElements();

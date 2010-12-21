@@ -20,6 +20,8 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.shape.SFBilinearLocal2D;
 import edu.uta.futureye.function.shape.SFLinearLocal2D;
+import edu.uta.futureye.function.shape.SFQuadraticLocal2D;
+import edu.uta.futureye.function.shape.SFQuadraticLocal2DFast;
 import edu.uta.futureye.function.shape.SFSerendipity2D;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -27,9 +29,10 @@ import edu.uta.futureye.io.MeshWriter;
 public class LaplaceTest {
 	
 	public static void triangleTest() {
-		MeshReader reader = new MeshReader("triangle2.grd");
-//		MeshReader reader = new MeshReader("triangle_refine0.grd");
-		Mesh mesh = reader.read2D();
+//		String meshName = "triangle2";
+		String meshName = "triangle_refine";
+		MeshReader reader = new MeshReader(meshName+".grd");
+		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodesBelongToElement();
 		
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
@@ -87,10 +90,13 @@ public class LaplaceTest {
 		
 		Assembler assembler = new Assembler(mesh, weakForm);
 		System.out.println("Begin Assemble...");
+		long begin = System.currentTimeMillis();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		assembler.imposeDirichletCondition(new FConstant(0.0));
+		long end = System.currentTimeMillis();
 		System.out.println("Assemble done!");
+		System.out.println("Time used:"+(end-begin));
 		
 		Solver solver = new Solver();
 		Vector u = solver.solve(stiff, load);
@@ -99,14 +105,14 @@ public class LaplaceTest {
 	        System.out.println(String.format("%.3f", u.get(i)));	
 	    
 	    MeshWriter writer = new MeshWriter(mesh);
-	    writer.writeTechplot("triangle2_out.dat", u);
+	    writer.writeTechplot(meshName+"_out.dat", u);
 		
 	}
 	
 	public static void rectangleTest() {
 //		MeshReader reader = new MeshReader("rectangle.grd");
 		MeshReader reader = new MeshReader("rectangle_refine.grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodesBelongToElement();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
@@ -175,7 +181,7 @@ public class LaplaceTest {
 	
 	public static void mixedTest() {
 		MeshReader reader = new MeshReader("mixed.grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodesBelongToElement();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
@@ -259,7 +265,7 @@ public class LaplaceTest {
 	public static void serendipityTest() {
 		MeshReader reader = new MeshReader("rectangle.grd");
 //		MeshReader reader = new MeshReader("rectangle_refine.grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		
 		//Add nodes for serendipity element
 		int indexSet[] = {1,2,3,4,1};
@@ -341,28 +347,28 @@ public class LaplaceTest {
 		MeshReader reader = new MeshReader("triangle.grd");
 //		MeshReader reader = new MeshReader("triangle_refine0.grd");
 //		MeshReader reader = new MeshReader("triangle_refine2.grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		
 		//Add nodes for quadratic element
-//		int indexSet[] = {1,2,3,1};
-//		for(int i=1;i<=mesh.getElementList().size();i++) {
-//			Element e = mesh.getElementList().at(i);
-//			for(int j=1;j<=3;j++) {
-//				Node l = e.nodes.at(indexSet[j-1]);
-//				Node r = e.nodes.at(indexSet[j]);
-//				double cx = (l.coord(1)+r.coord(1))/2.0;
-//				double cy = (l.coord(2)+r.coord(2))/2.0;
-//				Node node = new Node(2);
-//				node.set(mesh.getNodeList().size()+1, cx,cy );
-//				Node findNode = mesh.containNode(node);
-//				if(findNode == null) {
-//					e.addNode(node, false);
-//					mesh.addNode(node);
-//				} else {
-//					e.addNode(findNode, false);
-//				}
-//			}
-//		}
+		int indexSet[] = {1,2,3,1};
+		for(int i=1;i<=mesh.getElementList().size();i++) {
+			Element e = mesh.getElementList().at(i);
+			for(int j=1;j<=3;j++) {
+				Node l = e.nodes.at(indexSet[j-1]);
+				Node r = e.nodes.at(indexSet[j]);
+				double cx = (l.coord(1)+r.coord(1))/2.0;
+				double cy = (l.coord(2)+r.coord(2))/2.0;
+				Node node = new Node(2);
+				node.set(mesh.getNodeList().size()+1, cx,cy );
+				Node findNode = mesh.containNode(node);
+				if(findNode == null) {
+					e.addNode(node, false);
+					mesh.addNode(node);
+				} else {
+					e.addNode(findNode, false);
+				}
+			}
+		}
 		
 		mesh.computeNodesBelongToElement();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
@@ -379,12 +385,12 @@ public class LaplaceTest {
 		mesh.markBorderNode(mapNTF);
 
 	
-		SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
-		for(int i=0;i<3;i++)
-			shapeFun[i] = new SFLinearLocal2D(i+1);
-//		SFQuadraticLocal2DFast[] shapeFun = new SFQuadraticLocal2DFast[6];
-//		for(int i=1;i<=6;i++)
-//			shapeFun[i-1] = new SFQuadraticLocal2DFast(i);
+//		SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
+//		for(int i=0;i<3;i++)
+//			shapeFun[i] = new SFLinearLocal2D(i+1);
+		SFQuadraticLocal2DFast[] shapeFun = new SFQuadraticLocal2DFast[6];
+		for(int i=1;i<=6;i++)
+			shapeFun[i-1] = new SFQuadraticLocal2DFast(i);
 //		SFQuadraticLocal2D[] shapeFun = new SFQuadraticLocal2D[6];
 //		for(int i=1;i<=6;i++)
 //			shapeFun[i-1] = new SFQuadraticLocal2D(i);
@@ -442,7 +448,7 @@ public class LaplaceTest {
 		//rectangleTest();
 		//mixedTest();
 		//serendipityTest();
-		quadraticLocal2DTest();
+		//quadraticLocal2DTest();
 	}
 		
 }

@@ -27,7 +27,7 @@ public class Laplace {
 	public static void triangle() {
 		//Read a triangle mesh from an input file
 		MeshReader reader = new MeshReader("triangle.grd");
-		Mesh mesh = reader.read2D();
+		Mesh mesh = reader.read2DMesh();
 		
 		//Geometry relationship
 		mesh.computeNodesBelongToElement();
