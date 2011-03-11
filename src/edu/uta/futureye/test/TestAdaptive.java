@@ -2,31 +2,26 @@ package edu.uta.futureye.test;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.Matrix;
 import edu.uta.futureye.algebra.Solver;
-import edu.uta.futureye.algebra.Vector;
-import edu.uta.futureye.core.Assembler;
+import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Refiner;
-import edu.uta.futureye.core.WeakFormLaplace2D;
 import edu.uta.futureye.function.basic.FAxpb;
-import edu.uta.futureye.function.basic.FConstant;
-import edu.uta.futureye.function.basic.FX;
+import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.intf.FunctionDerivable;
 import edu.uta.futureye.function.operator.FOBasic;
-import edu.uta.futureye.function.shape.SFBilinearLocal2D;
-import edu.uta.futureye.function.shape.SFLinearLocal2D;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
-import edu.uta.futureye.util.EdgeList;
-import edu.uta.futureye.util.ElementList;
-import edu.uta.futureye.util.NodeList;
+import edu.uta.futureye.lib.assembler.AssemblerScalar;
+import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
+import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
+import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
+import edu.uta.futureye.util.list.ElementList;
 
 public class TestAdaptive {
 	
@@ -58,7 +53,7 @@ public class TestAdaptive {
 			for(int j=1;j<=e.nodes.size();j++) {
 				//Asign shape function to DOF
 				DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFun[j-1]);
-				e.addDOF(j, dof);
+				e.addNodeDOF(j, dof);
 			}
 		}
 		
@@ -74,17 +69,17 @@ public class TestAdaptive {
 		weakForm.setF(
 				FOBasic.Plus(
 					FOBasic.Plus(
-						FOBasic.Mult(new FConstant(-2.0), FOBasic.Power(fxm5, new FConstant(2.0)) ),
-						FOBasic.Mult(new FConstant(-2.0), FOBasic.Power(fym5, new FConstant(2.0)) )
-						),new FConstant(100.0)
+						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fxm5, new FC(2.0)) ),
+						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fym5, new FC(2.0)) )
+						),new FC(100.0)
 					)
 				);
 		
-		Assembler assembler = new Assembler(mesh, weakForm);
+		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new FConstant(0.0));
+		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
 		Solver solver = new Solver();
@@ -301,17 +296,17 @@ public class TestAdaptive {
 					if(nRefined.isHangingNode()) {
 						DOF dof  = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(1).globalIndex,
 								shapeFun2[j-1]);
-						e.addDOF(j, dof);
+						e.addNodeDOF(j, dof);
 						DOF dof2 = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(2).globalIndex,
 								shapeFun2[j-1]);
-						e.addDOF(j, dof2);
+						e.addNodeDOF(j, dof2);
 					} else {
 						DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFun[j-1]);
-						e.addDOF(j, dof);				
+						e.addNodeDOF(j, dof);				
 					}
 				} else {
 					DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFun[j-1]);
-					e.addDOF(j, dof);
+					e.addNodeDOF(j, dof);
 				}
 			}
 		}
@@ -328,17 +323,17 @@ public class TestAdaptive {
 		weakForm.setF(
 				FOBasic.Plus(
 					FOBasic.Plus(
-						FOBasic.Mult(new FConstant(-2.0), FOBasic.Power(fxm5, new FConstant(2.0)) ),
-						FOBasic.Mult(new FConstant(-2.0), FOBasic.Power(fym5, new FConstant(2.0)) )
-						),new FConstant(100.0)
+						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fxm5, new FC(2.0)) ),
+						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fym5, new FC(2.0)) )
+						),new FC(100.0)
 					)
 				);
 		
-		Assembler assembler = new Assembler(mesh, weakForm);
+		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new FConstant(0.0));
+		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
 		Solver solver = new Solver();
@@ -419,17 +414,17 @@ public class TestAdaptive {
 					if(nRefined.isHangingNode()) {
 						DOF dof  = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(1).globalIndex,
 								shapeFun2[j-1]);
-						e.addDOF(j, dof);
+						e.addNodeDOF(j, dof);
 						DOF dof2 = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(2).globalIndex,
 								shapeFun2[j-1]);
-						e.addDOF(j, dof2);
+						e.addNodeDOF(j, dof2);
 					} else {
 						DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFun[j-1]);
-						e.addDOF(j, dof);				
+						e.addNodeDOF(j, dof);				
 					}
 				} else {
 					DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFun[j-1]);
-					e.addDOF(j, dof);
+					e.addNodeDOF(j, dof);
 				}
 			}
 		}
@@ -446,17 +441,17 @@ public class TestAdaptive {
 		weakForm.setF(
 				FOBasic.Plus(
 					FOBasic.Plus(
-						FOBasic.Mult(new FConstant(-2.0), FOBasic.Power(fxm5, new FConstant(2.0)) ),
-						FOBasic.Mult(new FConstant(-2.0), FOBasic.Power(fym5, new FConstant(2.0)) )
-						),new FConstant(100.0)
+						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fxm5, new FC(2.0)) ),
+						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fym5, new FC(2.0)) )
+						),new FC(100.0)
 					)
 				);
 		
-		Assembler assembler = new Assembler(mesh, weakForm);
+		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new FConstant(0.0));
+		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
 		Solver solver = new Solver();

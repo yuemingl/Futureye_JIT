@@ -1,113 +1,121 @@
 package edu.uta.futureye.core;
 
-import java.util.List;
-import java.util.LinkedList;
-
-import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.GeoEntity;
-import edu.uta.futureye.core.intf.Point;
-import edu.uta.futureye.util.DOFList;
-import edu.uta.futureye.util.NodeList;
+import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.core.geometry.GeoEntity1D;
 import edu.uta.futureye.util.Utils;
+import edu.uta.futureye.util.list.NodeList;
 
-public class Edge implements GeoEntity{
-	public Element owner = null;
-	public List<NodeLocal> nodeLocalList = new LinkedList<NodeLocal>();
+/**
+ * Global edge of an element
+ * 全局边
+ * 
+ * @author liuyueming
+ *
+ */
+public class Edge extends GeoEntity1D<NodeLocal> {
+	protected int globalIndex;
+	private Vector globalUnitNormVector; //全局单位法方向
 	
-	public NodeType getBorderNodeType() {
-		NodeType nt1 = nodeLocalList.get(0).globalNode.getNodeType();
-		NodeType nt2 = nodeLocalList.get(nodeLocalList.size()-1).globalNode.getNodeType();
-		
-		if(nt1 == nt2) return nt1;
-		else
-			return null;
+	public Edge() {
 	}
 	
-	public boolean isBorderEdge() {
-		for(NodeType nt : NodeType.values()) {
-			if(nt == NodeType.Inner) continue;
-			if(nt == this.getBorderNodeType()) return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Edge自己变为一个单元，用于边界积分（线积分）
-	 * @return
-	 */
-	public Element changeToElement() {
-		Element be = new Element();
-		
-		Node n1 = nodeLocalList.get(0).globalNode;
-		Node n2 = nodeLocalList.get(1).globalNode;
-		int ownerLocalIndex1 = this.owner.getLocalIndex(n1);
-		int ownerLocalIndex2 = this.owner.getLocalIndex(n2);
-		
-		be.stemGeoEntity = this;
-		
-		be.addNode(n1,true);
-		be.addNode(n2,true);
-		
-		
-		DOFList eDOFList = owner.getDOFList(ownerLocalIndex1);
-		for(int j=1;eDOFList!=null && j<=eDOFList.size();j++) {
-			DOF dof = new DOF(
-						1,
-						n1.globalIndex,
-						eDOFList.at(j).shapeFunction.restrictTo(1)
-					);
-			be.addDOF(1, dof);
-		}
-		eDOFList = owner.getDOFList(ownerLocalIndex2);
-		for(int j=1;eDOFList!=null && j<=eDOFList.size();j++) {
-			DOF dof = new DOF(
-						2,
-						n2.globalIndex,
-						eDOFList.at(j).shapeFunction.restrictTo(2)
-					);
-			be.addDOF(2, dof);
-		}	
-		
-		int dofIndex = 3;
-		for(int i=2;i<nodeLocalList.size();i++) {
-			NodeLocal nl = nodeLocalList.get(i);
-			Node nn = nl.globalNode;
-			be.addNode(nn,false);
-			int ownerLocalIndexNN = this.owner.getLocalIndex(nn);
-			eDOFList = owner.getDOFList(ownerLocalIndexNN);
-			for(int j=1;eDOFList!=null && j<=eDOFList.size();j++) {
-				int localIndex = dofIndex++;
-				DOF dof = new DOF(
-					localIndex,
-					eDOFList.at(j).globalIndex,
-					eDOFList.at(j).shapeFunction.restrictTo(localIndex)
+	public Edge(NodeLocal begin, NodeLocal end) {
+		addVertex(new Vertex(1,begin));
+		addVertex(new Vertex(2,end));
+
+		globalUnitNormVector = Utils.getNormVector(
+				this.vertices.at(1),
+				this.vertices.at(2)
 				);
-				be.addDOF(localIndex, dof);
-			}
-		}
-		return be;
+	}
+	
+	public int getGlobalIndex() {
+		return globalIndex;
+	}
+
+	public void setGlobalIndex(int globalIndex) {
+		this.globalIndex = globalIndex;
+	}
+	
+	public Vector getNormVector() {
+		if(this.globalUnitNormVector == null)
+			globalUnitNormVector = Utils.getNormVector(
+					this.vertices.at(1),
+					this.vertices.at(2)
+					);
+			
+		return this.globalUnitNormVector;
+	}
+	
+    public NodeType getBorderType() {                 
+    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType();
+    	NodeType nt2 = this.vertices.at(2).globalNode().getNodeType();                       
+    	if(nt1 == nt2) return nt1;                  
+    	else {
+    		//TODO Exception?
+    		return null;
+    	}
+    }
+    
+	public boolean isBorderEdge() {
+		if(this.vertices.at(1).globalNode().getNodeType()==NodeType.Inner ||
+				this.vertices.at(2).globalNode().getNodeType()==NodeType.Inner)
+			return false;
+		else
+			return true;
+		
+//		for(NodeType nt : NodeType.values()) {
+//			if(nt == NodeType.Inner) continue;
+//			if(nt == this.edgeNodes.at(1).getNodeType() &&
+//					nt == this.edgeNodes.at(this.edgeNodes.size()).getNodeType()) 
+//				return true;
+//		}
+//		return false;
 	}
 	
 	/**
-	 * nodeLocalList 的前两个元素是Edge的端点
+	 * 判断某个坐标点是否在edge上
 	 * @param coord
 	 * @return
 	 */
-	public boolean isCoordOnEdge(double coord[]) {
-		Node n1 = nodeLocalList.get(0).globalNode;
-		Node n2 = nodeLocalList.get(1).globalNode;
-		Node n = new Node(coord);
-		return Utils.isPointOnLineSegment(n1,n2,n);
+	public boolean isCoordOnEdge(double coords[]) {
+		return Utils.isPointOnLineSegment(
+				this.vertices.at(1),
+				this.vertices.at(2),
+				new Vertex().set(0, coords));
+	}
+	
+    public Vertex beginVertex() {
+		return this.vertices.at(1);
+    }
+    
+    public Vertex endVertex() {
+		return this.vertices.at(2);
+    }
+    
+	public Node beginNode() {
+		return this.vertices.at(1).globalNode();
+	}
+
+	public Node endNode() {
+		return this.vertices.at(2).globalNode();
 	}
 	
 	public NodeList getEndNodes() {
 		NodeList rlt = new NodeList();
-		rlt.add(nodeLocalList.get(0).globalNode);
-		rlt.add(nodeLocalList.get(1).globalNode);
+		rlt.add(this.vertices.at(1).globalNode());
+		rlt.add(this.vertices.at(2).globalNode());
 		return rlt;
 	}
 	
-	public String toString() {
-		return nodeLocalList.toString();
+	public double getEdgeLength() {
+		return Utils.computeLength(
+					this.vertices.at(1),
+					this.vertices.at(2)
+				);
 	}
+	
+	public String toString() {
+		return "Edge"+this.globalIndex+":"+this.vertices.toString();
+	}	
 }

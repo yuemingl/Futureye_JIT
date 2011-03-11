@@ -1,31 +1,27 @@
 package edu.uta.futureye.function.basic;
 
-import edu.uta.futureye.function.DerivativeIndicator;
+import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.FunctionDerivable;
+import edu.uta.futureye.function.intf.Function;
 
-public class FAx extends FAbstract {
-	protected double a = 1.0;
-
-	public FAx() {
+public class FAx extends AbstractFunction {
+	protected double a;
+	
+	public FAx(double a) {
+		this.a = a;
 	}
 	
-	public FAx(String varName, double coef) {
+	public FAx(String varName, double a) {
 		super(varName);
-		this.a = coef;
-	}
-	
-	public FAx(double coef) {
-		this.a = coef;
+		this.a = a;
 	}
 	
 	@Override
-	public FunctionDerivable derivative(DerivativeIndicator di) {
-		Integer degree = di.get().get(varNames().get(0));
-		if( degree != null && degree == 1)
-			return new FConstant(a);
+	public Function d(String varName) {
+		if(this.varNames().contains(varName))
+			return new FC(a);
 		else
-			return new FConstant(0.0);
+			return FC.c0;
 	}
 
 	@Override

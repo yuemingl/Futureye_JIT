@@ -223,6 +223,7 @@ public class FunctionTest {
 		System.out.println(a._d("s"));
 	}	
 	
+
 	public static void main(String[] args) {
 		symbolTest();
 		valueTest();

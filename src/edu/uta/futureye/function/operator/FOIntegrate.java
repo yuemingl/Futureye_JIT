@@ -1,7 +1,7 @@
 package edu.uta.futureye.function.operator;
 
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.FConstant;
+import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 
 public class FOIntegrate{
@@ -94,7 +94,7 @@ public class FOIntegrate{
 			}	
 		}
 		//???  0.5 ???
-		return new FConstant(0.5*rlt);
+		return new FC(0.5*rlt);
 	}
 	
 	/**
@@ -178,12 +178,14 @@ public class FOIntegrate{
 		} else {
 			System.out.println("ERROR: intOnLinearRefElement() Not supported degree = "+degree);
 		}
-		return new FConstant(rlt);
+		return new FC(rlt);
 	}
 	
 	public static Function intOnRectangleRefElement(Function integrand, int degree) {
 		double a1_1 = 0.0;
 		double h1_1 = 4.0;
+		double a2 = 0.577350269189626;
+		double h2 = 1.0;
 		
 		Variable v = new Variable();
 		double rlt = 0.0;
@@ -192,23 +194,53 @@ public class FOIntegrate{
 			v.set("s", a1_1);
 			rlt += h1_1*integrand.value(v);
 		} else if(degree ==2) {
-			v.set("r", 0.5);
-			v.set("s", 0.5);
-			rlt += h1_1*integrand.value(v);			
-			v.set("r", -0.5);
-			v.set("s", 0.5);
-			rlt += h1_1*integrand.value(v);			
-			v.set("r", 0.5);
-			v.set("s", -0.5);
-			rlt += h1_1*integrand.value(v);			
-			v.set("r", -0.5);
-			v.set("s", -0.5);
-			rlt += h1_1*integrand.value(v);			
+			v.set("r", a2);
+			v.set("s", a2);
+			rlt += h2*integrand.value(v);			
+			v.set("r", -a2);
+			v.set("s", a2);
+			rlt += h2*integrand.value(v);			
+			v.set("r", a2);
+			v.set("s", -a2);
+			rlt += h2*integrand.value(v);			
+			v.set("r", -a2);
+			v.set("s", -a2);
+			rlt += h2*integrand.value(v);			
 		} else {
 			System.out.println("ERROR: intOnLinearRefElement() Not supported degree = "+degree);
 		}
 		
-		return new FConstant(rlt);
+		return new FC(rlt);
 	}		
 	
+	public static Function intOnTetrahedraRefElement(Function integrand, int degree) {
+		double a1_1 = 0.25;
+		double h1_1 = 1;
+		
+		double []a2 = {0.585410196624969,0.138196601125011,0.138196601125011,0.138196601125011};
+		double h2 = 0.25;
+		int [][]M24 = {{0,1,2,3},{1,0,2,3},{1,2,0,3},{1,2,3,0}};
+		
+		Variable v = new Variable();
+		double rlt = 0.0;
+		if(degree == 1) {
+			v.set("r", a1_1);
+			v.set("s", a1_1);
+			v.set("t", a1_1);
+			v.set("u", a1_1);
+			rlt += h1_1*integrand.value(v);
+		} else if(degree ==2) {
+			for(int i=0;i<M24.length;i++) {
+				v.set("r", a2[M24[i][0]]);
+				v.set("s", a2[M24[i][1]]);
+				v.set("t", a2[M24[i][2]]);
+				v.set("u", a2[M24[i][3]]);
+				rlt += h2*integrand.value(v);			
+			}
+		} else {
+			System.out.println("ERROR: intOnLinearRefElement() Not supported degree = "+degree);
+		}
+		
+		return new FC(rlt);
+	}		
 }

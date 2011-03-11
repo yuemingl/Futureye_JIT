@@ -1,10 +1,10 @@
 package edu.uta.futureye.function.basic;
 
-import edu.uta.futureye.function.DerivativeIndicator;
+import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.FunctionDerivable;
+import edu.uta.futureye.function.intf.Function;
 
-public class FDelta extends FAbstract {
+public class FDelta extends AbstractFunction {
 	Variable x0;
 	double eps;
 	double amp;
@@ -36,7 +36,7 @@ public class FDelta extends FAbstract {
 	}
 	
 	@Override
-	public FunctionDerivable derivative(DerivativeIndicator di) {
+	public Function d(String varName) {
 		return null;
 	}
 	

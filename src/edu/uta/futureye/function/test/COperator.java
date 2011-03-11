@@ -6,6 +6,12 @@ import edu.uta.futureye.util.Constant;
 
 public class COperator {
 	
+	/**
+	 * item * pChain
+	 * @param pChain
+	 * @param item
+	 * @return
+	 */
 	public static PlusChain PlusChainMultiItem(PlusChain pChain, Item item) {
 		if(item instanceof MultiChain)
 			return PlusChainMultiMultiChain(pChain,(MultiChain)item);
@@ -25,6 +31,12 @@ public class COperator {
 		}
 	}
 	
+	/**
+	 * pChain * mChain
+	 * @param pChain
+	 * @param mChain
+	 * @return
+	 */
 	public static PlusChain PlusChainMultiMultiChain(PlusChain pChain, MultiChain mChain) {
 		PlusChain pc = new PlusChain();
 		for(ItemPair pair : pChain.getAllItem()) {
@@ -38,6 +50,12 @@ public class COperator {
 		return pc;
 	}
 	
+	/**
+	 * pChain1 * pChain2
+	 * @param pChain1
+	 * @param pChain2
+	 * @return
+	 */
 	public static PlusChain PlusChainMultiPlusChain(PlusChain pChain1, PlusChain pChain2) {
 		PlusChain pc = new PlusChain();
 		for(ItemPair pair1 : pChain1.getAllItem()) {

@@ -1,11 +1,19 @@
 package edu.uta.futureye.test;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.UIManager;
 
 import edu.uta.futureye.function.Variable;
-
-import java.awt.*;
-import java.awt.event.*;
 
 public class CoordinateTransformationTest {
 

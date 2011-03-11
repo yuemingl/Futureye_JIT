@@ -1,19 +1,34 @@
 package edu.uta.futureye.prostate;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 
-import edu.uta.futureye.core.*;
-import edu.uta.futureye.core.intf.Point;
-import edu.uta.futureye.algebra.*;
-import edu.uta.futureye.function.*;
-import edu.uta.futureye.function.basic.*;
+import edu.uta.futureye.algebra.Solver;
+import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.core.DOF;
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.Node;
+import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.function.basic.FC;
+import edu.uta.futureye.function.basic.FDelta;
+import edu.uta.futureye.function.basic.FX;
+import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOBasic;
-import edu.uta.futureye.function.operator.FOBasicDerivable;
-import edu.uta.futureye.function.shape.SFLinearLocal2D;
-import edu.uta.futureye.io.*;
-import edu.uta.futureye.test.VectorBasedFunction;
-import edu.uta.futureye.util.*;
+import edu.uta.futureye.io.MeshReader;
+import edu.uta.futureye.io.MeshWriter;
+import edu.uta.futureye.lib.assembler.AssemblerScalar;
+import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
+import edu.uta.futureye.lib.weakform.WeakFormL22D;
+import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
+import edu.uta.futureye.util.list.NodeList;
 
 public class Test1 {
 	public static void allTest() {
@@ -52,7 +67,7 @@ public class Test1 {
 			for(int j=1;j<=e.nodes.size();j++) {
 				//Asign shape function to DOF
 				DOF dof = new DOF(j,e.nodes.at(j).globalIndex,shapeFun[j-1]);
-				e.addDOF(j, dof);
+				e.addNodeDOF(j, dof);
 			}
 		}
 		
@@ -77,8 +92,8 @@ public class Test1 {
 			final double fmu_a = mu_a[mu_ai];
 									
 			weakForm.setParam(
-			new FConstant(0.02), //  1/(3*mu_s') = 0.02
-			new FAbstract("x","y"){ //mu_a
+			new FC(0.02), //  1/(3*mu_s') = 0.02
+			new AbstractFunction("x","y"){ //mu_a
 				@Override
 				public double value(Variable v) {
 					double dx = v.get("x")-fcx;
@@ -89,14 +104,14 @@ public class Test1 {
 						return 0.1;
 				}
 			},
-			new FConstant(0.05),null //Robin: d*u + k*u_n = q
+			new FC(0.05),null // d*u + k*u_n= q (自然边界：d==k, q=0)
 			); 
 			
-			Assembler assembler = new Assembler(mesh, weakForm);
+			AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 			System.out.println("Begin Assemble...");
 			Matrix stiff = assembler.getStiffnessMatrix();
 			Vector load = assembler.getLoadVector();
-			assembler.imposeDirichletCondition(new FConstant(0.0));
+			assembler.imposeDirichletCondition(new FC(0.0));
 			System.out.println("Assemble done!");
 			
 			Solver solver = new Solver();
@@ -158,7 +173,7 @@ public class Test1 {
 			for(int j=1;j<=e.nodes.size();j++) {
 				//Asign shape function to DOF
 				DOF dof = new DOF(j,e.nodes.at(j).globalIndex,shapeFun[j-1]);
-				e.addDOF(j, dof);
+				e.addNodeDOF(j, dof);
 			}
 		}
 		
@@ -176,8 +191,8 @@ public class Test1 {
 		final double fmu_a = 1.0;
 
 		weakForm.setParam(
-		new FConstant(0.02), //  1/(3*mu_s') = 0.02
-		new FAbstract("x","y"){ //mu_a
+		new FC(0.02), //  1/(3*mu_s') = 0.02
+		new AbstractFunction("x","y"){ //mu_a
 			@Override
 			public double value(Variable v) {
 				double dx = v.get("x")-fcx;
@@ -188,14 +203,14 @@ public class Test1 {
 					return 0.1;
 			}
 		},
-		new FConstant(0.05),null //Robin: d*u + k*u_n = q
+		new FC(0.05),null // d*u + k*u_n= q (自然边界：d==k, q=0)
 		); 
 		
-		Assembler assembler = new Assembler(mesh, weakForm);
+		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new FConstant(0.0));
+		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
 		Solver solver = new Solver();
@@ -217,15 +232,15 @@ public class Test1 {
 		WeakFormL22D weakFormL2 = new WeakFormL22D();
 		weakFormL2.setF(delta);
 		weakFormL2.setParam(
-				new FConstant(0.02), 
-				new VectorBasedFunction(u)
+				new FC(0.02), 
+				new Vector2Function(u)
 				);
 		
-		Assembler assembler2 = new Assembler(mesh, weakFormL2);
+		AssemblerScalar assembler2 = new AssemblerScalar(mesh, weakFormL2);
 		System.out.println("Begin Assemble...");
 		Matrix stiff2 = assembler2.getStiffnessMatrix();
 		Vector load2 = assembler2.getLoadVector();
-		assembler2.imposeDirichletCondition(new FConstant(0.1));
+		assembler2.imposeDirichletCondition(new FC(0.1));
 		System.out.println("Assemble done!");
 		
 		Solver solver2 = new Solver();
@@ -256,7 +271,7 @@ public class Test1 {
 			for(int j=1;j<=e.nodes.size();j++) {
 				//Asign shape function to DOF
 				DOF dof = new DOF(j,e.nodes.at(j).globalIndex,shapeFun[j-1]);
-				e.addDOF(j, dof);
+				e.addNodeDOF(j, dof);
 			}
 		}
 		
@@ -267,13 +282,13 @@ public class Test1 {
 		
 		Function f =
 				FOBasic.PlusAll(
-						FOBasic.Mult(new FConstant(2.0), x2),
-						FOBasic.Mult(new FConstant(2.0), y2),
-						FOBasic.Mult(new FConstant(2.0), FOBasic.Mult(x2,y)),
-						FOBasic.Mult(new FConstant(2.0), FOBasic.Mult(y2,x)),
-						FOBasic.Mult(new FConstant(-18.0), x),
-						FOBasic.Mult(new FConstant(-18.0), y),
-						new FConstant(-36.0)
+						FOBasic.Mult(new FC(2.0), x2),
+						FOBasic.Mult(new FC(2.0), y2),
+						FOBasic.Mult(new FC(2.0), FOBasic.Mult(x2,y)),
+						FOBasic.Mult(new FC(2.0), FOBasic.Mult(y2,x)),
+						FOBasic.Mult(new FC(-18.0), x),
+						FOBasic.Mult(new FC(-18.0), y),
+						new FC(-36.0)
 				);
 		System.out.println(f);
 		
@@ -288,21 +303,21 @@ public class Test1 {
 		WeakFormGCM weakForm = new WeakFormGCM();
 		weakForm.setF(f);
 		weakForm.setParam(
-				new FConstant(-1.0),//注意，有负号!!!
-				new FConstant(0.0),
-				new FConstant(1.0),
-				new FConstant(1.0)
+				new FC(-1.0),//注意，有负号!!!
+				new FC(0.0),
+				new FC(1.0),
+				new FC(1.0)
 			);
 		
 		mesh.clearBorderNodeMark();
 		mesh.markBorderNode(mapNTF);
 
-		Assembler assembler = new Assembler(mesh, weakForm);
+		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveGCM");
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		//Dirichlet condition
-		assembler.imposeDirichletCondition(new FConstant(0.0));
+		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 
 		Solver solver = new Solver();
@@ -312,6 +327,200 @@ public class Test1 {
 	    writer.writeTechplot("testWeakFormGCM.dat", u);
 	}
 	
+	
+	public static void testLeastSquare() {
+		String gridFile = "prostate_test_least_square.grd";
+		
+		MeshReader reader = null;
+		reader = new MeshReader(gridFile);
+		Mesh mesh = reader.read2DMesh();
+		
+		ScalarShapeFunction[] shapeFun = null;
+		mesh.computeNodesBelongToElement();
+		mesh.computeNeiborNode();
+		//Assign degree of freedom to element
+		shapeFun = new SFLinearLocal2D[3];
+		for(int i=0;i<3;i++)
+			shapeFun[i] = new SFLinearLocal2D(i+1);
+		
+		//Assign shape function to DOF
+		for(int i=1;i<=mesh.getElementList().size();i++) {
+			Element e = mesh.getElementList().at(i);
+			for(int j=1;j<=e.nodes.size();j++) {
+				DOF dof = new DOF(j,e.nodes.at(j).globalIndex,shapeFun[j-1]);
+				e.addNodeDOF(j, dof);
+			}
+		}
+
+		Model model = new Model();
+		model.outputFolder = "prostate_least_square";
+	
+		NodeList list =mesh.getNodeList();
+		int nNode = list.size();
+		StringBuilder nd = new StringBuilder();
+		for(int i=1;i<=nNode;i++) {
+			Node node = list.at(i);
+			nd.append(String.format("%d\t%f\t%f\r\n", node.globalIndex,
+						node.coord(1),node.coord(2)));
+		}
+		writeStringToFile(model.outputFolder+"\\node.txt",nd.toString());
+		
+		StringBuilder rhs = new StringBuilder();
+		StringBuilder bkU = new StringBuilder();
+		rhs.append("  ");
+		bkU.append("  ");
+		
+		double deta = 0.1;
+		for(int l=1;l<=15;l++) {
+			
+			//----------------Left light source ---------------------
+			model.setDelta(1.0+deta*l, 2.8);
+			//Solve background forward problem
+			model.setMu_a(0.0, 0.0, 0.0, 
+					0.1, 1);
+			Vector bkUL = model.solveForwardNeumann(mesh);
+			model.plotVector(mesh, bkUL, "bkUL"+l+".dat");
+			
+			//Solve forward problem with inclusion
+			model.setMu_a(2.6, 2.7, 0.2, 
+					2.0, 1);
+			if(l==1)
+				model.plotFunction(mesh, model.mu_a, "alpha_real.dat");
+			Vector incUL = model.solveForwardNeumann(mesh);
+			model.plotVector(mesh, incUL, "incUL"+l+".dat");
+			
+			rhs.delete(0, rhs.length()-1);
+			bkU.delete(0, bkU.length()-1);
+			for(int i=1;i<=nNode;i++) {
+				Node node = list.at(i);
+				if(Math.abs(3.0-node.coord(2))<0.01)
+					rhs.append(String.format("%d\t%f\r\n", node.globalIndex,
+							incUL.get(i)-bkUL.get(i)));
+				bkU.append(String.format("%d\t%f\r\n",node.globalIndex, bkUL.get(i)));
+			}
+			writeStringToFile(model.outputFolder+"\\rhsL"+l+".txt",rhs.toString());
+			writeStringToFile(model.outputFolder+"\\bkUL"+l+".txt",bkU.toString());
+
+		
+			//----------------Right light source ---------------------
+			model.setDelta(4.0-deta*l, 2.8);
+			
+			model.setMu_a(0.0, 0.0, 0.0, 
+					0.1, 1);
+			Vector bkUR = model.solveForwardNeumann(mesh);
+			model.plotVector(mesh, bkUR, "bkUR"+l+".dat");
+			
+			model.setMu_a(2.6, 2.7, 0.2, 
+					2.0, 1);
+			Vector incUR = model.solveForwardNeumann(mesh);
+			model.plotVector(mesh, incUR, "incUR"+l+".dat");
+			
+			rhs.delete(0, rhs.length()-1);
+			bkU.delete(0, bkU.length()-1);
+			for(int i=1;i<=nNode;i++) {
+				Node node = list.at(i);
+				if(Math.abs(3.0-node.coord(2))<0.01)
+					rhs.append(String.format("%d\t%f\r\n", node.globalIndex,
+							incUR.get(i)-bkUR.get(i)));
+				bkU.append(String.format("%d\t%f\r\n",node.globalIndex, bkUR.get(i)));
+			}
+			writeStringToFile(model.outputFolder+"\\rhsR"+l+".txt",rhs.toString());
+			writeStringToFile(model.outputFolder+"\\bkUR"+l+".txt",bkU.toString());
+		}
+	}
+	
+	/**
+	 * one direction
+	 */
+	public static void testLeastSquare2() {
+		String gridFile = "prostate_test_least_square.grd";
+		//String gridFile = "prostate_test3.grd";
+		
+		MeshReader reader = null;
+		reader = new MeshReader(gridFile);
+		Mesh mesh = reader.read2DMesh();
+		
+		ScalarShapeFunction[] shapeFun = null;
+		mesh.computeNodesBelongToElement();
+		mesh.computeNeiborNode();
+		//Assign degree of freedom to element
+		shapeFun = new SFLinearLocal2D[3];
+		for(int i=0;i<3;i++)
+			shapeFun[i] = new SFLinearLocal2D(i+1);
+		
+		//Assign shape function to DOF
+		for(int i=1;i<=mesh.getElementList().size();i++) {
+			Element e = mesh.getElementList().at(i);
+			for(int j=1;j<=e.nodes.size();j++) {
+				DOF dof = new DOF(j,e.nodes.at(j).globalIndex,shapeFun[j-1]);
+				e.addNodeDOF(j, dof);
+			}
+		}
+
+		Model model = new Model();
+		model.outputFolder = "prostate_least_square";
+	
+		NodeList list =mesh.getNodeList();
+		int nNode = list.size();
+		StringBuilder nd = new StringBuilder();
+		for(int i=1;i<=nNode;i++) {
+			Node node = list.at(i);
+			nd.append(String.format("%d\t%f\t%f\r\n", node.globalIndex,
+						node.coord(1),node.coord(2)));
+		}
+		writeStringToFile(model.outputFolder+"\\node.txt",nd.toString());
+		
+		StringBuilder rhs = new StringBuilder();
+		StringBuilder bkU = new StringBuilder();
+		rhs.append("  ");
+		bkU.append("  ");
+		
+		double deta = 0.2;
+		for(int l=1;l<=5;l++) {
+			
+			//----------------Left light source ---------------------
+			model.setDelta(1.0+deta*l, 2.8);
+			//Solve background forward problem
+			model.setMu_a(0.0, 0.0, 0.0, 
+					0.1, 1);
+			Vector bkUL = model.solveForwardNeumann(mesh);
+			model.plotVector(mesh, bkUL, "bkUL"+l+".dat");
+			
+			//Solve forward problem with inclusion
+			model.setMu_a(3.0, 2.7, 0.2, 
+					2.0, 1);
+			if(l==1)
+				model.plotFunction(mesh, model.mu_a, "alpha_real.dat");
+			Vector incUL = model.solveForwardNeumann(mesh);
+			model.plotVector(mesh, incUL, "incUL"+l+".dat");
+			
+			rhs.delete(0, rhs.length()-1);
+			bkU.delete(0, bkU.length()-1);
+			for(int i=1;i<=nNode;i++) {
+				Node node = list.at(i);
+				if(Math.abs(3.0-node.coord(2))<0.01)
+					rhs.append(String.format("%d\t%f\r\n", node.globalIndex,
+							incUL.get(i)-bkUL.get(i)));
+				bkU.append(String.format("%d\t%f\r\n",node.globalIndex, bkUL.get(i)));
+			}
+			writeStringToFile(model.outputFolder+"\\rhsL"+l+".txt",rhs.toString());
+			writeStringToFile(model.outputFolder+"\\bkUL"+l+".txt",bkU.toString());
+		
+		}
+	}
+
+	public static void writeStringToFile(String fileName,String content) {
+		FileOutputStream out;
+		try {
+			out = new FileOutputStream(new File(fileName));
+			OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
+			writer.write(content);
+			writer.close();
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static void main(String[] args) {
 		
@@ -347,9 +556,12 @@ public class Test1 {
 				"prostate_test3_ex.grd",
 				"prostate_test3.grd",
 				"prostate_test3_gcm");
-
-	
+		
+		
+		//testLeastSquare();
+		//testLeastSquare2();
 	}
+	
 	
 	
 }

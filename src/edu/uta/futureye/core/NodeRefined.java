@@ -1,6 +1,6 @@
 package edu.uta.futureye.core;
 
-import edu.uta.futureye.util.NodeList;
+import edu.uta.futureye.util.list.NodeList;
 
 public class NodeRefined extends Node {
 	public NodeList constrainNodes = new NodeList();
@@ -17,7 +17,7 @@ public class NodeRefined extends Node {
 		constrainNodes.add(node);
 	}
 	
-	public void clearConstrainNode() {
+	public void clearConstrainNodes() {
 		this.constrainNodes.clear();
 	}	
 	

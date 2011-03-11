@@ -1,6 +1,14 @@
 package edu.uta.futureye.function.test;
 
 public class FOperator {
+	/**
+	 * coef1*f1 + coef2*f2
+	 * @param coef1
+	 * @param f1
+	 * @param coef2
+	 * @param f2
+	 * @return
+	 */
 	public static Function LinearCombination(final double coef1, final Function f1,
 			final double coef2,final Function f2) {
 

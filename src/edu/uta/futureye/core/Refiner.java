@@ -1,13 +1,13 @@
 package edu.uta.futureye.core;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import edu.uta.futureye.util.EdgeList;
-import edu.uta.futureye.util.ElementList;
-import edu.uta.futureye.util.FutureEyeException;
-import edu.uta.futureye.util.NodeList;
+import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.list.ElementList;
+import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.list.VertexList;
 
 public class Refiner {
 
@@ -47,7 +47,7 @@ public class Refiner {
 				continue;
 			
 			ElementList eList = new ElementList();
-			List<Vertex> vList = e.getVertexList();
+			VertexList vList = e.vertices();
 			
 			if(vList.size() == 3) {
 				/*
@@ -59,9 +59,9 @@ public class Refiner {
 				 * | \ | \
 				 * 1--4---2
 				 */
-				Vertex v1 = vList.get(0);
-				Vertex v2 = vList.get(1);
-				Vertex v3 = vList.get(2);
+				Vertex v1 = vList.at(1);
+				Vertex v2 = vList.at(2);
+				Vertex v3 = vList.at(3);
 				
 				Node node4 = new NodeRefined(2);
 				node4.setCoord(1, (v1.coord(1)+v2.coord(1))/2.0);
@@ -88,32 +88,37 @@ public class Refiner {
 				Node node2 = e.nodes.at(v2.localIndex);
 				Node node3 = e.nodes.at(v3.localIndex);
 				
-				Element e1 = new Element();
-				Element e2 = new Element();
-				Element e3 = new Element();
-				Element e4 = new Element();
+				NodeList nList = new NodeList();
 				
-				e1.addNode(node1, true);
-				e1.addNode(node4, true);
-				e1.addNode(node6, true);
+				nList.clear();
+				nList.add(node1);
+				nList.add(node4);
+				nList.add(node6);
+				Element e1 = new Element(nList);
 				e1.parent = e;
 				e1.setLevel(e.getLevel()+1);
 				
-				e2.addNode(node4, true);
-				e2.addNode(node2, true);
-				e2.addNode(node5, true);
+				nList.clear();
+				nList.add(node4);
+				nList.add(node2);
+				nList.add(node5);
+				Element e2 = new Element(nList);
 				e2.parent = e;
 				e2.setLevel(e.getLevel()+1);
 
-				e3.addNode(node5, true);
-				e3.addNode(node3, true);
-				e3.addNode(node6, true);
+				nList.clear();
+				nList.add(node5);
+				nList.add(node3);
+				nList.add(node6);
+				Element e3 = new Element(nList);
 				e3.parent = e;
 				e3.setLevel(e.getLevel()+1);
 
-				e4.addNode(node4, true);
-				e4.addNode(node5, true);
-				e4.addNode(node6, true);
+				nList.clear();
+				nList.add(node4);
+				nList.add(node5);
+				nList.add(node6);
+				Element e4 = new Element(nList);
 				e4.parent = e;
 				e4.setLevel(e.getLevel()+1);
 
@@ -129,10 +134,10 @@ public class Refiner {
 				 *  |  |  |
 				 *  1--5--2
 				 */
-				Vertex v1 = vList.get(0);
-				Vertex v2 = vList.get(1);
-				Vertex v3 = vList.get(2);
-				Vertex v4 = vList.get(3);
+				Vertex v1 = vList.at(1);
+				Vertex v2 = vList.at(2);
+				Vertex v3 = vList.at(3);
+				Vertex v4 = vList.at(4);
 				
 				Node node5 = new NodeRefined(2);
 				node5.setCoord(1, (v1.coord(1)+v2.coord(1))/2.0);
@@ -174,36 +179,41 @@ public class Refiner {
 				Node node3 = e.nodes.at(v3.localIndex);
 				Node node4 = e.nodes.at(v4.localIndex);
 				
-				Element e1 = new Element();
-				Element e2 = new Element();
-				Element e3 = new Element();
-				Element e4 = new Element();
+				NodeList nList = new NodeList();
 				
-				e1.addNode(node1, true);
-				e1.addNode(node5, true);
-				e1.addNode(node9, true);
-				e1.addNode(node8, true);
+				nList.clear();
+				nList.add(node1);
+				nList.add(node5);
+				nList.add(node9);
+				nList.add(node8);
+				Element e1 = new Element(nList);
 				e1.parent = e;
 				e1.setLevel(e.getLevel()+1);
 				
-				e2.addNode(node5, true);
-				e2.addNode(node2, true);
-				e2.addNode(node6, true);
-				e2.addNode(node9, true);
+				nList.clear();
+				nList.add(node5);
+				nList.add(node2);
+				nList.add(node6);
+				nList.add(node9);
+				Element e2 = new Element(nList);
 				e2.parent = e;
 				e2.setLevel(e.getLevel()+1);
 
-				e3.addNode(node9, true);
-				e3.addNode(node6, true);
-				e3.addNode(node3, true);
-				e3.addNode(node7, true);
+				nList.clear();
+				nList.add(node9);
+				nList.add(node6);
+				nList.add(node3);
+				nList.add(node7);
+				Element e3 = new Element(nList);
 				e3.parent = e;
 				e3.setLevel(e.getLevel()+1);
 
-				e4.addNode(node8, true);
-				e4.addNode(node9, true);
-				e4.addNode(node7, true);
-				e4.addNode(node4, true);
+				nList.clear();
+				nList.add(node8);
+				nList.add(node9);
+				nList.add(node7);
+				nList.add(node4);
+				Element e4 = new Element(nList);
 				e4.parent = e;
 				e4.setLevel(e.getLevel()+1);
 
@@ -212,7 +222,7 @@ public class Refiner {
 				eList.add(e3);
 				eList.add(e4);
 			} else {
-				FutureEyeException ex = new FutureEyeException("Unsupported element type for refinement!");
+				FutureyeException ex = new FutureyeException("Unsupported element type for refinement!");
 				ex.printStackTrace();
 			}
 			
@@ -275,7 +285,7 @@ public class Refiner {
 					//!!! Node的level与单元level相同时，清空hanging node限制值条件，准备重新计算
 					if(nNew.getLevel() == eChild.getLevel()) {
 						NodeRefined nRefined = (NodeRefined)nNew;
-						nRefined.clearConstrainNode();
+						nRefined.clearConstrainNodes();
 					}
 				}
 			}
@@ -298,11 +308,11 @@ public class Refiner {
 							Element eNeighbor = eNeighbors.at(k);
 							//!!! 相邻单元没有标记为加密  并且 相邻单元的层次要低于该单元
 							if(!eNeighbor.isRefined() && eNeighbor.getLevel()<eChild.getLevel()) {
-								EdgeList edges = eNeighbors.at(k).getEdgeList();
+								ObjList<EdgeLocal> edges = eNeighbors.at(k).edges();
 								for(int kk=1;kk<=edges.size();kk++) {
 									//判断结点是否在大单元边上
-									if(edges.at(kk).isCoordOnEdge(nRefined.coords())) {
-										NodeList endNodes = edges.at(kk).getEndNodes();
+									if(edges.at(kk).globalEdge.isCoordOnEdge(nRefined.coords())) {
+										NodeList endNodes = edges.at(kk).globalEdge.getEndNodes();
 										//System.out.println("Hanging node:"+nRefined.globalIndex+
 										//		" on "+endNodes.at(1).globalIndex+" "+endNodes.at(2).globalIndex);
 										nRefined.addConstrainNode(endNodes.at(1));

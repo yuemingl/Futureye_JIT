@@ -5,10 +5,10 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.FConstant;
-import edu.uta.futureye.function.intf.FunctionDerivable;
-import edu.uta.futureye.function.operator.FOBasicDerivable;
-import edu.uta.futureye.function.shape.SFBilinearLocal2D;
+import edu.uta.futureye.function.basic.FC;
+import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
 
 public class PanelDraw extends JPanel{
 	/**
@@ -16,8 +16,8 @@ public class PanelDraw extends JPanel{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public FunctionDerivable fx;
-	public FunctionDerivable fy;
+	public Function fx;
+	public Function fy;
 	
 	
 	public void paintComponent(Graphics g){
@@ -31,14 +31,14 @@ public class PanelDraw extends JPanel{
 		for(int i=1;i<=n;i++)
 			shapeFun[i-1] = new SFBilinearLocal2D(i);
 		
-		fx = new FConstant(0.0);
-		fy = new FConstant(0.0);
+		fx = new FC(0.0);
+		fy = new FC(0.0);
 		
 		for(int i=0;i<n;i++) {
-			fx = FOBasicDerivable.Plus(fx, 
-					FOBasicDerivable.Mult(new FConstant(xs[i]), shapeFun[i]));
-			fy = FOBasicDerivable.Plus(fy, 
-					FOBasicDerivable.Mult(new FConstant(ys[i]), shapeFun[i]));
+			fx = FMath.Plus(fx, 
+					FMath.Mult(new FC(xs[i]), shapeFun[i]));
+			fy = FMath.Plus(fy, 
+					FMath.Mult(new FC(ys[i]), shapeFun[i]));
 		}
 		
 		Variable p1 = new Variable();

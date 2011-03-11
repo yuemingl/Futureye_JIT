@@ -2,16 +2,16 @@ package edu.uta.futureye.function.basic;
 
 import java.util.List;
 
-import edu.uta.futureye.function.DerivativeIndicator;
+import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.FunctionDerivable;
+import edu.uta.futureye.function.intf.Function;
 
 /**
  * f(x) = an*x^n + an_1*x^(n-1) + ... + a1*x + a0
  * @author liuyueming
  *
  */
-public class FPolynomial1D extends FAbstract {
+public class FPolynomial1D extends AbstractFunction {
 	List<Double> coefList;
 	
 	/**
@@ -26,9 +26,11 @@ public class FPolynomial1D extends FAbstract {
 	}
 	
 	@Override
-	public FunctionDerivable derivative(DerivativeIndicator di) {
-		int degree = di.get().values().iterator().next();
-		return derivative1(degree,degree);
+	public Function d(String varName) {
+		if(this.varNames().contains(varName))
+			return derivative1(1,1);
+		else 
+			return new FC(0.0);
 	}
 	
 	protected FPolynomial1D derivative1(int degree,int maxDegree) {

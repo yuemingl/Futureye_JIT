@@ -2,10 +2,11 @@ package edu.uta.futureye.function;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import edu.uta.futureye.core.intf.Point;
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.util.Constant;
 
 /**
  * Function arguments (Independent variables of a function)
@@ -13,16 +14,39 @@ import edu.uta.futureye.function.intf.Function;
  *
  */
 public class Variable {
+	//LinkedHashMap 遍历时保证变量顺序
 	protected Map<String,Double> values = new LinkedHashMap<String,Double>();
-//	protected boolean bApplyRestirct = false;
+
+	//protected boolean bApplyRestirct = false;
+	
 	//Node Index
 	protected int index = 0;
 	
+	//变量中可以携带element，见class DuDn
+	protected Element element = null;
+	
 	public Variable() {
 	}
-	public Variable(int index) {
-		this.index = index;
-	}	
+	
+	///////////////////////////////////////////////
+	/**
+	 * 构造一维自变量并赋值
+	 */
+	public Variable(double val) {
+		values.put(Constant.x, val);
+	}
+	
+	/**
+	 * 获取一维自变量值
+	 * @return
+	 */
+	public double get() {
+		//TODO Need check values.size==1 ?
+		return values.values().iterator().next();
+	}
+	
+	////////////////////////////////////////////////
+
 	public Variable(String name, double val) {
 		values.put(name, val);
 	}
@@ -33,31 +57,33 @@ public class Variable {
 			values.put(pairs[i].name, pairs[i].value);
 	}
 	
+	/**
+	 * 返回自变量名名称对应的值
+	 * @param name
+	 * @return
+	 */
 	public double get(String name) {
 		return values.get(name);
 	}
 	
-	public Variable(double val) {
-		values.put("x", val);
-	}
 	/**
-	 * 适用于一维自变量
+	 * 设置自变量的值：名称、值对， 返回变量自身，以便链式表达：
+	 * 例如：设置二维自变量x=1,y=2：
+	 * Variable v = new Variable("x",1).set("y",2);
+	 * 
+	 * @param name
+	 * @param val
+	 * @return
 	 */
-	public double get() {
-		return values.values().iterator().next();
-	}	
-	
-	public void set(String name, double val) {
+	public Variable set(String name, double val) {
 		values.put(name, val);
+		return this;
 	}
 
 	public Map<String,Double> getValues() {
 		return values;
 	}
 
-	public String toString() {
-		return values.toString();
-	}
 	
 //	public void applyRestirct(boolean flag) {
 //		bApplyRestirct = flag;
@@ -70,15 +96,7 @@ public class Variable {
 //	public boolean isRestrict() {
 //		return bApplyRestirct;
 //	}
-	
-	
-	public void setIndex(int index) {
-		this.index = index;
-	}
-	
-	public int getIndex() {
-		return index;
-	}
+
 	
 	/**
 	 * 根据fun的自变量个数和Point的值（以及index，如果需要的话），
@@ -102,6 +120,34 @@ public class Variable {
 			//VectorBasedFunction
 		}
 		return var;
+	}
+	
+	/**
+	 * 变量中携带向量索引（编号）
+	 * @param index
+	 */
+	public Variable setIndex(int index) {
+		this.index = index;
+		return this;
+	}
+	public int getIndex() {
+		return index;
+	}
+	
+	/**
+	 * 变量中携带单元对象
+	 * @return
+	 */
+	public Element getElement() {
+		return element;
+	}
+	public Variable setElement(Element element) {
+		this.element = element;
+		return this;
+	}
+	
+	public String toString() {
+		return values.toString();
 	}
 	
 	public static void main(String[] args) {

@@ -1,18 +1,18 @@
 package edu.uta.futureye.test;
 
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.intf.ShapeFunction;
+import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.operator.FOIntegrate;
-import edu.uta.futureye.function.shape.SFBilinearLocal2D;
-import edu.uta.futureye.function.shape.SFLinearLocal1D;
-import edu.uta.futureye.function.shape.SFLinearLocal2D;
+import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
+import edu.uta.futureye.lib.shapefun.SFLinearLocal1D;
+import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
 
 public class IntegrationTest {
 	
 	public static void testSFLinearLocal1D() {
-		ShapeFunction sf1d1 = new SFLinearLocal1D(1);
-		ShapeFunction sf1d2 = new SFLinearLocal1D(2);
+		ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
+		ScalarShapeFunction sf1d2 = new SFLinearLocal1D(2);
 		
 		Function integrand = FOBasic.Plus(sf1d1, sf1d2);
 		

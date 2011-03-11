@@ -1,10 +1,10 @@
 package edu.uta.futureye.function.basic;
 
-import edu.uta.futureye.function.DerivativeIndicator;
+import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.FunctionDerivable;
+import edu.uta.futureye.function.intf.Function;
 
-public class FAxpb extends FAbstract {
+public class FAxpb extends AbstractFunction {
 	protected double a;
 	protected double b;
 
@@ -20,17 +20,16 @@ public class FAxpb extends FAbstract {
 	}
 	
 	@Override
-	public FunctionDerivable derivative(DerivativeIndicator di) {
-		Integer degree = di.get().get(varNames().get(0));
-		if( degree != null && degree == 1)
-			return new FConstant(a);
+	public Function d(String varName) {
+		if(this.varNames().contains(varName))
+			return new FC(a);
 		else
-			return new FConstant(0.0);
+			return FC.c0;
 	}
 
 	@Override
 	public double value(Variable v) {
-		double rlt = a*v.get(varNames().get(0))+b;
+		double rlt = a*v.get(varNames.get(0))+b;
 		return rlt;
 	}
 	
@@ -44,7 +43,7 @@ public class FAxpb extends FAbstract {
 			if(Double.compare(b, 0.0) == 0)
 				return " 0.0 ";
 			else
-				return " "+b+" ";			
+				return " "+b+" ";
 		}
 		return "("+a+"*"+varNames().get(0)+"+"+b+")";
 	}

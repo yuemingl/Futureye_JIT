@@ -8,20 +8,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import edu.uta.futureye.algebra.Vector;
-import edu.uta.futureye.core.DOF;
+import edu.uta.futureye.algebra.SpaceVector;
+import edu.uta.futureye.algebra.SparseVector;
+import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeRefined;
-import edu.uta.futureye.core.intf.Point;
+import edu.uta.futureye.core.Vertex;
+import edu.uta.futureye.core.geometry.Point;
+import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.FAbstract;
-import edu.uta.futureye.function.basic.FConstant;
+import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.intf.FunctionDerivable;
+import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOBasic;
-import edu.uta.futureye.function.shape.SFQuadraticLocal1D;
+import edu.uta.futureye.util.list.DOFList;
+import edu.uta.futureye.util.list.IndexList;
+import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.list.ObjList;
 
 public class Utils {
 	
@@ -37,12 +44,15 @@ public class Utils {
 		return rlt;
 	}
 	
+	/**
+	 * TODO 可以修改为2D,3D都可以计算
+	 */
 	public static double computeAngle2D(Point a1,Point a2,Point b1,Point b2) {
-		Vector v1 = new Vector(2);
+		Vector v1 = new SpaceVector(2);
 		v1.set(1, a2.coord(1)-a1.coord(1));
 		v1.set(2, a2.coord(2)-a1.coord(2));
 		
-		Vector v2 = new Vector(2);
+		Vector v2 = new SpaceVector(2);
 		v2.set(1, b2.coord(1)-b1.coord(1));
 		v2.set(2, b2.coord(2)-b1.coord(2));
 		
@@ -55,6 +65,13 @@ public class Utils {
 		
 	}
 
+	public static double computeAngle(SpaceVector v1,SpaceVector v2) {
+		double v = v1.dot(v2)/(v1.norm2()*v2.norm2());
+		if(v > 1.0) v = 1.0;
+		else if(v < -1.0) v = -1.0;
+		return Math.acos(v);
+	}
+	
 	public static double linearInterpolate(double x1, double x2, double x, 
 			double y1, double y2) {
 		double k = (y2 -y1)/(x2 -x1);
@@ -134,13 +151,13 @@ public class Utils {
 		NodeList list = mesh.getNodeList();
 		int nNode = list.size();
 		if(nNode != u.getDim()) {
-			FutureEyeException e = new FutureEyeException("Node number of mesh != length of vector u: "+
+			FutureyeException e = new FutureyeException("Node number of mesh != length of vector u: "+
 					"nNode="+nNode+"  dim(u)="+u.getDim());
 			e.printStackTrace();
 			return null;
 		}
 		
-	    Vector su = new Vector(nNode);
+	    Vector su = new SparseVector(nNode);
 	    
 	    if(neighborBand == 1) {
 		    for(int i=1;i<=nNode;i++) {
@@ -157,7 +174,7 @@ public class Utils {
 		    	}
 		    	nbList.addAll(node.neighbors);
 		    	if(nbList.size() == 0) {
-					FutureEyeException e = new FutureEyeException("No beighbors of Node "+node.globalIndex+", call mesh.computeNeiborNode() first!");
+					FutureyeException e = new FutureyeException("No beighbors of Node "+node.globalIndex+", call mesh.computeNeiborNode() first!");
 					e.printStackTrace();
 					return null;
 		    	}
@@ -178,7 +195,7 @@ public class Utils {
 
 		    	NodeList nbList = node.neighbors;
 		    	if(nbList.size() == 0) {
-					FutureEyeException e = new FutureEyeException("No beighbors of Node "+node.globalIndex+", call mesh.computeNeiborNode() first!");
+					FutureyeException e = new FutureyeException("No beighbors of Node "+node.globalIndex+", call mesh.computeNeiborNode() first!");
 					e.printStackTrace();
 					return null;
 		    	}		    	
@@ -217,31 +234,85 @@ public class Utils {
 	}
 	
 	public static Function interplateFunctionOnElement(Function fun, Element e) {
-		if(fun instanceof FConstant)
+		if(fun instanceof FC)
 			return fun;
-		Function rlt = new FConstant(0.0);
-		int nNode = e.nodes.size();
-		for(int i=1;i<=nNode;i++) {
-			DOFList dofListI = e.getDOFList(i);
-			for(int k=1;k<=dofListI.size();k++) {
-				DOF dofI = dofListI.at(k);
-				Variable var = Variable.createFrom(fun, dofI.getOwnerNode(), dofI.getGlobalNumber());
-				FunctionDerivable PValue = new FConstant(fun.value(var));
-				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, dofI.getShapeFunction()));
+		Function rlt = new FC(0.0);
+//		int nNode = e.nodes.size();
+//		for(int i=1;i<=nNode;i++) {
+//			DOFList dofListI = e.getNodeDOFList(i);
+//			for(int k=1;k<=dofListI.size();k++) {
+//				DOF dofI = dofListI.at(k);
+//				Variable var = Variable.createFrom(fun, (Node)dofI.getOwner(), dofI.getGlobalNumber());
+//				Function PValue = new FConstant(fun.value(var));
+//				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, dofI.getSSF()));
+//			}
+//		}
+		if(e.eleDim() == 1) {
+			CoordinateTransform trans = new CoordinateTransform(1);
+			Map<Vertex,ScalarShapeFunction> transSF = trans.getTransformLinear1DShapeFunction(e);
+			for(Entry<Vertex,ScalarShapeFunction> entry : transSF.entrySet()) {
+				Point p = entry.getKey();
+				ScalarShapeFunction sf = entry.getValue();
+				int index = 0;
+				//当fun是向量值函数时，函数的值靠下标获得，应该获取结点上自由度的全局编号
+				int localNodeIndex = e.getLocalIndex(e.getNode(p));
+				DOFList DOFs = e.getNodeDOFList(localNodeIndex);
+				if(DOFs != null)
+					index = DOFs.at(1).getGlobalIndex();
+				Variable var = Variable.createFrom(fun, p, index);
+				var.setElement(e);
+				Function PValue = new FC(fun.value(var));
+				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, sf));			
+			}
+			
+		} else if(e.eleDim() == 2) {
+			CoordinateTransform trans = new CoordinateTransform(2);
+			Map<Vertex,ScalarShapeFunction> transSF = trans.getTransformLinear2DShapeFunction(e);
+			for(Entry<Vertex,ScalarShapeFunction> entry : transSF.entrySet()) {
+				Point p = entry.getKey();
+				ScalarShapeFunction sf = entry.getValue();
+				int index = 0;
+				//当fun是向量值函数时，函数的值靠下标获得，应该获取结点上自由度的全局编号
+				int localNodeIndex = e.getLocalIndex(e.getNode(p));
+				DOFList DOFs = e.getNodeDOFList(localNodeIndex);
+				if(DOFs != null)
+					index = DOFs.at(1).getGlobalIndex();
+				Variable var = Variable.createFrom(fun, p, index);
+				var.setElement(e);
+				Function PValue = new FC(fun.value(var));
+				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, sf));			
+			}
+		} else if(e.eleDim()==3) {
+			//TODO 有没有更简洁的办法？
+			CoordinateTransform trans = new CoordinateTransform(3);
+			Map<Vertex,ScalarShapeFunction> transSF = trans.getTransformLinear3DShapeFunction(e);
+			for(Entry<Vertex,ScalarShapeFunction> entry : transSF.entrySet()) {
+				Point p = entry.getKey();
+				ScalarShapeFunction sf = entry.getValue();
+				int index = 0;
+				//当fun是向量值函数时，函数的值靠下标获得，应该获取结点上自由度的全局编号
+				int localNodeIndex = e.getLocalIndex(e.getNode(p));
+				DOFList DOFs = e.getNodeDOFList(localNodeIndex);
+				if(DOFs != null)
+					index = DOFs.at(1).getGlobalIndex();
+				Variable var = Variable.createFrom(fun, p, index);
+				var.setElement(e);
+				Function PValue = new FC(fun.value(var));
+				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, sf));			
 			}
 		}
 		return rlt;
 	}
 	
 	//只是用于三角形线性元
-	public static Map<String, FunctionDerivable> getFunctionComposeMap(Element e) {
+	public static Map<String, Function> getFunctionComposeMap(Element e) {
 		final Element fe =e;
-		Map<String, FunctionDerivable> fInners = new HashMap<String, FunctionDerivable>();
+		Map<String, Function> fInners = new HashMap<String, Function>();
 		final List<String> varNamesInner = new LinkedList<String>();
 		varNamesInner.add("r");
 		varNamesInner.add("s");
 		varNamesInner.add("t");
-		fInners.put("x", new FAbstract(varNamesInner) {	
+		fInners.put("x", new AbstractFunction(varNamesInner) {	
 			@Override
 			public double value(Variable v) {
 				double rlt = 0.0;
@@ -251,7 +322,7 @@ public class Utils {
 				
 			}
 		});
-		fInners.put("y", new FAbstract(varNamesInner) {	
+		fInners.put("y", new AbstractFunction(varNamesInner) {	
 			@Override
 			public double value(Variable v) {
 				double rlt = 0.0;
@@ -335,4 +406,175 @@ public class Utils {
 		return false;
 	}
 	
+	/**
+	 * 计算两个点之间的距离
+	 * 
+	 * TODO 考虑是否在Point上建立代数运算方法？
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return
+	 */
+	public static double computeLength(Point p1,Point p2) {
+		int dim = p1.dim();
+		double len = 0.0;
+		for(int i=1;i<=dim;i++) {
+			double t = (p1.coord(i)-p2.coord(i));
+			len += t*t;
+		}
+		return Math.sqrt(len);
+	}
+	
+	/**
+	 * Return a unit outer norm vector of a 2D edge (a,b), where
+	 * n \dot (a-b) = 0
+	 * |b| = 1
+	 * @param edge
+	 * @return n
+	 */
+	public static Vector getNormVector(Point a,Point b) {
+		SpaceVector v1 = new SpaceVector(a.coords());
+		SpaceVector v2 = new SpaceVector(b.coords());
+		Vector v2mv1 = SpaceVector.axpy(-1.0, v1, v2);//v2 - v1
+		double len = v2mv1.norm2();
+		Vector rlt =  SpaceVector.ax(1.0/len, v2mv1);
+		return new SpaceVector(rlt.get(2),-rlt.get(1));//外法向
+	}
+	
+	/**
+	 * 计算二维三角形面积
+	 * @param vertices
+	 * @return
+	 */
+	public static double getTriangleArea(ObjList<Vertex> vertices) {
+		double area = 0.0;
+		if(vertices.size() == 3) {
+			double x1 = vertices.at(1).coord(1) , y1 =  vertices.at(1).coord(2) ;
+			double x2 = vertices.at(2).coord(1) , y2 =  vertices.at(2).coord(2) ;
+			double x3 = vertices.at(3).coord(1) , y3 =  vertices.at(3).coord(2) ;
+			area = ( (x2*y3 - x3*y2) - (x1*y3 - x3*y1) + (x1*y2 - x2*y1) ) / 2.0;
+		}
+		return area;
+	}
+	
+	/**
+	 * 计算二维四边形面积
+	 * @param vertices
+	 * @return
+	 */
+	public static double getRectangleArea(ObjList<Vertex> vertices) {
+		double area = 0.0;
+		if(vertices.size() == 4) {
+			area += getTriangleArea(vertices.subList(1, 3));
+			area += getTriangleArea(vertices.subList(new IndexList(1,3,4)));
+		}
+		return area;
+	}
+	
+	/**
+	 * 多边形（二维）面积，转化为计算多个三角形面积
+	 * @param vertices
+	 * @return
+	 */
+	public static double getPolygonArea(ObjList<Vertex> vertices) {
+		double area = 0.0;
+		for(int i=3;i<=vertices.size();i++) {
+			area += getTriangleArea(
+					vertices.subList(new IndexList(1,i-1,i))
+					);
+		}
+		return area;
+	}
+	
+	/**
+	 * 计算球面三角形面积
+	 * @param r
+	 * @param o center
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @return
+	 */
+	public static double getSphereTriangleArea(double r,Point o, Point a, Point b, Point c) {
+		
+		SpaceVector oa = new SpaceVector(
+				a.coord(1)-o.coord(1),
+				a.coord(2)-o.coord(2),
+				a.coord(3)-o.coord(3)
+				);
+		SpaceVector ob = new SpaceVector(
+				b.coord(1)-o.coord(1),
+				b.coord(2)-o.coord(2),
+				b.coord(3)-o.coord(3)
+				);		
+		SpaceVector oc = new SpaceVector(
+				c.coord(1)-o.coord(1),
+				c.coord(2)-o.coord(2),
+				c.coord(3)-o.coord(3)
+				);
+		
+		SpaceVector v1,v2,v3;
+		v1 = oa.crossProduct(ob);
+		v2 = ob.crossProduct(oc);
+		v3 = oc.crossProduct(oa);
+		double angle1 = Math.PI-computeAngle(v1,v2);
+		double angle2 = Math.PI-computeAngle(v2,v3);
+		double angle3 = Math.PI-computeAngle(v3,v1);
+
+//		System.out.print("plot3(");
+//		System.out.print("["+o.coord(1)+" "+a.coord(1)+" "+b.coord(1)+" "+c.coord(1)+" "+a.coord(1)+"],");
+//		System.out.print("["+o.coord(2)+" "+a.coord(2)+" "+b.coord(2)+" "+c.coord(2)+" "+a.coord(2)+"],");
+//		System.out.print("["+o.coord(3)+" "+a.coord(3)+" "+b.coord(3)+" "+c.coord(3)+" "+a.coord(3)+"])");
+//		System.out.print("\nhold on\n");
+//		System.out.print("plot3(");
+//		System.out.print("["+b.coord(1)+" "+o.coord(1)+" "+c.coord(1)+"],");
+//		System.out.print("["+b.coord(2)+" "+o.coord(2)+" "+c.coord(2)+"],");
+//		System.out.print("["+b.coord(3)+" "+o.coord(3)+" "+c.coord(3)+"])");
+//		System.out.println("\nhold on\n");
+		
+		double angle = (angle1 + angle2 + angle3 - Math.PI)*r*r;
+
+		return angle;
+	}
+	
+
+	public static double getTetrahedronVolume(ObjList<Vertex> vertices) {
+		double x1,x2,x3,x4;
+		double y1,y2,y3,y4;
+		double z1,z2,z3,z4;
+		
+		x1 = vertices.at(1).coord(1);
+		x2 = vertices.at(2).coord(1);
+		x3 = vertices.at(3).coord(1);
+		x4 = vertices.at(4).coord(1);
+		y1 = vertices.at(1).coord(2);
+		y2 = vertices.at(2).coord(2);
+		y3 = vertices.at(3).coord(2);
+		y4 = vertices.at(4).coord(2);
+		z1 = vertices.at(1).coord(3);
+		z2 = vertices.at(2).coord(3);
+		z3 = vertices.at(3).coord(3);
+		z4 = vertices.at(4).coord(3);
+		
+		/*
+		      |x2-x1 x3-x1 x4-x1| |1 2 3|
+		6*v = |y2-y1 y3-y1 y4-y1|=|4 5 6|=1*(5*9-8*6) + 4*(8*3-2*9) + 7*(2*9-8*3)
+		      |z2-z1 z3-z1 z4-z1| |7 8 9|
+		*/
+		double volume = (x2-x1)*((y3-y1)*(z4-z1)-(y4-y1)*(z3-z1))
+			   + (y2-y1)*((x4-x1)*(z3-z1)-(x3-x1)*(z4-z1))
+			   + (z2-z1)*((x3-x1)*(y4-y1)-(x4-x1)*(y3-y1));
+		volume = volume/6.0;
+		return volume;
+	}
+	
+	public static double getHexahedronVolume(ObjList<Vertex> vertices) {
+		return 0.0;
+		
+	}
+	
+	public static double getPolyhedronVolume(ObjList<Vertex> vertices) {
+		return 0.0;
+		
+	}
 }

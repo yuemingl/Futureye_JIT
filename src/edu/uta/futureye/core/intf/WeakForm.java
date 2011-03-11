@@ -1,29 +1,43 @@
 package edu.uta.futureye.core.intf;
 
-import java.util.List;
 
-import edu.uta.futureye.algebra.Matrix;
+import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ShapeFunction;
-import edu.uta.futureye.util.PairElementMatrix;
 
 public interface WeakForm {
-	public static enum ItemType {Domain, Border};
+	static enum ItemType {Domain, Border};
 	
-	public void setShapeFunction(ShapeFunction trial, int trialDofLocalIndex,
+	//////////////////////Common Approach/////////////////////////
+	void setShapeFunction(ShapeFunction trial, int trialDofLocalIndex,
 			ShapeFunction test, int testDofLocalIndex);
 	
-	public Function leftHandSide(Element e, ItemType itemType);
-	public Function rightHandSide(Element e, ItemType itemType);
+	Function leftHandSide(Element e, ItemType itemType);
+	Function rightHandSide(Element e, ItemType itemType);
+	
+	//////////////////////Fast Approach//////////////////////////
+	/**
+	 * Assemble element e here, instead of provide left hand side
+	 * and right hand side.
+	 * 
+	 * @param e
+	 * @param globalStiff (I/O): Global stiff matrix 
+	 * @param globalLoad (I/O): Global load vector
+	 *   
+	 */
+	void assembleElement(Element e, 
+			Matrix globalStiff, Vector globalLoad);
+	
+	///////////////////////////////////////////////////////////////
 	
 	/**
-	 * Associate an element to the weak form. 
-	 * The local matrix can be assembled in this step if necessary.
-	 * (including element e itself and the border elements of e etc.)
+	 * 在单元e上对函数fun积分
 	 * @param e
-	 * @return 
+	 * @param fun
+	 * @return
 	 */
-	public List<PairElementMatrix> associateElement(Element e);
+	double integrate(Element e, Function fun);
 	
 }

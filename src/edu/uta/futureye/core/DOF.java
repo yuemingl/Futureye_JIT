@@ -1,6 +1,9 @@
 package edu.uta.futureye.core;
 
+import edu.uta.futureye.core.geometry.GeoEntity;
+import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
+import edu.uta.futureye.function.intf.VectorShapeFunction;
 
 /**
  * Degree Of Freedom
@@ -10,37 +13,62 @@ import edu.uta.futureye.function.intf.ShapeFunction;
 public class DOF {
 	protected int localIndex;
 	protected int globalIndex;
-	protected ShapeFunction shapeFunction;
-	protected Node owner;
+	protected ShapeFunction shapeFun;
+	protected GeoEntity owner;
 	
 	public DOF(int localIndex, int globalIndex, ShapeFunction shape) {
 		this.localIndex = localIndex;
 		this.globalIndex = globalIndex;
-		this.shapeFunction = shape;
+		this.shapeFun = shape;
 	}
 	
-	public int getLocalNumber() {
+	public int getLocalIndex() {
 		return localIndex;
 	}
-	public void setLocalNumber(int localNumber) {
-		this.localIndex = localNumber;
+	public void setLocalIndex(int localIndex) {
+		this.localIndex = localIndex;
 	}
-	public int getGlobalNumber() {
+	public int getGlobalIndex() {
 		return globalIndex;
 	}
-	public void setGlobalNumber(int globalNumber) {
-		this.globalIndex = globalNumber;
+	public void setGlobalIndex(int globalIndex) {
+		this.globalIndex = globalIndex;
 	}
-	public ShapeFunction getShapeFunction() {
-		return shapeFunction;
+	
+	
+	/**
+	 * 返回形函数
+	 * @return
+	 */
+	public ShapeFunction getSF() {
+		return shapeFun;
 	}
+	
+	/**
+	 * 返回标量形函数
+	 * @return
+	 */
+	public ScalarShapeFunction getSSF() {
+		return (ScalarShapeFunction)shapeFun;
+	}
+	
+	/**
+	 * 返回向量形函数
+	 * @return
+	 */
+	public VectorShapeFunction getVSF() {
+		return (VectorShapeFunction)shapeFun;
+	}
+
+	
 	public void setShapeFunction(ShapeFunction shapeFunction) {
-		this.shapeFunction = shapeFunction;
+		this.shapeFun = shapeFunction;
 	}
-	public Node getOwnerNode() {
+	
+	public GeoEntity getOwner() {
 		return owner;
 	}
-	public void setOwnerNode(Node node) {
-		owner = node;
+	public void setOwner(GeoEntity enty) {
+		owner = enty;
 	}
 }
