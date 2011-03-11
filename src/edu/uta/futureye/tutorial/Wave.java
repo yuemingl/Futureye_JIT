@@ -100,32 +100,6 @@ public class Wave {
 			fe.assign(eList.at(i));
 	}
 	
-	public static void plotVector(Mesh mesh, Vector v, String fileName) {
-	    MeshWriter writer = new MeshWriter(mesh);
-	    if(!outputFolder.isEmpty()) {
-		    File file = new File("./"+outputFolder);
-			if(!file.exists()) {
-				file.mkdirs();
-			}
-	    }
-	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
-	}
-		
-	public static void plotFunction(Mesh mesh, Function fun, String fileName) {
-	    NodeList list = mesh.getNodeList();
-	    int nNode = list.size();
-		Variable var = new Variable();
-		Vector v = new SparseVector(nNode);
-	    for(int i=1;i<=nNode;i++) {
-	    	Node node = list.at(i);
-	    	var.setIndex(node.globalIndex);
-	    	var.set("x", node.coord(1));
-	    	var.set("y", node.coord(2));
-	    	v.set(i, fun.value(var));
-	    }
-	    plotVector(mesh,v,fileName);
-	}
-	
 	public Vector solverOneStep(final int step) {
 //		f = new AbstractFunction("x","y") {
 //			@Override
@@ -177,7 +151,7 @@ public class Wave {
 		//for(int i=1;i<=u.getDim();i++)
 		//	System.out.println(String.format("%.3f", u.get(i)));	
 	    
-		plotVector(mesh, u, String.format("u_t%03d.dat",step));
+		Tools.plotVector(mesh, u, outputFolder, String.format("u_t%03d.dat",step));
 		
 		this.u_n = this.u_n1;
 		this.u_n1 = u_n;

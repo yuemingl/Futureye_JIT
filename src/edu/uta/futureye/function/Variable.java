@@ -109,7 +109,8 @@ public class Variable {
 	public static Variable createFrom(Function fun, Point point, int index) {
 		if(fun == null)
 			return null;
-		Variable var = new Variable(index);
+		Variable var = new Variable();
+		var.setIndex(index);
 		if(fun.varNames() != null) {
 			int ic = 1;
 			for(String vn : fun.varNames()) {

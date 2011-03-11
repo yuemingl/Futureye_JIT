@@ -64,14 +64,9 @@ public class RawLaplace {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side(RHS): f = -2*(x^2+y^2)+36
-		weakForm.setF(
-			FOBasic.Plus(
-				FOBasic.Plus(
-					FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("x"),new FX("x") )),
-					FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("y"),new FX("y") ))
-					),new FC(36.0)
-				)
-			);
+		Function fx = new FX("x");
+		Function fy = new FX("y");
+		weakForm.setF(FC.c(-2.0).X( fx.X(fx).P(fy.X(fy)) ).P(FC.c(36.0)));
 		
 		//Assemble
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
