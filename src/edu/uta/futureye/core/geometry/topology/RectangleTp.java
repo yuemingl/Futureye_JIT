@@ -1,7 +1,7 @@
 package edu.uta.futureye.core.geometry.topology;
 
 /**
- * ËÄ±ßÐÎÍØÆË½á¹¹
+ * å››è¾¹å½¢æ‹“æ‰‘ç»“æž„
  * @author liuyueming
  *
  */

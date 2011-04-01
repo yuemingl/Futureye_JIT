@@ -7,12 +7,12 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 public class FOVector {
 	
 	/**
-	 * ∏¥∫œ∫Ø ˝
+	 * Â§çÂêàÂáΩÊï∞
 	 */
 	public static VectorFunction Compose(final VectorFunction fOuter, 
 			final Map<String,Function> fInners) {
@@ -64,14 +64,14 @@ public class FOVector {
 		List<String> names = fun.varNames();
 		VectorFunction rlt = new SpaceVectorFunction(names.size());
 		for(int i=0;i<names.size();i++)
-			rlt.set(i+1, fun.d(names.get(i)));
+			rlt.set(i+1, fun._d(names.get(i)));
 		return rlt;
 	}
 	
 	public static VectorFunction Grad(Function fun,ObjList<String> varNames) {
 		VectorFunction rlt = new SpaceVectorFunction(varNames.size());
 		for(int i=1;i<=varNames.size();i++)
-			rlt.set(i, fun.d(varNames.at(i)));
+			rlt.set(i, fun._d(varNames.at(i)));
 		return rlt;
 	}
 	
@@ -80,7 +80,16 @@ public class FOVector {
 		Function rlt = new FC(0.0);
 		for(int i=0; i<dim; i++) {
 			Function fd = (Function)vFun.get(i+1);
-			rlt = FMath.Plus(rlt, fd.d(vFun.varNames().get(i)));
+			rlt = FMath.Plus(rlt, fd._d(vFun.varNames().get(i)));
+		}
+		return rlt;
+	}
+	
+	public static Function Div(VectorFunction vFun,ObjList<String> varNames) {
+		Function rlt = new FC(0.0);
+		for(int i=1;i<=varNames.size();i++) {
+			Function fd = (Function)vFun.get(i);
+			rlt = FMath.Plus(rlt, fd._d(varNames.at(i)));
 		}
 		return rlt;
 	}

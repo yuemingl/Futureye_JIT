@@ -15,7 +15,7 @@ import edu.uta.futureye.lib.shapefun.SFLinearLocal1D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal3D;
 import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.list.VertexList;
+import edu.uta.futureye.util.container.VertexList;
 
 public class CoordinateTransform {
 	private List<String> fromVarNames = null;
@@ -40,7 +40,7 @@ public class CoordinateTransform {
 	private ScalarShapeFunction sf3d4 = null;
 
 	/**
-	 * ¹¹ÔìÒ»¸ö×ø±ê±ä»»£º
+	 * æ„é€ ä¸€ä¸ªåæ ‡å˜æ¢ï¼š
 	 * e.g. 
 	 *  2D (x,y)   -> (r,s)
 	 *  3D (x,y,z) -> (r,s,t)
@@ -81,7 +81,7 @@ public class CoordinateTransform {
 	}
 
 	/**
-	 * Ò»Î¬ÏßĞÔ×ø±ê±ä»»
+	 * ä¸€ç»´çº¿æ€§åæ ‡å˜æ¢
 	 * @param be
 	 * @return
 	 */
@@ -103,9 +103,9 @@ public class CoordinateTransform {
 	}
 	
 	/**
-	 * ¶şÎ¬µ¥ÔªÉÏÏßĞÔ×ø±ê±ä»»
+	 * äºŒç»´å•å…ƒä¸Šçº¿æ€§åæ ‡å˜æ¢
 	 * @param Element e
-	 * @return ×ø±ê±ä»»ËùĞèµÄ ¡°½áµã<=>ĞÎº¯Êı¡±¶Ô
+	 * @return åæ ‡å˜æ¢æ‰€éœ€çš„ â€œç»“ç‚¹<=>å½¢å‡½æ•°â€å¯¹
 	 */
 	public Map<Vertex,ScalarShapeFunction> getTransformLinear2DShapeFunction(Element e) {
 		VertexList vl = e.vertices();
@@ -145,9 +145,9 @@ public class CoordinateTransform {
 	}
 	
 	/**
-	 * ÈıÎ¬µ¥ÔªÉÏÏßĞÔ×ø±ê±ä»»
+	 * ä¸‰ç»´å•å…ƒä¸Šçº¿æ€§åæ ‡å˜æ¢
 	 * @param Element e
-	 * @return ×ø±ê±ä»»ËùĞèµÄ ¡°½áµã<=>ĞÎº¯Êı¡±¶Ô
+	 * @return åæ ‡å˜æ¢æ‰€éœ€çš„ â€œç»“ç‚¹<=>å½¢å‡½æ•°â€å¯¹
 	 */
 	public Map<Vertex,ScalarShapeFunction> getTransformLinear3DShapeFunction(Element e) {
 		VertexList vl = e.vertices();
@@ -157,7 +157,7 @@ public class CoordinateTransform {
 			if(sf3d2 == null) sf3d2 = new SFLinearLocal3D(2);
 			if(sf3d3 == null) sf3d3 = new SFLinearLocal3D(3);
 			if(sf3d4 == null) sf3d4 = new SFLinearLocal3D(4);
-			//TODO ¿ÉÒÔÊ¡ÂÔ£¿
+			//TODO å¯ä»¥çœç•¥ï¼Ÿ
 			sf3d1.asignElement(e);
 			sf3d2.asignElement(e);
 			sf3d3.asignElement(e);
@@ -176,7 +176,7 @@ public class CoordinateTransform {
 	}
 	
 	/**
-	 * ÀûÓÃµ¥ÔªÉÏµÄĞÎº¯Êı½øĞĞ×ø±ê±ä»»
+	 * åˆ©ç”¨å•å…ƒä¸Šçš„å½¢å‡½æ•°è¿›è¡Œåæ ‡å˜æ¢
 	 * @param e
 	 * @return
 	 */
@@ -184,7 +184,7 @@ public class CoordinateTransform {
 		Map<Vertex, ScalarShapeFunction> mapVS = new LinkedHashMap<Vertex, ScalarShapeFunction>();
 		VertexList vertices = e.vertices();
 		for(int i=1;i<=vertices.size();i++) {
-			//TODO ÓÃ¶¥µã½áµãÉÏµÄµÚÒ»¸ö×ÔÓÉ¶È½øĞĞ×ø±ê±ä»»
+			//TODO ç”¨é¡¶ç‚¹ç»“ç‚¹ä¸Šçš„ç¬¬ä¸€ä¸ªè‡ªç”±åº¦è¿›è¡Œåæ ‡å˜æ¢
 			mapVS.put(
 					vertices.at(i), 
 					e.getNodeDOFList(i).at(1).getSSF()
@@ -194,21 +194,21 @@ public class CoordinateTransform {
 	}
 	
 	/**
-	 * e.g. ¶şÎ¬µÑ¿¨¶û×ø±ê(x,y) -> Èı½ÇĞÎÃæ»ı£¨ÖØĞÄ£©×ø±ê(r,s,t)
-	 * (xi,yi), i=1,2,3 Èı½ÇĞÎÈı¸ö¶¥µã
+	 * e.g. äºŒç»´ç¬›å¡å°”åæ ‡(x,y) -> ä¸‰è§’å½¢é¢ç§¯ï¼ˆé‡å¿ƒï¼‰åæ ‡(r,s,t)
+	 * (xi,yi), i=1,2,3 ä¸‰è§’å½¢ä¸‰ä¸ªé¡¶ç‚¹
 	 * x = x(r,s,t) = x1*sf1 + x2*sf2 + x3*sf3 = x1*r + x2*s + x3*t
 	 * y = y(r,s,t) = y1*sf1 + y2*sf2 + y3*sf3 = y1*r + y2*s + y3*t
-	 * ÀûÓÃºóÃæµÄµÈÊ½£¬¿ÉÒÔ¼ò»¯ÔËËã
+	 * åˆ©ç”¨åé¢çš„ç­‰å¼ï¼Œå¯ä»¥ç®€åŒ–è¿ç®—
 	 * 
-	 * e.g. ÈıÎ¬µÑ¿¨¶û×ø±ê(x,y,z) -> ËÄÃæÌåÌå»ı£¨ÖØĞÄ£©×ø±ê(r,s,t,u)
-	 * (xi,yi), i=1,2,3,4 ËÄÃæÌåËÄ¸ö¶¥µã
+	 * e.g. ä¸‰ç»´ç¬›å¡å°”åæ ‡(x,y,z) -> å››é¢ä½“ä½“ç§¯ï¼ˆé‡å¿ƒï¼‰åæ ‡(r,s,t,u)
+	 * (xi,yi), i=1,2,3,4 å››é¢ä½“å››ä¸ªé¡¶ç‚¹
 	 * x = x(r,s,t,u) = x1*sf1 + x2*sf2 + x3*sf3 * x4*sf4 = x1*r + x2*s + x3*t * x4*u 
 	 * y = y(r,s,t,u) = y1*sf1 + y2*sf2 + y3*sf3 * y4*sf4 = y1*r + y2*s + y3*t * y4*u 
 	 * z = z(r,s,t,u) = z1*sf1 + z2*sf2 + z3*sf3 * z4*sf4 = z1*r + z2*s + z3*t * z4*u 
-	 * ÀûÓÃºóÃæµÄµÈÊ½£¬¿ÉÒÔ¼ò»¯ÔËËã
+	 * åˆ©ç”¨åé¢çš„ç­‰å¼ï¼Œå¯ä»¥ç®€åŒ–è¿ç®—
 	 * 
 	 * @param mapVS
-	 * @return ×ø±ê±ä»»º¯ÊıÁĞ±í
+	 * @return åæ ‡å˜æ¢å‡½æ•°åˆ—è¡¨
 	 */
 	public List<Function> getTransformFunction(Map<Vertex,ScalarShapeFunction> mapVS) {
 		List<Function> r = new LinkedList<Function>();
@@ -267,7 +267,7 @@ public class CoordinateTransform {
 		 */
 		for(Function transFun : transFuns) {
 			for(String var : toVarNames) { //free variable r,s
-				funs[index++] = transFun.d(var);
+				funs[index++] = transFun._d(var);
 			}
 		}
 		/*  
@@ -290,11 +290,11 @@ public class CoordinateTransform {
 			return null;
 		for(Function transFun : transFuns) {
 			for(String var : toVarNames) {
-				funs[index++] = transFun.d(var);
+				funs[index++] = transFun._d(var);
 			}
 		}
 		/*
-		 * ÒªÇó½áµã±àºÅÎªÄæÊ±Õë£ºfuns[0:3]
+		 * è¦æ±‚ç»“ç‚¹ç¼–å·ä¸ºé€†æ—¶é’ˆï¼šfuns[0:3]
 		 *            |0 1|
 		 *  det(Jac)= |2 3| = 0*3-1*2
 		 */
@@ -321,11 +321,11 @@ public class CoordinateTransform {
 		 */
 		 for(Function transFun : transFuns) {
 			for(String var : toVarNames) { //free variable r,s,t
-				funs[index++] = transFun.d(var);
+				funs[index++] = transFun._d(var);
 			}
 		}
 		/*
-		 * ÒªÇó½áµã±àºÅÎªÄæÊ±Õë £ºfuns[0:8]
+		 * è¦æ±‚ç»“ç‚¹ç¼–å·ä¸ºé€†æ—¶é’ˆ ï¼šfuns[0:8]
 		 *            |0 1 2|
 		 *  det(Jac)= |3 4 5| = 0*3-1*2
 		 *            |6 7 8|
@@ -379,7 +379,7 @@ public class CoordinateTransform {
 		items[8] = z3 - z4;
 		
 		/*
-		 * ÒªÇó½áµã±àºÅÎªÄæÊ±Õë £ºitems[0:8]
+		 * è¦æ±‚ç»“ç‚¹ç¼–å·ä¸ºé€†æ—¶é’ˆ ï¼šitems[0:8]
 		 *            |0 1 2|
 		 *  det(Jac)= |3 4 5| = 0*3-1*2
 		 *            |6 7 8|

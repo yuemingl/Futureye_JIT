@@ -22,19 +22,18 @@ import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOBasic;
-import edu.uta.futureye.util.list.DOFList;
-import edu.uta.futureye.util.list.IndexList;
-import edu.uta.futureye.util.list.NodeList;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.DOFList;
+import edu.uta.futureye.util.container.ObjIndex;
+import edu.uta.futureye.util.container.NodeList;
+import edu.uta.futureye.util.container.ObjList;
 
 public class Utils {
 	
 	public static List<String> mergeList(List<String> a, List<String> b) {
 		Set<String> set = new LinkedHashSet<String>();
-		//TODO ??? ÊÇ·ñÒª×öÅĞ¶Ï£¿
+		//TODO ??? æ˜¯å¦è¦åšåˆ¤æ–­ï¼Ÿ
 		if(a != null)
 			set.addAll(a);
 		if(b != null)
@@ -45,7 +44,7 @@ public class Utils {
 	}
 	
 	/**
-	 * TODO ¿ÉÒÔĞŞ¸ÄÎª2D,3D¶¼¿ÉÒÔ¼ÆËã
+	 * TODO å¯ä»¥ä¿®æ”¹ä¸º2D,3Déƒ½å¯ä»¥è®¡ç®—
 	 */
 	public static double computeAngle2D(Point a1,Point a2,Point b1,Point b2) {
 		Vector v1 = new SpaceVector(2);
@@ -72,6 +71,18 @@ public class Utils {
 		return Math.acos(v);
 	}
 	
+	/**
+	 * y1=f(x1)
+	 * y2=f(x2)
+	 * ==>
+	 * return y=f(x)
+	 * @param x1
+	 * @param x2
+	 * @param x
+	 * @param y1
+	 * @param y2
+	 * @return
+	 */
 	public static double linearInterpolate(double x1, double x2, double x, 
 			double y1, double y2) {
 		double k = (y2 -y1)/(x2 -x1);
@@ -80,6 +91,19 @@ public class Utils {
 	}
 	
 	
+	/**
+	 * y1=f(p1)
+	 * y2=f(p2)
+	 * ==>
+	 * return y=f(p)
+	 * TODO è¿”å›p?
+	 * @param p1
+	 * @param p2
+	 * @param p
+	 * @param y1
+	 * @param y2
+	 * @return
+	 */
 	public static double linearInterpolate(Point p1, Point p2, Point p, 
 			double y1, double y2) {
 		double x1,x2,x;
@@ -87,7 +111,7 @@ public class Utils {
 			x1 = p1.coord(i);
 			x2 = p2.coord(i);
 			x = p.coord(i);
-			if(Math.abs(x1-x2)>Constant.eps) {
+			if(Math.abs(x1-x2)>Constant.meshEps) {
 				return linearInterpolate(x1,x2,x,y1,y2);
 			}
 		}
@@ -163,7 +187,7 @@ public class Utils {
 		    for(int i=1;i<=nNode;i++) {
 		    	NodeList nbList = new NodeList();
 		    	Node node = list.at(i);
-		    	//TODO ×ÔÊÊÓ¦Íø¸ñ½ÚµãĞèÒª×¢Òâ
+		    	//TODO è‡ªé€‚åº”ç½‘æ ¼èŠ‚ç‚¹éœ€è¦æ³¨æ„
 		    	if(node instanceof NodeRefined) {
 		    		if(((NodeRefined) node).isHangingNode()) {
 		    			NodeList cns = ((NodeRefined) node).constrainNodes;
@@ -174,9 +198,7 @@ public class Utils {
 		    	}
 		    	nbList.addAll(node.neighbors);
 		    	if(nbList.size() == 0) {
-					FutureyeException e = new FutureyeException("No beighbors of Node "+node.globalIndex+", call mesh.computeNeiborNode() first!");
-					e.printStackTrace();
-					return null;
+					throw new FutureyeException("No beighbors of Node "+node.globalIndex+", call mesh.computeNeiborNode() first!");
 		    	}
 		    	double nbV = 0.0;
 		    	for(int j=1;j<=nbList.size();j++) {
@@ -254,7 +276,7 @@ public class Utils {
 				Point p = entry.getKey();
 				ScalarShapeFunction sf = entry.getValue();
 				int index = 0;
-				//µ±funÊÇÏòÁ¿Öµº¯ÊıÊ±£¬º¯ÊıµÄÖµ¿¿ÏÂ±ê»ñµÃ£¬Ó¦¸Ã»ñÈ¡½áµãÉÏ×ÔÓÉ¶ÈµÄÈ«¾Ö±àºÅ
+				//å½“funæ˜¯å‘é‡å€¼å‡½æ•°æ—¶ï¼Œå‡½æ•°çš„å€¼é ä¸‹æ ‡è·å¾—ï¼Œåº”è¯¥è·å–ç»“ç‚¹ä¸Šè‡ªç”±åº¦çš„å…¨å±€ç¼–å·
 				int localNodeIndex = e.getLocalIndex(e.getNode(p));
 				DOFList DOFs = e.getNodeDOFList(localNodeIndex);
 				if(DOFs != null)
@@ -272,7 +294,7 @@ public class Utils {
 				Point p = entry.getKey();
 				ScalarShapeFunction sf = entry.getValue();
 				int index = 0;
-				//µ±funÊÇÏòÁ¿Öµº¯ÊıÊ±£¬º¯ÊıµÄÖµ¿¿ÏÂ±ê»ñµÃ£¬Ó¦¸Ã»ñÈ¡½áµãÉÏ×ÔÓÉ¶ÈµÄÈ«¾Ö±àºÅ
+				//å½“funæ˜¯å‘é‡å€¼å‡½æ•°æ—¶ï¼Œå‡½æ•°çš„å€¼é ä¸‹æ ‡è·å¾—ï¼Œåº”è¯¥è·å–ç»“ç‚¹ä¸Šè‡ªç”±åº¦çš„å…¨å±€ç¼–å·
 				int localNodeIndex = e.getLocalIndex(e.getNode(p));
 				DOFList DOFs = e.getNodeDOFList(localNodeIndex);
 				if(DOFs != null)
@@ -283,14 +305,14 @@ public class Utils {
 				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, sf));			
 			}
 		} else if(e.eleDim()==3) {
-			//TODO ÓĞÃ»ÓĞ¸ü¼ò½àµÄ°ì·¨£¿
+			//TODO æœ‰æ²¡æœ‰æ›´ç®€æ´çš„åŠæ³•ï¼Ÿ
 			CoordinateTransform trans = new CoordinateTransform(3);
 			Map<Vertex,ScalarShapeFunction> transSF = trans.getTransformLinear3DShapeFunction(e);
 			for(Entry<Vertex,ScalarShapeFunction> entry : transSF.entrySet()) {
 				Point p = entry.getKey();
 				ScalarShapeFunction sf = entry.getValue();
 				int index = 0;
-				//µ±funÊÇÏòÁ¿Öµº¯ÊıÊ±£¬º¯ÊıµÄÖµ¿¿ÏÂ±ê»ñµÃ£¬Ó¦¸Ã»ñÈ¡½áµãÉÏ×ÔÓÉ¶ÈµÄÈ«¾Ö±àºÅ
+				//å½“funæ˜¯å‘é‡å€¼å‡½æ•°æ—¶ï¼Œå‡½æ•°çš„å€¼é ä¸‹æ ‡è·å¾—ï¼Œåº”è¯¥è·å–ç»“ç‚¹ä¸Šè‡ªç”±åº¦çš„å…¨å±€ç¼–å·
 				int localNodeIndex = e.getLocalIndex(e.getNode(p));
 				DOFList DOFs = e.getNodeDOFList(localNodeIndex);
 				if(DOFs != null)
@@ -304,7 +326,7 @@ public class Utils {
 		return rlt;
 	}
 	
-	//Ö»ÊÇÓÃÓÚÈı½ÇĞÎÏßĞÔÔª
+	//åªæ˜¯ç”¨äºä¸‰è§’å½¢çº¿æ€§å…ƒ
 	public static Map<String, Function> getFunctionComposeMap(Element e) {
 		final Element fe =e;
 		Map<String, Function> fInners = new HashMap<String, Function>();
@@ -336,7 +358,7 @@ public class Utils {
 	}
 	
 	/**
-	 * ÅĞ¶ÏµãpÊÇ·ñÔÚp1,p2Ö±Ïß¶ÎÖĞ¼ä£¬°üÀ¨¶Ëµã
+	 * åˆ¤æ–­ç‚¹pæ˜¯å¦åœ¨p1,p2ç›´çº¿æ®µä¸­é—´ï¼ŒåŒ…æ‹¬ç«¯ç‚¹
 	 * @param p1
 	 * @param p2
 	 * @param p
@@ -346,14 +368,14 @@ public class Utils {
 		if(p1.coordEquals(p) || p2.coordEquals(p))
 			return true;
 		double rlt = computeAngle2D(p, p1, p, p2);
-		if(Math.abs(rlt-Math.PI) < Constant.eps) {
+		if(Math.abs(rlt-Math.PI) < Constant.meshEps) {
 			return true;
 		}
 		return false;
 	}
 	
 	/**
-	 * ÅĞ¶ÏµãpÊÇ·ñÔÚp1,p2Ö±Ïß¶ÎÖĞ¼ä£¬²»°üÀ¨¶Ëµã
+	 * åˆ¤æ–­ç‚¹pæ˜¯å¦åœ¨p1,p2ç›´çº¿æ®µä¸­é—´ï¼Œä¸åŒ…æ‹¬ç«¯ç‚¹
 	 * @param p1
 	 * @param p2
 	 * @param p
@@ -363,14 +385,14 @@ public class Utils {
 		if(p1.coordEquals(p) || p2.coordEquals(p))
 			return false;
 		double rlt = computeAngle2D(p, p1, p, p2);
-		if(Math.abs(rlt-Math.PI) < Constant.eps) {
+		if(Math.abs(rlt-Math.PI) < Constant.meshEps) {
 			return true;
 		}
 		return false;
 	}
 	
 	/**
-	 * ÅĞ¶ÏµãpÊÇ·ñÔÚp1,p2Ö±ÏßÉÏ£¬²»Ò»¶¨ÔÚÁ½µãÖ®¼ä
+	 * åˆ¤æ–­ç‚¹pæ˜¯å¦åœ¨p1,p2ç›´çº¿ä¸Šï¼Œä¸ä¸€å®šåœ¨ä¸¤ç‚¹ä¹‹é—´
 	 * @param p1
 	 * @param p2
 	 * @param p
@@ -380,15 +402,15 @@ public class Utils {
 		if(p1.coordEquals(p) || p2.coordEquals(p))
 			return true;
 		double rlt = computeAngle2D(p, p1, p, p2);
-		if(Math.abs(rlt-Math.PI) < Constant.eps ||
-				Math.abs(rlt) < Constant.eps) {
+		if(Math.abs(rlt-Math.PI) < Constant.meshEps ||
+				Math.abs(rlt) < Constant.meshEps) {
 			return true;
 		}
 		return false;
 	}
 	
 	/**
-	 * ÅĞ¶ÏÏß¶Î[a1,a2] Óë [b1,b2]ÊÇ·ñÓĞ¹«¹²Ïß¶Î
+	 * åˆ¤æ–­çº¿æ®µ[a1,a2] ä¸ [b1,b2]æ˜¯å¦æœ‰å…¬å…±çº¿æ®µ
 	 * @param a1
 	 * @param a2
 	 * @param b1
@@ -407,9 +429,9 @@ public class Utils {
 	}
 	
 	/**
-	 * ¼ÆËãÁ½¸öµãÖ®¼äµÄ¾àÀë
+	 * è®¡ç®—ä¸¤ä¸ªç‚¹ä¹‹é—´çš„è·ç¦»
 	 * 
-	 * TODO ¿¼ÂÇÊÇ·ñÔÚPointÉÏ½¨Á¢´úÊıÔËËã·½·¨£¿
+	 * TODO è€ƒè™‘æ˜¯å¦åœ¨Pointä¸Šå»ºç«‹ä»£æ•°è¿ç®—æ–¹æ³•ï¼Ÿ
 	 * 
 	 * @param p1
 	 * @param p2
@@ -438,11 +460,11 @@ public class Utils {
 		Vector v2mv1 = SpaceVector.axpy(-1.0, v1, v2);//v2 - v1
 		double len = v2mv1.norm2();
 		Vector rlt =  SpaceVector.ax(1.0/len, v2mv1);
-		return new SpaceVector(rlt.get(2),-rlt.get(1));//Íâ·¨Ïò
+		return new SpaceVector(rlt.get(2),-rlt.get(1));//å¤–æ³•å‘
 	}
 	
 	/**
-	 * ¼ÆËã¶şÎ¬Èı½ÇĞÎÃæ»ı
+	 * è®¡ç®—äºŒç»´ä¸‰è§’å½¢é¢ç§¯
 	 * @param vertices
 	 * @return
 	 */
@@ -458,7 +480,7 @@ public class Utils {
 	}
 	
 	/**
-	 * ¼ÆËã¶şÎ¬ËÄ±ßĞÎÃæ»ı
+	 * è®¡ç®—äºŒç»´å››è¾¹å½¢é¢ç§¯
 	 * @param vertices
 	 * @return
 	 */
@@ -466,13 +488,13 @@ public class Utils {
 		double area = 0.0;
 		if(vertices.size() == 4) {
 			area += getTriangleArea(vertices.subList(1, 3));
-			area += getTriangleArea(vertices.subList(new IndexList(1,3,4)));
+			area += getTriangleArea(vertices.subList(new ObjIndex(1,3,4)));
 		}
 		return area;
 	}
 	
 	/**
-	 * ¶à±ßĞÎ£¨¶şÎ¬£©Ãæ»ı£¬×ª»¯Îª¼ÆËã¶à¸öÈı½ÇĞÎÃæ»ı
+	 * å¤šè¾¹å½¢ï¼ˆäºŒç»´ï¼‰é¢ç§¯ï¼Œè½¬åŒ–ä¸ºè®¡ç®—å¤šä¸ªä¸‰è§’å½¢é¢ç§¯
 	 * @param vertices
 	 * @return
 	 */
@@ -480,14 +502,14 @@ public class Utils {
 		double area = 0.0;
 		for(int i=3;i<=vertices.size();i++) {
 			area += getTriangleArea(
-					vertices.subList(new IndexList(1,i-1,i))
+					vertices.subList(new ObjIndex(1,i-1,i))
 					);
 		}
 		return area;
 	}
 	
 	/**
-	 * ¼ÆËãÇòÃæÈı½ÇĞÎÃæ»ı
+	 * è®¡ç®—çƒé¢ä¸‰è§’å½¢é¢ç§¯
 	 * @param r
 	 * @param o center
 	 * @param a

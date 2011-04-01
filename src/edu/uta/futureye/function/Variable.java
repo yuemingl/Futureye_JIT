@@ -14,7 +14,7 @@ import edu.uta.futureye.util.Constant;
  *
  */
 public class Variable {
-	//LinkedHashMap ±éÀúÊ±±£Ö¤±äÁ¿Ë³Ğò
+	//LinkedHashMap éå†æ—¶ä¿è¯å˜é‡é¡ºåº
 	protected Map<String,Double> values = new LinkedHashMap<String,Double>();
 
 	//protected boolean bApplyRestirct = false;
@@ -22,7 +22,7 @@ public class Variable {
 	//Node Index
 	protected int index = 0;
 	
-	//±äÁ¿ÖĞ¿ÉÒÔĞ¯´øelement£¬¼ûclass DuDn
+	//å˜é‡ä¸­å¯ä»¥æºå¸¦elementï¼Œè§class DuDn
 	protected Element element = null;
 	
 	public Variable() {
@@ -30,14 +30,14 @@ public class Variable {
 	
 	///////////////////////////////////////////////
 	/**
-	 * ¹¹ÔìÒ»Î¬×Ô±äÁ¿²¢¸³Öµ
+	 * æ„é€ ä¸€ç»´è‡ªå˜é‡å¹¶èµ‹å€¼
 	 */
 	public Variable(double val) {
 		values.put(Constant.x, val);
 	}
 	
 	/**
-	 * »ñÈ¡Ò»Î¬×Ô±äÁ¿Öµ
+	 * è·å–ä¸€ç»´è‡ªå˜é‡å€¼
 	 * @return
 	 */
 	public double get() {
@@ -58,7 +58,7 @@ public class Variable {
 	}
 	
 	/**
-	 * ·µ»Ø×Ô±äÁ¿ÃûÃû³Æ¶ÔÓ¦µÄÖµ
+	 * è¿”å›è‡ªå˜é‡ååç§°å¯¹åº”çš„å€¼
 	 * @param name
 	 * @return
 	 */
@@ -67,8 +67,18 @@ public class Variable {
 	}
 	
 	/**
-	 * ÉèÖÃ×Ô±äÁ¿µÄÖµ£ºÃû³Æ¡¢Öµ¶Ô£¬ ·µ»Ø±äÁ¿×ÔÉí£¬ÒÔ±ãÁ´Ê½±í´ï£º
-	 * ÀıÈç£ºÉèÖÃ¶şÎ¬×Ô±äÁ¿x=1,y=2£º
+	 * 
+	 * @param pair
+	 * @return
+	 */
+	public double get(VarPair pair) {
+		pair.value = values.get(pair.name);
+		return pair.value;
+	}
+	
+	/**
+	 * è®¾ç½®è‡ªå˜é‡çš„å€¼ï¼šåç§°ã€å€¼å¯¹ï¼Œ è¿”å›å˜é‡è‡ªèº«ï¼Œä»¥ä¾¿é“¾å¼è¡¨è¾¾ï¼š
+	 * ä¾‹å¦‚ï¼šè®¾ç½®äºŒç»´è‡ªå˜é‡x=1,y=2ï¼š
 	 * Variable v = new Variable("x",1).set("y",2);
 	 * 
 	 * @param name
@@ -77,6 +87,11 @@ public class Variable {
 	 */
 	public Variable set(String name, double val) {
 		values.put(name, val);
+		return this;
+	}
+	
+	public Variable set(VarPair pair) {
+		values.put(pair.name, pair.value);
 		return this;
 	}
 
@@ -90,7 +105,7 @@ public class Variable {
 //	}
 //	
 //	/**
-//	 * Èç¹ûº¯Êı¶Ô×Ô±äÁ¿ÓĞÏŞÖÆ£¬ÀıÈç¶şÎ¬ĞÎº¯ÊıÏŞÖÆµ½Ò»Î¬±ß½çÉÏ£¬isRestrict()»áÌáÊ¾º¯ÊıÇóÖµÊ±ÊÇ·ñÓ¦ÓÃ¸ÃÏŞÖÆ
+//	 * å¦‚æœå‡½æ•°å¯¹è‡ªå˜é‡æœ‰é™åˆ¶ï¼Œä¾‹å¦‚äºŒç»´å½¢å‡½æ•°é™åˆ¶åˆ°ä¸€ç»´è¾¹ç•Œä¸Šï¼ŒisRestrict()ä¼šæç¤ºå‡½æ•°æ±‚å€¼æ—¶æ˜¯å¦åº”ç”¨è¯¥é™åˆ¶
 //	 * @return
 //	 */
 //	public boolean isRestrict() {
@@ -99,8 +114,8 @@ public class Variable {
 
 	
 	/**
-	 * ¸ù¾İfunµÄ×Ô±äÁ¿¸öÊıºÍPointµÄÖµ£¨ÒÔ¼°index£¬Èç¹ûĞèÒªµÄ»°£©£¬
-	 * ´´½¨Ò»¸öVariableµÄ¶ÔÏó
+	 * æ ¹æ®funçš„è‡ªå˜é‡ä¸ªæ•°å’ŒPointçš„å€¼ï¼ˆä»¥åŠindexï¼Œå¦‚æœéœ€è¦çš„è¯ï¼‰ï¼Œ
+	 * åˆ›å»ºä¸€ä¸ªVariableçš„å¯¹è±¡
 	 * @param fun
 	 * @param point
 	 * @param index
@@ -124,7 +139,7 @@ public class Variable {
 	}
 	
 	/**
-	 * ±äÁ¿ÖĞĞ¯´øÏòÁ¿Ë÷Òı£¨±àºÅ£©
+	 * å˜é‡ä¸­æºå¸¦å‘é‡ç´¢å¼•ï¼ˆç¼–å·ï¼‰
 	 * @param index
 	 */
 	public Variable setIndex(int index) {
@@ -136,7 +151,7 @@ public class Variable {
 	}
 	
 	/**
-	 * ±äÁ¿ÖĞĞ¯´øµ¥Ôª¶ÔÏó
+	 * å˜é‡ä¸­æºå¸¦å•å…ƒå¯¹è±¡
 	 * @return
 	 */
 	public Element getElement() {

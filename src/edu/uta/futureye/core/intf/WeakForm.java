@@ -33,7 +33,7 @@ public interface WeakForm {
 	///////////////////////////////////////////////////////////////
 	
 	/**
-	 * 在单元e上对函数fun积分
+	 * 鍦ㄥ崟鍏僥涓婂鍑芥暟fun绉垎
 	 * @param e
 	 * @param fun
 	 * @return

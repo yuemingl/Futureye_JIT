@@ -43,7 +43,7 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 		this.g_f = f;
 	}
 	
-	//Robin: k*u_n + d*u = q (��Ȼ�߽磺d==c)
+	//Robin: k*u_n + d*u = q (自然边界：d==c)
 	public void setParam(Function k,Function c,Function q,Function d) {
 		this.g_k = k;
 		this.g_c = c;

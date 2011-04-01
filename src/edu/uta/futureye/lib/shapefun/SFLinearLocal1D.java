@@ -13,8 +13,9 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
-import edu.uta.futureye.util.list.ObjList;
-import edu.uta.futureye.util.list.VertexList;
+import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.container.ObjList;
+import edu.uta.futureye.util.container.VertexList;
 
 public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFunction {
 	private int funIndex;
@@ -26,7 +27,7 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 	private Element e = null;
 
 	/**
-	 * ¹¹ÔìÏÂÁÐÐÎº¯ÊýÖÐµÄÒ»¸ö£º
+	 * æž„é€ ä¸‹åˆ—å½¢å‡½æ•°ä¸­çš„ä¸€ä¸ªï¼š
 	 * 
 	 *  1-----2  -->r
 	 * -1  0  1
@@ -39,14 +40,15 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 	public SFLinearLocal1D(int funID) {
 		funIndex = funID - 1;
 		if(funID<1 || funID>2) {
-			System.out.println("ERROR: funID should be 1 or 2.");
-			return;
+			FutureyeException ex = new FutureyeException("ERROR: funID should be 1 or 2.");
+			ex.printStackTrace();
+			System.exit(-1);	
 		}
 		
 		varNames.add("r");
 		innerVarNames = new ObjList<String>("x");
 		
-		//¸´ºÏº¯Êý
+		//å¤åˆå‡½æ•°
 		Map<String, Function> fInners = new HashMap<String, Function>();
 		List<String> varNamesInner = new LinkedList<String>();
 		varNamesInner.add("x");
@@ -60,7 +62,7 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 		 *  r_x = 2/(x2-x1)  
 		 */
 		fInners.put("r", new AbstractFunction(varNamesInner) {	
-			public Function d(String var) {
+			public Function _d(String var) {
 				if(var.equals("x")) {
 					VertexList vl = e.vertices();
 					if(vl.size() == 2) {
@@ -75,7 +77,7 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 			}
 		});
 		
-		//Ê¹ÓÃ¸´ºÏº¯Êý¹¹ÔìÐÎº¯Êý
+		//ä½¿ç”¨å¤åˆå‡½æ•°æž„é€ å½¢å‡½æ•°
 		if(funIndex == 0)
 			funOuter = new FAxpb("r",-0.5,0.5);
 		else
@@ -89,8 +91,8 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 	}
 
 	@Override
-	public Function d(String varName) {
-		return funCompose.d(varName);
+	public Function _d(String varName) {
+		return funCompose._d(varName);
 	}
 
 	@Override

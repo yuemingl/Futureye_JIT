@@ -1,13 +1,15 @@
 package edu.uta.futureye.core.geometry.topology;
 
 /**
- * Èý½ÇÐÎÍØÆË½á¹¹
+ * ä¸‰è§’å½¢æ‹“æ‰‘ç»“æž„
  * @author liuyueming
  *
  */
 public class TriangleTp implements Topology2D {
 	public static int[] vertices = {1,2,3};
 	public static int[][] edges = {{1,2},{2,3},{3,1}};
+	//äºŒæ¬¡å…ƒ
+	//public static int[][] edges3 = {{1,2,4},{2,3,5},{3,1,6}};
 	
 	@Override
 	public int[] getVertices() {

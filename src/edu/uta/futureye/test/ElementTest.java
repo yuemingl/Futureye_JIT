@@ -3,14 +3,14 @@ package edu.uta.futureye.test;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.util.list.NodeList;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.NodeList;
+import edu.uta.futureye.util.container.ObjList;
 
 public class ElementTest {
 	
 	public static void testTriangleNode3_Clockwise() {
 		/*
-		 * Ë³Ê±Õë²âÊÔ
+		 * é¡ºæ—¶é’ˆæµ‹è¯•
 		 *  2
 		 *  | \
 		 *  |  \
@@ -130,7 +130,7 @@ public class ElementTest {
 	
 	public static void testRectangleNode4_Clockwise() {
 		/*
-		 * Ë³Ê±Õë²âÊÔ
+		 * é¡ºæ—¶é’ˆæµ‹è¯•
 		 * 2----3
 		 * |    |
 		 * |    |

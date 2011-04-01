@@ -16,7 +16,7 @@ import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.function.operator.FOVector;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.list.DOFList;
+import edu.uta.futureye.util.container.DOFList;
 
 /**
  * Problem:
@@ -63,8 +63,8 @@ public class WeakFormMixedLaplace implements WeakForm {
 
 		BlockMatrix blockMat = (BlockMatrix)globalStiff;
 		BlockVector blockVec = (BlockVector)globalLoad;
-//²»ĞèÒªÊ¹ÓÃ·Ö¿é¾ØÕó£¬Ö±½ÓÊ¹ÓÃÕû¸ö¾ØÕó¾Í¿ÉÒÔÁË£¬ºÏ³É¹ı³ÌÓÉÓÚ¿é¾ØÕóµÄĞÔÖÊ
-//»á×Ô¶¯½«ÏàÓ¦µÄÔªËØ·ÅÈë¶ÔÓ¦µÄ¿éÖĞ¡£		
+//ä¸éœ€è¦ä½¿ç”¨åˆ†å—çŸ©é˜µï¼Œç›´æ¥ä½¿ç”¨æ•´ä¸ªçŸ©é˜µå°±å¯ä»¥äº†ï¼Œåˆæˆè¿‡ç¨‹ç”±äºå—çŸ©é˜µçš„æ€§è´¨
+//ä¼šè‡ªåŠ¨å°†ç›¸åº”çš„å…ƒç´ æ”¾å…¥å¯¹åº”çš„å—ä¸­ã€‚		
 //		Matrix m11 = blockMat.getBlock(1, 1);
 //		Matrix m12 = blockMat.getBlock(1, 2);
 //		Matrix m21 = blockMat.getBlock(2, 1);
@@ -75,7 +75,7 @@ public class WeakFormMixedLaplace implements WeakForm {
 			edgeDOFs.at(i).getVSF().asignElement(e);
 		}
 		
-		//±ß×ÔÓÉ¶ÈË«Ñ­»·
+		//è¾¹è‡ªç”±åº¦åŒå¾ªç¯
 		for(int j=1;j<=nEdgeDOF;j++) {
 			DOF dofV = edgeDOFs.at(j);
 			VectorShapeFunction vecV = dofV.getVSF();
@@ -86,7 +86,7 @@ public class WeakFormMixedLaplace implements WeakForm {
 				//B: (p,q)_{\Omega}
 				Function integrandB = null;
 				integrandB = vecU.dot(vecV);
-				//µ¥ÔªÉÏÊıÖµ»ı·Ö
+				//å•å…ƒä¸Šæ•°å€¼ç§¯åˆ†
 				Function integralB = null;
 				if(e.vertices().size() == 3) {
 					integralB = FOIntegrate.intOnTriangleRefElement(
@@ -96,7 +96,7 @@ public class WeakFormMixedLaplace implements WeakForm {
 					blockMat.add(dofU.getGlobalIndex(), dofV.getGlobalIndex(), val);
 				}
 			}
-			//Ãæ×ÔÓÉ¶ÈÑ­»·£¨2Dµ¥Ôª£©
+			//é¢è‡ªç”±åº¦å¾ªç¯ï¼ˆ2Då•å…ƒï¼‰
 			for(int k=1;k<=nElementDOF;k++) {
 				DOF dofE = eleDOFs.at(k);
 				//C: (u,\div{q})_{\Omega}
@@ -111,12 +111,12 @@ public class WeakFormMixedLaplace implements WeakForm {
 				blockMat.add(dofE.getGlobalIndex(), dofV.getGlobalIndex(), val);
 			}
 			
-			//b0 DirichletÌõ¼ş£¿
+			//b0 Dirichletæ¡ä»¶ï¼Ÿ
 		}
 		
 		for(int k=1;k<=nElementDOF;k++) {
 			DOF dofE = eleDOFs.at(k);
-			//ShapeFunction sf = dofE.getSF(); //·ÖÆ¬³£ÊıÔª£¬ÔÚ»ı·ÖÏîÖĞÏµÊıÊÇ1
+			//ShapeFunction sf = dofE.getSF(); //åˆ†ç‰‡å¸¸æ•°å…ƒï¼Œåœ¨ç§¯åˆ†é¡¹ä¸­ç³»æ•°æ˜¯1
 			Function integrand = Utils.interplateFunctionOnElement(g_f, e);
 			//bf: -(v,f)_{\Omega}
 			integrand = FOBasic.Mult(new FC(-1.0), integrand);
@@ -154,7 +154,7 @@ public class WeakFormMixedLaplace implements WeakForm {
 		this.g_f = f;
 	}
 	
-	//Robin:  d*u + k*u_n= q (×ÔÈ»±ß½ç£ºd==k, q=0)
+	//Robin:  d*u + k*u_n= q (è‡ªç„¶è¾¹ç•Œï¼šd==k, q=0)
 	public void setParam(Function k,Function c,Function q,Function d) {
 		this.g_k = k;
 		this.g_c = c;

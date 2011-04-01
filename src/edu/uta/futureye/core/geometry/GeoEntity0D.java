@@ -1,11 +1,11 @@
 package edu.uta.futureye.core.geometry;
 
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.util.list.VertexList;
+import edu.uta.futureye.util.container.VertexList;
 
 /**
  * 0D(Vertices) Geometry Entity
- * ¼¸ºÎÊµÌåµÄ¸¸Àà£¬±£´æ¼¸ºÎÊµÌåµÄ¶¥µã
+ * å‡ ä½•å®ä½“çš„çˆ¶ç±»ï¼Œä¿å­˜å‡ ä½•å®ä½“çš„é¡¶ç‚¹
  * 
  * @author liuyueming
  *

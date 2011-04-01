@@ -12,6 +12,7 @@ import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractVectorFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -21,7 +22,7 @@ import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.function.operator.FOVector;
 import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 /**
  * Raviart-Thomas 2D0 triangle element
@@ -57,12 +58,11 @@ import edu.uta.futureye.util.list.ObjList;
  * @author liuyueming
  *
  */
-public class RaviartThomas2D0 implements VectorShapeFunction {
+public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorShapeFunction {
 	int funIndex = 0;
 	
 	private VectorFunction funCompose = null;
 	private VectorFunction funOuter = null;
-	private List<String> varNames = new LinkedList<String>();
 	private ObjList<String> innerVarNames = null;
 
 	public RaviartThomas2D0(int funID) {
@@ -94,7 +94,7 @@ public class RaviartThomas2D0 implements VectorShapeFunction {
 		this.funOuter = FOVector.ScalarProduct(coef, 
 				FOVector.Minus(svf, new SpaceVectorFunction(v)));
 		
-		//复合函数
+		//澶嶅悎鍑芥暟
 		Map<String, Function> fInners = new HashMap<String, Function>();
 		List<String> varNamesInner = new LinkedList<String>();
 		varNamesInner.add("r");
@@ -105,12 +105,12 @@ public class RaviartThomas2D0 implements VectorShapeFunction {
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
-				public Function d(String varName) {
+				public Function _d(String varName) {
 					return null;
 				}
 				@Override
 				public double value(Variable v) {
-					//根据不同的varName给出不同的表达式
+					//鏍规嵁涓嶅悓鐨剉arName缁欏嚭涓嶅悓鐨勮〃杈惧紡
 					//x = x(r,s,t)
 					//y = y(r,s,t)
 					//where t = 1 - r - s
@@ -129,7 +129,7 @@ public class RaviartThomas2D0 implements VectorShapeFunction {
 			});
 		}
 		
-		//使用复合函数构造形函数
+		//浣跨敤澶嶅悎鍑芥暟鏋勯�犲舰鍑芥暟
 		//funOuter.setVarNames(varNames); //!!!
 		funCompose = FOVector.Compose(funOuter, fInners);
 	}
@@ -151,18 +151,13 @@ public class RaviartThomas2D0 implements VectorShapeFunction {
 	}
 
 	@Override
+	public void set(int index, Function value) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
 	public int getDim() {
 		return this.funCompose.getDim();
-	}
-
-	@Override
-	public Function norm2() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Function normInf() {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -171,41 +166,12 @@ public class RaviartThomas2D0 implements VectorShapeFunction {
 	}
 
 	@Override
-	public void set(int index, Function value) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setVarNames(List<String> varNames) {
-		this.varNames = varNames;
-	}
-
-	@Override
 	public Vector value(Variable v) {
 		return this.funCompose.value(v);
 	}
 
 	@Override
-	public List<String> varNames() {
-		return this.varNames;
-	}
-
-	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
-	}
-
-
-	@Override
-	public Function dot(Vector b) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public VectorFunction copy() {
-		// TODO 是函数copy还是向量copy?
-		return null;
 	}
 }

@@ -1,6 +1,6 @@
 package edu.uta.futureye.core;
 
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class NodeRefined extends Node {
 	public NodeList constrainNodes = new NodeList();
@@ -22,11 +22,11 @@ public class NodeRefined extends Node {
 	}	
 	
 	/**
-	 * 判断是否为Hanging node
+	 * 鍒ゆ柇鏄惁涓篐anging node
 	 * @return
 	 */
 	public boolean isHangingNode() {
-		//没有constrain node的加密结点不是hanging node
+		//娌℃湁constrain node鐨勫姞瀵嗙粨鐐逛笉鏄痟anging node
 		return this.constrainNodes.size()>0;
 	}
 	

@@ -1,17 +1,17 @@
 package edu.uta.futureye.core.geometry;
 
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 /**
- * Ò»Î¬¼¸ºÎÊµÌå£¬±£´æÓĞÏŞÔªElementµÄ¼¸ºÎĞÅÏ¢
- *   ¸¸ÀàµÄvertices£ºÒ»Î¬µ¥Ôª¶ÔÓ¦µÄÏß¶Î¶¥µã£¨Á½¸ö¶Ëµã£©
- *   nodes£º±ßÉÏµÄ½áµãÁĞ±í£¬²»°üÀ¨¶Ëµã£¨e.g.ÏßĞÔÔª£º0¸ö£¬¶ş´ÎÔª£º1¸ö£¬...£©
+ * ä¸€ç»´å‡ ä½•å®ä½“ï¼Œä¿å­˜æœ‰é™å…ƒElementçš„å‡ ä½•ä¿¡æ¯
+ *   çˆ¶ç±»çš„verticesï¼šä¸€ç»´å•å…ƒå¯¹åº”çš„çº¿æ®µé¡¶ç‚¹ï¼ˆä¸¤ä¸ªç«¯ç‚¹ï¼‰
+ *   nodesï¼šè¾¹ä¸Šçš„ç»“ç‚¹åˆ—è¡¨ï¼Œä¸åŒ…æ‹¬ç«¯ç‚¹ï¼ˆe.g.çº¿æ€§å…ƒï¼š0ä¸ªï¼ŒäºŒæ¬¡å…ƒï¼š1ä¸ªï¼Œ...ï¼‰
  *   
  * @author liuyueming
  *
  */
 public class GeoEntity1D<TNode extends Point> extends GeoEntity0D {
-	//±ßÉÏµÄ½áµã£¬²»°üÀ¨¶Ëµã
+	//è¾¹ä¸Šçš„ç»“ç‚¹ï¼Œä¸åŒ…æ‹¬ç«¯ç‚¹
 	protected ObjList<TNode> edgeNodes = null;
 	
 	public void addEdgeNode(TNode node) {

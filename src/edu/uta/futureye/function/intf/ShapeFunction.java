@@ -1,23 +1,23 @@
 package edu.uta.futureye.function.intf;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 public interface ShapeFunction {
 	/**
-	 * µ±ĞÎº¯ÊıÊÇ¾Ö²¿×ø±êµÄ¸´ºÏº¯ÊıÊ±£¬·µ»ØÎïÀí×ø±ê±äÁ¿Ãû³Æ
+	 * å½“å½¢å‡½æ•°æ˜¯å±€éƒ¨åæ ‡çš„å¤åˆå‡½æ•°æ—¶ï¼Œè¿”å›ç‰©ç†åæ ‡å˜é‡åç§°
 	 * @return
 	 */
 	ObjList<String> innerVarNames();
 	
 	/**
-	 * ¹ØÁªĞÎº¯ÊıºÍµ¥Ôª
+	 * å…³è”å½¢å‡½æ•°å’Œå•å…ƒ
 	 * @param e
 	 */
 	void asignElement(Element e);
 	
 	/**
-	 * ½«ĞÎº¯ÊıÏŞÖÆÎªµÍÒ»Î¬µÄĞÎº¯Êı
+	 * å°†å½¢å‡½æ•°é™åˆ¶ä¸ºä½ä¸€ç»´çš„å½¢å‡½æ•°
 	 * @param funIndex
 	 * @return
 	 */

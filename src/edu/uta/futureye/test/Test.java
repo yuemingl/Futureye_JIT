@@ -30,6 +30,10 @@ public class Test  extends Number implements Comparable<Double> {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		//int[]aaa=new int[0];
+		//System.out.println(aaa.length);//=0
+		
+		
 		//doubleTest(1.0);
 		
 		// TODO Auto-generated method stub

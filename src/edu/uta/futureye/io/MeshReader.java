@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class MeshReader {
 	Mesh mesh = new Mesh();
@@ -65,7 +65,9 @@ public class MeshReader {
 					}
 				}
 			}
-			
+			br.close();
+			in.close();
+
 			return mesh;
 		
 		} catch (Exception e) {
@@ -115,6 +117,8 @@ public class MeshReader {
 					}
 				}
 			}
+			br.close();
+			in.close();
 			
 			return mesh;
 		

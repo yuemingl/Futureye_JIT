@@ -134,7 +134,7 @@ public class FOperator {
 	}
 
 	/**
-	 * Ïà·´Êı
+	 * ç›¸åæ•°
 	 * @param f
 	 * @return
 	 */

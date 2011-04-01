@@ -12,8 +12,9 @@ import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class AssemblerScalarFast implements Assembler{
 	protected Mesh mesh;
@@ -64,10 +65,13 @@ public class AssemblerScalarFast implements Assembler{
 			if(n.getNodeType() == NodeType.Dirichlet) {
 				Variable v = Variable.createFrom(diri, n, n.globalIndex);
 				this.globalStiff.set(n.globalIndex, n.globalIndex, 1.0);
-				this.globalLoad.set(n.globalIndex, diri.value(v));
+				double val = diri.value(v);
+				this.globalLoad.set(n.globalIndex, val);
 				for(int j=1;j<=this.globalStiff.getRowDim();j++) {
 					if(j!=n.globalIndex) {
-						//this.globalMatrix.set(j, n.globalIndex, 0.0);
+						//TODO è¡Œåˆ—éƒ½éœ€è¦ç½®é›¶
+						this.globalLoad.add(j, -this.globalStiff.get(j, n.globalIndex)*val);
+						this.globalStiff.set(j, n.globalIndex, 0.0);
 						this.globalStiff.set(n.globalIndex, j, 0.0);
 					}
 				}
@@ -75,7 +79,7 @@ public class AssemblerScalarFast implements Assembler{
 		}
 	}
 	
-	//¶þÎ¬£º¸Õ¶È¾ØÕóÔö¼Óhanging nodeÔ¼ÊøÏµÊý
+	//äºŒç»´ï¼šåˆšåº¦çŸ©é˜µå¢žåŠ hanging nodeçº¦æŸç³»æ•°
 	// nh - 0.5*n1 - 0.5*n2 = 0
 	public void procHangingNode(Mesh mesh) {
 		
@@ -93,4 +97,9 @@ public class AssemblerScalarFast implements Assembler{
 			}
 		}
 	}
+	
+	@Override
+	public void imposeDirichletCondition(VectorFunction diri) {
+		throw new UnsupportedOperationException();
+	}	
 }

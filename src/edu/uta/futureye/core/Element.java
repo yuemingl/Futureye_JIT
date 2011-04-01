@@ -19,18 +19,20 @@ import edu.uta.futureye.core.geometry.topology.TetrahedronTp;
 import edu.uta.futureye.core.geometry.topology.TriangleTp;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.list.DOFList;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.NodeList;
-import edu.uta.futureye.util.list.ObjList;
-import edu.uta.futureye.util.list.VertexList;
+import edu.uta.futureye.util.container.DOFList;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
+import edu.uta.futureye.util.container.ObjList;
+import edu.uta.futureye.util.container.ObjVector;
+import edu.uta.futureye.util.container.VertexList;
 
 /**
  * Element of a triangulation
- * ÆÊ·Öµ¥Ôª
+ * å‰–åˆ†å•å…ƒ
  * 
  * @author liuyueming
  *
@@ -38,25 +40,25 @@ import edu.uta.futureye.util.list.VertexList;
 public class Element {
 	/**
 	 * Global index of this element
-	 * µ¥ÔªÈ«¾Ö±àºÅ
+	 * å•å…ƒå…¨å±€ç¼–å·
 	 */
 	public int globalIndex = 0;
 	
 	/**
 	 * Node list of this element
-	 * µ¥Ôª½áµãÁĞ±í
+	 * å•å…ƒç»“ç‚¹åˆ—è¡¨
 	 */
 	public NodeList nodes = new NodeList();
 	
 	/**
 	 * Neighbors of this element
-	 * ÏàÁÚµ¥Ôª
+	 * ç›¸é‚»å•å…ƒ
 	 */
 	public ElementList neighbors = new ElementList();
 	
 	/**
 	 * A map between local index of a node and it's corresponding DOFList
-	 * Óëµ¥Ôª½áµã¶ÔÓ¦µÄDOFList
+	 * ä¸å•å…ƒç»“ç‚¹å¯¹åº”çš„DOFList
 	 */
 	protected Map<Integer,DOFList> nodeDOFList;
 	protected Map<Integer,DOFList> edgeDOFList;
@@ -64,15 +66,25 @@ public class Element {
 	protected DOFList volumeDOFList;
 	
 	/**
-	 * µ¥Ôª¼¸ºÎÊµÌå£¬°üÀ¨Ìå¡¢Ãæ¡¢±ß¡¢¶¥µãĞÅÏ¢
+	 * å•å…ƒå‡ ä½•å®ä½“ï¼ŒåŒ…æ‹¬ä½“ã€é¢ã€è¾¹ã€é¡¶ç‚¹ä¿¡æ¯
 	 */
 	protected GeoEntity0D geoEntity = null;
 	public GeoEntity0D getGeoEntity() {
 		return geoEntity;
 	}
+	public void setGeoEntity(GeoEntity0D geoEntity) {
+		this.geoEntity = geoEntity;
+		this.nodes.addAll(getNodeList(geoEntity));
+		if(geoEntity instanceof GeoEntity2D<?,?>)
+			this.eleDim = 2;
+		else if(geoEntity instanceof GeoEntity3D<?,?,?>)
+			this.eleDim = 3;
+		else
+			this.eleDim = 1;
+	}
 
 	/**
-	 * µ¥ÔªÎ¬¶È£º1D, 2D or 3D
+	 * å•å…ƒç»´åº¦ï¼š1D, 2D or 3D
 	 */
 	protected int eleDim = 0;
 	public int eleDim() {
@@ -82,10 +94,14 @@ public class Element {
 	protected Function jac = null;
 
 	////////////////////////////////////////////////////////////////////
+	public Element() {
+		
+	}
+	
 	/**
-	 * ¹¹ÔìÒ»¸ö¼òµ¥Element£¬²ÎÊı½áµãÄ¬ÈÏ°´ÕÕÒÔÏÂ±àºÅ£º
+	 * æ„é€ ä¸€ä¸ªç®€å•Elementï¼Œå‚æ•°ç»“ç‚¹é»˜è®¤æŒ‰ç…§ä»¥ä¸‹ç¼–å·ï¼š
 	 * 
-	 * Ò»Î¬µ¥Ôª£º
+	 * ä¸€ç»´å•å…ƒï¼š
 	 * 
 	 * 1---2
 	 * 
@@ -93,7 +109,7 @@ public class Element {
 	 * 
 	 * 1--3--4--2
 	 * 
-	 * ¶şÎ¬Èı½ÇĞÎµ¥Ôª:
+	 * äºŒç»´ä¸‰è§’å½¢å•å…ƒ:
 	 *  3
 	 *  | \
 	 *  |  \
@@ -117,7 +133,7 @@ public class Element {
 	 *  |       \
 	 *  1--4--7--2 
 	 *
-	 * ¶şÎ¬ËÄ±ßĞÎµ¥Ôª£º
+	 * äºŒç»´å››è¾¹å½¢å•å…ƒï¼š
 	 * 4----3
 	 * |    |
 	 * |    |
@@ -137,7 +153,7 @@ public class Element {
 	 * |         |
 	 * 1-- 5--9--2
 	 * 
-	 * ÈıÎ¬ËÄÃæÌåµ¥Ôª£º
+	 * ä¸‰ç»´å››é¢ä½“å•å…ƒï¼š
 	 *    4
 	 *   /|\
 	 *  / | \
@@ -148,7 +164,7 @@ public class Element {
 	 *   \|/
 	 *    2
 	 * 
-	 * ÈıÎ¬ÁùÃæÌåµ¥Ôª£º
+	 * ä¸‰ç»´å…­é¢ä½“å•å…ƒï¼š
 	 *   4--------3
 	 *  /|       /|
 	 * 1--------2 |
@@ -166,7 +182,7 @@ public class Element {
 	}
 	
 	/**
-	 * ¹¹ÔìÒ»¸öÒ»°ãElement£¬ĞèÒªÌá¹©µ¥Ôª¼¸ºÎĞÅÏ¢
+	 * æ„é€ ä¸€ä¸ªä¸€èˆ¬Elementï¼Œéœ€è¦æä¾›å•å…ƒå‡ ä½•ä¿¡æ¯
 	 * @param node
 	 */
 	public Element(GeoEntity0D geoEntity) {
@@ -269,12 +285,12 @@ public class Element {
 //					return -1;
 //			}
 //		});
-		//·µ»ØµÄÈ«¾Ö½áµã°´ÕÕ¾Ö²¿½áµãµÄ±àºÅË³Ğò·µ»Ø
+		//è¿”å›çš„å…¨å±€ç»“ç‚¹æŒ‰ç…§å±€éƒ¨ç»“ç‚¹çš„ç¼–å·é¡ºåºè¿”å›
 		List<NodeLocal> list = localNodes.toList();
 		Collections.sort(list, new Comparator<NodeLocal>(){
 			@Override
 			public int compare(NodeLocal o1, NodeLocal o2) {
-				//ÉıĞò
+				//å‡åº
 				if(o1.localIndex > o2.localIndex)
 					return 1;
 				else
@@ -289,9 +305,9 @@ public class Element {
 	}
 	
 	/**
-	 * ¹¹½¨Ò»¸öÓĞÏŞµ¥Ôª
-	 * ×¢Òâ£º¸Ã·½·¨¹¹½¨µÄµ¥Ôª¼¸ºÎĞÅÏ¢²»°üº¬£ºÈ«¾ÖEdge£¨2D,3D£©£¬È«¾ÖFace£¨3D£©£¬
-	 * È«¾ÖĞÅÏ¢ĞèÒªµ÷ÓÃMeshÀàµÄÏà¹Øº¯Êı¼ÆËãµÃµ½¡£
+	 * æ„å»ºä¸€ä¸ªæœ‰é™å•å…ƒ
+	 * æ³¨æ„ï¼šè¯¥æ–¹æ³•æ„å»ºçš„å•å…ƒå‡ ä½•ä¿¡æ¯ä¸åŒ…å«ï¼šå…¨å±€Edgeï¼ˆ2D,3Dï¼‰ï¼Œå…¨å±€Faceï¼ˆ3Dï¼‰ï¼Œ
+	 * å…¨å±€ä¿¡æ¯éœ€è¦è°ƒç”¨Meshç±»çš„ç›¸å…³å‡½æ•°è®¡ç®—å¾—åˆ°ã€‚
 	 * 
 	 * @param nodes
 	 */
@@ -299,7 +315,7 @@ public class Element {
 		this.nodes.clear();
 		this.nodes.addAll(nodes);
 		
-		//ÒÔ½áµãµÄÎ¬¶È¾ö¶¨µ¥ÔªµÄÎ¬¶È
+		//ä»¥ç»“ç‚¹çš„ç»´åº¦å†³å®šå•å…ƒçš„ç»´åº¦
 		this.eleDim = nodes.at(1).dim();
 		int n = nodes.size();
 		if(this.eleDim == 1) {
@@ -323,21 +339,57 @@ public class Element {
 						new GeoEntity2D<EdgeLocal,NodeLocal>();
 			int [][]edgesTp = null;
 			if(n == 3) {
-				//ÏßĞÔÈı½ÇĞÎµ¥Ôª
+				//çº¿æ€§ä¸‰è§’å½¢å•å…ƒ
 				TriangleTp triTp = new TriangleTp();
 				entity.setTopology(triTp);
 				edgesTp = triTp.getEdges();
 				for(int i=1;i<=nodes.size();i++)
 					entity.addVertex(new Vertex(i,new NodeLocal(i,nodes.at(i))));
+				for(int i=0;i<edgesTp.length;i++) {
+					EdgeLocal el = new EdgeLocal(i+1,this);
+					for(int j=0;j<edgesTp[i].length;j++) {
+						el.addVertex(
+								new Vertex(edgesTp[i][j],
+								new NodeLocal(edgesTp[i][j],nodes.at(edgesTp[i][j])))
+								);
+					}
+					entity.addEdge(el);
+				}
 			} else if(n == 4) {
-				//ÏßĞÔËÄ±ßĞÎµ¥Ôª
+				//çº¿æ€§å››è¾¹å½¢å•å…ƒ
 				RectangleTp rectTp = new RectangleTp();
 				entity.setTopology(rectTp);
 				edgesTp = rectTp.getEdges();
 				for(int i=1;i<=nodes.size();i++)
 					entity.addVertex(new Vertex(i,new NodeLocal(i,nodes.at(i))));
+				for(int i=0;i<edgesTp.length;i++) {
+					EdgeLocal el = new EdgeLocal(i+1,this);
+					for(int j=0;j<edgesTp[i].length;j++) {
+						el.addVertex(
+								new Vertex(edgesTp[i][j],
+								new NodeLocal(edgesTp[i][j],nodes.at(edgesTp[i][j])))
+								);
+					}
+					entity.addEdge(el);
+				}
 			} else if(n == 6) {
-				
+				//äºŒæ¬¡ä¸‰è§’å½¢å•å…ƒ
+				TriangleTp triTp = new TriangleTp();
+				entity.setTopology(triTp);
+				edgesTp = triTp.getEdges();
+				for(int i=1;i<=3;i++)
+					entity.addVertex(new Vertex(i,new NodeLocal(i,nodes.at(i))));
+				for(int i=0;i<edgesTp.length;i++) {
+					EdgeLocal el = new EdgeLocal(i+1,this);
+					for(int j=0;j<edgesTp[i].length;j++) {
+						el.addVertex(
+								new Vertex(edgesTp[i][j],
+								new NodeLocal(edgesTp[i][j],nodes.at(edgesTp[i][j])))
+								);
+					}
+					el.addEdgeNode(new NodeLocal(4+i,nodes.at(4+i)));
+					entity.addEdge(el);
+				}
 			} else if(n == 8) {
 				
 			} else if(n ==9) {
@@ -349,16 +401,7 @@ public class Element {
 				ex.printStackTrace();
 				System.exit(0);
 			}
-			for(int i=0;i<edgesTp.length;i++) {
-				EdgeLocal el = new EdgeLocal(i+1,this);
-				for(int j=0;j<edgesTp[i].length;j++) {
-					el.addVertex(
-							new Vertex(edgesTp[i][j],
-							new NodeLocal(edgesTp[i][j],nodes.at(edgesTp[i][j])))
-							);
-				}
-				entity.addEdge(el);
-			}
+
 			this.geoEntity = entity;
 			
 		} else if(this.eleDim == 3) {
@@ -367,7 +410,7 @@ public class Element {
 			int [][]edgesTp = null;
 			int [][]facesTp = null;
 			if(n == 4) {
-				//ÏßĞÔËÄÃæÌåµ¥Ôª
+				//çº¿æ€§å››é¢ä½“å•å…ƒ
 				TetrahedronTp tetTp = new TetrahedronTp();
 				entity.setTopology(tetTp);
 				edgesTp = tetTp.getEdges();
@@ -375,7 +418,7 @@ public class Element {
 				for(int i=1;i<=tetTp.getVertices().length;i++)
 					entity.addVertex(new Vertex(i,new NodeLocal(i,nodes.at(i))));
 			} else if(n == 8) {
-				//ÏßĞÔÁùÃæÌåµ¥Ôª
+				//çº¿æ€§å…­é¢ä½“å•å…ƒ
 				HexahedronTp hexTp = new HexahedronTp();
 				entity.setTopology(hexTp);
 				edgesTp = hexTp.getEdges();
@@ -423,45 +466,50 @@ public class Element {
 	 */
 	public void applyChange() {
 		this.nodes.clear();
-		this.nodes.addAll(getNodeList(this.geoEntity));
+		//æœ‰é—®é¢˜ï¼Œè¾¹ç•Œæ²¡åŠæ³•è°ƒæ•´
+		//this.nodes.addAll(getNodeList(this.geoEntity));
+		
+		this.buildElement(getNodeList(this.geoEntity));
 	}
 	
 	/**
-	 * »ñÈ¡µ¥ÔªµÄ¼¸ºÎ¶¥µã
-	 * Ó¦ÓÃ£º
-	 * 1.ÓÃÓÚ×ø±ê±ä»»
-	 * 2.ÓÃÓÚÃæ»ı¼ÆËã
-	 * 3.µÈµÈ
+	 * è·å–å•å…ƒçš„å‡ ä½•é¡¶ç‚¹
+	 * åº”ç”¨ï¼š
+	 * 1.ç”¨äºåæ ‡å˜æ¢
+	 * 2.ç”¨äºé¢ç§¯è®¡ç®—
+	 * 3.ç­‰ç­‰
 	 * @return
 	 */
 	public VertexList vertices() {
 		return this.geoEntity.getVertices();
 	}
 	
+	/**
+	 * è·å–å•å…ƒçš„è¾¹åˆ—è¡¨
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public ObjList<EdgeLocal> edges() {
 		if(this.eleDim == 2) {
 			GeoEntity2D entity = (GeoEntity2D)this.geoEntity;
 			return entity.getEdges();
 		} else {
-			FutureyeException ex = new FutureyeException("Error: "+this.geoEntity.getClass().getName());
-			ex.printStackTrace();
-			System.exit(0);
+			throw new FutureyeException("Error: "+this.geoEntity.getClass().getName());
 		}
-		return null;
 	}
 	
+	/**
+	 * è·å–å•å…ƒçš„é¢åˆ—è¡¨
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public ObjList<FaceLocal> faces() {
 		if(this.eleDim == 3) {
 			GeoEntity3D entity = (GeoEntity3D)this.geoEntity;
 			return entity.getFaces();
 		} else {
-			FutureyeException ex = new FutureyeException("Error: "+this.geoEntity.getClass().getName());
-			ex.printStackTrace();
-			System.exit(0);
+			throw new FutureyeException("Error: "+this.geoEntity.getClass().getName());
 		}
-		return null;
 	}
 	
 	
@@ -470,7 +518,7 @@ public class Element {
 	
 	
 	/**
-	 * Ìí¼ÓÒ»¸ö½áµãÏà¹Ø×ÔÓÉ¶È£¨1D/2D/3D£©
+	 * æ·»åŠ ä¸€ä¸ªç»“ç‚¹ç›¸å…³è‡ªç”±åº¦ï¼ˆ1D/2D/3Dï¼‰
 	 * @param localNodeIndex
 	 * @param dof
 	 */
@@ -482,13 +530,13 @@ public class Element {
 			dofList = new DOFList();
 			nodeDOFList.put(localNodeIndex, dofList);
 		}
-		//2010-10-11 DOF·´ÏòË÷ÒıNode
+		//2010-10-11 DOFåå‘ç´¢å¼•Node
 		dof.setOwner(this.nodes.at(localNodeIndex));
 		dofList.add(dof);
 	}
 	
 	/**
-	 * Ìí¼ÓÒ»¸ö±ßÏà¹Ø×ÔÓÉ¶È£¨2D/3D£©
+	 * æ·»åŠ ä¸€ä¸ªè¾¹ç›¸å…³è‡ªç”±åº¦ï¼ˆ2D/3Dï¼‰
 	 * @param localEdgeIndex
 	 * @param dof
 	 */
@@ -500,13 +548,13 @@ public class Element {
 			dofList = new DOFList();
 			edgeDOFList.put(localEdgeIndex, dofList);
 		}
-		//DOF·´ÏòË÷ÒıEdge
+		//DOFåå‘ç´¢å¼•Edge
 		dof.setOwner(this.edges().at(localEdgeIndex));
 		dofList.add(dof);		
 	}
 	
 	/**
-	 * Ìí¼ÓÒ»¸öÃæÏà¹Ø×ÔÓÉ¶È£¨3D£©
+	 * æ·»åŠ ä¸€ä¸ªé¢ç›¸å…³è‡ªç”±åº¦ï¼ˆ3Dï¼‰
 	 * @param localFaceIndex
 	 * @param dof
 	 */
@@ -518,7 +566,7 @@ public class Element {
 			dofList = new DOFList();
 			faceDOFList.put(localFaceIndex, dofList);
 		}
-		//DOF·´ÏòË÷ÒıFace
+		//DOFåå‘ç´¢å¼•Face
 		dof.setOwner(this.faces().at(localFaceIndex));
 		dofList.add(dof);
 	}
@@ -530,17 +578,17 @@ public class Element {
 	public void addVolumeDOF(DOF dof) {
 		if(volumeDOFList == null)
 			volumeDOFList = new DOFList();
-		//DOF·´ÏòË÷ÒıElement
-		//TODO???Ìå×ÔÓÉ¶ÈµÄownerÊÇthis.geoEntity???
+		//DOFåå‘ç´¢å¼•Element
+		//TODO???ä½“è‡ªç”±åº¦çš„owneræ˜¯this.geoEntity???
 		dof.setOwner(this.geoEntity);
 		volumeDOFList.add(dof);
 	}
 	
 	/**
-	 * Ìí¼ÓÒ»¸öµ¥ÔªÏà¹Ø×ÔÓÉ¶È£¨1D/2D/3D£©£¬
-	 * ¶ÔÓÚ1D£¬Îªµ¥ÔªÏßÉÏµÄ×ÔÓÉ¶È
-	 * ¶ÔÓÚ2D£¬Îªµ¥ÔªÃæÉÏµÄ×ÔÓÉ¶È
-	 * ¶ÔÓÚ3D£¬Îªµ¥ÔªÌåÉÏµÄ×ÔÓÉ¶È
+	 * æ·»åŠ ä¸€ä¸ªå•å…ƒç›¸å…³è‡ªç”±åº¦ï¼ˆ1D/2D/3Dï¼‰ï¼Œ
+	 * å¯¹äº1Dï¼Œä¸ºå•å…ƒçº¿ä¸Šçš„è‡ªç”±åº¦
+	 * å¯¹äº2Dï¼Œä¸ºå•å…ƒé¢ä¸Šçš„è‡ªç”±åº¦
+	 * å¯¹äº3Dï¼Œä¸ºå•å…ƒä½“ä¸Šçš„è‡ªç”±åº¦
 	 * @param dof
 	 */
 	public void addElementDOF(DOF dof) {
@@ -549,7 +597,7 @@ public class Element {
 	
 	
 	/**
-	 * »ñÈ¡µ¥Ôª½áµãlocalNodeIndex¶ÔÓ¦µÄ×ÔÓÉ¶ÈÁĞ±í
+	 * è·å–å•å…ƒç»“ç‚¹localNodeIndexå¯¹åº”çš„è‡ªç”±åº¦åˆ—è¡¨
 	 * @param localNodeIndex
 	 * @return
 	 */
@@ -560,7 +608,7 @@ public class Element {
 	}
 	
 	/**
-	 * »ñÈ¡µ¥Ôª±ßlocalEdgeIndex¶ÔÓ¦µÄ×ÔÓÉ¶ÈÁĞ±í
+	 * è·å–å•å…ƒè¾¹localEdgeIndexå¯¹åº”çš„è‡ªç”±åº¦åˆ—è¡¨
 	 * @param localEdgeIndex
 	 * @return
 	 */
@@ -570,7 +618,7 @@ public class Element {
 		return dofList;
 	}	
 	/**
-	 * »ñÈ¡µ¥ÔªÃælocalFaceIndex¶ÔÓ¦µÄ×ÔÓÉ¶ÈÁĞ±í
+	 * è·å–å•å…ƒé¢localFaceIndexå¯¹åº”çš„è‡ªç”±åº¦åˆ—è¡¨
 	 * @param localFaceIndex
 	 * @return
 	 */
@@ -580,7 +628,7 @@ public class Element {
 		return dofList;
 	}
 	/**
-	 * »ñÈ¡µ¥ÔªÌå¶ÔÓ¦µÄ×ÔÓÉ¶ÈÁĞ±í
+	 * è·å–å•å…ƒä½“å¯¹åº”çš„è‡ªç”±åº¦åˆ—è¡¨
 	 * @return
 	 */
 	public DOFList getVolumeDOFList() {
@@ -630,10 +678,10 @@ public class Element {
 	}
 	
 	/**
-	 * »ñÈ¡µ¥ÔªÉÏËùÓĞµÄ×ÔÓÉ¶È
-	 * Ä¬ÈÏ¹æÔò£º
-	 * °´ÕÕµã¡¢±ß¡¢Ãæ¡¢ÌåµÄË³Ğò½«¾Ö²¿×ÔÓÉ¶È±àºÅ´ÓĞ¡µ½´óÅÅÁĞ
-	 * @param ×ÔÓÉ¶ÈÅÅĞò·½Ê½
+	 * è·å–å•å…ƒä¸Šæ‰€æœ‰çš„è‡ªç”±åº¦
+	 * é»˜è®¤è§„åˆ™ï¼š
+	 * æŒ‰ç…§ç‚¹ã€è¾¹ã€é¢ã€ä½“çš„é¡ºåºå°†å±€éƒ¨è‡ªç”±åº¦ç¼–å·ä»å°åˆ°å¤§æ’åˆ—
+	 * @param è‡ªç”±åº¦æ’åºæ–¹å¼
 	 * @return
 	 */
 	public DOFList getAllDOFList(DOFOrder order) {
@@ -655,6 +703,42 @@ public class Element {
 		}
 		if(volumeDOFList != null) {
 			rlt.addAll(volumeDOFList);
+		}
+		return rlt;
+	}
+	
+
+	/**
+	 * å¯¹äºå‘é‡å€¼é—®é¢˜ï¼Œåœ¨æŸä¸ªå‡ ä½•å®ä½“ä¸Šçš„è‡ªç”±åº¦ä¹Ÿæ˜¯ä¸€ä¸ªå‘é‡ï¼Œ
+	 * ä¾‹å¦‚ï¼šäºŒç»´Stokesé—®é¢˜çš„é€Ÿåº¦ã€å‹å¼ºå‘é‡ï¼š(u1,u2,p)ï¼Œåœ¨ç»“ç‚¹ä¸Š
+	 * å¯¹åº”çš„è‡ªç”±åº¦ä¸ºlistï¼š [DOFu1 DOFu2 DOFp]
+	 * @param order
+	 * @param vectorDim: è‡ªç”±åº¦list index  
+	 * @return
+	 */
+	public DOFList getAllDOFListByVectorDim(DOFOrder order,int vectorDim) {
+		DOFList rlt = new DOFList();
+		if(nodeDOFList != null) {
+			for(Entry<Integer,DOFList> entry : nodeDOFList.entrySet()) {
+				if(entry.getValue().size()>=vectorDim)
+					rlt.add(entry.getValue().at(vectorDim));
+			}
+		}
+		if(edgeDOFList != null) {
+			for(Entry<Integer,DOFList> entry : edgeDOFList.entrySet()) {
+				if(entry.getValue().size()>=vectorDim)
+					rlt.add(entry.getValue().at(vectorDim));
+			}
+		}
+		if(faceDOFList != null) {
+			for(Entry<Integer,DOFList> entry : faceDOFList.entrySet()) {
+				if(entry.getValue().size()>=vectorDim)
+					rlt.add(entry.getValue().at(vectorDim));
+			}
+		}
+		if(volumeDOFList != null) {
+			if(volumeDOFList.size()>=vectorDim)
+				rlt.add(volumeDOFList.at(vectorDim));
 		}
 		return rlt;
 	}
@@ -692,10 +776,10 @@ public class Element {
 		return volumeDOFList.size();
 	}
 	/**
-	 * »ñÈ¡µ¥ÔªÏà¹Ø×ÔÓÉ¶È×ÜÊı£¨1D/2D/3D£©£¬
-	 * ¶ÔÓÚ1D£¬Îªµ¥ÔªÏßÉÏµÄ×ÔÓÉ¶È×ÜÊı
-	 * ¶ÔÓÚ2D£¬Îªµ¥ÔªÃæÉÏµÄ×ÔÓÉ¶È×ÜÊı
-	 * ¶ÔÓÚ3D£¬Îªµ¥ÔªÌåÉÏµÄ×ÔÓÉ¶È×ÜÊı
+	 * è·å–å•å…ƒç›¸å…³è‡ªç”±åº¦æ€»æ•°ï¼ˆ1D/2D/3Dï¼‰ï¼Œ
+	 * å¯¹äº1Dï¼Œä¸ºå•å…ƒçº¿ä¸Šçš„è‡ªç”±åº¦æ€»æ•°
+	 * å¯¹äº2Dï¼Œä¸ºå•å…ƒé¢ä¸Šçš„è‡ªç”±åº¦æ€»æ•°
+	 * å¯¹äº3Dï¼Œä¸ºå•å…ƒä½“ä¸Šçš„è‡ªç”±åº¦æ€»æ•°
 	 * @return
 	 */
 	public int getElementDOFNumber() {
@@ -704,7 +788,7 @@ public class Element {
 	}
 
 	/**
-	 * »ñÈ¡ËùÓĞ½áµã¡¢±ß¡¢ÃæºÍÌåÉÏµÄ×ÔÓÉ¶È×ÜÊı
+	 * è·å–æ‰€æœ‰ç»“ç‚¹ã€è¾¹ã€é¢å’Œä½“ä¸Šçš„è‡ªç”±åº¦æ€»æ•°
 	 * @return
 	 */
 	public int getAllDOFNumber() {
@@ -717,9 +801,9 @@ public class Element {
 	}
 	
 	/**
-	 * ¾Ö²¿×ÔÓÉ¶È±àºÅÓëÈ«¾Ö×ÔÓÉ¶È±àºÅ×ª»»
-	 * Ä¬ÈÏ¹æÔò£º
-	 * °´ÕÕµã¡¢±ß¡¢Ãæ¡¢ÌåµÄË³Ğò½«¾Ö²¿×ÔÓÉ¶È±àºÅ´ÓĞ¡µ½´óÅÅÁĞ
+	 * å±€éƒ¨è‡ªç”±åº¦ç¼–å·ä¸å…¨å±€è‡ªç”±åº¦ç¼–å·è½¬æ¢
+	 * é»˜è®¤è§„åˆ™ï¼š
+	 * æŒ‰ç…§ç‚¹ã€è¾¹ã€é¢ã€ä½“çš„é¡ºåºå°†å±€éƒ¨è‡ªç”±åº¦ç¼–å·ä»å°åˆ°å¤§æ’åˆ—
 	 * @param local
 	 * @return
 	 */
@@ -797,7 +881,7 @@ public class Element {
 	public double getElementArea() {
 		double area = 0.0;
 		if(this.eleDim == 2) {
-			//²»Ê¹ÓÃNode£¬¶øÊÇVertex£¬¶øÇÒÒª±£Ö¤¶¨µãÄæÊ±Õë
+			//ä¸ä½¿ç”¨Nodeï¼Œè€Œæ˜¯Vertexï¼Œè€Œä¸”è¦ä¿è¯å®šç‚¹é€†æ—¶é’ˆ
 			VertexList vertices = this.vertices();
 			if(vertices.size() == 3) {
 				area = Utils.getTriangleArea(vertices);
@@ -825,7 +909,7 @@ public class Element {
 	
 	/**
 	 * Return true if exists an edge of this element that is on the border of the domain
-	 * ÅĞ¶ÏÊÇ·ñ±ß½çµ¥Ôª£¬¼´ÖÁÉÙ´æÔÚµ¥ÔªµÄÒ»±ßÎ»ÓÚÇøÓò±ß½çÉÏ
+	 * åˆ¤æ–­æ˜¯å¦è¾¹ç•Œå•å…ƒï¼Œå³è‡³å°‘å­˜åœ¨å•å…ƒçš„ä¸€è¾¹ä½äºåŒºåŸŸè¾¹ç•Œä¸Š
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -861,8 +945,8 @@ public class Element {
 	}
 	
 	/**
-	 * ¼ÆËãÒÔnodeÎª¶¥µã£¬Æäµ¥ÔªÄÚÏàÁÚÁ½½áµãÓëÖ®ĞÎ³ÉµÄ¼Ğ½Ç½Ç¶È
-	 * ²ÎÊıÒªÇó£ºnodeÎªµ¥ÔªÉÏµÄÒ»¸ö½áµã
+	 * è®¡ç®—ä»¥nodeä¸ºé¡¶ç‚¹ï¼Œå…¶å•å…ƒå†…ç›¸é‚»ä¸¤ç»“ç‚¹ä¸ä¹‹å½¢æˆçš„å¤¹è§’è§’åº¦
+	 * å‚æ•°è¦æ±‚ï¼šnodeä¸ºå•å…ƒä¸Šçš„ä¸€ä¸ªç»“ç‚¹
 	 * 
 	 * @param node
 	 * @return
@@ -876,7 +960,7 @@ public class Element {
 			return Utils.computeAngle2D(l, node, r, node);
 		} else if(this.nodes.size()/vn == 2){
 			Node l = nodes.at(li - vn);
-			//TODO ´íÎóµÄ£ºnodes.at(li - vn + 1)
+			//TODO é”™è¯¯çš„ï¼šnodes.at(li - vn + 1)
 			Node r = nodes.at( (li - vn + 1)>vn?1:(li - vn + 1));
 			return Utils.computeAngle2D(l, node, r, node);
 		} else {
@@ -886,12 +970,12 @@ public class Element {
 	}
 	
 	/**
-	 * ÊÊÓÃÓÚËÄÃæÌåµ¥Ôª
+	 * é€‚ç”¨äºå››é¢ä½“å•å…ƒ
 	 * 
-	 * ¼ÆËãÒÔnodeÎª¶¥µã£¬Æäµ¥ÔªÄÚÏàÁÚÈı½áµãÓëÖ®ĞÎ³ÉµÄµ¥Î»ÇòÃæÈı½ÇĞÎµÄÃæ»ı£¬
-	 * ¿ÉÓÃÓÚÅĞ¶ÏÊÇ·ñÄÚµã£¬¼´µ±Ä³½áµãÏàÁÚËùÓĞµ¥ÔªÉÏµÄ½áµãÓëÖ®ĞÎ³ÉµÄµ¥Î»ÇòÃæÈı½ÇĞÎµÄÃæ»ıÖ»ºÍ=4*PIÊ±ÎªÄÚµã
-	 * £¨ÇòÃæÌå£º4*PI*r^2£¬ÇóÌå»ı£º(4/3)*PI*r^3£©
-	 * ²ÎÊıÒªÇó£ºnodeÎªµ¥ÔªÉÏµÄÒ»¸ö½áµã
+	 * è®¡ç®—ä»¥nodeä¸ºé¡¶ç‚¹ï¼Œå…¶å•å…ƒå†…ç›¸é‚»ä¸‰ç»“ç‚¹ä¸ä¹‹å½¢æˆçš„å•ä½çƒé¢ä¸‰è§’å½¢çš„é¢ç§¯ï¼Œ
+	 * å¯ç”¨äºåˆ¤æ–­æ˜¯å¦å†…ç‚¹ï¼Œå³å½“æŸç»“ç‚¹ç›¸é‚»æ‰€æœ‰å•å…ƒä¸Šçš„ç»“ç‚¹ä¸ä¹‹å½¢æˆçš„å•ä½çƒé¢ä¸‰è§’å½¢çš„é¢ç§¯åªå’Œ=4*PIæ—¶ä¸ºå†…ç‚¹
+	 * ï¼ˆçƒé¢ä½“ï¼š4*PI*r^2ï¼Œæ±‚ä½“ç§¯ï¼š(4/3)*PI*r^3ï¼‰
+	 * å‚æ•°è¦æ±‚ï¼šnodeä¸ºå•å…ƒä¸Šçš„ä¸€ä¸ªç»“ç‚¹
 	 * 
 	 * @param node
 	 * @return
@@ -917,7 +1001,7 @@ public class Element {
 		CoordinateTransform transBorder = new CoordinateTransform(fromVars,toVars);
 		transBorder.transformLinear1D(this);
 		jac = (Function) transBorder.getJacobian1D();
-		//TODO ²»ÒªÓÃÕâ¸ö£¬ĞŞ¸Äº¯ÊıÔËËã
+		//TODO ä¸è¦ç”¨è¿™ä¸ªï¼Œä¿®æ”¹å‡½æ•°è¿ç®—
 		jac = FC.c(transBorder.getJacobian1D().value(null));
 	}
 
@@ -926,10 +1010,10 @@ public class Element {
 		CoordinateTransform trans = new CoordinateTransform(2);
 		trans.transformLinear2D(this);
 		//jac = (Function) trans.getJacobian2D();
-		//TODO ²»ÒªÓÃÕâ¸ö£¬ĞŞ¸Äº¯ÊıÔËËã
+		//TODO ä¸è¦ç”¨è¿™ä¸ªï¼Œä¿®æ”¹å‡½æ•°è¿ç®—
 		jac = FC.c(trans.getJacobian2D().value(null));
 
-//TODO adaptiveµÄÊ±ºò²»ÊÊÓÃ		
+//TODO adaptiveçš„æ—¶å€™ä¸é€‚ç”¨		
 //		List<FunctionDerivable> funs = trans.getTransformFunction(
 //				trans.getTransformShapeFunctionByElement(this)
 //					);
@@ -951,7 +1035,7 @@ public class Element {
 	}
 	
 	/**
-	 * ÅĞ¶Ïµ¥ÔªÎ¬¶È£¬¸üĞÂ»ı·Ö×ø±ê±ä»»µÄJacobin¾ØÕó
+	 * åˆ¤æ–­å•å…ƒç»´åº¦ï¼Œæ›´æ–°ç§¯åˆ†åæ ‡å˜æ¢çš„JacobinçŸ©é˜µ
 	 */
 	public void updateJacobin() {
 		if(this.eleDim == 2)
@@ -977,7 +1061,7 @@ public class Element {
 	}
 	
 	/**
-	 * »ñÈ¡±ß½çµ¥Ôª£¬ÓÃÓÚ×ÔÈ»±ß½çµÄ±ß½ç»ı·Ö
+	 * è·å–è¾¹ç•Œå•å…ƒï¼Œç”¨äºè‡ªç„¶è¾¹ç•Œçš„è¾¹ç•Œç§¯åˆ†
 	 * 
 	 * @return
 	 */
@@ -1005,34 +1089,42 @@ public class Element {
 	}
 	
 	/**
-	 * »ñÈ¡±ß½ç½áµãÀàĞÍ
+	 * è·å–è¾¹ç•Œç»“ç‚¹ç±»å‹
 	 * @return
 	 */
 	public NodeType getBorderNodeType() {
-		if(this.eleDim == 2) {
-			//´ÓÒ»¸öÈıÎ¬µ¥ÔªµÄÃæ¹¹Ôì¶øÀ´µÄElement¶ÔÏóµÄ¼¸ºÎÊµÌå
-			//ÊÇÒ»¸ö±ßÈ«¾ÖÃæÏó£¬»ñÈ¡¸ÃÃæ¶ÔÏóµÄ±ß½çÀàĞÍ
-			Face face = (Face)this.geoEntity;
-			return face.getBorderType();
-		} else if(this.eleDim == 1) {
-			//´ÓÒ»¸ö¶şÎ¬µ¥ÔªµÄ±ß¹¹Ôì¶øÀ´µÄElement¶ÔÏóµÄ¼¸ºÎÊµÌå
-			//ÊÇÒ»¸ö±ßÈ«¾Ö¶ÔÏó£¬»ñÈ¡¸Ã±ß¶ÔÏóµÄ±ß½çÀàĞÍ
-			Edge edge = (Edge)this.geoEntity;
-			return edge.getBorderType();
-		} else {
-			FutureyeException ex = new FutureyeException("");
-			ex.printStackTrace();
-			System.exit(-1);
-		}
-		return null;
+		return getBorderNodeType(1);
 	}
 	
 	/**
-	 * ¸ù¾İÈ«¾Ö½áµãnode·µ»Ø¸Ã½áµãÔÚµ¥ÔªµÄ¾Ö²¿Ë÷Òı£¨±àºÅ£©£¬
-	 * Èç¹û¸Ã½áµã²»ÔÚµ¥ÔªÖĞ£¬·µ»Ø0
+	 * å¯¹äºå‘é‡å€¼é—®é¢˜ï¼Œæ¯ä¸ªåˆ†é‡åœ¨åŒä¸€è¾¹ç•Œä¸Šçš„ç±»å‹ä¸ä¸€å®šç›¸åŒï¼Œ
+	 * è¯¥å‡½æ•°è¿”å›åˆ†é‡<tt>vvfIndex</tt>å¯¹åº”çš„è¾¹ç•Œç±»å‹
+	 * Vector valued function (vvf)
+	 * @param vvfIndex
+	 * @return
+	 */
+	public NodeType getBorderNodeType(int vvfIndex) {
+		if(this.eleDim == 2) {
+			//ä»ä¸€ä¸ªä¸‰ç»´å•å…ƒçš„é¢æ„é€ è€Œæ¥çš„Elementå¯¹è±¡çš„å‡ ä½•å®ä½“
+			//æ˜¯ä¸€ä¸ªè¾¹å…¨å±€é¢è±¡ï¼Œè·å–è¯¥é¢å¯¹è±¡çš„è¾¹ç•Œç±»å‹
+			Face face = (Face)this.geoEntity;
+			return face.getBorderType(vvfIndex);
+		} else if(this.eleDim == 1) {
+			//ä»ä¸€ä¸ªäºŒç»´å•å…ƒçš„è¾¹æ„é€ è€Œæ¥çš„Elementå¯¹è±¡çš„å‡ ä½•å®ä½“
+			//æ˜¯ä¸€ä¸ªè¾¹å…¨å±€å¯¹è±¡ï¼Œè·å–è¯¥è¾¹å¯¹è±¡çš„è¾¹ç•Œç±»å‹
+			Edge edge = (Edge)this.geoEntity;
+			return edge.getBorderType(vvfIndex);
+		} else {
+			throw new FutureyeException("this.eleDim="+this.eleDim);
+		}
+	}
+	
+	/**
+	 * æ ¹æ®å…¨å±€ç»“ç‚¹nodeè¿”å›è¯¥ç»“ç‚¹åœ¨å•å…ƒçš„å±€éƒ¨ç´¢å¼•ï¼ˆç¼–å·ï¼‰ï¼Œ
+	 * å¦‚æœè¯¥ç»“ç‚¹ä¸åœ¨å•å…ƒä¸­ï¼Œè¿”å›0
 	 * 
-	 * ×¢Òâ£ºÈç¹û¸Ä±äÁËµ¥ÔªµÄgeoEntity£¬±ØĞëµ÷ÓÃapplyChange()£¬
-	 * ·ñÔò¸Ãº¯Êı¿ÉÄÜ·µ»Ø´íÎóµÄ½á¹û
+	 * æ³¨æ„ï¼šå¦‚æœæ”¹å˜äº†å•å…ƒçš„geoEntityï¼Œå¿…é¡»è°ƒç”¨applyChange()ï¼Œ
+	 * å¦åˆ™è¯¥å‡½æ•°å¯èƒ½è¿”å›é”™è¯¯çš„ç»“æœ
 	 * 
 	 * @param node
 	 * @return
@@ -1054,7 +1146,7 @@ public class Element {
 	}
 	
 	/**
-	 * ÅĞ¶Ï½áµãnodeÊÇ·ñÊôÓÚ¸Ãµ¥Ôª
+	 * åˆ¤æ–­ç»“ç‚¹nodeæ˜¯å¦å±äºè¯¥å•å…ƒ
 	 * 
 	 * @param node
 	 * @return
@@ -1064,7 +1156,7 @@ public class Element {
 	}
 	
 	/**
-	 * ÅĞ¶ÏÒ»¸ö×ø±êµãÊÇ·ñÔÚµ¥ÔªÄÚ²¿£¨°üÀ¨µ¥Ôª±ß½ç£©£¬ÊÊÓÃÓÚÈÎÒâÎ¬¶È
+	 * åˆ¤æ–­ä¸€ä¸ªåæ ‡ç‚¹æ˜¯å¦åœ¨å•å…ƒå†…éƒ¨ï¼ˆåŒ…æ‹¬å•å…ƒè¾¹ç•Œï¼‰ï¼Œé€‚ç”¨äºä»»æ„ç»´åº¦
 	 * 
 	 * @param coord
 	 * @return
@@ -1078,7 +1170,7 @@ public class Element {
 						new Vertex().set(0,coord)
 					);
 		} else if(this.eleDim == 2) {
-			//¼ÆËãÒÔ coord Îª¶¥µã£¬·Ö±ğÒÔµ¥Ôª¶¥µãÎª·½ÏòµÄ¼Ğ½Ç£¬Èç¹û×ÜºÍÎª360¶È£¬ÔòÊÇÄÚµã¡£
+			//è®¡ç®—ä»¥ coord ä¸ºé¡¶ç‚¹ï¼Œåˆ†åˆ«ä»¥å•å…ƒé¡¶ç‚¹ä¸ºæ–¹å‘çš„å¤¹è§’ï¼Œå¦‚æœæ€»å’Œä¸º360åº¦ï¼Œåˆ™æ˜¯å†…ç‚¹ã€‚
 			double angle = 0.0;
 			ObjList<EdgeLocal> edges = this.edges();
 			for(int i=1;i<=edges.size();i++) {
@@ -1096,8 +1188,8 @@ public class Element {
 			for(int i=1;i<=faces.size();i++) {
 				FaceLocal face = faces.at(i);
 				VertexList vs = face.getVertices();
-				//¶àÃæÌåµÄÇòÃæ»ı·Ö½âÎªÈı½ÇĞÎÇòÃæ»ıµÄºÍ
-				//e.g. Îå±ßĞÎSphereArea(1,2,3,4,5) = SA(1,2,3)+SA(1,3,4)+SA(1,4,5)
+				//å¤šé¢ä½“çš„çƒé¢ç§¯åˆ†è§£ä¸ºä¸‰è§’å½¢çƒé¢ç§¯çš„å’Œ
+				//e.g. äº”è¾¹å½¢SphereArea(1,2,3,4,5) = SA(1,2,3)+SA(1,3,4)+SA(1,4,5)
 				for(int j=3;j<=vs.size();j++) {
 					angle += Utils.getSphereTriangleArea(1, v, 
 							vs.at(1), vs.at(j-1), vs.at(j));
@@ -1119,23 +1211,30 @@ public class Element {
 			s += globalIndex;
 		s += "( ";
 		for(int i=1;i<=nodes.size();i++) {
-			String st = "_";
-			NodeType nodeType = nodes.at(i).getNodeType();
-			if(nodeType == NodeType.Inner)
-				st = "I";
-			else if(nodeType == NodeType.Dirichlet)
-				st = "D";
-			else if(nodeType == NodeType.Neumann)
-				st = "N";
-			else if(nodeType == NodeType.Robin)
-				st = "R";
+			String st = "";
+			ObjVector<NodeType> nodeTypes = nodes.at(i).nodeTypes;
+			if(nodeTypes.size()==0)
+				st="_";
+			for(int j=1;j<=nodeTypes.size();j++) {
+				NodeType nodeType = nodeTypes.at(j);
+				if(nodeType == NodeType.Inner)
+					st += "I";
+				else if(nodeType == NodeType.Dirichlet)
+					st += "D";
+				else if(nodeType == NodeType.Neumann)
+					st += "N";
+				else if(nodeType == NodeType.Robin)
+					st += "R";
+				else
+					st += "_";
+			}
 			s += nodes.at(i).globalIndex + st + " ";
 		}
 		return s+")";
 	}
 	
 	/**
-	 *½«½áµã±àºÅµ÷ÕûÎªÄæÊ±ÕëË³Ğò
+	 *å°†ç»“ç‚¹ç¼–å·è°ƒæ•´ä¸ºé€†æ—¶é’ˆé¡ºåº
 	 */
 	//2011-02-19
 //	public void adjustVerticeToCounterClockwise() {
@@ -1162,7 +1261,7 @@ public class Element {
 //							);			
 //				}
 //				cp = v12.crossProduct(v13);
-//				//²æ³ËĞ¡ÓÚ0£¬±àºÅÊÇË³Ê±Õë£¬ĞèÒª¸ÄÎªÄæÊ±Õë
+//				//å‰ä¹˜å°äº0ï¼Œç¼–å·æ˜¯é¡ºæ—¶é’ˆï¼Œéœ€è¦æ”¹ä¸ºé€†æ—¶é’ˆ
 //				if(cp.get(3) < 0.0) {
 //					VertexList tmp = new VertexList();
 //					int n = list.size();
@@ -1220,16 +1319,16 @@ public class Element {
 	
 	////////////////////////////////////////////////////////////////////
 	/**
-	 * ×ÔÊÊÓ¦Íø¸ñ¼ÓÃÜÓÃÀ´±£´æ´Ó¸Ãµ¥Ôª¼ÓÃÜ³öÀ´µÄ×ÓÍø¸ñµ¥Ôª
+	 * è‡ªé€‚åº”ç½‘æ ¼åŠ å¯†ç”¨æ¥ä¿å­˜ä»è¯¥å•å…ƒåŠ å¯†å‡ºæ¥çš„å­ç½‘æ ¼å•å…ƒ
 	 */
 	public ElementList childs = null;
 	public Element parent = null;
-	//¼ÓÃÜ²ã´Î
+	//åŠ å¯†å±‚æ¬¡
 	protected int level = 1;
 	
 	
 	/**
-	 * ÅĞ¶Ïµ¥ÔªÊÇ·ñ¼ÓÃÜ
+	 * åˆ¤æ–­å•å…ƒæ˜¯å¦åŠ å¯†
 	 * @return
 	 */
 	public boolean isRefined() {
@@ -1245,4 +1344,17 @@ public class Element {
 	}
 	////////////////////////////////////////////////////////////////////
 	
+	
+	public void printDOFInfo() {
+		DOFList DOFs = getAllDOFList(DOFOrder.NEFV);
+		int nDOFs = DOFs.size();
+		for(int i=1;i<=nDOFs;i++) {
+			DOF dofI = DOFs.at(i);
+			VectorShapeFunction sfI = dofI.getVSF();
+			int nLocalRow = dofI.getLocalIndex();
+			int nGlobalRow = dofI.getGlobalIndex();
+			System.out.print(String.format("localIndex=%02d,globalIndex=%02d  ", nLocalRow,nGlobalRow));
+			System.out.println(sfI);
+		}
+	}
 }

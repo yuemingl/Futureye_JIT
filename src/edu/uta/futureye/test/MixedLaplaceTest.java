@@ -22,9 +22,9 @@ import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssembleMixedLaplace;
 import edu.uta.futureye.lib.shapefun.RaviartThomas2D0;
 import edu.uta.futureye.lib.weakform.WeakFormMixedLaplace;
-import edu.uta.futureye.util.list.EdgeList;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.container.EdgeList;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class MixedLaplaceTest {
 	public static void main(String[] args) {
@@ -39,7 +39,7 @@ public class MixedLaplaceTest {
 		MeshReader reader = new MeshReader(meshName+".grd");
 		Mesh mesh = reader.read2DMesh();
 		
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 		mesh.computeGlobalEdge();
 				EdgeList edgeList = mesh.getEdgeList();
 		System.out.println(edgeList.size());

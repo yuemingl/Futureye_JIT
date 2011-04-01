@@ -9,8 +9,8 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class MeshWriter {
 	Mesh mesh = null;
@@ -19,7 +19,7 @@ public class MeshWriter {
 		this.mesh = mesh;
 	}
 	
-	public void writeTechplot(String fileName, Vector u) {
+	public void writeTechplot(String fileName, Vector u, Vector ...us) {
 		FileOutputStream out;
 		try {
 			File file = new File(fileName);
@@ -31,7 +31,7 @@ public class MeshWriter {
 			ElementList elements = mesh.getElementList();
 			int nNode = nodes.size();
 			int nElement = elements.size();
-			//ÕÒµ½°üº¬½áµã×î¶àµÄµ¥ÔªµÄ½áµãÊıÄ¿£¬ÒòÎªÓĞĞ©Íø¸ñÊÇ»ìºÏµ¥ÔªÍø¸ñ
+			//æ‰¾åˆ°åŒ…å«ç»“ç‚¹æœ€å¤šçš„å•å…ƒçš„ç»“ç‚¹æ•°ç›®ï¼Œå› ä¸ºæœ‰äº›ç½‘æ ¼æ˜¯æ··åˆå•å…ƒç½‘æ ¼
 			int nMaxNodes = 0;
 			for(int i=1;i<=elements.size();i++) {
 				if(elements.at(i).nodes.size() > nMaxNodes)
@@ -39,9 +39,14 @@ public class MeshWriter {
 			}
 			int dim = nodes.at(1).dim();
 			
-			if(dim == 2) { //¶şÎ¬µ¥Ôª
+			String [] VNs ={"V","W","U4","U5","U6","U7","U8","U9"};
+			if(dim == 2) { //äºŒç»´å•å…ƒ
 				if(nMaxNodes % 3 == 0) {
-					br.println("VARIABLES=\"X\",\"Y\",\"U\"");
+					StringBuilder sb = new StringBuilder();
+					sb.append("VARIABLES=\"X\",\"Y\",\"U\"");
+					for(int ui=0;ui<us.length;ui++)
+						sb.append(String.format(",\"%s\"",VNs[ui]));
+					br.println(sb.toString());
 					
 					if(nMaxNodes == 3)
 						br.println(String.format("ZONE F=FEPOINT ET=TRIANGLE N=%d E=%d",nNode,nElement));
@@ -50,10 +55,15 @@ public class MeshWriter {
 						
 					for(int i=1;i<=nNode;i++) {
 						Node node = nodes.at(i);
-						br.println(String.format("%f    %f    %f", 
+						sb.delete(0, sb.length());
+						sb.append("   ");
+						for(int ui=0;ui<us.length;ui++)
+							sb.append(String.format("%f    ", us[ui].get(i)));
+						br.println(String.format("%f    %f    %f %s", 
 								node.coord(1),
 								node.coord(2),
-								u.get(i)));			
+								u.get(i),
+								sb.toString()));	
 					}
 					for(int i=1;i<=nElement;i++) {
 						Element e = elements.at(i);
@@ -90,7 +100,11 @@ public class MeshWriter {
 						
 					}
 				} else if(nMaxNodes % 4 == 0) {
-					br.println("VARIABLES=\"X\",\"Y\",\"U\"");
+					StringBuilder sb = new StringBuilder();
+					sb.append("VARIABLES=\"X\",\"Y\",\"U\"");
+					for(int ui=0;ui<us.length;ui++)
+						sb.append(String.format(",\"%s\"",VNs[ui]));
+					br.println(sb.toString());
 					
 					if(nMaxNodes == 4)
 						br.println(String.format("ZONE F=FEPOINT ET=QUADRILATERAL N=%d E=%d",nNode,nElement));
@@ -99,10 +113,15 @@ public class MeshWriter {
 	
 					for(int i=1;i<=nNode;i++) {
 						Node node = nodes.at(i);
-						br.println(String.format("%f    %f    %f", 
+						sb.delete(0, sb.length());
+						sb.append("   ");
+						for(int ui=0;ui<us.length;ui++)
+							sb.append(String.format("%f    ", us[ui].get(i)));
+						br.println(String.format("%f    %f    %f %s", 
 								node.coord(1),
 								node.coord(2),
-								u.get(i)));			
+								u.get(i),
+								sb.toString()));
 					}
 					for(int i=1;i<=nElement;i++) {
 						Element e = elements.at(i);
@@ -157,18 +176,28 @@ public class MeshWriter {
 						
 					}				
 				}
-			} else if(dim == 3) { //ÈıÎ¬µ¥Ôª
-				br.println("VARIABLES=\"X\",\"Y\",\"Z\",\"U\"");
-				//ËÄÃæÌåµ¥Ôª
+			} else if(dim == 3) { //ä¸‰ç»´å•å…ƒ
+				StringBuilder sb = new StringBuilder();
+				sb.append("VARIABLES=\"X\",\"Y\",\"Z\",\"U\"");
+				for(int ui=0;ui<us.length;ui++)
+					sb.append(String.format(",\"%s\"",VNs[ui]));
+				br.println(sb.toString());
+				
+				//å››é¢ä½“å•å…ƒ
 				if(nMaxNodes == 4)
 					br.println(String.format("ZONE F=FEPOINT ET=TETRAHEDRON N=%d E=%d",nNode,nElement));
 				for(int i=1;i<=nNode;i++) {
 					Node node = nodes.at(i);
-					br.println(String.format("%f    %f    %f    %f", 
+					sb.delete(0, sb.length());
+					sb.append("   ");
+					for(int ui=0;ui<us.length;ui++)
+						sb.append(String.format("%f    ", us[ui].get(i)));
+					br.println(String.format("%f    %f    %f    %f %s", 
 							node.coord(1),
 							node.coord(2),
 							node.coord(3),
-							u.get(i)));			
+							u.get(i),
+							sb.toString()));			
 				}
 				for(int i=1;i<=nElement;i++) {
 					Element e = elements.at(i);

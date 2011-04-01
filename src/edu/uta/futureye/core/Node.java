@@ -2,46 +2,49 @@ package edu.uta.futureye.core;
 
 import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.util.Constant;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
+import edu.uta.futureye.util.container.ObjVector;
 
 /**
  * Global finite element node class
- * ÓĞÏŞÔª£¨È«¾Ö£©½áµã
+ * æœ‰é™å…ƒï¼ˆå…¨å±€ï¼‰ç»“ç‚¹
  * 
  * @author liuyueming
  *
  */
 public class Node implements Point {
-	//¿Õ¼äÎ¬¶È
-	protected int dim = 0;
-	
-	//¿Õ¼ä×ø±ê
-	protected double[] coords = new double[3];
-	
-	//È«¾ÖË÷Òı£¨±àºÅ£©
+	//å…¨å±€ç´¢å¼•ï¼ˆç¼–å·ï¼‰
 	public int globalIndex = 0;
 	
-	//½áµãÀàĞÍ£º±ß½ç½áµã or ÄÚ²¿½áµã
-	private NodeType nodeType = null;
-	
-	//È«¾ÖÀ´¿´£¬½áµãËùÊôµ¥Ôª
+	//å…¨å±€æ¥çœ‹ï¼Œç»“ç‚¹æ‰€å±å•å…ƒ
 	public ElementList belongToElements = new ElementList();
 	
-	//ÏàÁÚ½áµã
+	//ç›¸é‚»ç»“ç‚¹
 	public NodeList neighbors = new NodeList();
+	
+	//ç©ºé—´ç»´åº¦
+	protected int dim = 0;
+	
+	//ç©ºé—´åæ ‡
+	protected double[] coords = new double[3];
+	
+	//ç»“ç‚¹ç±»å‹ï¼šè¾¹ç•Œç»“ç‚¹ or å†…éƒ¨ç»“ç‚¹
+	ObjVector<NodeType> nodeTypes = new ObjVector<NodeType>();
 	
 	public Node() {
 	}
+	
 	public Node(int dim) {
 		this.dim = dim;
 	}
 	
 	/**
-	 * ¹¹ÔìÒ»¸öÈ«¾Ö½áµã
-	 * @param globalIndex È«¾ÖË÷Òı£¨±àºÅ£©
-	 * @param x µÚÒ»¸ö×ø±ê
-	 * @param coords ÆäËû×ø±ê£¨y:2D or y,z:3D£©
+	 * æ„é€ ä¸€ä¸ªå…¨å±€ç»“ç‚¹
+	 * @param globalIndex å…¨å±€ç´¢å¼•ï¼ˆç¼–å·ï¼‰
+	 * @param x ç¬¬ä¸€ä¸ªåæ ‡
+	 * @param coords å…¶ä»–åæ ‡ï¼ˆy:2D or y,z:3Dï¼‰
 	 */
 	public Node(int globalIndex, double x, double ...coords) {
 		this.globalIndex = globalIndex;
@@ -99,27 +102,85 @@ public class Node implements Point {
 	@Override
 	public boolean coordEquals(Point p) {
 		for(int i=1;i<=this.dim;i++) {
-			if(Math.abs(this.coord(i)-p.coord(i)) > Constant.eps)
+			if(Math.abs(this.coord(i)-p.coord(i)) > Constant.meshEps)
 				return false;
 		}
 		return true;
 	}
 	
+	/**
+	 * åˆ¤æ–­æ˜¯å¦å†…éƒ¨ç»“ç‚¹
+	 * 
+	 * Dependents:
+	 * 
+	 * Mesh.computeNodeBelongsToElements()
+	 * or 
+	 * Mesh.markBorderNode()
+	 * 
+	 * @return
+	 */
 	public boolean isInnerNode() {
-		return nodeType==NodeType.Inner;
+		if(this.getNodeType() == null) {
+			if(belongToElements.size()==0)
+				throw new FutureyeException("Call Mesh.computeNodeBelongsToElements() first!");
+			//è®¡ç®—ä»¥nodeä¸ºé¡¶ç‚¹ï¼Œå‘¨å›´å•å…ƒç»“ç‚¹ä¸ä¹‹å½¢æˆçš„å¤¹è§’è§’åº¦ï¼Œ
+			//å¦‚æœä¸º360åº¦ï¼ˆ2*PIï¼‰ï¼Œå°±è¯´æ˜æ˜¯å†…ç‚¹
+			double sum = 0.0;
+			double coef = 0;
+			if(dim==2) {//2D
+				coef = 2;
+				for(int j=1;j<=belongToElements.size();j++) {
+					sum += belongToElements.at(j).getAngleInElement2D(this);
+				}
+			} else if(dim==3) {//3D
+				coef = 4;
+				for(int j=1;j<=belongToElements.size();j++) {
+					sum += belongToElements.at(j).getUnitSphereTriangleArea(this);
+				}
+			}
+			if(Math.abs(sum-coef*Math.PI) <= Constant.meshEps)//2D=2*PIï¼Œ3D=4*PIï¼Œæ˜¯å†…éƒ¨ç»“ç‚¹
+				return true;
+			else
+				return false;
+		} else {
+			//Use the result of Mesh.markBorderNode()
+			for(int i=1;i<=this.nodeTypes.size();i++)
+				if(this.nodeTypes.at(i) == null ||
+						this.nodeTypes.at(i) != NodeType.Inner)
+					return false;
+			return true;
+		}
 	}
 	
 	public NodeType getNodeType() {
-		return nodeType;
+		return nodeTypes.at(1);
+	}
+	
+	/**
+	 * å¯¹äºå‘é‡å€¼é—®é¢˜ï¼Œæ¯ä¸ªåˆ†é‡åœ¨åŒä¸€è¾¹ç•Œç»“ç‚¹ä¸Šçš„ç±»å‹ä¸ä¸€å®šç›¸åŒï¼Œ
+	 * è¯¥å‡½æ•°è¿”å›åˆ†é‡<tt>vvfIndex</tt>å¯¹åº”çš„è¾¹ç•Œç»“ç‚¹ç±»å‹
+	 * Vector valued function (vvf)
+	 * @param vvfIndex
+	 * @return
+	 */
+	public NodeType getNodeType(int vvfIndex) {
+		return nodeTypes.at(vvfIndex);
 	}
 	
 	public void setNodeType(NodeType nodeType) {
-		this.nodeType = nodeType;
+		this.nodeTypes.setSize(1);
+		this.nodeTypes.set(1,nodeType);
+	}
+	
+	public void setNodeType(int vvfIndex, NodeType nodeType) {
+		if(this.nodeTypes.size()<vvfIndex)
+			this.nodeTypes.setSize(vvfIndex);
+		this.nodeTypes.set(vvfIndex,nodeType);
 	}
 	
 	public void addBelongToElements(Element e) {
 		for(int i=1;i<=belongToElements.size();i++) {
-			//TODO e.globalIndex ÓÃË÷Òı´úÌæ¶ÔÏóÖ±½Ó±È½Ï£¿
+			//TODO e.globalIndex ç”¨ç´¢å¼•ä»£æ›¿å¯¹è±¡ç›´æ¥æ¯”è¾ƒï¼Ÿ
 			if(e.equals(belongToElements.at(i)))
 				return;
 		}
@@ -127,7 +188,7 @@ public class Node implements Point {
 	}
 	
 	//////////////////////////////////////////////////////
-	//½áµãÊôÓÚµÄ¼ÓÃÜ²ã´Î£¬¼´µÚlevel´Î¼ÓÃÜ²úÉúµÄ½áµã
+	//ç»“ç‚¹å±äºçš„åŠ å¯†å±‚æ¬¡ï¼Œå³ç¬¬levelæ¬¡åŠ å¯†äº§ç”Ÿçš„ç»“ç‚¹
 	protected int level = 1;
 	
 	public int getLevel() {

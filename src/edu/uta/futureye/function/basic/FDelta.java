@@ -28,7 +28,7 @@ public class FDelta extends AbstractFunction {
 		double dx = x.get("x")-x0.get("x");
 		double dy = x.get("y")-x0.get("y");
 		double d2 = dx*dx+dy*dy;
-		return amp*Math.pow(Math.E, (-d2/eps/4.0)) / (2*Math.sqrt(Math.PI*eps));
+		return amp*Math.exp(-d2/eps/4.0) / (2*Math.sqrt(Math.PI*eps));
 	}
 
 	public double value() {
@@ -36,7 +36,7 @@ public class FDelta extends AbstractFunction {
 	}
 	
 	@Override
-	public Function d(String varName) {
+	public Function _d(String varName) {
 		return null;
 	}
 	

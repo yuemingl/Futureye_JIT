@@ -5,74 +5,137 @@ import java.util.Map;
 
 import edu.uta.futureye.function.Variable;
 
+/**
+ * Function interface
+ * 
+ * @author liuyueming
+ *
+ */
 public interface Function {
 	/**
-	 * ·µ»Øº¯ÊıÖµ
+	 * Return function value at variable v
+	 * è¿”å›è‡ªå˜é‡vå¯¹åº”çš„å‡½æ•°å€¼
+	 * 
 	 * @param v
-	 * @return
+	 * @return double function value
 	 */
 	double value(Variable v);
 	
 	/**
-	 * ÉèÖÃ±äÁ¿Ãû³Æ
+	 * Set function variable names
+	 * è®¾ç½®å‡½æ•°è‡ªå˜é‡åç§°ï¼Œå¯¹äºå¤åˆå‡½æ•°ï¼Œåªè®¾ç½®å¤–å±‚è‡ªå˜é‡åç§°
+	 * å…³äºå¤åˆå‡½æ•°çš„æ„é€  @see compose()
+	 * 
 	 * @param varNames
 	 */
 	void setVarNames(List<String> varNames);
 	
 	/**
-	 * ·µ»ØËùÓĞ±äÁ¿Ãû³Æ
+	 * Return all variable names of the function
+	 * è¿”å›æ‰€æœ‰è‡ªå˜é‡åç§°
+	 * 
 	 * @return
 	 */
 	List<String> varNames();
 	
 	/**
-	 * this+f
-	 * @param f
-	 * @return
+	 * Add
+	 * 
+	 * @param g
+	 * @return f+g, f==this
 	 */
-	Function P(Function f);
+	Function A(Function g);
+	Function A(double g);
 	
 	/**
-	 * this-f
-	 * @param f
-	 * @return
+	 * Subtract
+	 * 
+	 * @param g
+	 * @return f-g, f==this
 	 */
-	Function M(Function f);
+	Function S(Function g);
+	Function S(double g);
 	
 	/**
-	 * this*f
-	 * @param f
-	 * @return
+	 * Multiply
+	 * 
+	 * @param g
+	 * @return f*g, f==this
 	 */
-	Function X(Function f);
+	Function M(Function g);
+	Function M(double g);
 	
 	/**
-	 * this/f
-	 * @param f
-	 * @return
+	 * Divide
+	 * 
+	 * @param g
+	 * @return f/g, f==this
 	 */
-	Function D(Function f);
+	Function D(Function g);
+	Function D(double g);
 	
 	/**
-	 * ¸´ºÏº¯Êı
-	 * @param e.g. fInners: Map[ x = x(r,s), y = y(r,s) ]
+	 * Composition function
+	 * å¤åˆå‡½æ•°
+	 * e.g.
+	 *  Function fx = FX.fx;
+	 *	Function fr = new FX("r");
+	 *	Function fOut = fx.M(fx).S(FC.c1);
+	 *	System.out.println(fOut); //x*x - 1.0
+	 *	Function fIn = fr.M(fr).A(FC.c1);
+	 *  System.out.println(fIn); //r*r + 1.0
+	 *	//Construct a map to define variable mapping
+	 *	Map<String,Function> map = new HashMap<String,Function>();
+	 *	map.put("x", fIn); //x=r*r + 1.0
+	 *	Function fComp = fOut.compose(map);
+	 *	System.out.println(fComp); //x(r)*x(r) - 1.0, where x=r*r + 1.0
+	 *
+	 * @param e.g. fInners: Variable map[ x = x(r,s), y = y(r,s) ]
 	 * @return e.g. f = f(x,y) = f( x(r,s),y(r,s) )
 	 */
 	Function compose(Map<String,Function> fInners);
 	
 	/**
-	 * f(x).d(x) := \frac{ \partial{this} }{ \partial{varName} }
+	 * å…³äºvarNameçš„ä¸€é˜¶å¯¼æ•°ï¼š
+	 * f(x)._d(x) := \frac{ \partial{this} }{ \partial{varName} }
 	 * 
-	 * ¹ØÓÚvarNameµÄÒ»½×µ¼Êı
 	 * @param varName
 	 * @return
 	 */
-	Function d(String varName);
+	Function _d(String varName);
+
 	
 	/**
-	 * For constant function only
+	 * Return function (for constant function only)
+	 * 
 	 * @return
 	 */
 	double value();
-
+	
+	/**
+	 * Deep copy
+	 * @return
+	 */
+	Function copy();
+	
+	//////////////////For printing expression only///////////////////////////
+	/**
+	 * If function name is not null, the name is printed instead of the expression
+	 */
+	String getFName();
+	void setFName(String name);
+	
+	/**
+	 * Order of Operations (Priority Rules for Arithmetic)
+	 *   0 Brackets first
+	 *   1 Exponents next
+	 *   2 Multiply and Divide next
+	 *   3 Add and Subtract last of all.
+	 */
+	static int OP_ORDER0 = 0;
+	static int OP_ORDER1 = 1;
+	static int OP_ORDER2 = 2;
+	static int OP_ORDER3 = 3;
+	int getOpOrder();
+	void setOpOrder(int order);
 }

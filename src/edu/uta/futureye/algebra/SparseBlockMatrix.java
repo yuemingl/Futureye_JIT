@@ -1,6 +1,5 @@
 package edu.uta.futureye.algebra;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,13 +7,14 @@ import java.util.Map.Entry;
 import edu.uta.futureye.algebra.intf.BlockMatrix;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.util.FutureyeException;
 
 public class SparseBlockMatrix implements BlockMatrix {
 	protected int rowBlockDim;
 	protected int colBlockDim;
 	protected double defaultValue = 0.0;
 	protected Map<Integer,Map<Integer,Matrix>> m = 
-		new HashMap<Integer,Map<Integer,Matrix>>();;
+		new LinkedHashMap<Integer,Map<Integer,Matrix>>();;
 
 	/**
 	 * Construct a rowBlockDim*colBlockDim block matrix
@@ -112,26 +112,38 @@ public class SparseBlockMatrix implements BlockMatrix {
 	public void set(int row, int col, double value) {
 		int rBase = 0;
 		Map<Integer, Matrix> rMats = null;
+		boolean find = false;
 		for(int r=1;r<=this.rowBlockDim;r++) {
 			rMats = m.get(r);
 			int rUpper = rMats.get(1).getRowDim();
-			if(rBase < row && row <= rBase + rUpper) {
+			if(rBase < row && row <= rBase+rUpper) {
+				find = true;
 				break;
 			} else {
-				rBase = rUpper;
+				rBase += rUpper;
 			}
+		}
+		if(!find) {
+			throw new FutureyeException("row="+row+"; rMax="+rBase);
 		}
 		int cBase = 0;
 		Matrix cMat = null;
 		if(rMats != null) {
+			find = false;
 			for(int c=1;c<=this.colBlockDim;c++) {
 				cMat = rMats.get(c);
 				int cUpper = cMat.getColDim();
 				if(cBase < col && col <= cBase+cUpper) {
+					find = true;
 					break;
 				} else {
-					cBase = cUpper;
+					cBase += cUpper;
 				}
+			}
+			if(!find) {
+				FutureyeException ex = new FutureyeException("col="+col+"; cMax="+cBase);
+				ex.printStackTrace();
+				System.exit(-1);
 			}
 		}
 		if(cMat != null)
@@ -142,26 +154,40 @@ public class SparseBlockMatrix implements BlockMatrix {
 	public double get(int row, int col) {
 		int rBase = 0;
 		Map<Integer, Matrix> rMats = null;
+		boolean find = false;
 		for(int r=1;r<=this.rowBlockDim;r++) {
 			rMats = m.get(r);
 			int rUpper = rMats.get(1).getRowDim();
-			if(rBase < row && row <= rBase + rUpper) {
+			if(rBase < row && row <= rBase+rUpper) {
+				find = true;
 				break;
 			} else {
-				rBase = rUpper;
+				rBase += rUpper;
 			}
+		}
+		if(!find) {
+			FutureyeException ex = new FutureyeException("row="+row+"; rMax="+rBase);
+			ex.printStackTrace();
+			System.exit(-1);
 		}
 		int cBase = 0;
 		Matrix cMat = null;
 		if(rMats != null) {
+			find = false;
 			for(int c=1;c<=this.colBlockDim;c++) {
 				cMat = rMats.get(c);
 				int cUpper = cMat.getColDim();
 				if(cBase < col && col <= cBase+cUpper) {
+					find = true;
 					break;
 				} else {
-					cBase = cUpper;
+					cBase += cUpper;
 				}
+			}
+			if(!find) {
+				FutureyeException ex = new FutureyeException("col="+col+"; cMax="+cBase);
+				ex.printStackTrace();
+				System.exit(-1);
 			}
 		} else 
 			return 0.0;
@@ -219,7 +245,26 @@ public class SparseBlockMatrix implements BlockMatrix {
 		}
 		System.out.println();
 	}
-
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SparseBlockMatrix(").
+			append(this.rowBlockDim).
+			append(",").
+			append(this.colBlockDim).
+			append("):N0R=").
+			append(m.size()).
+			append("\n");
+		
+		for(int i=1;i<=this.rowBlockDim;i++) {
+			for(int j=1;j<=this.colBlockDim;j++) {
+				sb.append("(").append(i).append(",").append(j).append(")=");
+				sb.append(m.get(i).get(j)).append("\n");
+			}
+		}
+		return sb.toString();
+	}
+	
 	@Override
 	public void mult(Vector x, Vector y) {
 		throw new UnsupportedOperationException();

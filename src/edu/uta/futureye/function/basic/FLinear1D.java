@@ -3,12 +3,20 @@ package edu.uta.futureye.function.basic;
 import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.util.Constant;
 
+/**
+ * 
+ * f(x) = (y2-y1)/(x2-x1)*(x-x1)+y1;
+ * @author liuyueming
+ *
+ */
 public class FLinear1D  extends AbstractFunction{
 	protected double x1,x2,y1,y2;
 	
 	public FLinear1D(double x1, double y1, 
 			double x2, double y2) {
+		varNames.add(Constant.x);
 		this.x1 = x1;
 		this.y1 = y1;
 
@@ -23,7 +31,7 @@ public class FLinear1D  extends AbstractFunction{
 	}
 
 	@Override
-	public Function d(String varName) {
+	public Function _d(String varName) {
 		if(this.varNames().contains(varName))
 			return new FC((y2-y1)/(x2-x1));
 		else

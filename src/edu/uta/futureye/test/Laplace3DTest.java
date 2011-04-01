@@ -22,10 +22,12 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
+import edu.uta.futureye.lib.element.FELinearTetrahedron;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal3D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace3D;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class Laplace3DTest {
 	
@@ -33,7 +35,7 @@ public class Laplace3DTest {
 		String meshName = "block1";
 		MeshReader reader = new MeshReader(meshName+".grd");
 		Mesh mesh = reader.read3DMesh(); //3D
-		mesh.computeNodesBelongToElement(); //worked in 3D
+		mesh.computeNodeBelongsToElements(); //worked in 3D
 		
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y","z"){
@@ -54,19 +56,24 @@ public class Laplace3DTest {
 				System.out.println(nList.at(i));
 		}
 
-		SFLinearLocal3D[] shapeFun = new SFLinearLocal3D[4];
-		for(int i=0;i<4;i++)
-			shapeFun[i] = new SFLinearLocal3D(i+1);
+//		//Asign degree of freedom to element
+//		SFLinearLocal3D[] shapeFun = new SFLinearLocal3D[4];
+//		for(int i=0;i<4;i++)
+//			shapeFun[i] = new SFLinearLocal3D(i+1);
+//		for(int i=1;i<=mesh.getElementList().size();i++) {
+//			Element e = mesh.getElementList().at(i);
+//			for(int j=1;j<=e.nodes.size();j++) {
+//				//Asign shape function to DOF
+//				DOF dof = new DOF(j,e.nodes.at(j).globalIndex,shapeFun[j-1]);
+//				e.addNodeDOF(j, dof);
+//			}
+//		}
 		
-		//Asign degree of freedom to element
-		for(int i=1;i<=mesh.getElementList().size();i++) {
-			Element e = mesh.getElementList().at(i);
-			for(int j=1;j<=e.nodes.size();j++) {
-				//Asign shape function to DOF
-				DOF dof = new DOF(j,e.nodes.at(j).globalIndex,shapeFun[j-1]);
-				e.addNodeDOF(j, dof);
-			}
-		}
+		//Use element library
+		ElementList eList = mesh.getElementList();
+		FELinearTetrahedron fe = new FELinearTetrahedron();
+		for(int i=1;i<=eList.size();i++)
+			fe.assign(eList.at(i));
 		
 		//User defined weak form of PDE (including bounder conditions)
 		//-\Delta{u} = f
@@ -145,7 +152,7 @@ public class Laplace3DTest {
 		String meshName = "block1";
 		MeshReader reader = new MeshReader(meshName+".grd");
 		Mesh mesh = reader.read3DMesh(); //3D
-		mesh.computeNodesBelongToElement(); //worked in 3D
+		mesh.computeNodeBelongsToElements(); //worked in 3D
 		
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);

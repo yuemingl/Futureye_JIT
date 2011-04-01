@@ -4,46 +4,46 @@ import java.util.Map;
 
 /**
  * General matrix interface
- * Ò»°ã¾ØÕó½Ó¿Ú£¬²»ÊÊÓÃÓÚÇó½â´úÊı·½³Ì×é£¨Çó½â´úÊı·½³Ì×éµÄ¾ØÕó½Ó¿Ú²Î¼ûAlgebraMatrix£©
- * ÓÃÍ¾£º
- * 1. ÓÃÀ´±£´æ¸Õ¶È¾ØÕóºÏ³É²½ÖèÖĞµÄ¾Ö²¿ºÍÈ«¾Ö¾ØÕó
- * 2. ´òÓ¡Êä³ö¾ØÕó
+ * ä¸€èˆ¬çŸ©é˜µæ¥å£ï¼Œä¸é€‚ç”¨äºæ±‚è§£ä»£æ•°æ–¹ç¨‹ç»„ï¼ˆæ±‚è§£ä»£æ•°æ–¹ç¨‹ç»„çš„çŸ©é˜µæ¥å£å‚è§AlgebraMatrixï¼‰
+ * ç”¨é€”ï¼š
+ * 1. ç”¨æ¥ä¿å­˜åˆšåº¦çŸ©é˜µåˆæˆæ­¥éª¤ä¸­çš„å±€éƒ¨å’Œå…¨å±€çŸ©é˜µ
+ * 2. æ‰“å°è¾“å‡ºçŸ©é˜µ
  * 
  * @author liuyueming
  *
  */
 public interface Matrix {
 	/**
-	 * ÁãÔªËØãĞÖµ
+	 * é›¶å…ƒç´ é˜ˆå€¼
 	 */
 	public static double zeroEps = 1e-10;
 	
 	/**
-	 * ÉèÖÃ¾ØÕóĞĞÊı
+	 * è®¾ç½®çŸ©é˜µè¡Œæ•°
 	 * @param nRowDim TODO
 	 */
 	void setRowDim(int nRowDim);
 	
 	/**
-	 * »ñÈ¡¾ØÕóĞĞÊı
+	 * è·å–çŸ©é˜µè¡Œæ•°
 	 * @return TODO
 	 */
 	int getRowDim();
 	
 	/**
-	 * ÉèÖÃ¾ØÕóÁĞÊı
+	 * è®¾ç½®çŸ©é˜µåˆ—æ•°
 	 * @param nColDim TODO
 	 */
 	void setColDim(int nColDim);
 	
 	/**
-	 * »ñÈ¡¾ØÕóÁĞÊı
+	 * è·å–çŸ©é˜µåˆ—æ•°
 	 * @return
 	 */
 	int getColDim();
 	
 	/**
-	 * ÉèÖÃrowĞĞcolÁĞÔªËØµÄÖµ
+	 * è®¾ç½®rowè¡Œcolåˆ—å…ƒç´ çš„å€¼
 	 * @param row
 	 * @param col
 	 * @param value
@@ -51,7 +51,7 @@ public interface Matrix {
 	void set(int row, int col,double value);
 	
 	/**
-	 * »ñÈ¡rowĞĞcolÁĞÔªËØµÄÖµ
+	 * è·å–rowè¡Œcolåˆ—å…ƒç´ çš„å€¼
 	 * @param row
 	 * @param col
 	 * @return
@@ -68,15 +68,15 @@ public interface Matrix {
 	
 	/**
 	 * get all non-zero element, instead of iterator
-	 * »ñÈ¡ËùÓĞ·ÇÁãÔªËØ£¬²»Ê¹ÓÃµü´ú×Ó
+	 * è·å–æ‰€æœ‰éé›¶å…ƒç´ ï¼Œä¸ä½¿ç”¨è¿­ä»£å­
 	 * @return
 	 */
 	Map<Integer,Map<Integer,Double>> getAll();
 	
 	/**
 	 * M(nRowBase + row, nColBase + col) = values in map
-	 * ½«²ÎÊımapÖĞµÄËùÓĞÔªËØÖµ¸³Öµµ½±¾¾ØÕó£¬ÆäÖĞmapÖĞËùÓĞµÄĞĞºÅ¶¼¼ÓÉÏnRowBase£¬
-	 * ËùÓĞµÄÁĞºÅ¶¼¼ÓÉÏnColBase
+	 * å°†å‚æ•°mapä¸­çš„æ‰€æœ‰å…ƒç´ å€¼èµ‹å€¼åˆ°æœ¬çŸ©é˜µï¼Œå…¶ä¸­mapä¸­æ‰€æœ‰çš„è¡Œå·éƒ½åŠ ä¸ŠnRowBaseï¼Œ
+	 * æ‰€æœ‰çš„åˆ—å·éƒ½åŠ ä¸ŠnColBase
 	 * @param nRowBase
 	 * @param nColBase
 	 * @param map
@@ -85,19 +85,19 @@ public interface Matrix {
 	
 	/**
 	 * y = M*x
-	 * ¾ØÕóÏòÁ¿Ïà³Ë£¬ËÙ¶È½ÏÂı£¬ÊÊÓÃÓÚ¿ìËÙ´úÊı·½³Ì×éÇó½âµÄ¾ØÕó½Ó¿Ú²Î¼ûAlgebraMatrix
+	 * çŸ©é˜µå‘é‡ç›¸ä¹˜ï¼Œé€Ÿåº¦è¾ƒæ…¢ï¼Œé€‚ç”¨äºå¿«é€Ÿä»£æ•°æ–¹ç¨‹ç»„æ±‚è§£çš„çŸ©é˜µæ¥å£å‚è§AlgebraMatrix
 	 * @param x
 	 * @param y
 	 */
 	void mult(Vector x, Vector y);
 	
 	/**
-	 * Çå¿Õ¾ØÕóÖĞµÄËùÓĞÔªËØ
+	 * æ¸…ç©ºçŸ©é˜µä¸­çš„æ‰€æœ‰å…ƒç´ 
 	 */
 	void clear();
 	
 	/**
-	 * ´òÓ¡¾ØÕóÔªËØ
+	 * æ‰“å°çŸ©é˜µå…ƒç´ 
 	 */
 	void print();
 }

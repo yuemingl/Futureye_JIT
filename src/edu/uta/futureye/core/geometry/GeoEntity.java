@@ -1,7 +1,7 @@
 package edu.uta.futureye.core.geometry;
 
 /**
- * 几何实体
+ * 鍑犱綍瀹炰綋
  * 
  * @author liuyueming
  *

@@ -4,24 +4,25 @@ import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.geometry.GeoEntity1D;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.list.DOFList;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.DOFList;
+import edu.uta.futureye.util.container.ObjList;
+import edu.uta.futureye.util.container.VertexList;
 
 /**
  * Local edge of an element
- * ¾Ö²¿±ß
+ * å±€éƒ¨è¾¹
  * 
  * @author liuyueming
  *
  */
 public class EdgeLocal extends GeoEntity1D<NodeLocal> {
-	//±ß¾Ö²¿Ë÷Òı£¨±àºÅ£©
+	//è¾¹å±€éƒ¨ç´¢å¼•ï¼ˆç¼–å·ï¼‰
 	public int localIndex;
 	//global edge shared with all elements that containing the edge
 	protected Edge globalEdge = null; 
 	public Element owner = null;
 	
-	//¾Ö²¿µ¥Î»£¨Íâ£©·¨ÏàÁ¿
+	//å±€éƒ¨å•ä½ï¼ˆå¤–ï¼‰æ³•ç›¸é‡
 	private Vector localUnitNormVector = null;
 	
 	public EdgeLocal(int localIndex, Element owner) {
@@ -49,12 +50,23 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
     }
 
 	/**
-	 * ±ß½çÀàĞÍ£¬²»ÒÀÀµÓÚÊÇ·ñ¼ÆËã¹ıÈ«¾Ö±ß½ç
+	 * è¾¹ç•Œç±»å‹ï¼Œä¸ä¾èµ–äºæ˜¯å¦è®¡ç®—è¿‡å…¨å±€è¾¹ç•Œ
 	 * @return
 	 */
     public NodeType getBorderType() {
-    	NodeType nt1 = this.beginNode().getNodeType();
-    	NodeType nt2 = this.endNode().getNodeType();                       
+    	return getBorderType(1);
+    }
+    
+	/**
+	 * å¯¹äºå‘é‡å€¼é—®é¢˜ï¼Œæ¯ä¸ªåˆ†é‡åœ¨åŒä¸€è¾¹ç•Œä¸Šçš„ç±»å‹ä¸ä¸€å®šç›¸åŒï¼Œ
+	 * è¯¥å‡½æ•°è¿”å›åˆ†é‡<tt>vvfIndex</tt>å¯¹åº”çš„è¾¹ç•Œç±»å‹
+	 * Vector valued function (vvf)
+	 * @param vvfIndex
+	 * @return
+	 */
+    public NodeType getBorderType(int vvfIndex) {
+    	NodeType nt1 = this.beginNode().getNodeType(vvfIndex);
+    	NodeType nt2 = this.endNode().getNodeType(vvfIndex);                       
     	if(nt1 == nt2) return nt1;
     	else {
     		//TODO Exception?
@@ -63,7 +75,7 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
     }
    
 	/**
-	 * ÊÇ·ñÎ»ÓÚÇøÓò±ß½ç£¬²»ÒÀÀµÓÚÊÇ·ñ¼ÆËã¹ıÈ«¾Ö±ß½ç
+	 * æ˜¯å¦ä½äºåŒºåŸŸè¾¹ç•Œï¼Œä¸ä¾èµ–äºæ˜¯å¦è®¡ç®—è¿‡å…¨å±€è¾¹ç•Œ
 	 * @return
 	 */
     public boolean isBorderEdge() {
@@ -93,7 +105,7 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
     public Vector getNormVector() {
     	if(localUnitNormVector == null) {
     		if(this.globalEdge != null) {
-    		 //¾Ö²¿±ßÓëÈ«¾Ö±ß·½ÏòÓĞ¿ÉÄÜÏàÍ¬Ò²ÓĞ¿ÉÄÜ²»Í¬£¬±£Ö¤½áµã±àºÅË³ĞòÏàÍ¬·½ÏòÒ»ÖÂ£¬²»Í¬·½ÏòÏà·´
+    		 //å±€éƒ¨è¾¹ä¸å…¨å±€è¾¹æ–¹å‘æœ‰å¯èƒ½ç›¸åŒä¹Ÿæœ‰å¯èƒ½ä¸åŒï¼Œä¿è¯ç»“ç‚¹ç¼–å·é¡ºåºç›¸åŒæ–¹å‘ä¸€è‡´ï¼Œä¸åŒæ–¹å‘ç›¸å
     		if(this.beginNode().globalIndex == this.globalEdge.beginNode().globalIndex)
     			localUnitNormVector = this.globalEdge.getNormVector().copy();
     		else
@@ -121,11 +133,11 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
     }
     
 	/**
-	 * Edge×Ô¼º±äÎªÒ»¸öµ¥Ôª£¬ÓÃÓÚ±ß½ç»ı·Ö£¨Ïß»ı·Ö£©
+	 * Edgeè‡ªå·±å˜ä¸ºä¸€ä¸ªå•å…ƒï¼Œç”¨äºè¾¹ç•Œç§¯åˆ†ï¼ˆçº¿ç§¯åˆ†ï¼‰
 	 * @return
 	 */
-	public Element changeToElement() {
-		//ÒªÊ¹ÓÃÈ«¾Ö±ß£¬¾Ö²¿±ßµÄ½áµã±àºÅ²»Ò»¶¨ÊÇÕıÈ·µÄ¡£
+	public Element changeToElement2() {
+		//è¦ä½¿ç”¨å…¨å±€è¾¹(Edge)ï¼Œå±€éƒ¨è¾¹(EdgeLocal)çš„ç»“ç‚¹ç¼–å·ä¸ä¸€å®šæ˜¯æ­£ç¡®çš„ã€‚
 		Element be = new Element(this.buildEdge());
 		
 		DOFList eDOFList = owner.getNodeDOFList(this.vertices.at(1).localNode().localIndex);
@@ -160,6 +172,65 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
 						eDOFList.at(j).getSSF().restrictTo(localIndex)
 					);
 					be.addNodeDOF(localIndex, dof);
+				}
+			}
+		}
+		return be;
+	}
+	
+	public Element changeToElement() {
+		//è¦ä½¿ç”¨å…¨å±€è¾¹(Edge)ï¼Œå±€éƒ¨è¾¹(EdgeLocal)çš„ç»“ç‚¹ç¼–å·ä¸ä¸€å®šæ˜¯æ­£ç¡®çš„ã€‚
+		Element be = new Element(this.buildEdge());
+		Edge edge = (Edge)be.geoEntity;
+		ObjList<NodeLocal> edgeNodes = this.getEdgeNodes();
+		VertexList vertices = this.getVertices();
+		int nNode;
+		if(edgeNodes != null) {
+			nNode = edgeNodes.size() + vertices.size();
+		} else {
+			nNode =  vertices.size();
+		}
+		
+		int dofIndex = 1;
+		DOFList eDOFList = owner.getNodeDOFList(this.vertices.at(1).localNode().localIndex);
+		for(int j=1;eDOFList!=null && j<=eDOFList.size();j++) {
+			DOF dof = new DOF(
+						dofIndex,
+						eDOFList.at(j).globalIndex,
+						eDOFList.at(j).getSF().restrictTo(dofIndex)
+					);
+			dof.setVvfIndex(eDOFList.at(j).getVvfIndex());
+			be.addNodeDOF(1, dof);
+			dofIndex += nNode;
+		}
+		dofIndex = 2;
+		eDOFList = owner.getNodeDOFList(this.vertices.at(2).localNode().localIndex);
+		for(int j=1;eDOFList!=null && j<=eDOFList.size();j++) {
+			DOF dof = new DOF(
+						dofIndex,
+						eDOFList.at(j).globalIndex,
+						eDOFList.at(j).getSF().restrictTo(dofIndex)
+					);
+			dof.setVvfIndex(eDOFList.at(j).getVvfIndex());
+			be.addNodeDOF(2, dof);
+			dofIndex += nNode;
+		}
+		
+		if(edgeNodes != null) {
+			for(int i=1; i<=edgeNodes.size(); i++) {
+				dofIndex = i;
+				NodeLocal node = edgeNodes.at(i);
+				eDOFList = owner.getNodeDOFList(node.localIndex);
+				for(int j=1;eDOFList!=null && j<=eDOFList.size();j++) {
+					DOF dof = new DOF(
+						dofIndex,
+						eDOFList.at(j).globalIndex,
+						eDOFList.at(j).getSF().restrictTo(dofIndex)
+					);
+					dof.setVvfIndex(eDOFList.at(j).getVvfIndex());
+					be.addNodeDOF(edge.getEdgeNodes().at(i).localIndex, dof);
+					//dofIndex += DOFMatrix.rowDim()
+					dofIndex += nNode;
 				}
 			}
 		}

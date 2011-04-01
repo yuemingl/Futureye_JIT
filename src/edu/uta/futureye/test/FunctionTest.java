@@ -11,8 +11,8 @@ import edu.uta.futureye.function.basic.FLinear1D;
 import edu.uta.futureye.function.basic.FPolynomial1D;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.operator.FOBasic;
 
 public class FunctionTest {
 	
@@ -21,16 +21,28 @@ public class FunctionTest {
 		Function c1 = FC.c1;
 		Function fx = FX.fx;
 		
-		System.out.println(c0.P(c0));
-		System.out.println(c1.P(c1));
-		System.out.println(c1.P(c0));
-		System.out.println(c0.P(c1));
+		System.out.println(c0.A(c0));
+		System.out.println(c1.A(c1));
+		System.out.println(c1.A(c0));
+		System.out.println(c0.A(c1));
 		System.out.println();
-		System.out.println(fx.P(c0));
-		System.out.println(fx.P(c1));
-		System.out.println(c0.P(fx));
-		System.out.println(c1.P(fx));
-		System.out.println(fx.P(fx));
+		System.out.println(fx.A(c0));
+		System.out.println(fx.A(c1));
+		System.out.println(c0.A(fx));
+		System.out.println(c1.A(fx));
+		System.out.println(fx.A(fx));
+		System.out.println();
+		
+		System.out.println(c0.S(c0));
+		System.out.println(c1.S(c1));
+		System.out.println(c1.S(c0));
+		System.out.println(c0.S(c1));
+		System.out.println();
+		System.out.println(fx.S(c0));
+		System.out.println(fx.S(c1));
+		System.out.println(c0.S(fx));
+		System.out.println(c1.S(fx));
+		System.out.println(fx.S(fx));
 		System.out.println();
 		
 		System.out.println(c0.M(c0));
@@ -43,18 +55,6 @@ public class FunctionTest {
 		System.out.println(c0.M(fx));
 		System.out.println(c1.M(fx));
 		System.out.println(fx.M(fx));
-		System.out.println();
-		
-		System.out.println(c0.X(c0));
-		System.out.println(c1.X(c1));
-		System.out.println(c1.X(c0));
-		System.out.println(c0.X(c1));
-		System.out.println();
-		System.out.println(fx.X(c0));
-		System.out.println(fx.X(c1));
-		System.out.println(c0.X(fx));
-		System.out.println(c1.X(fx));
-		System.out.println(fx.X(fx));
 		System.out.println();
 		
 		System.out.println(c0.D(c0));
@@ -105,17 +105,17 @@ public class FunctionTest {
 		Variable var = new Variable(0.5);
 		System.out.println(l2.value(var));
 		
-		//导数：fd_x = fd'(x) , fd_xx = fd_x'(x)
+		//瀵兼暟锛歠d_x = fd'(x) , fd_xx = fd_x'(x)
 //		FunctionDerivable fd = FOBasicDerivable.Plus(FOBasicDerivable.Mult(c1, fi),c3);
 		Function fd = FMath.Plus(FMath.Divi(c1, fi),c3);
-		Function fd_x = fd.d("x");
-		Function fd_xx = fd_x.d("x");
+		Function fd_x = fd._d("x");
+		Function fd_xx = fd_x._d("x");
 		System.out.println("fd = "+fd);
 		System.out.println("fd_x = "+fd_x);
 		System.out.println("fd_xx = "+fd_xx);
 		System.out.println(fd_x.value(var));
 		
-		//f(x) = 6*x^3 + 5*x^2 + 4*x + 3 多项式的导数
+		//f(x) = 6*x^3 + 5*x^2 + 4*x + 3 澶氶」寮忕殑瀵兼暟
 		List<Double> coef = new ArrayList<Double>();
 		coef.add(3.0);
 		coef.add(4.0);
@@ -123,10 +123,10 @@ public class FunctionTest {
 		coef.add(6.0);
 		FPolynomial1D fp = new FPolynomial1D(coef);
 		System.out.println(fp.value(new Variable(2.0)));
-		Function fp_x2 = fp.d("x").d("x");
+		Function fp_x2 = fp._d("x")._d("x");
 		System.out.println(fp_x2.value(new Variable(2.0)));
 		Function fp_x2d = (Function)fp_x2;
-		Function fp_x3 = fp_x2d.d("X");
+		Function fp_x3 = fp_x2d._d("X");
 		System.out.println(fp_x3.value(new Variable(3.0)));
 		
 		Function power = FOBasic.Power(c2, c3);
@@ -135,10 +135,38 @@ public class FunctionTest {
 		
 	}
 	
+	public static void testOperation() {
+		Function fx = FX.fx;
+		//f(x)=2*x+3
+		Function f1 = new FAxpb(2.0,0.0);
+		Function f2 = new FAxpb(2.0,3.0);
+		Function f3 = new FAxpb(0.0,3.0);
+		Function f4 = new FAxpb(0.0,0.0);
+		System.out.println("f(x)="+f2);
+		System.out.println(fx.M(f1));
+		System.out.println(fx.M(f2));
+		System.out.println(fx.M(f3));
+		System.out.println(fx.M(f4));
+		
+		
+	}
+	
+	public static void severalVariableFunctions() {
+		Function fx = FX.fx;
+		Function fy = FX.fy;
+		Function f = FC.c(0.25).M(FC.c1.S(fx)).M(FC.c1.S(fy));
+		System.out.println(f);
+		Variable v = new Variable("x",0.5).set("y", 0.5);
+		System.out.println(f.value(v));
+	}
+	
+	
 	public static void main(String[] args) {
 		
-		constantTest();
+		//constantTest();
+		//testOperation();
 		
+		severalVariableFunctions();
 	}
 
 		

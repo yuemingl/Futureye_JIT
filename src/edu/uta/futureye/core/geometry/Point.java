@@ -1,7 +1,7 @@
 package edu.uta.futureye.core.geometry;
 
 /**
- * ÓĞÏŞÔª¿Õ¼äµã
+ * æœ‰é™å…ƒç©ºé—´ç‚¹
  * 
  * @author liuyueming
  *
@@ -17,16 +17,16 @@ public interface Point extends GeoEntity {
 	void setCoord(int index,double value);
 	
 	/**
-	 * ÅĞ¶Ï×ø±êµãÊÇ·ñÏàµÈ
+	 * åˆ¤æ–­åæ ‡ç‚¹æ˜¯å¦ç›¸ç­‰
 	 * @param p
 	 * @return
 	 */
 	boolean coordEquals(Point p);
 	
 	/**
-	 * »ñÈ¡Ë÷Òı±àºÅ£¬
-	 * ¶ÔÓÚÈ«¾Ö½áµã£¬·µ»ØÈ«¾Ö±àºÅ£¬
-	 * ¶ÔÓÚ¾Ö²¿½áµã£¬·µ»Ø¾Ö²¿±àºÅ
+	 * è·å–ç´¢å¼•ç¼–å·ï¼Œ
+	 * å¯¹äºå…¨å±€ç»“ç‚¹ï¼Œè¿”å›å…¨å±€ç¼–å·ï¼Œ
+	 * å¯¹äºå±€éƒ¨ç»“ç‚¹ï¼Œè¿”å›å±€éƒ¨ç¼–å·
 	 * 
 	 * @return
 	 */

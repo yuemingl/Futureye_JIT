@@ -3,11 +3,13 @@ package edu.uta.futureye.function.basic;
 import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.util.Constant;
 
 public class FAx extends AbstractFunction {
 	protected double a;
 	
 	public FAx(double a) {
+		varNames.add(Constant.x);
 		this.a = a;
 	}
 	
@@ -17,7 +19,7 @@ public class FAx extends AbstractFunction {
 	}
 	
 	@Override
-	public Function d(String varName) {
+	public Function _d(String varName) {
 		if(this.varNames().contains(varName))
 			return new FC(a);
 		else
@@ -29,6 +31,12 @@ public class FAx extends AbstractFunction {
 		return a*v.get(varNames().get(0));
 	}
 	
+	@Override
+	public Function copy() {
+		return new FAx(this.varNames.get(0),a);
+	}
+	
+	@Override
 	public String toString() {
 		if(Double.compare(a, 1.0) == 0)
 			return " "+varNames().get(0)+" ";

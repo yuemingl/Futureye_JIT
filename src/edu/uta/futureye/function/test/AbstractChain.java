@@ -59,7 +59,7 @@ public abstract class AbstractChain extends AbstractItem implements Chain {
 			this.merge(false);
 			c.merge(false);
 			int minLength = Math.min(this.length(), c.length());
-			//Ä¬ÈÏ¼ÙÉèÃ¿¸öChainÖĞµÄItem¶¼ÊÇ´Ó´óµ½Ğ¡ÅÅÁĞµÄ
+			//é»˜è®¤å‡è®¾æ¯ä¸ªChainä¸­çš„Iteméƒ½æ˜¯ä»å¤§åˆ°å°æ’åˆ—çš„
 			for(int i=0;i<minLength;i++) {
 				int cmpRlt = this.getItem(i).item.symCompairTo(c.getItem(i).item);
 				if(cmpRlt == 0) {

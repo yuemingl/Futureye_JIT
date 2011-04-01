@@ -30,7 +30,7 @@ public class FXY extends AbstractFunction{
 	}
 	
 	@Override
-	public Function d(String varName) {
+	public Function _d(String varName) {
 		if(varNames.get(0).equals(varName))
 			return new FC(c1);
 		else if(varNames.get(1).equals(varName)) {

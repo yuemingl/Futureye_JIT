@@ -74,7 +74,7 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 		this.g_f = f;
 	}
 	
-	//Robin:  d*u + k*u_n= q (��Ȼ�߽磺d==k, q=0)
+	//Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
 	public void setRobin(Function q,Function d) {
 		this.g_q = q;
 		this.g_d = d;
@@ -92,14 +92,14 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 			
 			//Dt*(k*\Nabla{u},\Nabla{w}) + Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) + b*(u,w)
 			Function integrand = null;
-			integrand = fk.X(
+			integrand = fk.M(
 							FOVector.Grad(u,u.innerVarNames()).
 								dot(
 							FOVector.Grad(v,v.innerVarNames()))
-						).P(
+						).A(
 							fv.dot(FOVector.Grad(u,u.innerVarNames()))
-						).X(FC.c(Dt)).P(
-							fb.X(u).X(v)
+						).M(FC.c(Dt)).A(
+							fb.M(u).M(v)
 						);
 			return integrand;
 		}
@@ -120,7 +120,7 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 			//(Dt*f + c_n,w)
 			Function ff = Utils.interplateFunctionOnElement(g_f, e);
 			Function fcn = Utils.interplateFunctionOnElement(g_cn, e);
-			Function integrand = FOBasic.Mult(ff.X(FC.c(Dt)).P(fcn),v);
+			Function integrand = FOBasic.Mult(ff.M(FC.c(Dt)).A(fcn),v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;

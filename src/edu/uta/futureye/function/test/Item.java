@@ -7,34 +7,34 @@ public interface Item {
 	public String getName();
 	
 	/**
-	 * ´Ó·ûºÅÉÏÅĞ¶ÏÁ½¸öItem¶ÔÏó´ú±íµÄ¡°º¯ÊıÏî¡±µÄ¹ØÏµ
+	 * ä»ç¬¦å·ä¸Šåˆ¤æ–­ä¸¤ä¸ªItemå¯¹è±¡ä»£è¡¨çš„â€œå‡½æ•°é¡¹â€çš„å…³ç³»
 	 * @param item
-	 * @return 0ÏàµÈ £¬-1Ğ¡ÓÚ£¬ 1´óÓÚ
+	 * @return 0ç›¸ç­‰ ï¼Œ-1å°äºï¼Œ 1å¤§äº
 	 */
 	public int symCompairTo(Item item);
 	
 	/**
-	 * ÊÇ·ñÑÇÔª£¬Ò»°ãÇé¿öÏÂ£¬Ã¿¸öitem¶¼ÓĞÏµÊı£¬
-	 * Èç¹û½ö±íÊ¾ÏµÊıÊ±£¬¿ÉÒÔÊ¹ÓÃÒ»¸öDummy Item
+	 * æ˜¯å¦äºšå…ƒï¼Œä¸€èˆ¬æƒ…å†µä¸‹ï¼Œæ¯ä¸ªiteméƒ½æœ‰ç³»æ•°ï¼Œ
+	 * å¦‚æœä»…è¡¨ç¤ºç³»æ•°æ—¶ï¼Œå¯ä»¥ä½¿ç”¨ä¸€ä¸ªDummy Item
 	 * @return
 	 */
 	public boolean isDummy();
 	
 	/**
-	 * ¸´ÖÆ
+	 * å¤åˆ¶
 	 * @return
 	 */
 	public Item copy();
 	
 	/**
-	 * ÇóÖµ
+	 * æ±‚å€¼
 	 * @param items
 	 * @return
 	 */
 	public double getValue(Item ...items);
 	
 	/**
-	 * ¹ØÓÚ×Ô±äÁ¿nameÇóµ¼Ò»´Î
+	 * å…³äºè‡ªå˜é‡nameæ±‚å¯¼ä¸€æ¬¡
 	 * @param name
 	 * @return
 	 */

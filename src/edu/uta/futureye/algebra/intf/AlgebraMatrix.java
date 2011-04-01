@@ -1,7 +1,7 @@
 package edu.uta.futureye.algebra.intf;
 
 /**
- * 为矩阵向量运算优化的矩阵接口
+ * 涓虹煩闃靛悜閲忚繍绠椾紭鍖栫殑鐭╅樀鎺ュ彛
  * 
  * @author liuyueming
  *
@@ -17,6 +17,19 @@ public interface AlgebraMatrix {
 	 */
 	public void mult(AlgebraVector x, AlgebraVector y);
 
+	/**
+	 * C = A*B
+	 * @param x
+	 * @param y
+	 */
+	public void mult(AlgebraMatrix B, AlgebraMatrix C);
+
+	/**
+	 * Get A'
+	 * @return A'
+	 */
+	public AlgebraMatrix getTrans();
+	
 	/**
 	 * print the component values of this matrix
 	 */

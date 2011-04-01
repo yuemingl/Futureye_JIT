@@ -10,10 +10,10 @@ import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOBasic;
-import edu.uta.futureye.util.list.DOFList;
+import edu.uta.futureye.util.container.DOFList;
 
 /**
- * ÓÃÓĞÏŞÔª·½·¨Çóµ¼Êı
+ * ç”¨æœ‰é™å…ƒæ–¹æ³•æ±‚å¯¼æ•°
  * Solve: (w, v) = (U_x, v)
  * where w is unknown
  *   U_x is the piecewise derivative on the mesh
@@ -51,8 +51,8 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 					Variable var = Variable.createFrom(g_U, (Node)dofI.getOwner(), dofI.getGlobalIndex());
 					Function PValue = new FC(g_U.value(var));
 					ScalarShapeFunction shape = dofI.getSSF();
-					//ÒÔÇ°°æ±¾ĞèÒªµ÷ÓÃshapeFun.asignElement(e)£¬ÏÖÔÚ°æ±¾²»ĞèÒªµ÷ÓÃÁË
-					rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, shape.d(varName)));
+					//ä»¥å‰ç‰ˆæœ¬éœ€è¦è°ƒç”¨shapeFun.asignElement(e)ï¼Œç°åœ¨ç‰ˆæœ¬ä¸éœ€è¦è°ƒç”¨äº†
+					rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, shape._d(varName)));
 				}
 			}
 			

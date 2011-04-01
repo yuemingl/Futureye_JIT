@@ -11,10 +11,10 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.list.DOFList;
+import edu.uta.futureye.util.container.DOFList;
 
 /**
- * ÏµÊı·´ÎÊÌâ
+ * ç³»æ•°åé—®é¢˜
  * Solve: (U*u, v) = (f, v) - (k*grad(U),grad(v))
  * where u is unknown
  * U,f and k is known
@@ -55,9 +55,9 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 					Variable var = Variable.createFrom(g_U, (Node)dofI.getOwner(), dofI.getGlobalIndex());
 					Function PValue = new FC(g_U.value(var));
 					ScalarShapeFunction shape = dofI.getSSF();
-					//ÒÔÇ°°æ±¾ĞèÒªµ÷ÓÃshapeFun.asignElement(e)£¬ÏÖÔÚ°æ±¾²»ĞèÒªµ÷ÓÃÁË
-					rlt_dx = FOBasic.Plus(rlt_dx, FOBasic.Mult(PValue, shape.d("x")));
-					rlt_dy = FOBasic.Plus(rlt_dy, FOBasic.Mult(PValue, shape.d("y")));
+					//ä»¥å‰ç‰ˆæœ¬éœ€è¦è°ƒç”¨shapeFun.asignElement(e)ï¼Œç°åœ¨ç‰ˆæœ¬ä¸éœ€è¦è°ƒç”¨äº†
+					rlt_dx = FOBasic.Plus(rlt_dx, FOBasic.Mult(PValue, shape._d("x")));
+					rlt_dy = FOBasic.Plus(rlt_dy, FOBasic.Mult(PValue, shape._d("y")));
 				}
 			}
 			
@@ -65,8 +65,8 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 				FOBasic.Mult(ff,v),
 				FOBasic.Mult(fk,
 						FOBasic.Plus(
-								FOBasic.Mult(rlt_dx, v.d("x")),
-								FOBasic.Mult(rlt_dy, v.d("y"))
+								FOBasic.Mult(rlt_dx, v._d("x")),
+								FOBasic.Mult(rlt_dy, v._d("y"))
 			)));
 			return integrand;
 		}

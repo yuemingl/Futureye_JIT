@@ -6,7 +6,7 @@ public abstract class AbstractFunction extends AbstractItem implements Function 
 	protected Chain chain = null;
 	
 	/**
-	 * ÄäÃûº¯ÊıµÄ¹¹Ôìº¯Êıµ÷ÓÃ¸¸ÀàµÄ¹¹Ôìº¯Êı???
+	 * åŒ¿åå‡½æ•°çš„æ„é€ å‡½æ•°è°ƒç”¨çˆ¶ç±»çš„æ„é€ å‡½æ•°???
 	 * if(chain == null)
 			createChain();
 	 */

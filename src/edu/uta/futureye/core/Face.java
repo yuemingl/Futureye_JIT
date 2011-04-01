@@ -3,18 +3,18 @@ package edu.uta.futureye.core;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.geometry.GeoEntity2D;
 import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 /**
  * Global face of an element
- * È«¾ÖÃæ£¨ÈıÎ¬µ¥ÔªµÄÈ«¾ÖÃæ£©
+ * å…¨å±€é¢ï¼ˆä¸‰ç»´å•å…ƒçš„å…¨å±€é¢ï¼‰
  * 
  * @author liuyueming
  *
  */
 public class Face extends GeoEntity2D<EdgeLocal,NodeLocal> {
 	protected int globalIndex;
-	protected Vector globalUnitNormVector = null; //È«¾Öµ¥Î»·¨·½Ïò
+	protected Vector globalUnitNormVector = null; //å…¨å±€å•ä½æ³•æ–¹å‘
 	
 	public int getGlobalIndex() {
 		return globalIndex;
@@ -32,21 +32,32 @@ public class Face extends GeoEntity2D<EdgeLocal,NodeLocal> {
 	}
 	
 	/**
-	 * ·µ»ØÃæµÄ±ß½çÀàĞÍ£¬È·±£ËùÓĞ¶¥µãµÄÀàĞÍÒª¶¼ÏàÍ¬
+	 * è¿”å›é¢çš„è¾¹ç•Œç±»å‹ï¼Œç¡®ä¿æ‰€æœ‰é¡¶ç‚¹çš„ç±»å‹è¦éƒ½ç›¸åŒ
 	 * 
 	 * @return
 	 */
     public NodeType getBorderType() {
-    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType();
+    	return getBorderType(1);                  
+    }
+    
+	/**
+	 * å¯¹äºå‘é‡å€¼é—®é¢˜ï¼Œæ¯ä¸ªåˆ†é‡åœ¨åŒä¸€è¾¹ç•Œä¸Šçš„ç±»å‹ä¸ä¸€å®šç›¸åŒï¼Œ
+	 * è¯¥å‡½æ•°è¿”å›åˆ†é‡<tt>vvfIndex</tt>å¯¹åº”çš„è¾¹ç•Œç±»å‹
+	 * Vector valued function (vvf)
+	 * @param vvfIndex
+	 * @return
+	 */
+    public NodeType getBorderType(int vvfIndex) {
+    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType(vvfIndex);
     	for(int i=2;i<this.vertices.size();i++) {
-    		NodeType nt2 = this.vertices.at(2).globalNode().getNodeType();
+    		NodeType nt2 = this.vertices.at(2).globalNode().getNodeType(vvfIndex);
     	   	if(nt1 != nt2) return null;                  
     	}
     	return nt1;                  
     }
     
 	public boolean isBorderFace() {
-		//¶¥µã¶ÔÓ¦µÄNodeLocalÊÇ·ÇInner¼´¿É£¬Ò²¾ÍÊÇËµÖ»ÒªÓĞÒ»¸öÊÇInnerËµÃ÷¸ÃÃæ²»ÊÇ±ß½çÃæ
+		//é¡¶ç‚¹å¯¹åº”çš„NodeLocalæ˜¯éInnerå³å¯ï¼Œä¹Ÿå°±æ˜¯è¯´åªè¦æœ‰ä¸€ä¸ªæ˜¯Innerè¯´æ˜è¯¥é¢ä¸æ˜¯è¾¹ç•Œé¢
 		ObjList<Vertex> vs = this.getVertices();
 		if(vs.size() >= 3) {
 			for(int i=1;i<=vs.size();i++) {

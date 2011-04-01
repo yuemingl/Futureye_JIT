@@ -3,6 +3,7 @@ package edu.uta.futureye.function;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
@@ -11,17 +12,17 @@ import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
 public abstract class AbstractFunction implements Function {
-	protected List<String> varNames = new LinkedList<String>();;
+	protected List<String> varNames = new LinkedList<String>();
 
 	/**
 	 * Construct 1 Dim function
 	 */
 	public AbstractFunction() {
-		varNames.add(Constant.x);
 	}
 	
 	/**
 	 * Construct n Dim function
+	 * 
 	 * @param varName
 	 * @param aryVarNames
 	 */
@@ -31,23 +32,13 @@ public abstract class AbstractFunction implements Function {
 			varNames.add(s);
 	}
 	
+	/**
+	 * Construct n Dim function
+	 * 
+	 * @param varNames
+	 */
 	public AbstractFunction(List<String> varNames) {
 		this.varNames = varNames;
-	}
-	
-	@Override
-	public double value(Variable v) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public double value() {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public Function d(String varName) {
-		throw new UnsupportedOperationException();
 	}
 	
 	@Override
@@ -60,131 +51,34 @@ public abstract class AbstractFunction implements Function {
 		this.varNames = varNames;
 	}
 	
+	/**
+	 * Implement yourself
+	 */
 	@Override
-	public Function P(final Function f) {
-		final Function f1 = this;
-		final Function f2 = f;
-		if(f1 instanceof FC && f2 instanceof FC) {
-			return new FC(f1.value() + f2.value());
-		} else if(f1 instanceof FC && Math.abs(f1.value()) < Constant.eps) {
-			return f2;
-		} else if(f2 instanceof FC && Math.abs(f2.value()) < Constant.eps) {
-			return f1;
-		} else {
-			return new AbstractFunction(Utils.mergeList(f1.varNames(), f2.varNames())) {
-				@Override
-				public double value(Variable v) {
-					return f1.value(v) + f2.value(v);
-				}
-				@Override
-				public Function d(String varName) {
-					return f1.d(varName).P(f2.d(varName));
-				}
-				public String toString() {
-					return "("+f1.toString()+" [+] "+f2.toString()+")";
-				}
-			};
-		}
+	public double value(Variable v) {
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-	public Function M(Function f) {
-		final Function f1 = this;
-		final Function f2 = f;
-		if(f1 instanceof FC && f2 instanceof FC) {
-			return new FC(f1.value() - f2.value());
-		} else if(f2 instanceof FC && Math.abs(f2.value()) < Constant.eps) {
-			return f1;
-		} else {
-			return new AbstractFunction(Utils.mergeList(f1.varNames(), f2.varNames())) {
-				@Override
-				public double value(Variable v) {
-					return f1.value(v) - f2.value(v);
-				}
-				@Override
-				public Function d(String varName) {
-					return f1.d(varName).M(f2.d(varName));
-				}
-				public String toString() {
-					if(f1 instanceof FC && Math.abs(f1.value()) < Constant.eps)
-						return " [-] "+f2.toString();
-					return "("+f1.toString()+" [-] "+f2.toString()+")";
-				}
-			};
-		}
+	public double value() {
+		throw new UnsupportedOperationException();
 	}
 	
+	/**
+	 * Implement yourself if necessary
+	 */
 	@Override
-	public Function X(Function f) {
-		final Function f1 = this;
-		final Function f2 = f;
-		if(f1 instanceof FC && f2 instanceof FC) {
-			return new FC(f1.value() * f2.value());
-		} else if( (f1 instanceof FC && Math.abs(f1.value()) < Constant.eps) ||
-				f2 instanceof FC && Math.abs(f2.value()) < Constant.eps)
-			return FC.c0;
-		else if(f1 instanceof FC && Math.abs(f1.value()-1.0) < Constant.eps)
-			return f2;
-		else if(f2 instanceof FC && Math.abs(f2.value()-1.0) < Constant.eps)
-			return f1;
-		else
-			return new AbstractFunction(Utils.mergeList(f1.varNames(), f2.varNames())) {
-				@Override
-				public double value(Variable v) {
-					return f1.value(v) * f2.value(v);
-				}
-				@Override
-				public Function d(String varName) {
-					return 	f1.d(varName).X(f2).P(
-							f1.X(f2.d(varName))
-							);
-				}
-				public String toString() {
-					return "("+f1.toString()+" [*] "+f2.toString()+")";
-				}
-			};
+	public Function _d(String varName) {
+		throw new UnsupportedOperationException();
 	}
-	
-	@Override
-	public Function D(Function f) {
-		final Function f1 = this;
-		final Function f2 = f;
-		if(f1 instanceof FC && f2 instanceof FC) {
-			return new FC(f1.value() / f2.value());
-		} else if(f1 instanceof FC && Double.compare(f1.value(),0.0)==0) {
-			//Math.abs(f1.value())<Constant.eps will not work properly
-			return FC.c0;
-		} else if(f2 instanceof FC && Double.compare(f2.value(),0.0)==0) {
-			return FC.c(Double.POSITIVE_INFINITY);
-		}  else if(f2 instanceof FC && Math.abs(f2.value()-1.0) < Constant.eps) {
-			return f1;
-		} else {
-			return new AbstractFunction(Utils.mergeList(f1.varNames(), f2.varNames())) {
-				@Override
-				public double value(Variable v) {
-					return f1.value(v) / f2.value(v);
-				}
-				@Override
-				public Function d(String varName) {
-					return f1.d(varName).X(f2).M(
-						   f1.X(f2.d(varName)).D(
-								   f2.X(f2))
-							);
-				}
-				public String toString() {
-					return "("+f1.toString()+" [/] "+f2.toString()+")";
-				}
-			};
-		}
-	}
-	
+
 	@Override
 	public Function compose(final Map<String,Function> fInners) {
 		final Function fOuter = this;
 		return new AbstractFunction(fOuter.varNames()) {
 			@Override
 			public double value(Variable v) {
-				//bugfix ‘ˆº”ªÚÃıº˛
+				//bugfix Â¢ûÂä†ÊàñÊù°‰ª∂
 				if(fOuter.varNames().containsAll(v.getValues().keySet()) ||
 						v.getValues().keySet().containsAll(fOuter.varNames())) {
 					return fOuter.value(v);
@@ -213,40 +107,263 @@ public abstract class AbstractFunction implements Function {
 				return 0.0;
 			}
 			/**
-			 * ¡¥ Ω«Ûµº
+			 * ÈìæÂºèÊ±ÇÂØº
 			 * f( x(r,s),y(r,s) )_r = f_x * x_r + f_y * y_r
 			 */
 			@Override
-			public Function d(String varName) {
+			public Function _d(String varName) {
 				Function rlt = null;
 				if(fOuter.varNames().contains(varName)) {
-					//f(x,y)πÿ”⁄xªÚy«Ûµº
-					rlt = fOuter.d(varName);
+					//f(x,y)ÂÖ≥‰∫éxÊàñyÊ±ÇÂØº
+					rlt = fOuter._d(varName);
 					return rlt;
 				} else {
-					//f(x,y)πÿ”⁄rªÚs«Ûµº
+					//f(x,y)ÂÖ≥‰∫érÊàñsÊ±ÇÂØº
 					rlt = new FC(0.0);
 					for(String innerVarName : fOuter.varNames()) {
 						Function fInner = fInners.get(innerVarName);
 						if(fInner != null) {
-							Function rltOuter = fOuter.d(innerVarName);
-							Function rltInner = fInner.d(varName);
+							Function rltOuter = fOuter._d(innerVarName);
+							if(!(rltOuter instanceof FC))
+								rltOuter = fOuter.compose(fInners);
+							Function rltInner = fInner._d(varName);
 							//f_x * x_r + f_y * y_r
-							rlt = rlt.P(
-									rltOuter.X(rltInner)
+							rlt = rlt.A(
+									rltOuter.M(rltInner)
 									);
 						}
 					}
 					return rlt;
 				}
 			}
+			@Override
+			public int getOpOrder() {
+				return fOuter.getOpOrder();
+			}
+			@Override
 			public String toString() {
-				//return "("+fOuter.toString()+"  ,  "+fInners.toString()+")";
-				return "("+fOuter.toString()+")";
+				String rlt = fOuter.toString();
+				for(Entry<String,Function> map : fInners.entrySet()) {
+					String names = map.getValue().varNames().toString();
+					rlt = rlt.replace(map.getKey(), map.getKey()+"("+names.substring(1,names.length()-1)+")");
+				}
+				return rlt;
 			}
 		};
 	}
 
+	
+	////////////////////////Operations////////////////////////////////////
+	
+	@Override
+	public Function A(final Function g) {
+		final Function f1 = this;
+		final Function f2 = g;
+		if(f1 instanceof FC && f2 instanceof FC) {
+			return new FC(f1.value() + f2.value());
+		} else if(f1 instanceof FC && Math.abs(f1.value()) < Constant.eps) {
+			return f2;
+		} else if(f2 instanceof FC && Math.abs(f2.value()) < Constant.eps) {
+			return f1;
+		} else {
+			return new AbstractFunction(Utils.mergeList(f1.varNames(), f2.varNames())) {
+				@Override
+				public double value(Variable v) {
+					return f1.value(v) + f2.value(v);
+				}
+				@Override
+				public Function _d(String varName) {
+					return f1._d(varName).A(f2._d(varName));
+				}
+				@Override
+				public int getOpOrder() {
+					return OP_ORDER3;
+				}
+				@Override
+				public String toString() {
+					StringBuilder sb = new StringBuilder();
+					sb.append(f1.toString());
+					sb.append(" + ");
+					sb.append(f2.toString());
+					return sb.toString();
+				}
+			};
+		}
+	}
+	@Override
+	public Function A(final double g) {
+		return A(FC.c(g));
+	}
+	
+	@Override
+	public Function S(Function g) {
+		final Function f1 = this;
+		final Function f2 = g;
+		if(f1 instanceof FC && f2 instanceof FC) {
+			return new FC(f1.value() - f2.value());
+		} else if(f2 instanceof FC && Math.abs(f2.value()) < Constant.eps) {
+			return f1;
+		} else {
+			return new AbstractFunction(Utils.mergeList(f1.varNames(), f2.varNames())) {
+				@Override
+				public double value(Variable v) {
+					return f1.value(v) - f2.value(v);
+				}
+				@Override
+				public Function _d(String varName) {
+					return f1._d(varName).S(f2._d(varName));
+				}
+				@Override
+				public int getOpOrder() {
+					return OP_ORDER3;
+				}
+				@Override
+				public String toString() {
+					StringBuilder sb = new StringBuilder();
+					if(! (f1 instanceof FC && Math.abs(f1.value()) < Constant.eps) ) {
+						sb.append(f1.toString());
+					}
+					sb.append(" - ");
+					sb.append(f2.toString());
+					return sb.toString();
+				}
+			};
+		}
+	}
+	@Override
+	public Function S(final double g) {
+		return S(FC.c(g));
+	}	
+	
+	@Override
+	public Function M(Function f) {
+		final Function f1 = this;
+		final Function f2 = f;
+		if(f1 instanceof FC && f2 instanceof FC) {
+			return new FC(f1.value() * f2.value());
+		} else if( (f1 instanceof FC && Math.abs(f1.value()) < Constant.eps) ||
+				f2 instanceof FC && Math.abs(f2.value()) < Constant.eps)
+			return FC.c0;
+		else if(f1 instanceof FC && Math.abs(f1.value()-1.0) < Constant.eps)
+			return f2;
+		else if(f2 instanceof FC && Math.abs(f2.value()-1.0) < Constant.eps)
+			return f1;
+		else
+			return new AbstractFunction(Utils.mergeList(f1.varNames(), f2.varNames())) {
+				@Override
+				public double value(Variable v) {
+					return f1.value(v) * f2.value(v);
+				}
+				@Override
+				public Function _d(String varName) {
+					return 	f1._d(varName).M(f2).A(
+							f1.M(f2._d(varName))
+							);
+				}
+				@Override
+				public int getOpOrder() {
+					return OP_ORDER2;
+				}
+				@Override
+				public String toString() {
+					StringBuilder sb = new StringBuilder();
+					if(f1.getOpOrder() > OP_ORDER2)
+						sb.append("(").append(f1.toString()).append(")");
+					else
+						sb.append(f1.toString());
+					sb.append(" * ");
+					if(f2.getOpOrder() > OP_ORDER2)
+						sb.append("(").append(f2.toString()).append(")");
+					else
+						sb.append(f2.toString());
+					return sb.toString();
+				}
+			};
+	}
+	@Override
+	public Function M(final double g) {
+		return M(FC.c(g));
+	}	
+	
+	@Override
+	public Function D(Function f) {
+		final Function f1 = this;
+		final Function f2 = f;
+		if(f1 instanceof FC && f2 instanceof FC) {
+			return new FC(f1.value() / f2.value());
+		} else if(f1 instanceof FC && Double.compare(f1.value(),0.0)==0) {
+			//Math.abs(f1.value())<Constant.eps will not work properly
+			return FC.c0;
+		} else if(f2 instanceof FC && Double.compare(f2.value(),0.0)==0) {
+			return FC.c(Double.POSITIVE_INFINITY);
+		}  else if(f2 instanceof FC && Math.abs(f2.value()-1.0) < Constant.eps) {
+			return f1;
+		} else {
+			return new AbstractFunction(Utils.mergeList(f1.varNames(), f2.varNames())) {
+				@Override
+				public double value(Variable v) {
+					return f1.value(v) / f2.value(v);
+				}
+				@Override
+				public Function _d(String varName) {
+					return f1._d(varName).M(f2).S(
+						   f1.M(f2._d(varName)).D(
+								   f2.M(f2))
+							);
+				}
+				@Override
+				public int getOpOrder() {
+					return OP_ORDER2;
+				}
+				@Override
+				public String toString() {
+					StringBuilder sb = new StringBuilder();
+					if(f1.getOpOrder() > OP_ORDER2)
+						sb.append("(").append(f1.toString()).append(")");
+					else
+						sb.append(f1.toString());
+					sb.append(" / ");
+					if(f2.getOpOrder() > OP_ORDER2)
+						sb.append("(").append(f2.toString()).append(")");
+					else
+						sb.append(f2.toString());
+					return sb.toString();
+				}
+			};
+		}
+	}
+	@Override
+	public Function D(final double g) {
+		return D(FC.c(g));
+	}
+	
+	@Override
+	public Function copy() {
+		throw new UnsupportedOperationException();
+	}
+	////////////////////////For printing expression////////////////////////////
+	
+	@Override
+	public String getFName() {
+		return null;
+	}
+	
+	@Override
+	public void setFName(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getOpOrder() {
+		return OP_ORDER3;
+	}
+	
+	@Override
+	public void setOpOrder(int order) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
 	public String toString() {
 		String s = varNames.toString();
 		return "F("+s.substring(1, s.length()-1)+")";

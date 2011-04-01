@@ -191,7 +191,7 @@ public class COperator {
 						}
 						return ExpandChain(pc);
 					} else if(pair.coef > 0 && Math.abs(Math.ceil(pair.coef)-pair.coef) < Constant.eps) {
-						//ÕûÊı´ÎÃİ×ª»»³ÉÁ¬³ËĞÎÊ½
+						//æ•´æ•°æ¬¡å¹‚è½¬æ¢æˆè¿ä¹˜å½¢å¼
 						pair.coef = 1.0;
 						for(int j=1;j<=(int)pair.coef;j++) {
 							tmp.addItem(new ItemPair(1.0,pair.item));

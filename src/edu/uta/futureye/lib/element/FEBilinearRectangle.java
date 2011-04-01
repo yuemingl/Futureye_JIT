@@ -4,7 +4,7 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
-import edu.uta.futureye.util.list.VertexList;
+import edu.uta.futureye.util.container.VertexList;
 
 public class FEBilinearRectangle implements FiniteElementType {
 	SFBilinearLocal2D[] shapeFun = new SFBilinearLocal2D[4];
@@ -34,6 +34,16 @@ public class FEBilinearRectangle implements FiniteElementType {
 						);
 			e.addNodeDOF(j, dof);
 		}
+	}
+
+	@Override
+	public int getDOFNumOnElement(int vsfDim) {
+		return 4;
+	}
+
+	@Override
+	public int getVectorShapeFunctionDim() {
+		throw new UnsupportedOperationException();
 	}
 
 }

@@ -1,14 +1,14 @@
 package edu.uta.futureye.core.geometry;
 
 import edu.uta.futureye.core.geometry.topology.Topology3D;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 /**
- * ÈıÎ¬¼¸ºÎÊµÌå£¬±£´æÓĞÏŞÔªElementµÄ¼¸ºÎĞÅÏ¢
+ * ä¸‰ç»´å‡ ä½•å®ä½“ï¼Œä¿å­˜æœ‰é™å…ƒElementçš„å‡ ä½•ä¿¡æ¯
  * 
- *   ¸¸ÀàµÄvertices£ºÈıÎ¬µ¥Ôª¶ÔÓ¦¶¥µã¼¯ºÏ£¨ËÄÃæÌåµ¥Ôª£ºËÄ¸ö¶¥µã£¬ÁùÃæÌåµ¥Ôª£º°Ë¸ö¶¥µã£¬...£©
- *   faces£ºÈıÎ¬µ¥ÔªµÄÃæ¼¯ºÏ
- *   volumeNodes£ºÈıÎ¬µ¥ÔªÄÚ²¿µÄ½áµã¼¯ºÏ
+ *   çˆ¶ç±»çš„verticesï¼šä¸‰ç»´å•å…ƒå¯¹åº”é¡¶ç‚¹é›†åˆï¼ˆå››é¢ä½“å•å…ƒï¼šå››ä¸ªé¡¶ç‚¹ï¼Œå…­é¢ä½“å•å…ƒï¼šå…«ä¸ªé¡¶ç‚¹ï¼Œ...ï¼‰
+ *   facesï¼šä¸‰ç»´å•å…ƒçš„é¢é›†åˆ
+ *   volumeNodesï¼šä¸‰ç»´å•å…ƒå†…éƒ¨çš„ç»“ç‚¹é›†åˆ
  *   
  * @author liuyueming
  *

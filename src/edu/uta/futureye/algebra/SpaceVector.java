@@ -3,6 +3,11 @@ package edu.uta.futureye.algebra;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.util.FutureyeException;
 
+/**
+ * ç©ºé—´å‘é‡
+ * @author liuyueming
+ *
+ */
 public class SpaceVector implements Vector {
 	protected int dim = 0;
 	protected double[] data = null;
@@ -14,7 +19,7 @@ public class SpaceVector implements Vector {
 		this.dim = dim;
 		data = new double[dim];
 	}
-	
+
 	public SpaceVector(double ...a) {
 		if(a == null || a.length ==0) {
 			Exception e = new FutureyeException("Dim of SpaceVector should be > 0!");
@@ -44,13 +49,6 @@ public class SpaceVector implements Vector {
 	}
 	
 	@Override
-	public void set(Vector v) {
-		SpaceVector tmp = (SpaceVector)v;
-		for(int i=0;i<dim;i++)
-			this.data[i] = tmp.data[i];
-	}
-
-	@Override
 	public double get(int index) {
 		return data[index-1];
 	}
@@ -60,17 +58,55 @@ public class SpaceVector implements Vector {
 		set(index,get(index)+value);
 	}
 	
-	@Override
-	public void add(double a, Vector v) {
-		SpaceVector tmp = (SpaceVector)v;
-		for(int i=0;i<dim;i++)
-			this.data[i] += a*tmp.data[i];
-	}
-
+	/////////////////////////////////////////////////
 	
 	@Override
-	public Vector copy() {
-		return new SpaceVector(this.data);
+	public Vector set(Vector v) {
+		for(int i=0;i<dim;i++)
+			this.data[i] = v.get(i+1);
+		return this;
+	}
+
+	@Override
+	public Vector set(double a, Vector v) {
+		for(int i=0;i<dim;i++)
+			this.data[i] = a*v.get(i+1);
+		return this;
+	}
+	
+	@Override
+	public Vector add(Vector v) {
+		for(int i=0;i<dim;i++)
+			this.data[i] += v.get(i+1);
+		return this;
+	}
+	
+	@Override
+	public Vector add(double a, Vector v) {
+		for(int i=0;i<dim;i++)
+			this.data[i] += a*v.get(i+1);
+		return this;
+	}
+
+	@Override
+	public Vector scale(double a) {
+		for(int i=0;i<dim;i++)
+			this.data[i] = a*this.data[i];
+		return this;
+	}
+
+	@Override
+	public Vector ax(double a) {
+		for(int i=0;i<dim;i++)
+			this.data[i] = a*this.data[i];
+		return this;
+	}
+
+	@Override
+	public Vector axpy(double a, Vector y) {
+		for(int i=0;i<dim;i++)
+			this.data[i] += a*this.data[i] + y.get(i+1);
+		return this;
 	}
 
 	@Override
@@ -89,6 +125,14 @@ public class SpaceVector implements Vector {
 	}
 
 	@Override
+	public double norm1() {
+		double rlt = 0.0;
+		for(int i=0;i<dim;i++)
+			rlt += Math.abs(this.data[i]);
+		return rlt;
+	}
+	
+	@Override
 	public double norm2() {
 		return Math.sqrt(this.dot(this));
 	}
@@ -102,6 +146,13 @@ public class SpaceVector implements Vector {
 		return max;
 	}
 
+	/////////////////////////////////////////////////////
+	
+	@Override
+	public Vector copy() {
+		return new SpaceVector(this.data);
+	}
+	
 	@Override
 	public void clear() {
 		this.dim = 0;
@@ -111,15 +162,15 @@ public class SpaceVector implements Vector {
 	@Override
 	public void print() {
 		for(int i=1;i<=dim;i++) {
-			System.out.print(String.format("%8.6f", get(i))+"   ");
+			System.out.print(get(i)+" ");
 		}
 		System.out.println("");
 	}
 
 	/////////////////////////////////////////////////
-	
+
 	/**
-	 * ²æ³Ë£¨½ö3Î¬ÏòÁ¿£©
+	 * å‰ä¹˜ï¼ˆä»…3ç»´å‘é‡ï¼‰
 	 * cross product for 3D vectors a=(a1 a2 a3)' and b=(b1 b2 b3)'
 	 * 
 	 *     |i   j  k|
@@ -146,7 +197,18 @@ public class SpaceVector implements Vector {
 		}
 		return r;
 	}
+	
+	////////////////////////////////////////////////////
+	
 
+	public String toString() {
+		String rlt = "(";
+		for(int i=0;i<dim;i++)
+			rlt += data[i]+"  ";
+		return rlt+")";
+	}
+	
+	//////////////////////////////////////////////////////
 	public static Vector ax(double a, Vector x) {
 		int dim = x.getDim();
 		Vector rlt = new SpaceVector(dim);
@@ -172,12 +234,5 @@ public class SpaceVector implements Vector {
 			rlt.set(i, a*x.get(i)*y.get(i));
 		}
 		return rlt;
-	}
-	
-	public String toString() {
-		String rlt = "(";
-		for(int i=0;i<dim;i++)
-			rlt += data[i]+"  ";
-		return rlt+")";
-	}
+	}	
 }

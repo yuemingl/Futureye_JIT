@@ -22,15 +22,13 @@ public class Solver {
 	 * 
 	 * @param m
 	 * @param v
-	 * @return ∑Ω≥ÃµƒΩ‚œÚ¡ø£¨œ¬±Í¥”1ø™ º
+	 * @return ÊñπÁ®ãÁöÑËß£ÂêëÈáèÔºå‰∏ãÊ†á‰ªé1ÂºÄÂßã
 	 */
 	public Vector solve(Matrix m,Vector v) {
 		if( !( m.getRowDim() == m.getColDim() &&
 				m.getRowDim() == v.getDim()) ) {
-			FutureyeException e = new FutureyeException(
+			throw new FutureyeException(
 					"ERROR: Solver.solver() m.dim!=v.dim ");
-			e.printStackTrace();
-			System.exit(0);
 		}
 		
 	    int N = v.getDim();
@@ -64,11 +62,31 @@ public class Solver {
 
 	}
 	
-	//µ¸¥˙œ‡∂‘ŒÛ≤Ó
+	public Vector solveCGS(Matrix m,Vector v) {
+		if( !( m.getRowDim() == m.getColDim() &&
+				m.getRowDim() == v.getDim()) ) {
+			throw new FutureyeException(
+					"ERROR: Solver.solver() m.dim!=v.dim ");
+		}
+		//CGS
+		Solver solver = new Solver();
+		SparseVector u = new SparseVector(v.getDim(),1.0);
+		AlgebraMatrix algStiff = new CompressedRowMatrix((SparseMatrix)m,true);
+		FullVector algLoad = new FullVector((SparseVector)v);
+		FullVector algU = new FullVector(u);
+		solver.CGS(algStiff, algLoad, algU);
+		double[] data = algU.getData();
+		for(int i=0;i<data.length;i++) {
+			u.set(i+1, data[i]);
+		}
+		return u;
+	}
+	
+	//Ëø≠‰ª£Áõ∏ÂØπËØØÂ∑Æ
 	static double epsIter = 1e-5;
-	//µ¸¥˙æ¯∂‘ŒÛ≤Ó
+	//Ëø≠‰ª£ÁªùÂØπËØØÂ∑Æ
 	static double epsAbsIter = 1e-15;
-	//µ¸¥˙◊Ó¥Û¥Œ ˝
+	//Ëø≠‰ª£ÊúÄÂ§ßÊ¨°Êï∞
 	static double maxIter = 1000;
 
 	public AlgebraVector CG(AlgebraMatrix A, AlgebraVector b, AlgebraVector x) {
@@ -92,13 +110,13 @@ public class Solver {
 		for(int i=0;i<maxIter;i++) {
 			norm2 = r.norm2();
 			if(norm2<epsIter*firstNorm2) {
-				System.out.println("Iter----->i="+i+"  norm2="+norm2);
+				System.out.println("Iter----->i="+i+"  RError="+String.format("%8.3e", norm2/firstNorm2));
 				return x;
 			}
 			
 		    //M.apply(r, z);
 			//Mz=r
-			//M£∫‘§Ãıº˛æÿ’Û£¨»°Œ™I,z==r
+			//MÔºöÈ¢ÑÊù°‰ª∂Áü©ÈòµÔºåÂèñ‰∏∫I,z==r
 			z=r;
 			
 		    rho = r.dot(z);
@@ -122,6 +140,72 @@ public class Solver {
 		System.out.println("Iter Max----->maxIter="+maxIter+"  norm2="+norm2);
 		return x;
     }
+	
+	
+	public AlgebraVector CGS(AlgebraMatrix A, AlgebraVector b, AlgebraVector x) {
+
+        double rho_1 = 0, rho_2 = 0, alpha = 0, beta = 0;
+		
+		int dim = b.getDim();
+		AlgebraVector r = new FullVector(dim);
+		AlgebraVector p = new FullVector(dim);
+		AlgebraVector q = new FullVector(dim);
+		AlgebraVector u = new FullVector(dim);
+		AlgebraVector phat = new FullVector(dim);
+		AlgebraVector qhat = new FullVector(dim);
+		AlgebraVector vhat = new FullVector(dim);
+		AlgebraVector uhat = new FullVector(dim);
+		AlgebraVector sum = new FullVector(dim);
+		AlgebraVector rtilde = new FullVector(dim);
+        
+		// r = b - Ax
+		//A.multAdd(-1, x, r.set(b));
+		A.mult(x, r);
+		r.axpy(-1.0, b);
+	    rtilde.set(r);
+		
+		double firstNorm2 = r.norm2();
+		double norm2 = 0;
+		//for (iter.setFirst(); !iter.converged(r, x); iter.next()) {
+		for(int i=0;i<maxIter;i++) {
+			norm2 = r.norm2();
+			if(norm2<epsIter*firstNorm2) {
+				System.out.println("Iter----->i="+i+"  RError="+String.format("%8.3e", norm2/firstNorm2));
+				return x;
+			}
+			
+            rho_1 = rtilde.dot(r);
+            if (rho_1 == 0)
+                throw new FutureyeException("NotConverge, rho_1==0, iter="+i);
+
+            if (i==0) {
+                u.set(r);
+                p.set(u);
+            } else {
+                beta = rho_1 / rho_2;
+                u.set(r).add(beta, q);
+                sum.set(q).add(beta, p);
+                p.set(u).add(beta, sum);
+            }
+
+            //M.apply(p, phat);
+            phat.set(p);
+            
+            A.mult(phat, vhat);
+            alpha = rho_1 / rtilde.dot(vhat);
+            q.set(-alpha, vhat).add(u);
+            
+            //M.apply(sum.set(u).add(q), uhat);
+            uhat.set(sum.set(u).add(q));
+            x.add(alpha, uhat);
+            A.mult(uhat, qhat);
+            r.add(-alpha, qhat);
+
+            rho_2 = rho_1;
+        }
+		System.out.println("Iter Max----->maxIter="+maxIter+"  norm2="+norm2);
+		return x;
+    }	
 	
 	public Vector CG1(Matrix A, Vector b, Vector x) {
 
@@ -151,7 +235,7 @@ public class Solver {
 			
 		    //M.apply(r, z);
 			//Mz=r
-			//M£∫‘§Ãıº˛æÿ’Û£¨»°Œ™I,z==r
+			//MÔºöÈ¢ÑÊù°‰ª∂Áü©ÈòµÔºåÂèñ‰∏∫I,z==r
 			z=r;
 			
 		    rho = r.dot(z);

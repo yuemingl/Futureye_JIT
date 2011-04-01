@@ -1,6 +1,5 @@
 package edu.uta.futureye.tutorial;
 
-import java.io.File;
 import java.util.HashMap;
 
 import edu.uta.futureye.algebra.CompressedRowMatrix;
@@ -12,7 +11,6 @@ import edu.uta.futureye.algebra.intf.AlgebraMatrix;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
@@ -20,13 +18,10 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.io.MeshReader;
-import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.element.FEBilinearRectangle;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.container.ElementList;
 
 /**
  * d2dt(u) - c2*Laplace(u) = 0
@@ -74,7 +69,7 @@ public class Wave {
 		//MeshReader reader = new MeshReader("triangle_big.grd");
 		//MeshReader reader = new MeshReader("triangle_big2.grd");
 		
-		//Í¹ÐÍÇøÓò[-40,40]x[-30,25]	
+		//å‡¸åž‹åŒºåŸŸ[-40,40]x[-30,25]	
 		//MeshReader reader = new MeshReader("two_rectangle.grd");
 		MeshReader reader = new MeshReader("three_rectangle.grd");
 		
@@ -83,7 +78,7 @@ public class Wave {
 		//MeshReader reader = new MeshReader("triangle_bigbig80x80.grd");
 		mesh = reader.read2DMesh();
 		//Geometry relationship
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 	}
 	
 	public void initParam() {
@@ -120,9 +115,9 @@ public class Wave {
 		
 		FC k = new FC(Dt*Dt*c2);
 		//Function ff = this.u_n1.mult(FC.c(2.0)).minus(this.u_n).plus(f.mult(FC.c(Dt*Dt)));
-		Function ff = this.u_n1.X(FC.c(2.0)).M(this.u_n).X(FC.c(1+13*Dt*step));
+		Function ff = this.u_n1.M(FC.c(2.0)).S(this.u_n).M(FC.c(1+13*Dt*step));
 		weakForm.setF(ff);
-		weakForm.setParam(k, FC.c(1.0).X(FC.c(1+13*Dt*step)), null, k);
+		weakForm.setParam(k, FC.c(1.0).M(FC.c(1+13*Dt*step)), null, k);
 		
 		//Assemble
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
@@ -151,7 +146,7 @@ public class Wave {
 		//for(int i=1;i<=u.getDim();i++)
 		//	System.out.println(String.format("%.3f", u.get(i)));	
 	    
-		Tools.plotVector(mesh, u, outputFolder, String.format("u_t%03d.dat",step));
+		Tools.plotVector(mesh, outputFolder, String.format("u_t%03d.dat",step), u);
 		
 		this.u_n = this.u_n1;
 		this.u_n1 = u_n;
@@ -181,7 +176,7 @@ public class Wave {
 //					return 0.0;
 //			}
 			
-//Í¹ÐÍÇøÓò[-40,40]x[-30,25]			
+//å‡¸åž‹åŒºåŸŸ[-40,40]x[-30,25]			
 			@Override
 			public double value(Variable v) {
 				double x = v.get("x");

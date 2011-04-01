@@ -15,10 +15,10 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 /**
- * 2D Serendipity ¾Ö²¿×ø±êÐÎº¯Êý
+ * 2D Serendipity å±€éƒ¨åæ ‡å½¢å‡½æ•°
  * 
  * 
  * @author liuyueming
@@ -33,7 +33,7 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 	
 	private Element e = null;
 	/**
-	 * ¹¹ÔìÏÂÁÐÐÎº¯ÊýÖÐµÄÒ»¸ö£º
+	 * æž„é€ ä¸‹åˆ—å½¢å‡½æ•°ä¸­çš„ä¸€ä¸ªï¼š
 	 *  s
 	 *  ^
 	 *  |
@@ -71,7 +71,7 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 		varNames.add("s");
 		innerVarNames = new ObjList<String>("x","y");
 		
-		//¸´ºÏº¯Êý
+		//å¤åˆå‡½æ•°
 		Map<String, Function> fInners = new HashMap<String, Function>(4);
 		
 		for(final String varName : varNames) {
@@ -79,22 +79,22 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
-				public Function d(String var) {
+				public Function _d(String var) {
 					//Coordinate transform and Jacbian on element e
 					List<Function> funs = trans.getTransformFunction(
 							trans.getTransformLinear2DShapeFunction(e)
-							//TODO ÏÂÃæµÄµ÷ÓÃÓÐÎÊÌâ
+							//TODO ä¸‹é¢çš„è°ƒç”¨æœ‰é—®é¢˜
 							//trans.getTransformShapeFunctionByElement(e)
 								);
 					trans.setTransformFunction(funs);
 					
-					Function x_r = funs.get(0).d("r");
-					Function x_s = funs.get(0).d("s");
-					Function y_r = funs.get(1).d("r");
-					Function y_s = funs.get(1).d("s");
+					Function x_r = funs.get(0)._d("r");
+					Function x_s = funs.get(0)._d("s");
+					Function y_r = funs.get(1)._d("r");
+					Function y_s = funs.get(1)._d("s");
 					Function jac = trans.getJacobian2D();
 					
-					//TODO !!! ÊýÖµ»ý·ÖµãµÄÑ¡È¡ÎÊÌâ
+					//TODO !!! æ•°å€¼ç§¯åˆ†ç‚¹çš„é€‰å–é—®é¢˜
 //					Variable v = new Variable();
 //					v.set("r", 0.0);
 //					v.set("s", 0.0);
@@ -175,7 +175,7 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 					FMath.Minus(new FC(1.0), 
 							FMath.Mult(fy,fy)));
 
-		//Ê¹ÓÃ¸´ºÏº¯Êý¹¹ÔìÐÎº¯Êý
+		//ä½¿ç”¨å¤åˆå‡½æ•°æž„é€ å½¢å‡½æ•°
 		funCompose = FMath.Compose(funOuter, fInners);		
 	}
 	
@@ -184,7 +184,7 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 		this.e = e;
 	}
 
-	//TODO ??? Ó¦¸Ã²ÉÓÃÒ»Î¬¶þ´ÎÐÍº¯Êý
+	//TODO ??? åº”è¯¥é‡‡ç”¨ä¸€ç»´äºŒæ¬¡åž‹å‡½æ•°
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
 	ScalarShapeFunction sf1d2 = new SFLinearLocal1D(2);
 	@Override
@@ -194,8 +194,8 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 	}
 
 	@Override
-	public Function d(String varName) {
-		return funCompose.d(varName);
+	public Function _d(String varName) {
+		return funCompose._d(varName);
 	}
 
 	@Override
@@ -221,8 +221,8 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 		for(int i=1;i<=8;i++) {
 			SFSerendipity2D s = new SFSerendipity2D(i);
 			System.out.println(s);
-			System.out.println(s.d("r"));
-			System.out.println(s.d("s"));
+			System.out.println(s._d("r"));
+			System.out.println(s._d("s"));
 		}
 	}
 

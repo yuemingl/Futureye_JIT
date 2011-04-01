@@ -14,7 +14,7 @@ import edu.uta.futureye.function.operator.FOVector;
 import edu.uta.futureye.util.FutureyeException;
 
 /**
- * u关于n的方向导数：
+ * u鍏充簬n鐨勬柟鍚戝鏁帮細
  * \frac{ \partial{u} }{ \partial{\mathbf{n}} }
  * 
  * @author liuyueming

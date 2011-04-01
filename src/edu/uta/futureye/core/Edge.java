@@ -3,18 +3,18 @@ package edu.uta.futureye.core;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.geometry.GeoEntity1D;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.container.NodeList;
 
 /**
  * Global edge of an element
- * ȫ�ֱ�
+ * 全局边
  * 
  * @author liuyueming
  *
  */
 public class Edge extends GeoEntity1D<NodeLocal> {
 	protected int globalIndex;
-	private Vector globalUnitNormVector; //ȫ�ֵ�λ������
+	private Vector globalUnitNormVector; //全局单位法方向
 	
 	public Edge() {
 	}
@@ -48,8 +48,19 @@ public class Edge extends GeoEntity1D<NodeLocal> {
 	}
 	
     public NodeType getBorderType() {                 
-    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType();
-    	NodeType nt2 = this.vertices.at(2).globalNode().getNodeType();                       
+    	return getBorderType(1);
+    }
+    
+	/**
+	 * 对于向量值问题，每个分量在同一边界上的类型不一定相同，
+	 * 该函数返回分量<tt>vvfIndex</tt>对应的边界类型
+	 * Vector valued function (vvf)
+	 * @param vvfIndex
+	 * @return
+	 */
+    public NodeType getBorderType(int vvfIndex) {                 
+    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType(vvfIndex);
+    	NodeType nt2 = this.vertices.at(2).globalNode().getNodeType(vvfIndex);                       
     	if(nt1 == nt2) return nt1;                  
     	else {
     		//TODO Exception?
@@ -74,7 +85,7 @@ public class Edge extends GeoEntity1D<NodeLocal> {
 	}
 	
 	/**
-	 * �ж�ĳ��������Ƿ���edge��
+	 * 判断某个坐标点是否在edge上
 	 * @param coord
 	 * @return
 	 */

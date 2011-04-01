@@ -31,28 +31,28 @@ import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFQuadraticLocal2DFast;
 import edu.uta.futureye.lib.shapefun.SFSerendipity2D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.ObjList;
 
 public class LaplaceTest {
 	
 	public static void triangleTest() {
-//		String meshName = "triangle2";
-		String meshName = "triangle_refine";
+		String meshName = "triangle";
+//		String meshName = "triangle_refine";
 		MeshReader reader = new MeshReader(meshName+".grd");
 		Mesh mesh = reader.read2DMesh();
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 		
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
-//		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
-//			@Override
-//			public double value(Variable v) {
-//				if(3.0-v.get("x")<0.01)
-//					return 1.0;
-//				else
-//					return -1.0;
-//			}
-//		});
+		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y"){
+			@Override
+			public double value(Variable v) {
+				if(3.0-v.get("x")<0.01)
+					return 1.0;
+				else
+					return -1.0;
+			}
+		});
 		mapNTF.put(NodeType.Dirichlet, null);		
 		mesh.markBorderNode(mapNTF);
 
@@ -93,14 +93,19 @@ public class LaplaceTest {
 				);
 //		weakForm.setF(new FConstant(-2.0));
 		
+		//Robin:  d*u + k*u_n= q (è‡ªç„¶è¾¹ç•Œï¼šd==k, q=0)
 		weakForm.setParam(
 					null,
 					null,
-					FOBasic.Minus(
-							FOBasic.Mult(new FC(6.0), 
-							FOBasic.Mult(new FX("y"),new FX("y") )
-							),
-					new FC(54.0)),null //Robin: 6*y^2-54
+//					FOBasic.Minus(
+//							FOBasic.Mult(new FC(6.0), 
+//							FOBasic.Mult(new FX("y"),new FX("y") )
+//							),
+//					new FC(54.0)),
+//					FC.c(2.0).X(FX.fx),//2*x
+					FC.c(0.0),
+					
+					FC.c0 //Robin: 6*y^2-54
 				);
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
@@ -108,7 +113,9 @@ public class LaplaceTest {
 		long begin = System.currentTimeMillis();
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
+		stiff.print();
 		Vector load = assembler.getLoadVector();
+		load.print();
 		assembler.imposeDirichletCondition(new FC(0.0));
 		long end = System.currentTimeMillis();
 		System.out.println("Assemble done!");
@@ -129,7 +136,7 @@ public class LaplaceTest {
 //		MeshReader reader = new MeshReader("rectangle.grd");
 		MeshReader reader = new MeshReader("rectangle_refine.grd");
 		Mesh mesh = reader.read2DMesh();
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
 //			@Override
@@ -204,12 +211,12 @@ public class LaplaceTest {
 	
 	
 	public static void mixedTest() {
-		//×¢£º
-		//ÊıÖµ»ı·ÖÈı½ÇĞÎÉÏÑ¡Ôñ2½×£¬ËÄ±ßĞÎÉÏÑ¡Ôñ1½×
-		//Èı½ÇĞÎÉÏÑ¡Ôñ4½×£¬ËÄ±ßĞÎÉÏÑ¡Ôñ2½×£¨bugfix£©
+		//æ³¨ï¼š
+		//æ•°å€¼ç§¯åˆ†ä¸‰è§’å½¢ä¸Šé€‰æ‹©2é˜¶ï¼Œå››è¾¹å½¢ä¸Šé€‰æ‹©1é˜¶
+		//ä¸‰è§’å½¢ä¸Šé€‰æ‹©4é˜¶ï¼Œå››è¾¹å½¢ä¸Šé€‰æ‹©2é˜¶ï¼ˆbugfixï¼‰
 		MeshReader reader = new MeshReader("mixed.grd");
 		Mesh mesh = reader.read2DMesh();
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
 //			@Override
@@ -336,7 +343,7 @@ public class LaplaceTest {
 //			}
 		}
 		
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
@@ -438,7 +445,7 @@ public class LaplaceTest {
 //			}
 		}
 		
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
 //									@Override
@@ -516,15 +523,15 @@ public class LaplaceTest {
 	/**
 	 * Border Depth Compensation test
 	 * 
-	 * Dirichlet±ß½çÌõ¼şÆäÖĞÒ»¸ö½áµãÉÏµÄÖµ±ÈÆäËû½áµã¶¼Ğ¡£¬
-	 * ½áËãÆäÓ°Ïì·¶Î§
+	 * Dirichletè¾¹ç•Œæ¡ä»¶å…¶ä¸­ä¸€ä¸ªç»“ç‚¹ä¸Šçš„å€¼æ¯”å…¶ä»–ç»“ç‚¹éƒ½å°ï¼Œ
+	 * ç»“ç®—å…¶å½±å“èŒƒå›´
 	 */
 	public static void triangleBDCTest() {
 		//String meshName = "triangle_refine";
 		String meshName = "triangle";
 		MeshReader reader = new MeshReader(meshName+".grd");
 		Mesh mesh = reader.read2DMesh();
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 		
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);		
@@ -570,9 +577,9 @@ public class LaplaceTest {
 			public double value(Variable v) {
 				if(3.0-v.get("x")<0.01 && 
 						Math.abs(1.0-v.get("y"))<0.2)
-					return 0.0;
+					return -10.0;
 				else
-					return 10.0;
+					return 0.0;
 			}
 		});
 		long end = System.currentTimeMillis();
@@ -594,11 +601,11 @@ public class LaplaceTest {
 //		rectangleTest();
 	
 //TODO
-//		mixedTest(); //OK ÊıÖµ»ı·ÖµÄÎÊÌâfixed
+//		mixedTest(); //OK æ•°å€¼ç§¯åˆ†çš„é—®é¢˜fixed
 		
 //		serendipityTest();
-		quadraticLocal2DTest();
-//		triangleBDCTest();
+//		quadraticLocal2DTest();
+		triangleBDCTest();
 	}
 		
 }

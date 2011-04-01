@@ -13,8 +13,8 @@ public interface Chain extends Item{
 	public void clear();
 	
 	/**
-	 * ºÏ²¢ChainÖĞµÄÍ¬ÀàÏî
-	 * @param bMergeFunction ¿ØÖÆÊÇ·ñºÏ²¢ChainÖĞµÄFunction¶ÔÏó
+	 * åˆå¹¶Chainä¸­çš„åŒç±»é¡¹
+	 * @param bMergeFunction æ§åˆ¶æ˜¯å¦åˆå¹¶Chainä¸­çš„Functionå¯¹è±¡
 	 */
 	public void merge(boolean bMergeFunction);
 	

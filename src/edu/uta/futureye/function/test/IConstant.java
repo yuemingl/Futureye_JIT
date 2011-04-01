@@ -1,6 +1,6 @@
 package edu.uta.futureye.function.test;
 
-//²»ĞèÒª
+//ä¸éœ€è¦
 public class IConstant extends AbstractItem{
 
 	@Override

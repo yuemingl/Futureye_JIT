@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.NodeList;
-import edu.uta.futureye.util.list.ObjList;
-import edu.uta.futureye.util.list.VertexList;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
+import edu.uta.futureye.util.container.ObjList;
+import edu.uta.futureye.util.container.VertexList;
 
 public class Refiner {
 
 	/**
-	 * ¼ì²éÊÇ·ñĞèÒªÁ´Ê½¼ÓÃÜÖÜÎ§Íø¸ñ£¬µ±½øĞĞµÚ¶ş´Î¼ÓÃÜµ¥ÔªÊ±£¬ÎªÁË±£³ÖÒ»Ìõ±ß½çÉÏÖ»ÓĞÒ»¸öhanging node£¬
-	 * ¿ÉÄÜĞèÒª¼ÓÃÜµ±Ç°µ¥ÔªÖÜÎ§µÄµ¥Ôª
+	 * æ£€æŸ¥æ˜¯å¦éœ€è¦é“¾å¼åŠ å¯†å‘¨å›´ç½‘æ ¼ï¼Œå½“è¿›è¡Œç¬¬äºŒæ¬¡åŠ å¯†å•å…ƒæ—¶ï¼Œä¸ºäº†ä¿æŒä¸€æ¡è¾¹ç•Œä¸Šåªæœ‰ä¸€ä¸ªhanging nodeï¼Œ
+	 * å¯èƒ½éœ€è¦åŠ å¯†å½“å‰å•å…ƒå‘¨å›´çš„å•å…ƒ
 	 * @param mesh
 	 * @param eToRefine
 	 */
@@ -42,7 +42,7 @@ public class Refiner {
 		
 		for(int i=1;i<=eToRefine.size();i++) {
 			Element e = eToRefine.at(i);
-			//·ÀÖ¹ÖØ¸´refine
+			//é˜²æ­¢é‡å¤refine
 			if(e.isRefined())
 				continue;
 			
@@ -257,24 +257,24 @@ public class Refiner {
 				for(int iToRe=1;iToRe<=eNeighbors.size();iToRe++) {
 					eList.remove(eNeighbors.at(iToRe));
 				}
-				mesh.computeNodesBelongToElement();
-				mesh.computeNeiborNode();
-				mesh.computeNeighborElement();
+				mesh.computeNodeBelongsToElements();
+				mesh.computeNeighborNodes();
+				mesh.computeNeighborElements();
 			} else {
 				directRefine(mesh,eToRefine);
 				computeHangingNode(eToRefine);
 				for(int iToRe=1;iToRe<=eToRefine.size();iToRe++) {
 					eList.remove(eToRefine.at(iToRe));
 				}
-				mesh.computeNodesBelongToElement();
-				mesh.computeNeiborNode();
-				mesh.computeNeighborElement();
+				mesh.computeNodeBelongsToElements();
+				mesh.computeNeighborNodes();
+				mesh.computeNeighborElements();
 				break;
 			}
 		}
 	}
 	
-	//¼ÆËãhanging node
+	//è®¡ç®—hanging node
 	public static void computeHangingNode(ElementList eToRefine) {
 		for(int iToRe=1;iToRe<=eToRefine.size();iToRe++) {
 			ElementList eChilds = eToRefine.at(iToRe).childs;
@@ -282,7 +282,7 @@ public class Refiner {
 				Element eChild = eChilds.at(i);
 				for(int j=1;j<=eChild.nodes.size();j++) {
 					Node nNew = eChild.nodes.at(j);
-					//!!! NodeµÄlevelÓëµ¥ÔªlevelÏàÍ¬Ê±£¬Çå¿Õhanging nodeÏŞÖÆÖµÌõ¼ş£¬×¼±¸ÖØĞÂ¼ÆËã
+					//!!! Nodeçš„levelä¸å•å…ƒlevelç›¸åŒæ—¶ï¼Œæ¸…ç©ºhanging nodeé™åˆ¶å€¼æ¡ä»¶ï¼Œå‡†å¤‡é‡æ–°è®¡ç®—
 					if(nNew.getLevel() == eChild.getLevel()) {
 						NodeRefined nRefined = (NodeRefined)nNew;
 						nRefined.clearConstrainNodes();
@@ -294,23 +294,23 @@ public class Refiner {
 		for(int iToRe=1;iToRe<=eToRefine.size();iToRe++) {
 			ElementList eChilds = eToRefine.at(iToRe).childs;
 			ElementList eNeighbors = eToRefine.at(iToRe).neighbors;
-			//Ñ­»·´óµ¥ÔªÖĞµÄÃ¿¸ö×Óµ¥Ôª
+			//å¾ªç¯å¤§å•å…ƒä¸­çš„æ¯ä¸ªå­å•å…ƒ
 			for(int i=1;i<=eChilds.size();i++) {
 				Element eChild = eChilds.at(i);
-				//Ñ­»·Ã¿¸ö×Óµ¥ÔªµÄ½áµã
+				//å¾ªç¯æ¯ä¸ªå­å•å…ƒçš„ç»“ç‚¹
 				for(int j=1;j<=eChild.nodes.size();j++) {
 					Node nNew = eChild.nodes.at(j);
 					if(nNew.getLevel() == eChild.getLevel()) {
 						NodeRefined nRefined = (NodeRefined)nNew;
-						//Ñ­»·´óµ¥ÔªµÄÏàÁÚµ¥Ôª£¬ÅĞ¶Ï¸Ã½ÚµãÊÇ·ñHanging node£¬
-						//Èç¹ûÊÇ±ß½çµ¥ÔªµÄ±ß½çÉÏ¼ÓÃÜ£¬nRefined½«Ã»ÓĞConstrainNode£¬Ä¬ÈÏÎª·ÇHanging node
+						//å¾ªç¯å¤§å•å…ƒçš„ç›¸é‚»å•å…ƒï¼Œåˆ¤æ–­è¯¥èŠ‚ç‚¹æ˜¯å¦Hanging nodeï¼Œ
+						//å¦‚æœæ˜¯è¾¹ç•Œå•å…ƒçš„è¾¹ç•Œä¸ŠåŠ å¯†ï¼ŒnRefinedå°†æ²¡æœ‰ConstrainNodeï¼Œé»˜è®¤ä¸ºéHanging node
 						for(int k=1;k<=eNeighbors.size();k++) {
 							Element eNeighbor = eNeighbors.at(k);
-							//!!! ÏàÁÚµ¥ÔªÃ»ÓĞ±ê¼ÇÎª¼ÓÃÜ  ²¢ÇÒ ÏàÁÚµ¥ÔªµÄ²ã´ÎÒªµÍÓÚ¸Ãµ¥Ôª
+							//!!! ç›¸é‚»å•å…ƒæ²¡æœ‰æ ‡è®°ä¸ºåŠ å¯†  å¹¶ä¸” ç›¸é‚»å•å…ƒçš„å±‚æ¬¡è¦ä½äºè¯¥å•å…ƒ
 							if(!eNeighbor.isRefined() && eNeighbor.getLevel()<eChild.getLevel()) {
 								ObjList<EdgeLocal> edges = eNeighbors.at(k).edges();
 								for(int kk=1;kk<=edges.size();kk++) {
-									//ÅĞ¶Ï½áµãÊÇ·ñÔÚ´óµ¥Ôª±ßÉÏ
+									//åˆ¤æ–­ç»“ç‚¹æ˜¯å¦åœ¨å¤§å•å…ƒè¾¹ä¸Š
 									if(edges.at(kk).globalEdge.isCoordOnEdge(nRefined.coords())) {
 										NodeList endNodes = edges.at(kk).globalEdge.getEndNodes();
 										//System.out.println("Hanging node:"+nRefined.globalIndex+

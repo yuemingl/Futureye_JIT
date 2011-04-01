@@ -29,11 +29,13 @@ public class SparseVector implements Vector {
 		if(a == null || a.length ==0) {
 			Exception e = new FutureyeException("Dim of SparseVector should be > 0!");
 			e.printStackTrace();
-			return;
+			System.exit(-1);
 		} else {
 			dim = a.length;
-			for(int i=0; i<a.length; i++)
-				data.put(i+1, a[i]);
+			for(int i=0; i<a.length; i++) {
+				if(Double.compare(a[i], 0.0) != 0)
+					data.put(i+1, a[i]);
+			}
 		}
 	}
 	
@@ -53,7 +55,7 @@ public class SparseVector implements Vector {
 	}
 	
 	@Override
-	public void set(Vector v) {
+	public Vector set(Vector v) {
 		if(v instanceof SparseVector) {
 			SparseVector tmp = (SparseVector)v;
 			this.data.clear();
@@ -65,6 +67,7 @@ public class SparseVector implements Vector {
 				this.set(i,v.get(i));
 			}
 		}
+		return this;
 	}
 	
 	@Override
@@ -83,7 +86,7 @@ public class SparseVector implements Vector {
 	}
 	
 	@Override
-	public void add(double a, Vector v) {
+	public Vector add(double a, Vector v) {
 		if(v instanceof SparseVector) {
 			SparseVector tmp = (SparseVector)v;
 			for(Entry<Integer, Double> e : tmp.data.entrySet()) {
@@ -94,6 +97,7 @@ public class SparseVector implements Vector {
 				this.add(i,a*v.get(i));
 			}
 		}
+		return this;
 	}
 	
 	@Override
@@ -144,10 +148,17 @@ public class SparseVector implements Vector {
 	@Override
 	public void print() {
 		for(int i=1;i<=dim;i++) {
-			System.out.print(String.format("%8.4f", get(i))+"   ");
+			System.out.print(String.format("%8.6f", get(i))+"   ");
 		}
 		System.out.println();
+		System.out.println();
 	}	
+	
+	public String toString() {
+		return "SparseVector("+
+			this.dim+
+			"):N0R="+data.size();
+	}
 	
 	/////////////////////////////////////////////////
 
@@ -156,7 +167,7 @@ public class SparseVector implements Vector {
 	}
 	
 	/////////////////////////////////////////////////
-	//TODO 不要静态函数，紧改成系数矩阵优化的方法
+	//TODO 涓嶈闈欐�佸嚱鏁帮紝绱ф敼鎴愮郴鏁扮煩闃典紭鍖栫殑鏂规硶
 
 	public static Vector ax(double a, Vector x) {
 		int dim = x.getDim();
@@ -192,6 +203,40 @@ public class SparseVector implements Vector {
 			rlt.set(i, a*x.get(i)/y.get(i));
 		}
 		return rlt;
+	}
+
+	@Override
+	public Vector add(Vector v) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Vector axpy(double a, Vector y) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Vector scale(double a) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Vector ax(double a) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double norm1() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Vector set(double a, Vector v) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 
 }

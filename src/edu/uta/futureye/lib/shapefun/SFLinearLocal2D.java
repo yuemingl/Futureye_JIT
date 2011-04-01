@@ -13,11 +13,11 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.list.ObjList;
-import edu.uta.futureye.util.list.VertexList;
+import edu.uta.futureye.util.container.ObjList;
+import edu.uta.futureye.util.container.VertexList;
 
 /**
- * Èý½ÇÐÎ¾Ö²¿×ø±ê£¬ÏßÐÔÐÍº¯Êý
+ * ä¸‰è§’å½¢å±€éƒ¨åæ ‡ï¼Œçº¿æ€§åž‹å‡½æ•°
  * N = N(r,s,t) = N( r(x,y), s(x,y), t(x,y) )
  * N1 = r
  * N2 = s
@@ -47,10 +47,10 @@ public class SFLinearLocal2D  extends AbstractFunction implements ScalarShapeFun
 			this.funIndex = funIndex;
 		}
 		@Override
-		public Function d(String var) {
-			if(sfVarNames.get(funIndex).equals(var)) { //r,s,t¹ØÓÚ¸÷×Ô±äÁ¿Çóµ¼
+		public Function _d(String var) {
+			if(sfVarNames.get(funIndex).equals(var)) { //r,s,tå…³äºŽå„è‡ªå˜é‡æ±‚å¯¼
 				return new FC(1.0);
-			} else if(funIndex == 2){ //t¹ØÓÚ±äÁ¿r,sÇóµ¼
+			} else if(funIndex == 2){ //tå…³äºŽå˜é‡r,sæ±‚å¯¼
 				//1 = r + s + t
 				return new FC(-1.0);
 			} else {
@@ -69,7 +69,7 @@ public class SFLinearLocal2D  extends AbstractFunction implements ScalarShapeFun
  	}
 	
 	/**
-	 * ¹¹ÔìÏÂÁÐÐÎº¯ÊýÖÐµÄÒ»¸ö£º
+	 * æž„é€ ä¸‹åˆ—å½¢å‡½æ•°ä¸­çš„ä¸€ä¸ªï¼š
 	 * N1 = L1 = r
 	 * N2 = L2 = s
 	 * N3 = L3 = t
@@ -79,8 +79,9 @@ public class SFLinearLocal2D  extends AbstractFunction implements ScalarShapeFun
 	public void Create(int funID, double coef) {
 		funIndex = funID - 1;
 		if(funID<1 || funID>3) {
-			System.out.println("ERROR: funID should be 1,2 or 3.");
-			return;
+			FutureyeException ex = new FutureyeException("ERROR: funID should be 1,2 or 3.");
+			ex.printStackTrace();
+			System.exit(-1);
 		}
 		
 		sfVarNames.add("r");
@@ -88,12 +89,12 @@ public class SFLinearLocal2D  extends AbstractFunction implements ScalarShapeFun
 		sfVarNames.add("t");
 		innerVarNames = new ObjList<String>("x","y");
 		
-		//¸´ºÏº¯Êý
+		//å¤åˆå‡½æ•°
 		Map<String, Function> fInners = new HashMap<String, Function>();
 		
 		final String varName = sfVarNames.get(funIndex);
 		fInners.put(varName, new AbstractFunction(innerVarNames.toList()) {	
-			public Function d(String var) {
+			public Function _d(String var) {
 				if(area < 0.0) {
 					FutureyeException e = new FutureyeException("Check nodes order: area < 0.0");
 					e.printStackTrace();
@@ -120,7 +121,7 @@ public class SFLinearLocal2D  extends AbstractFunction implements ScalarShapeFun
 			}
 		});
 		
-		//Ê¹ÓÃ¸´ºÏº¯Êý¹¹ÔìÐÎº¯Êý
+		//ä½¿ç”¨å¤åˆå‡½æ•°æž„é€ å½¢å‡½æ•°
 		funOuter = new SF123(funIndex);
 		this.coef = coef;
 		funCompose = FMath.Mult(new FC(this.coef), 
@@ -136,8 +137,8 @@ public class SFLinearLocal2D  extends AbstractFunction implements ScalarShapeFun
 	}
 	
 	@Override
-	public Function d(String varName) {
-		return funCompose.d(varName);
+	public Function _d(String varName) {
+		return funCompose._d(varName);
 	}
 
 	@Override
@@ -148,7 +149,7 @@ public class SFLinearLocal2D  extends AbstractFunction implements ScalarShapeFun
 	@Override
 	public void asignElement(Element e) {
 		this.e = e;
-		//ÓÉnode¸ÄÎªvertex£¬ÒòÎªElement.adjustVerticeToCounterClockwise()½áµãË³ÐòÖ»µ÷ÕûÁËvertex
+		//ç”±nodeæ”¹ä¸ºvertexï¼Œå› ä¸ºElement.adjustVerticeToCounterClockwise()ç»“ç‚¹é¡ºåºåªè°ƒæ•´äº†vertex
 		VertexList vList = e.vertices();
 		double x1 = vList.at(1).coord(1) , y1 =  vList.at(1).coord(2) ;
 		double x2 = vList.at(2).coord(1) , y2 =  vList.at(2).coord(2) ;

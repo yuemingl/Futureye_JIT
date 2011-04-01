@@ -129,17 +129,23 @@ public class SparseMatrix implements Matrix {
 	public void print() {
 		for(int i=1;i<=rowDim;i++) {
 			for(int j=1;j<=colDim;j++) {
-				System.out.print(String.format("%8.4f", get(i,j))+"   ");
+				System.out.print(String.format("%8.6f", get(i,j))+"   ");
 			}
 			System.out.println();
 		}
 		System.out.println();
 	}
+	
+	public String toString() {
+		return "SparseMatrix("+
+			this.rowDim+","+this.colDim+
+			"):N0R="+m.size();
+	}
 
 	////////////////////////////////////////////////////
 	
 	/**
-	 * ·µ»ØÐÐÑ¹Ëõ´æ´¢·½Ê½µÄÁÐË÷ÒýÊý×é£¬ÁÐºÅ´Ó0¿ªÊ¼
+	 * è¿”å›žè¡ŒåŽ‹ç¼©å­˜å‚¨æ–¹å¼çš„åˆ—ç´¢å¼•æ•°ç»„ï¼Œåˆ—å·ä»Ž0å¼€å§‹
 	 */
 	public int [][] getColIndex() {
 		int[][] colIndex = new int[m.size()][];

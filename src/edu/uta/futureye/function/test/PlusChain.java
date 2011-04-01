@@ -42,7 +42,7 @@ public class PlusChain extends AbstractChain {
 					((PlusChain) sub).multiCoef(pair.coef);
 					tmp.addAll(sub.getAllItem());
 				} else {
-					//²»Ó¦¸Ã´æÔÚ
+					//ä¸åº”è¯¥å­˜åœ¨
 					//Exception e = new Exception("ERROR 1: PlusChain.merge");
 					//e.printStackTrace();
 					tmp.add(pair);

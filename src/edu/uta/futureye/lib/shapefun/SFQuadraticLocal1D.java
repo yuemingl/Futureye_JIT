@@ -14,8 +14,9 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
-import edu.uta.futureye.util.list.ObjList;
-import edu.uta.futureye.util.list.VertexList;
+import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.container.ObjList;
+import edu.uta.futureye.util.container.VertexList;
 
 public class SFQuadraticLocal1D extends AbstractFunction implements ScalarShapeFunction {
 	private int funIndex;
@@ -27,7 +28,7 @@ public class SFQuadraticLocal1D extends AbstractFunction implements ScalarShapeF
 	private Element e = null;
 
 	/**
-	 * ¹¹ÔìÏÂÁÐÐÎº¯ÊýÖÐµÄÒ»¸ö£º
+	 * æž„é€ ä¸‹åˆ—å½¢å‡½æ•°ä¸­çš„ä¸€ä¸ªï¼š
 	 * 
 	 *  1--3--2  -->r
 	 * -1  0  1
@@ -41,21 +42,22 @@ public class SFQuadraticLocal1D extends AbstractFunction implements ScalarShapeF
 	public SFQuadraticLocal1D(int funID) {
 		funIndex = funID - 1;
 		if(funID<1 || funID>3) {
-			System.out.println("ERROR: funID should be 1 ,2 or 3.");
-			return;
+			FutureyeException ex = new FutureyeException("ERROR: funID should be 1 ,2 or 3.");
+			ex.printStackTrace();
+			System.exit(-1);			
 		}
 		
 		varNames.add("r");
 		innerVarNames = new ObjList<String>("x");
 		
-		//¸´ºÏº¯Êý
+		//å¤åˆå‡½æ•°
 		Map<String, Function> fInners = new HashMap<String, Function>();
 		
 		/*
 		 *  r_x = 2/(x2-x1)  
 		 */
 		fInners.put("r", new AbstractFunction(innerVarNames.toList()) {	
-			public Function d(String var) {
+			public Function _d(String var) {
 				if(var.contains("x")) {
 					VertexList vl = e.vertices();
 					if(vl.size() == 2) {
@@ -75,7 +77,7 @@ public class SFQuadraticLocal1D extends AbstractFunction implements ScalarShapeF
 		 //* N2 = (r+1)*r/2 = r*(r/2 + 1/2)
 		 //* N3 = 1-r*r
 		Function fr = new FX("r");
-		//Ê¹ÓÃ¸´ºÏº¯Êý¹¹ÔìÐÎº¯Êý
+		//ä½¿ç”¨å¤åˆå‡½æ•°æž„é€ å½¢å‡½æ•°
 		if(funIndex == 0)
 			funOuter = FMath.Mult(fr, new FAxpb("r",0.5,-0.5));
 		else if(funIndex == 1)
@@ -92,8 +94,8 @@ public class SFQuadraticLocal1D extends AbstractFunction implements ScalarShapeF
 	}
 
 	@Override
-	public Function d(String varName) {
-		return funCompose.d(varName);
+	public Function _d(String varName) {
+		return funCompose._d(varName);
 	}
 
 	@Override

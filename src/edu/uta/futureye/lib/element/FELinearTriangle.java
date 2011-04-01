@@ -4,8 +4,15 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
-import edu.uta.futureye.util.list.VertexList;
+import edu.uta.futureye.util.container.VertexList;
 
+/**
+ * Linear Triangle element for 2D
+ * 2维三角形线性单元
+ * 
+ * @author liuyueming
+ *
+ */
 public class FELinearTriangle implements FiniteElementType {
 	protected static SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
 	
@@ -32,4 +39,15 @@ public class FELinearTriangle implements FiniteElementType {
 			e.addNodeDOF(j, dof);
 		}
 	}
+
+	@Override
+	public int getDOFNumOnElement(int vsfDim) {
+		return 3;
+	}
+
+	@Override
+	public int getVectorShapeFunctionDim() {
+		throw new UnsupportedOperationException();
+	}
+	
 }

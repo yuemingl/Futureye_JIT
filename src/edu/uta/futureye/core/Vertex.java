@@ -4,7 +4,7 @@ import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.util.Constant;
 
 /**
- * µ¥Ôª¶¥µã
+ * å•å…ƒé¡¶ç‚¹
  * @author liuyueming
  *
  */
@@ -14,7 +14,7 @@ public class Vertex implements Point {
 
 	protected int localIndex;
 	public Element owner = null;
-	//¶¥µã¶ÔÓ¦µÄ½áµã
+	//é¡¶ç‚¹å¯¹åº”çš„ç»“ç‚¹
 	protected NodeLocal refNodeLocal = null;
 	
 	public Node globalNode() {
@@ -30,10 +30,10 @@ public class Vertex implements Point {
 	}
 	
 	/**
-	 * ¹¹ÔìÒ»¸ö¶¥µã
-	 * @param localIndex ¾Ö²¿Ë÷Òı£¨±àºÅ£©
-	 * @param x µÚÒ»¸ö×ø±ê
-	 * @param coords ÆäËû×ø±ê£¨y:2D or y,z:3D£©
+	 * æ„é€ ä¸€ä¸ªé¡¶ç‚¹
+	 * @param localIndex å±€éƒ¨ç´¢å¼•ï¼ˆç¼–å·ï¼‰
+	 * @param x ç¬¬ä¸€ä¸ªåæ ‡
+	 * @param coords å…¶ä»–åæ ‡ï¼ˆy:2D or y,z:3Dï¼‰
 	 */
 	public Vertex(int localIndex, double x,double ...coords) {
 		this.localIndex = localIndex;
@@ -48,7 +48,7 @@ public class Vertex implements Point {
 	}
 	
 	/**
-	 * ´ÓÒ»¸öNodeLocal¹¹ÔìVertex£¬²¢ÓëNodeLocal¹ØÁª
+	 * ä»ä¸€ä¸ªNodeLocalæ„é€ Vertexï¼Œå¹¶ä¸NodeLocalå…³è”
 	 * @param localIndex
 	 * @param localNode
 	 */
@@ -57,7 +57,7 @@ public class Vertex implements Point {
 	}
 	
 	/**
-	 * ÖÃ¶¥µã±àºÅºÍ×ø±êÖµ
+	 * ç½®é¡¶ç‚¹ç¼–å·å’Œåæ ‡å€¼
 	 * @param localIndex
 	 * @param coords
 	 * @return self
@@ -73,7 +73,7 @@ public class Vertex implements Point {
 	}
 	
 	/**
-	 * ½«Ò»¸öNodeLocal×ø±ê¸³Öµ¸øVertex£¬²¢ÓëNodeLocal¹ØÁª
+	 * å°†ä¸€ä¸ªNodeLocalåæ ‡èµ‹å€¼ç»™Vertexï¼Œå¹¶ä¸NodeLocalå…³è”
 	 * @param localIndex
 	 * @param node
 	 * @return self

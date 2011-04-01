@@ -14,7 +14,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFunction {
 	private int funIndex;
@@ -28,7 +28,7 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 	
 	
 	/**
-	 * ¹¹ÔìÏÂÁÐÐÎº¯ÊýÖÐµÄÒ»¸ö£º
+	 * æž„é€ ä¸‹åˆ—å½¢å‡½æ•°ä¸­çš„ä¸€ä¸ªï¼š
 	 *  s
 	 *  ^
 	 *  |
@@ -58,7 +58,7 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 		varNames.add("s");
 		innerVarNames = new ObjList<String>("x","y");
 		
-		//¸´ºÏº¯Êý
+		//å¤åˆå‡½æ•°
 		Map<String, Function> fInners = new HashMap<String, Function>(4);
 		
 		for(final String varName : varNames) {
@@ -66,7 +66,7 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
-				public Function d(String var) {
+				public Function _d(String var) {
 					//Coordinate transform and Jacbian on element e
 					List<Function> funs = trans.getTransformFunction(
 							trans.getTransformLinear2DShapeFunction(e)
@@ -76,10 +76,10 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 					Function fx = funs.get(0);
 					Function fy = funs.get(1);
 					
-					Function x_r = fx.d("r");
-					Function x_s = fx.d("s");
-					Function y_r = fy.d("r");
-					Function y_s = fy.d("s");
+					Function x_r = fx._d("r");
+					Function x_s = fx._d("s");
+					Function y_r = fy._d("r");
+					Function y_s = fy._d("s");
 					Function jac = trans.getJacobian2D();
 					
 					if(varName.equals("r")) {
@@ -113,7 +113,7 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 			funOuter = FMath.Mult(new FAxpb("r",-0.5,0.5), 
 					new FAxpb("s",0.5,0.5));
 		
-		//Ê¹ÓÃ¸´ºÏº¯Êý¹¹ÔìÐÎº¯Êý
+		//ä½¿ç”¨å¤åˆå‡½æ•°æž„é€ å½¢å‡½æ•°
 		this.coef = coef;
 		funCompose = FMath.Mult(new FC(this.coef), 
 				FMath.Compose(funOuter, fInners));
@@ -127,8 +127,8 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 		Create(funID,1.0);
 	}
 
-	public Function d(String varName) {
-		return funCompose.d(varName);
+	public Function _d(String varName) {
+		return funCompose._d(varName);
 	}
 
 	public double value(Variable v) {

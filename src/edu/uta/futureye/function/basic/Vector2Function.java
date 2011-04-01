@@ -26,7 +26,7 @@ public class Vector2Function extends AbstractFunction {
 			ex.printStackTrace();
 			System.exit(-1);
 		} else {
-			return u.get(index);//注：下标错位会造成结果出现随机混乱
+			return u.get(index);//娉細涓嬫爣閿欎綅浼氶�犳垚缁撴灉鍑虹幇闅忔満娣蜂贡
 		}
 		return 0.0;
 	}

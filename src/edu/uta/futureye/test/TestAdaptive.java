@@ -21,7 +21,7 @@ import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
-import edu.uta.futureye.util.list.ElementList;
+import edu.uta.futureye.util.container.ElementList;
 
 public class TestAdaptive {
 	
@@ -34,13 +34,13 @@ public class TestAdaptive {
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 
-		mesh.computeNodesBelongToElement();
-		mesh.computeNeiborNode();
+		mesh.computeNodeBelongsToElements();
+		mesh.computeNeighborNodes();
 		mesh.markBorderNode(mapNTF);
 
-		mesh.computeNodesBelongToElement();
-		mesh.computeNeiborNode();
-		mesh.computeNeighborElement();
+		mesh.computeNodeBelongsToElements();
+		mesh.computeNeighborNodes();
+		mesh.computeNeighborElements();
 
 		SFBilinearLocal2D[] shapeFun = new SFBilinearLocal2D[4];
 		for(int i=0;i<4;i++)
@@ -111,7 +111,7 @@ public class TestAdaptive {
 //		ElementList refinedList = eOld.refineOnce();
 //		NodeList nList = mesh.getNodeList();
 //		
-//		//µÚÒ»²½£ºĞÂÔö¼ÓµÄ½áµã¸³ÓèÈ«¾Ö±àºÅ£¬¼ÓÈëmesh¶ÔÏó
+//		//ç¬¬ä¸€æ­¥ï¼šæ–°å¢åŠ çš„ç»“ç‚¹èµ‹äºˆå…¨å±€ç¼–å·ï¼ŒåŠ å…¥meshå¯¹è±¡
 //		for(int i=1;i<=refinedList.size();i++) {
 //			Element eNew = refinedList.at(i);
 //			if(eNew.globalIndex == 0) {
@@ -127,7 +127,7 @@ public class TestAdaptive {
 //			}
 //		}
 //		
-//		//µÚ¶ş²½£º¼ÆËãhanging node
+//		//ç¬¬äºŒæ­¥ï¼šè®¡ç®—hanging node
 //		ElementList eNeighbor = eOld.neighbors;
 //		for(int i=1;i<=refinedList.size();i++) {
 //			Element eRefined = refinedList.at(i);
@@ -218,7 +218,7 @@ public class TestAdaptive {
 //		Solver solver = new Solver();
 //		Vector u = solver.solve(stiff, load);
 //		
-//		//hanging node¸³Öµ
+//		//hanging nodeèµ‹å€¼
 //		for(int i=1;i<=mesh.getElementList().size();i++) {
 //			Element e = mesh.getElementList().at(i);
 //			for(int j=1;j<=e.nodes.size();j++) {
@@ -253,10 +253,10 @@ public class TestAdaptive {
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 
-		mesh.computeNodesBelongToElement();
-		mesh.computeNeiborNode();
+		mesh.computeNodeBelongsToElements();
+		mesh.computeNeighborNodes();
 		mesh.markBorderNode(mapNTF);
-		mesh.computeNeighborElement();
+		mesh.computeNeighborElements();
 
 		ElementList eList = mesh.getElementList();
 		ElementList eToRefine = new ElementList();
@@ -268,12 +268,12 @@ public class TestAdaptive {
 		Refiner.refineOnce(mesh, eToRefine);
 		mesh.markBorderNode(mapNTF);
 		
-		//¶ş´Î¼ÓÃÜ
+		//äºŒæ¬¡åŠ å¯†
 		eToRefine.clear();
-		//µ¥Ôª±àºÅµÄÎÊÌâ¸ÃÈçºÎ´¦Àí£¿
+		//å•å…ƒç¼–å·çš„é—®é¢˜è¯¥å¦‚ä½•å¤„ç†ï¼Ÿ
 		eToRefine.add(eList.at(17));
 		eToRefine.add(eList.at(18));
-		//µÚÒ»²½£ºĞÂÔö¼ÓµÄ½áµã¸³ÓèÈ«¾Ö±àºÅ£¬¼ÓÈëmesh¶ÔÏó
+		//ç¬¬ä¸€æ­¥ï¼šæ–°å¢åŠ çš„ç»“ç‚¹èµ‹äºˆå…¨å±€ç¼–å·ï¼ŒåŠ å…¥meshå¯¹è±¡
 		Refiner.refineOnce(mesh, eToRefine);
 		mesh.markBorderNode(mapNTF);
 
@@ -339,7 +339,7 @@ public class TestAdaptive {
 		Solver solver = new Solver();
 		Vector u = solver.solve(stiff, load);
 		
-		//hanging node¸³Öµ
+		//hanging nodeèµ‹å€¼
 		for(int i=1;i<=mesh.getElementList().size();i++) {
 			Element e = mesh.getElementList().at(i);
 			for(int j=1;j<=e.nodes.size();j++) {
@@ -372,10 +372,10 @@ public class TestAdaptive {
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 
-		mesh.computeNodesBelongToElement();
-		mesh.computeNeiborNode();
+		mesh.computeNodeBelongsToElements();
+		mesh.computeNeighborNodes();
 		mesh.markBorderNode(mapNTF);
-		mesh.computeNeighborElement();
+		mesh.computeNeighborElements();
 
 		ElementList eList = mesh.getElementList();
 		ElementList eToRefine = new ElementList();
@@ -387,11 +387,11 @@ public class TestAdaptive {
 		Refiner.refineOnce(mesh, eToRefine);
 		mesh.markBorderNode(mapNTF);
 		
-//		//¶ş´Î¼ÓÃÜ
+//		//äºŒæ¬¡åŠ å¯†
 //		eToRefine.clear();
-//		//µ¥Ôª±àºÅµÄÎÊÌâ¸ÃÈçºÎ´¦Àí£¿
+//		//å•å…ƒç¼–å·çš„é—®é¢˜è¯¥å¦‚ä½•å¤„ç†ï¼Ÿ
 //		eToRefine.add(eList.at(17));
-//		//µÚÒ»²½£ºĞÂÔö¼ÓµÄ½áµã¸³ÓèÈ«¾Ö±àºÅ£¬¼ÓÈëmesh¶ÔÏó
+//		//ç¬¬ä¸€æ­¥ï¼šæ–°å¢åŠ çš„ç»“ç‚¹èµ‹äºˆå…¨å±€ç¼–å·ï¼ŒåŠ å…¥meshå¯¹è±¡
 //		Refiner.refineOnce(mesh, eToRefine);
 //		mesh.markBorderNode(mapNTF);
 
@@ -457,7 +457,7 @@ public class TestAdaptive {
 		Solver solver = new Solver();
 		Vector u = solver.solve(stiff, load);
 		
-		//hanging node¸³Öµ
+		//hanging nodeèµ‹å€¼
 		for(int i=1;i<=mesh.getElementList().size();i++) {
 			Element e = mesh.getElementList().at(i);
 			for(int j=1;j<=e.nodes.size();j++) {

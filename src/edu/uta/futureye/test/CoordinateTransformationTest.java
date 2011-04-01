@@ -18,14 +18,14 @@ import edu.uta.futureye.function.Variable;
 public class CoordinateTransformationTest {
 
 	public Component createComponents() {
-		final JLabel label = new JLabel("¾Ö²¿×ø±ê (r,s) => ÎïÀí×ø±ê (x,y)");
+		final JLabel label = new JLabel("å±€éƒ¨åæ ‡ (r,s) => ç‰©ç†åæ ‡ (x,y)");
 		final PanelDraw pane = new PanelDraw();
 		pane.setBorder(BorderFactory.createEmptyBorder(50, // top
 				50, // left
 				700, // bottom
 				700) // right
 				);
-		pane.setLayout(new GridLayout(0, 1)); // µ¥ÁĞ¶àĞĞ
+		pane.setLayout(new GridLayout(0, 1)); // å•åˆ—å¤šè¡Œ
 		pane.add(label);
 		pane.addMouseListener(new MouseListener() {
 
@@ -103,19 +103,19 @@ public class CoordinateTransformationTest {
 		try {
 			UIManager.setLookAndFeel(UIManager
 					.getCrossPlatformLookAndFeelClassName());
-			// ÉèÖÃ´°¿Ú·ç¸ñ
+			// è®¾ç½®çª—å£é£æ ¼
 		} catch (Exception e) {
 		}
 
-		// ´´½¨¶¥²ãÈİÆ÷²¢Ìí¼ÓÄÚÈİ.
+		// åˆ›å»ºé¡¶å±‚å®¹å™¨å¹¶æ·»åŠ å†…å®¹.
 		JFrame frame = new JFrame("CoordinateTransformation Test");
 		CoordinateTransformationTest app = new CoordinateTransformationTest();
 		Component contents = app.createComponents();
 		frame.getContentPane().add(contents, BorderLayout.CENTER);
 
-		// ´°¿ÚÉèÖÃ½áÊø£¬¿ªÊ¼ÏÔÊ¾
+		// çª—å£è®¾ç½®ç»“æŸï¼Œå¼€å§‹æ˜¾ç¤º
 		frame.addWindowListener(new WindowAdapter() {
-			// ÄäÃûÀàÓÃÓÚ×¢²á¼àÌıÆ÷
+			// åŒ¿åç±»ç”¨äºæ³¨å†Œç›‘å¬å™¨
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}

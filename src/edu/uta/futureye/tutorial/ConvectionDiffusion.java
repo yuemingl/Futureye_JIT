@@ -10,20 +10,16 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.io.MeshReader;
-import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakFormConvectionDiffusion;
-import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.Constant;
-import edu.uta.futureye.util.list.ElementList;
+import edu.uta.futureye.util.container.ElementList;
 
 /**
  * Convection-diffusion equation
@@ -75,7 +71,7 @@ public class ConvectionDiffusion {
 		MeshReader reader = new MeshReader("triangle_refine2.grd");
 		mesh = reader.read2DMesh();
 		//Geometry relationship
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 	}
 	
 	public void initParam() {
@@ -124,7 +120,7 @@ public class ConvectionDiffusion {
 		for(int i=1;i<=u.getDim();i++)
 			System.out.println(String.format("%.3f", u.get(i)));	
 	    
-		Tools.plotVector(mesh, u, outputFolder, String.format("ConDiff_t%03d.dat",step));
+		Tools.plotVector(mesh, outputFolder, String.format("ConDiff_t%03d.dat",step), u);
 	    return u;
 		
 	}
@@ -147,8 +143,8 @@ public class ConvectionDiffusion {
 		});
 		v.set(2, FC.c0);
 		
-		Tools.plotFunction(mesh, v.get(1), outputFolder, String.format("v1.dat"));
-		Tools.plotFunction(mesh, v.get(2), outputFolder, String.format("v2.dat"));
+		Tools.plotFunction(mesh, outputFolder, String.format("v1.dat"), v.get(1));
+		Tools.plotFunction(mesh, outputFolder, String.format("v2.dat"), v.get(2));
 		
 		//c0
 		Function c_n = new AbstractFunction("x","y") {

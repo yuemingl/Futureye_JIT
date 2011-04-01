@@ -17,7 +17,7 @@ import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
-import edu.uta.futureye.util.list.ElementList;
+import edu.uta.futureye.util.container.ElementList;
 
 /**
  * d1dt(u) - Laplace(u) = f
@@ -49,7 +49,7 @@ public class HeatTransfer {
 		MeshReader reader = new MeshReader("triangle.grd");
 		mesh = reader.read2DMesh();
 		//Geometry relationship
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 	}
 	
 	public void initParam() {
@@ -77,7 +77,7 @@ public class HeatTransfer {
 	
 	public Vector solverOneStep(int step, Function u_n) {
 		FC FDt = new FC(Dt);
-		weakForm.setF(FDt.X(f).P(u_n));
+		weakForm.setF(FDt.M(f).A(u_n));
 		weakForm.setParam(FDt, new FC(1.0), null, null);
 		
 		//Assemble

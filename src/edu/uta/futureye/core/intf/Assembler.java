@@ -3,18 +3,19 @@ package edu.uta.futureye.core.intf;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.VectorFunction;
 
 /**
- * ÕûÌåºÏ³É½Ó¿Ú£¬×î³õÔÚÇó½âLaplaceÎÊÌâÊ±£¨±êÁ¿Öµº¯Êı£©²¢Ã»ÓĞ³éÏóÎª½Ó¿Ú¡£
- * µ«ÊÇ£¬µ±´¦ÀíÏòÁ¿Öµº¯ÊıÊ±£¬¿ÉÄÜ»áÒıÈë·Ö¿é¾ØÕó£¬ÕâÊ±ÕûÌåºÏ³ÉµÄ¹ı³ÌÓëÒÔÇ°
- * ÓĞºÜ´óÇø±ğ£¬ĞèÒªÒÔÁíÍâµÄ·½Ê½ÊµÏÖ£¬Òò´Ë½«¡°ÕûÌåºÏ³É¡±²¿·Ö³éÏóÎª½Ó¿Ú¡£
+ * æ•´ä½“åˆæˆæ¥å£ï¼Œæœ€åˆåœ¨æ±‚è§£Laplaceé—®é¢˜æ—¶ï¼ˆæ ‡é‡å€¼å‡½æ•°ï¼‰å¹¶æ²¡æœ‰æŠ½è±¡ä¸ºæ¥å£ã€‚
+ * ä½†æ˜¯ï¼Œå½“å¤„ç†å‘é‡å€¼å‡½æ•°æ—¶ï¼Œå¯èƒ½ä¼šå¼•å…¥åˆ†å—çŸ©é˜µï¼Œè¿™æ—¶æ•´ä½“åˆæˆçš„è¿‡ç¨‹ä¸ä»¥å‰
+ * æœ‰å¾ˆå¤§åŒºåˆ«ï¼Œéœ€è¦ä»¥å¦å¤–çš„æ–¹å¼å®ç°ï¼Œå› æ­¤å°†â€œæ•´ä½“åˆæˆâ€éƒ¨åˆ†æŠ½è±¡ä¸ºæ¥å£ã€‚
  * 
  * @author liuyueming
  *
  */
 public interface Assembler {
 	/**
-	 * Ö´ĞĞÕûÌåºÏ³É²Ù×÷
+	 * æ‰§è¡Œæ•´ä½“åˆæˆæ“ä½œ
 	 */
 	void assemble();
 
@@ -23,4 +24,5 @@ public interface Assembler {
 	Vector getLoadVector();
 	
 	void imposeDirichletCondition(Function diri);
+	void imposeDirichletCondition(VectorFunction diri);
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.util.Constant;
 
 /**
  * f(x) = an*x^n + an_1*x^(n-1) + ... + a1*x + a0
@@ -15,18 +16,19 @@ public class FPolynomial1D extends AbstractFunction {
 	List<Double> coefList;
 	
 	/**
-	 * 构造一个多项式
+	 * 鏋勯�犱竴涓椤瑰紡
 	 * @param coefList
 	 * a0 = coefList.get(0)
 	 * ...
 	 * an = coefList.get(coefList.size()-1)
 	 */
 	public FPolynomial1D(List<Double> coefList) {
+		varNames.add(Constant.x);
 		this.coefList = coefList;
 	}
 	
 	@Override
-	public Function d(String varName) {
+	public Function _d(String varName) {
 		if(this.varNames().contains(varName))
 			return derivative1(1,1);
 		else 

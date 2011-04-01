@@ -19,9 +19,10 @@ import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.util.list.DOFList;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.util.container.DOFList;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class AssemblerScalar implements Assembler {
 	protected Mesh mesh;
@@ -71,10 +72,13 @@ public class AssemblerScalar implements Assembler {
 			if(n.getNodeType() == NodeType.Dirichlet) {
 				Variable v = Variable.createFrom(diri, n, n.globalIndex);
 				this.globalStiff.set(n.globalIndex, n.globalIndex, 1.0);
-				this.globalLoad.set(n.globalIndex, diri.value(v));
+				double val = diri.value(v);
+				this.globalLoad.set(n.globalIndex, val);
 				for(int j=1;j<=this.globalStiff.getRowDim();j++) {
 					if(j!=n.globalIndex) {
-						//this.globalMatrix.set(j, n.globalIndex, 0.0);
+						//TODO è¡Œåˆ—éƒ½éœ€è¦ç½®é›¶
+						this.globalLoad.add(j, -this.globalStiff.get(j, n.globalIndex)*val);
+						this.globalStiff.set(j, n.globalIndex, 0.0);
 						this.globalStiff.set(n.globalIndex, j, 0.0);
 					}
 				}
@@ -83,7 +87,7 @@ public class AssemblerScalar implements Assembler {
 	}
 	
 	/**
-	 * ´Óµ¥ÔªeºÏ³ÉÈ«¾Ö¾ØÕóºÍÏòÁ¿
+	 * ä»Žå•å…ƒeåˆæˆå…¨å±€çŸ©é˜µå’Œå‘é‡
 	 * @param e
 	 * @param stiff
 	 * @param load
@@ -95,12 +99,12 @@ public class AssemblerScalar implements Assembler {
 		//Update Jacobin on e
 		e.updateJacobin();
 		
-		//ÐÎº¯Êý¼ÆËãÐèÒªºÍµ¥Ôª¹ØÁª
+		//å½¢å‡½æ•°è®¡ç®—éœ€è¦å’Œå•å…ƒå…³è”
 		for(int i=1;i<=nDOFs;i++) {
 			DOFs.at(i).getSSF().asignElement(e);
 		}
 		
-		//ËùÓÐ×ÔÓÉ¶ÈË«Ñ­»·
+		//æ‰€æœ‰è‡ªç”±åº¦åŒå¾ªçŽ¯
 		for(int i=1;i<=nDOFs;i++) {
 			DOF dofI = DOFs.at(i);
 			ScalarShapeFunction sfI = dofI.getSSF();
@@ -112,7 +116,7 @@ public class AssemblerScalar implements Assembler {
 				int nLocalCol = dofJ.getLocalIndex();
 				int nGlobalCol = dofJ.getGlobalIndex();
 				//Local stiff matrix
-				//×¢ÒâË³Ðò£¬ÄÚÑ­»·testº¯Êý²»±ä£¬trialº¯ÊýÑ­»·
+				//æ³¨æ„é¡ºåºï¼Œå†…å¾ªçŽ¯testå‡½æ•°ä¸å˜ï¼Œtrialå‡½æ•°å¾ªçŽ¯
 				weakForm.setShapeFunction(sfJ,nLocalCol, sfI,nLocalRow); 
 				Function lhs = weakForm.leftHandSide(e, WeakForm.ItemType.Domain);
 				double lhsVal = weakForm.integrate(e, lhs);
@@ -136,12 +140,12 @@ public class AssemblerScalar implements Assembler {
 					DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
 					int nBeDOF = beDOFs.size();
 					
-					//ÐÎº¯Êý¼ÆËãÐèÒªºÍµ¥Ôª¹ØÁª
+					//å½¢å‡½æ•°è®¡ç®—éœ€è¦å’Œå•å…ƒå…³è”
 					for(int i=1;i<=nBeDOF;i++) {
-						beDOFs.at(i).getSSF().asignElement(e);
+						beDOFs.at(i).getSSF().asignElement(be);
 					}
 					
-					//ËùÓÐ×ÔÓÉ¶ÈË«Ñ­»·
+					//æ‰€æœ‰è‡ªç”±åº¦åŒå¾ªçŽ¯
 					for(int i=1;i<=nBeDOF;i++) {
 						DOF dofI = beDOFs.at(i);
 						ScalarShapeFunction sfI = dofI.getSSF();
@@ -153,7 +157,7 @@ public class AssemblerScalar implements Assembler {
 							int nLocalCol = dofJ.getLocalIndex();
 							int nGlobalCol = dofJ.getGlobalIndex();
 							//Local stiff matrix for border
-							//×¢ÒâË³Ðò£¬ÄÚÑ­»·testº¯Êý²»±ä£¬trialº¯ÊýÑ­»·
+							//æ³¨æ„é¡ºåºï¼Œå†…å¾ªçŽ¯testå‡½æ•°ä¸å˜ï¼Œtrialå‡½æ•°å¾ªçŽ¯
 							weakForm.setShapeFunction(sfJ,nLocalCol, sfI,nLocalRow);
 							Function lhsBr = weakForm.leftHandSide(be, WeakForm.ItemType.Border);
 							double lhsBrVal = weakForm.integrate(be, lhsBr);
@@ -171,7 +175,7 @@ public class AssemblerScalar implements Assembler {
 	}
 	
 	/**
-  	 * ´Óµ¥ÔªeºÏ³É¾Ö²¿¾ØÕóºÍÏòÁ¿
+  	 * ä»Žå•å…ƒeåˆæˆå±€éƒ¨çŸ©é˜µå’Œå‘é‡
   	 * @param e
 	 * @param localStiff (I/O): 
 	 *   local stiff matrix corresponds to the integration part
@@ -201,12 +205,12 @@ public class AssemblerScalar implements Assembler {
 		//Update Jacobin on e
 		e.updateJacobin();
 		
-		//ÐÎº¯Êý¼ÆËãÐèÒªºÍµ¥Ôª¹ØÁª
+		//å½¢å‡½æ•°è®¡ç®—éœ€è¦å’Œå•å…ƒå…³è”
 		for(int i=1;i<=nDOFs;i++) {
 			DOFs.at(i).getSSF().asignElement(e);
 		}
 		
-		//ËùÓÐ×ÔÓÉ¶ÈË«Ñ­»·
+		//æ‰€æœ‰è‡ªç”±åº¦åŒå¾ªçŽ¯
 		for(int i=1;i<=nDOFs;i++) {
 			DOF dofI = DOFs.at(i);
 			ScalarShapeFunction sfI = dofI.getSSF();
@@ -216,7 +220,7 @@ public class AssemblerScalar implements Assembler {
 				ScalarShapeFunction sfJ = dofJ.getSSF();
 				int nLocalCol = dofJ.getLocalIndex();
 				//Local stiff matrix
-				//×¢ÒâË³Ðò£¬ÄÚÑ­»·testº¯Êý²»±ä£¬trialº¯ÊýÑ­»·
+				//æ³¨æ„é¡ºåºï¼Œå†…å¾ªçŽ¯testå‡½æ•°ä¸å˜ï¼Œtrialå‡½æ•°å¾ªçŽ¯
 				weakForm.setShapeFunction(sfJ,nLocalCol, sfI,nLocalRow);
 				Function lhs = weakForm.leftHandSide(e, WeakForm.ItemType.Domain);
 				double lhsVal = weakForm.integrate(e, lhs);
@@ -242,12 +246,12 @@ public class AssemblerScalar implements Assembler {
 					
 					localStiffBorder.setRowDim(nDOFs);
 					localStiffBorder.setColDim(nDOFs);
-					//ÐÎº¯Êý¼ÆËãÐèÒªºÍµ¥Ôª¹ØÁª
+					//å½¢å‡½æ•°è®¡ç®—éœ€è¦å’Œå•å…ƒå…³è”
 					for(int i=1;i<=nBeDOF;i++) {
 						beDOFs.at(i).getSSF().asignElement(e);
 					}
 					
-					//ËùÓÐ×ÔÓÉ¶ÈË«Ñ­»·
+					//æ‰€æœ‰è‡ªç”±åº¦åŒå¾ªçŽ¯
 					for(int i=1;i<=nBeDOF;i++) {
 						DOF dofI = beDOFs.at(i);
 						ScalarShapeFunction sfI = dofI.getSSF();
@@ -257,7 +261,7 @@ public class AssemblerScalar implements Assembler {
 							ScalarShapeFunction sfJ = dofJ.getSSF();
 							int nLocalCol = dofJ.getLocalIndex();
 							//Local stiff matrix for border
-							//×¢ÒâË³Ðò£¬ÄÚÑ­»·testº¯Êý²»±ä£¬trialº¯ÊýÑ­»·
+							//æ³¨æ„é¡ºåºï¼Œå†…å¾ªçŽ¯testå‡½æ•°ä¸å˜ï¼Œtrialå‡½æ•°å¾ªçŽ¯
 							weakForm.setShapeFunction(sfJ,nLocalCol, sfI,nLocalRow);
 							Function lhsBr = weakForm.leftHandSide(be, WeakForm.ItemType.Border);
 							double lhsBrVal = weakForm.integrate(be, lhsBr);
@@ -274,7 +278,7 @@ public class AssemblerScalar implements Assembler {
 		}
 	}
 	
-	//¶þÎ¬£º¸Õ¶È¾ØÕóÔö¼Óhanging nodeÔ¼ÊøÏµÊý
+	//äºŒç»´ï¼šåˆšåº¦çŸ©é˜µå¢žåŠ hanging nodeçº¦æŸç³»æ•°
 	// nh - 0.5*n1 - 0.5*n2 = 0
 	public void procHangingNode(Mesh mesh) {
 		
@@ -317,4 +321,9 @@ public class AssemblerScalar implements Assembler {
 			}
 		}
 	}
+	
+	@Override
+	public void imposeDirichletCondition(VectorFunction diri) {
+		throw new UnsupportedOperationException();
+	}	
 }

@@ -23,7 +23,7 @@ public class MultiKey {
 	
 	
 	/*****************************************************
-	 * ±È½ÏË³Ğò
+	 * æ¯”è¾ƒé¡ºåº
 	 * if(obj1.hashCode() == obj2.hashCode()) {
 	 *  return obj1.equals(obj2);
 	 * } else {

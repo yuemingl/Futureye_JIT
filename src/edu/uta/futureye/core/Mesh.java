@@ -9,13 +9,15 @@ import java.util.Map.Entry;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.util.Constant;
+import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.MultiKey;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.list.EdgeList;
-import edu.uta.futureye.util.list.ElementList;
-import edu.uta.futureye.util.list.FaceList;
-import edu.uta.futureye.util.list.NodeList;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.EdgeList;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.FaceList;
+import edu.uta.futureye.util.container.NodeList;
+import edu.uta.futureye.util.container.ObjIndex;
+import edu.uta.futureye.util.container.ObjList;
 
 public class Mesh {
 	//Global node list
@@ -29,6 +31,8 @@ public class Mesh {
 	
 	//Global face list
 	protected FaceList faceList = null;
+	
+	public int nVertex = 0;
 	
 	public EdgeList getEdgeList() {
 		return edgeList;
@@ -46,8 +50,6 @@ public class Mesh {
 
 	//Global volume list
 	//??? protected VolumeList volumeList = null;
-	
-	public static double eps = 1e-6;
 	
 	public NodeList getNodeList() {
 		return nodeList;
@@ -67,7 +69,10 @@ public class Mesh {
 		eleList.clear();
 	}
 	
-	public void computeNodesBelongToElement() {
+	/**
+	 * è®¡ç®—ç»“ç‚¹æ‰€å±çš„å•å…ƒï¼Œåœ¨è®¡ç®—å…¶ä»–ç½‘æ ¼å…³ç³»æ—¶ï¼Œè¯¥æ­¥éª¤å¿…é¡»å…ˆè®¡ç®—
+	 */
+	public void computeNodeBelongsToElements() {
 		System.out.println("computeNodesBelongToElement...");
 		
 //		for(int i=1;i<=nodeList.size();i++) {
@@ -96,9 +101,9 @@ public class Mesh {
 	}
 	
 	/**
-	 * Ìí¼Ó±ß½ç½áµãÀàĞÍ
+	 * æ·»åŠ è¾¹ç•Œç»“ç‚¹ç±»å‹
 	 * @param nodeType
-	 * @param fun ¿ØÖÆº¯Êı£¬fun(x)>0±ß½çµã£¬fun(x)<=0ÄÚµã£¬xÎª½áµã×ø±ê
+	 * @param fun æ§åˆ¶å‡½æ•°ï¼Œfun(x)>0è¾¹ç•Œç‚¹ï¼Œfun(x)<=0å†…ç‚¹ï¼Œxä¸ºç»“ç‚¹åæ ‡
 	 */
 	public void addBorderType(NodeType nodeType, Function fun) {
 		
@@ -111,41 +116,39 @@ public class Mesh {
 	/**
 	 * Mark border node type according to mapNTF
 	 * 
-	 * ±ê¼Ç±ß½ç½áµãÀàĞÍ£¬²»»á¸²¸ÇÒÑ±ê¼Ç¹ıÀàĞÍµÄ±ß½ç½áµã£¬
-	 * Èç¹ûĞèÒªĞŞ¸Ä£¬ÏÈµ÷ÓÃclearBorderNodeMark()
+	 * æ ‡è®°è¾¹ç•Œç»“ç‚¹ç±»å‹ï¼Œä¸ä¼šè¦†ç›–å·²æ ‡è®°è¿‡ç±»å‹çš„è¾¹ç•Œç»“ç‚¹ï¼Œ
+	 * å¦‚æœéœ€è¦ä¿®æ”¹ï¼Œå…ˆè°ƒç”¨clearBorderNodeMark()
+	 * 
+	 * ä¾èµ–ï¼šcomputeNodesBelongToElement()
 	 * 
 	 * TODO
-	 * Èç¹ûÍø¸ñ±¾Éí°üº¬±ß½ç½áµãÀàĞÍ£¬ÈçºÎ±ê¼Ç£¿
+	 * å¦‚æœç½‘æ ¼æœ¬èº«åŒ…å«è¾¹ç•Œç»“ç‚¹ç±»å‹ï¼Œå¦‚ä½•æ ‡è®°ï¼Ÿ
 	 * 
 	 * @param mapNTF
 	 */
 	public void markBorderNode(Map<NodeType,Function> mapNTF) {
+		markBorderNode(1,mapNTF);
+	}
+	
+	/**
+	 * å¯¹äºå‘é‡å€¼é—®é¢˜ï¼Œå¯ä»¥ä¸ºæ¯ä¸ªåˆ†é‡<tt>vvfIndex</tt>åˆ†åˆ«æ ‡è®°è¾¹ç•Œç±»å‹
+	 * 
+	 * @param vvfIndex
+	 * @param mapNTF
+	 */
+	public void markBorderNode(int vvfIndex, Map<NodeType,Function> mapNTF) {
 		System.out.println("markBorderNode...");
 		for(int i=1;i<=nodeList.size();i++) {
 			Node node = nodeList.at(i);
 			if(node.belongToElements.size()==0) {
-				System.out.println("ERROR: Call computeNodesBelongToElement() first!");
+				throw new FutureyeException("ERROR: Call computeNodesBelongToElement() first!");
 			} else if(node instanceof NodeRefined && ((NodeRefined) node).isHangingNode()) {
-				//TODO Hanging ½áµãÉèÖÃÎªÄÚµã£¬»¹ÓĞÆäËû°ì·¨Âğ£¿
-				node.setNodeType(NodeType.Inner); 
+				//TODO Hanging ç»“ç‚¹è®¾ç½®ä¸ºå†…ç‚¹ï¼Œè¿˜æœ‰å…¶ä»–åŠæ³•å—ï¼Ÿ
+				node.setNodeType(vvfIndex, NodeType.Inner); 
 			} else {
-				 //¼ÆËãÒÔnodeÎª¶¥µã£¬ÖÜÎ§µ¥Ôª½áµãÓëÖ®ĞÎ³ÉµÄ¼Ğ½Ç½Ç¶È£¬Èç¹ûÎª360¶È£¨2*PI£©£¬¾ÍËµÃ÷ÊÇÄÚµã
-				double sum = 0.0;
-				double coef = 0;
-				if(node.coords().length==2) {
-					coef = 2;
-					for(int j=1;j<=node.belongToElements.size();j++) {
-						sum += node.belongToElements.at(j).getAngleInElement2D(node);
-					}
-				} else if(node.coords().length==3) {
-					coef = 4;
-					for(int j=1;j<=node.belongToElements.size();j++) {
-						sum += node.belongToElements.at(j).getUnitSphereTriangleArea(node);
-					}
-				}
-				if(Math.abs(sum-coef*Math.PI) <= eps) { //2D=2*PI£¬3D=4*PI£¬ÊÇÄÚ²¿½áµã
-					node.setNodeType(NodeType.Inner); 
-				} else { //·ñÔòÊÇ±ß½ç½áµã
+				if(node.isInnerNode()) {
+					node.setNodeType(vvfIndex, NodeType.Inner); 
+				} else { //å¦åˆ™æ˜¯è¾¹ç•Œç»“ç‚¹
 					//System.out.println("Border Node:"+node.globalIndex);
 					for(Entry<NodeType,Function> entry : mapNTF.entrySet()) {
 						NodeType nodeType = entry.getKey();
@@ -156,29 +159,40 @@ public class Mesh {
 							for(String vn : fun.varNames())
 								v.set(vn, node.coord(ic++));
 							if(fun.value(v) > 0)
-								node.setNodeType(nodeType);
+								node.setNodeType(vvfIndex, nodeType);
 						} else {
-							if(node.getNodeType() == null)
-								node.setNodeType(nodeType);
+							if(node.getNodeType(vvfIndex) == null)
+								node.setNodeType(vvfIndex, nodeType);
 						}
 					}
 				}
 			}
-		}	
+		}
 		System.out.println("markBorderNode done!");
 	}	
+	public void markBorderNode(ObjIndex vvfIndexSet, Map<NodeType,Function> mapNTF) {
+		for(int i:vvfIndexSet)
+			markBorderNode(i,mapNTF);
+	}
 	
 	public void clearBorderNodeMark() {
+		clearBorderNodeMark(1);
+	}
+	
+	public void clearBorderNodeMark(int vvfIndex) {
 		for(int i=1;i<=nodeList.size();i++) {
 			Node node = nodeList.at(i);
 			if(node.getNodeType() != NodeType.Inner)
-				node.setNodeType(null);
+				node.setNodeType(vvfIndex, null);
 		}
 	}
-	
+	public void clearBorderNodeMark(ObjIndex set) {
+		for(int i:set)
+			clearBorderNodeMark(i);
+	}
 	
 	/**
-	 * ÅĞ¶ÏÍø¸ñÊÇ·ñ°üº¬½áµãnode
+	 * åˆ¤æ–­ç½‘æ ¼æ˜¯å¦åŒ…å«ç»“ç‚¹node
 	 * @param node
 	 * @return null if not contains the node
 	 */
@@ -187,7 +201,7 @@ public class Mesh {
 			int nDim = node.dim();
 			boolean same = true;
 			for(int j=1;j<=nDim;j++) {
-				if(Math.abs(node.coord(j)-nodeList.at(i).coord(j)) > Constant.eps) {
+				if(Math.abs(node.coord(j)-nodeList.at(i).coord(j)) > Constant.meshEps) {
 					same = false;
 					break;
 				}
@@ -199,7 +213,7 @@ public class Mesh {
 	}
 	
 	/**
-	 * »ñÈ¡Óë¸Ã×ø±êµã½Ó½üµÄ½áµã
+	 * è·å–ä¸è¯¥åæ ‡ç‚¹æ¥è¿‘çš„ç»“ç‚¹
 	 * @param coord
 	 * @param threshold
 	 * @return
@@ -221,7 +235,7 @@ public class Mesh {
 	}
 	
 	/**
-	 * »ñÈ¡°üº¬¸Ã×ø±êµãµÄµ¥Ôª£¨¶şÎ¬£©
+	 * è·å–åŒ…å«è¯¥åæ ‡ç‚¹çš„å•å…ƒï¼ˆäºŒç»´ï¼‰
 	 * @param coord
 	 * @return
 	 */
@@ -236,7 +250,15 @@ public class Mesh {
 		return null;
 	}
 	
-	public void computeNeiborNode() {
+	/**
+	 * Compute neighbor nodes of a node
+	 * è®¡ç®—ç›¸é‚»ç»“ç‚¹
+	 * 
+	 * Depends:
+	 *   computeNodesBelongToElement()
+	 * 
+	 */
+	public void computeNeighborNodes() {
 		for(int i=1;i<=nodeList.size();i++) {
 			nodeList.at(i).neighbors.clear();
 		}
@@ -261,7 +283,17 @@ public class Mesh {
 		}
 	}
 	
-	public void computeNeighborElement() {
+	/**
+	 * Compute neighbor elements of an element
+	 * è®¡ç®—ç›¸é‚»å•å…ƒ
+	 * 
+	 * Depends:
+	 *  computeNodesBelongToElement()
+	 *  computeGlobalEdge() (2D,3D case)
+	 *  computeGlobalFace() (3D case)
+	 *
+	 */
+	public void computeNeighborElements() {
 		for(int i=1;i<=eleList.size();i++) {
 			eleList.at(i).neighbors.clear();
 		}
@@ -292,16 +324,17 @@ public class Mesh {
 	}
 	
 	/**
-	 * ¼ÆËãÍø¸ñ°üº¬µÄÈ«¾Ö±ß
+	 * Compute global edges in grid
+	 * è®¡ç®—ç½‘æ ¼åŒ…å«çš„å…¨å±€è¾¹
 	 * 
 	 */
 	public void computeGlobalEdge() {
 		Map<MultiKey, Edge> map = new HashMap<MultiKey, Edge>();
 		for(int i=1;i<=eleList.size();i++) {
 			Element e = eleList.at(i);
-			ObjList<EdgeLocal> localEdges = e.edges();//µ¥ÔªeµÄ¾Ö²¿±ßÁĞ±í
+			ObjList<EdgeLocal> localEdges = e.edges();//å•å…ƒeçš„å±€éƒ¨è¾¹åˆ—è¡¨
 			for(int j=1;j<=localEdges.size();j++) {
-				EdgeLocal localEdge = localEdges.at(j);//¾Ö²¿±ß
+				EdgeLocal localEdge = localEdges.at(j);//å±€éƒ¨è¾¹
 				MultiKey mkey = new MultiKey(
 								localEdge.getVertices().at(1).globalNode().globalIndex,
 								localEdge.getVertices().at(2).globalNode().globalIndex
@@ -315,11 +348,11 @@ public class Mesh {
 				localEdge.globalEdge = globalEdge;
 			}
 		}
-		//Îªmesh.edgeList£¨È«¾Ö±ß£©¸³Öµ£¬²¢¼ÓÈ«¾Ö±ßË÷Òı£¨±àºÅ£©
+		//ä¸ºmesh.edgeListï¼ˆå…¨å±€è¾¹ï¼‰èµ‹å€¼ï¼Œå¹¶åŠ å…¨å±€è¾¹ç´¢å¼•ï¼ˆç¼–å·ï¼‰
 		this.edgeList = new EdgeList();
 		int globalIndex = 1;
 		for(Entry<MultiKey, Edge> entry : map.entrySet()) {
-			//globalIndex£ºÈ«¾Ö±ßË÷Òı£¨±àºÅ£©
+			//globalIndexï¼šå…¨å±€è¾¹ç´¢å¼•ï¼ˆç¼–å·ï¼‰
 			//globalIndex: Global index of Global edges
 			entry.getValue().setGlobalIndex(globalIndex++);
 			this.edgeList.add(entry.getValue());
@@ -327,14 +360,15 @@ public class Mesh {
 	}
 	
 	/**
-	 * ¼ÆËãÍø¸ñ°üº¬µÄÈ«¾ÖÃæ
+	 * Compute global faces in grid
+	 * è®¡ç®—ç½‘æ ¼åŒ…å«çš„å…¨å±€é¢
 	 * 
 	 */
 	public void computeGlobalFace() {
 		Map<Set<Integer>, Face> map = new HashMap<Set<Integer>, Face>();
 		for(int i=1;i<=eleList.size();i++) {
 			Element e = eleList.at(i);
-			//±éÀú¾Ö²¿Ãæ£¬ÀûÓÃHashMap×öfaceµÄÌŞÖØÅĞ¶Ï£¬µÃµ½È«¾ÖÃæ
+			//éå†å±€éƒ¨é¢ï¼Œåˆ©ç”¨HashMapåšfaceçš„å‰”é‡åˆ¤æ–­ï¼Œå¾—åˆ°å…¨å±€é¢
 			ObjList<FaceLocal> localFaces = e.faces();
 			for(int j=1; j<=localFaces.size(); j++) {
 				FaceLocal localFace = localFaces.at(j);
@@ -352,11 +386,11 @@ public class Mesh {
 				localFace.globalFace = gobalFace;
 			}
 		}
-		//Îªmesh.faceList£¨È«¾ÖÃæ£©¸³Öµ£¬²¢¼ÓÈ«¾ÖÃæË÷Òı£¨±àºÅ£©
+		//ä¸ºmesh.faceListï¼ˆå…¨å±€é¢ï¼‰èµ‹å€¼ï¼Œå¹¶åŠ å…¨å±€é¢ç´¢å¼•ï¼ˆç¼–å·ï¼‰
 		this.faceList = new FaceList();
 		int globalIndex = 1;
 		for(Entry<Set<Integer>, Face> entry : map.entrySet()) {
-			//globalIndex£ºÈ«¾ÖÃæË÷Òı£¨±àºÅ£©
+			//globalIndexï¼šå…¨å±€é¢ç´¢å¼•ï¼ˆç¼–å·ï¼‰
 			//globalIndex: Global index of Global faces
 			entry.getValue().setGlobalIndex(globalIndex++);
 			this.faceList.add(entry.getValue());
@@ -364,7 +398,7 @@ public class Mesh {
 	}
 	
 	/**
-	 * ½öÊÊÓÃÓÚ¶şÎ¬
+	 * ä»…é€‚ç”¨äºäºŒç»´
 	 * @param e1
 	 * @param e2
 	 * @return
@@ -374,7 +408,7 @@ public class Mesh {
 //		int counter = 0;
 //		for(int i=1;i<=e1.nodes.size();i++) {
 //			for(int j=1;j<=e2.nodes.size();j++) {
-//				//ÓĞÁ½¸ö¹«¹²½áµã(¶ÔÓÚ×ÔÊÊÓ¦Íø¸ñ£¬ÓÉÓÚ´æÔÚhanging node£¬Ëü²»ÊôÓÚ´Öµ¥Ôª¸ñ£¬Òò´Ë¸Ã·½·¨ÅĞ¶ÏÓĞÎó)
+//				//æœ‰ä¸¤ä¸ªå…¬å…±ç»“ç‚¹(å¯¹äºè‡ªé€‚åº”ç½‘æ ¼ï¼Œç”±äºå­˜åœ¨hanging nodeï¼Œå®ƒä¸å±äºç²—å•å…ƒæ ¼ï¼Œå› æ­¤è¯¥æ–¹æ³•åˆ¤æ–­æœ‰è¯¯)
 //				if(e1.nodes.at(i).globalIndex == e2.nodes.at(j).globalIndex) {
 //					counter++;
 //					if(counter==2) return true; 

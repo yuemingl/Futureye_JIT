@@ -14,10 +14,10 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.weakform.WeakFormDerivative;
-import edu.uta.futureye.util.list.NodeList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class Tools {
-	public static void plotVector(Mesh mesh, Vector v, String outputFolder, String fileName) {
+	public static void plotVector(Mesh mesh, String outputFolder, String fileName, Vector v, Vector ...vs) {
 	    MeshWriter writer = new MeshWriter(mesh);
 	    if(!outputFolder.isEmpty()) {
 		    File file = new File("./"+outputFolder);
@@ -25,10 +25,10 @@ public class Tools {
 				file.mkdirs();
 			}
 	    }
-	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
+	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v, vs);
 	}
 
-	public static void plotFunction(Mesh mesh, Function fun, String outputFolder, String fileName) {
+	public static void plotFunction(Mesh mesh, String outputFolder, String fileName, Function fun, Function ...funs) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
@@ -42,7 +42,8 @@ public class Tools {
 	    	}
 	    	v.set(i, fun.value(var));
 	    }
-	    plotVector(mesh,v,outputFolder,fileName);
+	    //TODO funs
+	    plotVector(mesh,outputFolder,fileName,v);
 	}
 	
 	public static Vector computeDerivative(Mesh mesh, Vector U, String varName) {

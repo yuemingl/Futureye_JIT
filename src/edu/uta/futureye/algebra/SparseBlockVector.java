@@ -47,13 +47,13 @@ public class SparseBlockVector implements BlockVector {
 				v.set(index - base, value);
 				return;
 			} else {
-				base = upper;
+				base += upper;
 			}
 		}
 	}
 	
 	@Override
-	public void set(Vector v) {
+	public Vector set(Vector v) {
 		if(v instanceof SparseBlockVector) {
 			for(int bi=1;bi<=this.blockDim;bi++) {
 				this.data.get(bi).set(((SparseBlockVector)v).getBlock(bi));
@@ -63,10 +63,11 @@ public class SparseBlockVector implements BlockVector {
 				this.set(i,v.get(i));
 			}
 		}
+		return this;
 	}
 	
 	@Override
-	public void add(double a, Vector v) {
+	public Vector add(double a, Vector v) {
 		if(v instanceof SparseBlockVector) {
 			for(int bi=1;bi<=this.blockDim;bi++) {
 				this.data.get(bi).add(a,((SparseBlockVector)v).getBlock(bi));
@@ -76,6 +77,7 @@ public class SparseBlockVector implements BlockVector {
 				this.add(i,v.get(i));
 			}
 		}
+		return this;
 	}
 	
 	@Override
@@ -88,10 +90,10 @@ public class SparseBlockVector implements BlockVector {
 			if(base < index && index <= base + upper) {
 				return v.get(index - base);
 			} else {
-				base = upper;
+				base += upper;
 			}
 		}
-		return this.defaultValue;
+		throw new FutureyeException("index="+index);
 	}
 
 	@Override
@@ -174,4 +176,49 @@ public class SparseBlockVector implements BlockVector {
 	public void clear() {
 		throw new UnsupportedOperationException();
 	}	
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SparseBlockVector(").
+			append(this.blockDim).
+			append("):N0R=").
+			append(data.size()).
+			append("\n");
+		
+		for(int i=1;i<=this.blockDim;i++) {
+				sb.append("(").append(i).append(")=");
+				sb.append(data.get(i)).append("\n");
+		}
+		return sb.toString();
+	}
+
+	@Override
+	public Vector add(Vector v) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Vector axpy(double a, Vector y) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Vector scale(double a) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Vector ax(double a) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public double norm1() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Vector set(double a, Vector v) {
+		throw new UnsupportedOperationException();
+	}
 }

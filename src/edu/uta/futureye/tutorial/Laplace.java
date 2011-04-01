@@ -10,13 +10,12 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
-import edu.uta.futureye.util.list.ElementList;
+import edu.uta.futureye.util.container.ElementList;
 
 /**
  * Problem:
@@ -38,7 +37,7 @@ public class Laplace {
 		Mesh mesh = reader.read2DMesh();
 		
 		//Geometry relationship
-		mesh.computeNodesBelongToElement();
+		mesh.computeNodeBelongsToElements();
 		
 		//Mark border type
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
@@ -57,7 +56,7 @@ public class Laplace {
 		//Right hand side(RHS): f = -2*(x^2+y^2)+36
 		Function fx = new FX("x");
 		Function fy = new FX("y");
-		weakForm.setF(FC.c(-2.0).X( fx.X(fx).P(fy.X(fy)) ).P(FC.c(36.0)));
+		weakForm.setF(FC.c(-2.0).M( fx.M(fx).A(fy.M(fy)) ).A(FC.c(36.0)));
 		
 		//Assemble
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);

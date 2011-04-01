@@ -12,13 +12,13 @@ import edu.uta.futureye.algebra.intf.Vector;
  * f = (F)
  *     (G)
  *
- * Çó A*x=f, x=(U P)'
+ * æ±‚ A*x=f, x=(U P)'
  * 
  * 
  * (B*inv(M)*B')*P = B*inv(M)*F - G
  *             M*U = F - B'*P
  * 
- * where S = B*inv(M)*B' ³ÆÎª Schur complement matrix
+ * where S = B*inv(M)*B' ç§°ä¸º Schur complement matrix
  *
  * @author liuyueming
  *
@@ -131,7 +131,7 @@ public class SchurComplementSolver {
 			
 		    //M.apply(r, z);
 			//Mz=r
-			//M£ºÔ¤Ìõ¼ş¾ØÕó£¬È¡ÎªI,z==r
+			//Mï¼šé¢„æ¡ä»¶çŸ©é˜µï¼Œå–ä¸ºI,z==r
 			z=r;
 			
 		    rho = r.dot(z);

@@ -1,69 +1,89 @@
 package edu.uta.futureye.algebra.intf;
 
 /**
- * Îª¾ØÕóÏòÁ¿ÔËËãÓÅ»¯µÄÏòÁ¿½Ó¿Ú
+ * ä¸ºçŸ©é˜µå‘é‡è¿ç®—ä¼˜åŒ–çš„å‘é‡æ¥å£
  * 
  * @author liuyueming
  *
  */
 public interface AlgebraVector {
 	/**
-	 * »ñµÃÏòÁ¿µÄÎ¬¶È
+	 * Get dimension of the vector
+	 * è·å¾—å‘é‡çš„ç»´åº¦
+	 * 
 	 * @return
 	 */
 	public int getDim();
 	
 	/**
-	 * »ñµÃÏòÁ¿µÄÊı×é
+	 * Get <tt>double</tt> array of the vector 
+	 * è·å¾—å‘é‡çš„æ•°ç»„
+	 * 
 	 * @return
 	 */
 	public double[] getData();
 	
 	/**
-	 * this = v
-	 * @param v
+	 * <code>x = y</code>
+	 * 
+	 * @param y
 	 */
-	public AlgebraVector set(AlgebraVector v);
+	public AlgebraVector set(AlgebraVector y);
 
 	/**
-	 * this += v
+	 * <code>x = a*y</code>
+	 * 
+	 * @param y
+	 */
+	public AlgebraVector set(double a, AlgebraVector y);
+	
+	/**
+	 * <code>x = x + y</code>
+	 * 
 	 * @param a
-	 * @param v
+	 * @param y
 	 */
-	public AlgebraVector plus(AlgebraVector v);	
-
+	public AlgebraVector add(AlgebraVector y);
+	
 	/**
-	 * this -= v
+	 * <code>x = x - y</code>
+	 * 
 	 * @param a
-	 * @param v
+	 * @param y
 	 */
-	public AlgebraVector minus(AlgebraVector v);	
+	public AlgebraVector subtract(AlgebraVector y);	
 
 	/**
-	 * this += a*v
+	 * <code>x = x + a*y</code>
+	 * 
 	 * @param a
-	 * @param v
+	 * @param y
 	 */
-	public AlgebraVector add(double a, AlgebraVector v);	
+	public AlgebraVector add(double a, AlgebraVector y);
 
 	/**
-	 * this *= a
+	 * <code>x = a*x</code>
+	 * 
 	 * @param a
 	 * @return
 	 */
 	public AlgebraVector scale(double a);
 
 	/**
-	 * this *= a
-	 * µÈ¼ÛÓÚ scale(double a);
+	 * <code>x = a*x</code>
+	 * Alias of <code>scale(double a)</code>
+	 * ç­‰ä»·äº <code>scale(double a)</code>
+	 * 
 	 * @param a
 	 * @return
 	 */
 	public AlgebraVector ax(double a);
 	
 	/**
-	 * x = a*x+y
-	 * µÈ¼ÛÓÚ add(double a, AlgebraVector v);
+	 * <code>x = a*x+y</code>
+	 * Notice: Different from <code>add(double a, AlgebraVector y)</code>
+	 * æ³¨æ„ï¼šä¸<code>add(double a, AlgebraVector y)</code>æœ‰åŒºåˆ«
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
@@ -71,7 +91,8 @@ public interface AlgebraVector {
 	public AlgebraVector axpy(double a, AlgebraVector y);
 	
 	/**
-	 * x = (a*x).*y
+	 * <code>x = (a*x).*y</code>
+	 * 
 	 * @param a
 	 * @param y
 	 * @return
@@ -79,27 +100,31 @@ public interface AlgebraVector {
 	public AlgebraVector axmy(double a, AlgebraVector y);
 	
 	/**
-	 * x.y
-	 * ÄÚ»ı
+	 * <code>x.y</code>
+	 * 
+	 * å†…ç§¯
+	 * 
 	 * @param y
 	 * @return
 	 */
 	public double dot(AlgebraVector y);
 	
 	/**
-	 * ¶ş·¶Êı
+	 * äºŒèŒƒæ•°
+	 * 
 	 * @return
 	 */
 	public double norm2();
 	
 	/**
-	 * ÎŞÇî·¶Êı
+	 * æ— ç©·èŒƒæ•°
+	 * 
 	 * @return
 	 */
 	public double normInf();
 	
 	/**
-	 * print the component values of this vector
+	 * Print the component values of this vector
 	 */
 	public void print();
 

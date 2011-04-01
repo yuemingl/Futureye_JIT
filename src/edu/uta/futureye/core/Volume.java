@@ -4,7 +4,7 @@ import edu.uta.futureye.core.geometry.GeoEntity3D;
 
 /**
  * Global block of an element
- * ÈýÎ¬Ìå
+ * ä¸‰ç»´ä½“
  * 
  * @author liuyueming
  *

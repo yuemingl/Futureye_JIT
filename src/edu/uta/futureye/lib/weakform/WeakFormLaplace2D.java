@@ -14,8 +14,8 @@ import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.list.DOFList;
-import edu.uta.futureye.util.list.ElementList;
+import edu.uta.futureye.util.container.DOFList;
+import edu.uta.futureye.util.container.ElementList;
 
 /**
  * Solve
@@ -53,7 +53,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 		this.g_f = f;
 	}
 	
-	//Robin:  d*u + k*u_n= q (×ÔÈ»±ß½ç£ºd==k, q=0)
+	//Robin:  d*u + k*u_n= q (è‡ªç„¶è¾¹ç•Œï¼šd==k, q=0)
 	public void setParam(Function k,Function c,Function q,Function d) {
 		this.g_k = k;
 		this.g_c = c;
@@ -68,16 +68,16 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 			Function integrand = null;
 			if(g_k == null) {
 				integrand = FOBasic.Plus(
-					FOBasic.Mult(u.d("x"), v.d("x")),
-					FOBasic.Mult(u.d("y"), v.d("y"))
+					FOBasic.Mult(u._d("x"), v._d("x")),
+					FOBasic.Mult(u._d("y"), v._d("y"))
 					);
 			} else {
 				Function fk = Utils.interplateFunctionOnElement(g_k,e);
 				Function fc = Utils.interplateFunctionOnElement(g_c,e);
 				integrand = FOBasic.Plus(
 							FOBasic.Mult(fk, FOBasic.Plus(
-							FOBasic.Mult(u.d("x"), v.d("x")),
-							FOBasic.Mult(u.d("y"), v.d("y"))
+							FOBasic.Mult(u._d("x"), v._d("x")),
+							FOBasic.Mult(u._d("y"), v._d("y"))
 						)),
 							FOBasic.Mult(fc, FOBasic.Mult(u, v))
 						);
@@ -125,15 +125,15 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 		//Update Jacobin on e
 		e.updateJacobinLinear2D();
 		
-		//ĞÎº¯Êı¼ÆËãĞèÒªºÍµ¥Ôª¹ØÁª£¬²¢ÌáÇ°¼ÆËãµ¼Êı
+		//å½¢å‡½æ•°è®¡ç®—éœ€è¦å’Œå•å…ƒå…³è”ï¼Œå¹¶æå‰è®¡ç®—å¯¼æ•°
 		Map<Integer, Function> mapShape_x = new HashMap<Integer, Function>();
 		Map<Integer, Function> mapShape_y = new HashMap<Integer, Function>();
 		for(int i=1;i<=nDOFs;i++) {
 			DOF dof = DOFs.at(i);
 			ScalarShapeFunction sf = dof.getSSF();
 			dof.getSSF().asignElement(e);
-			mapShape_x.put(dof.getLocalIndex(), sf.d("x"));
-			mapShape_y.put(dof.getLocalIndex(), sf.d("y"));
+			mapShape_x.put(dof.getLocalIndex(), sf._d("x"));
+			mapShape_y.put(dof.getLocalIndex(), sf._d("y"));
 		}
 
 		Function fk = null;
@@ -141,7 +141,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 		Function fc = null;
 		if(g_c != null) fc = Utils.interplateFunctionOnElement(g_c,e);
 
-		//ËùÓĞ×ÔÓÉ¶ÈË«Ñ­»·
+		//æ‰€æœ‰è‡ªç”±åº¦åŒå¾ªç¯
 		for(int i=1;i<=nDOFs;i++) {
 			DOF dofI = DOFs.at(i);
 			ScalarShapeFunction sfI = dofI.getSSF();
@@ -198,8 +198,9 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 			globalLoad.add(nGlobalRow, rhsVal);
 		}
 		
-		//Robin:  d*u + k*u_n= q (×ÔÈ»±ß½ç£ºd==k, q=0)
-		if(g_d != null && e.isBorderElement()) {
+		//Robin:  d*u + k*u_n= q (è‡ªç„¶è¾¹ç•Œï¼šd==k, q=0)
+		//if(g_d != null && e.isBorderElement()) {
+		if(e.isBorderElement()) {
 
 			ElementList beList = e.getBorderElements();
 			for(int n=1;n<=beList.size();n++) {
@@ -216,28 +217,30 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 					//Update Jacobin on be
 					be.updateJacobinLinear1D();
 					
-					//ĞÎº¯Êı¼ÆËãĞèÒªºÍµ¥Ôª¹ØÁª
+					//å½¢å‡½æ•°è®¡ç®—éœ€è¦å’Œå•å…ƒå…³è”
 					for(int i=1;i<=nBeDOF;i++) {
 						beDOFs.at(i).getSSF().asignElement(be);
 					}
 					
-					//ËùÓĞ×ÔÓÉ¶ÈË«Ñ­»·
+					//æ‰€æœ‰è‡ªç”±åº¦åŒå¾ªç¯
 					for(int i=1;i<=nBeDOF;i++) {
 						DOF dofI = beDOFs.at(i);
 						ScalarShapeFunction sfI = dofI.getSSF();
 						int nGlobalRow = dofI.getGlobalIndex();
-						for(int j=1;j<=nBeDOF;j++) {
-							DOF dofJ = beDOFs.at(j);
-							ScalarShapeFunction sfJ = dofJ.getSSF();
-							int nGlobalCol = dofJ.getGlobalIndex();
-							//Stiff matrix for border
-							Function borderIntegrand = FOBasic.Mult(FOBasic.Mult(fd, sfI), sfJ);
-							//Numerical integrate the border 'be' of element 'e'
-							Function borderIntgral = FOIntegrate.intOnLinearRefElement(
-									FOBasic.Mult(borderIntegrand, be.getJacobin()),5
-								);
-							double lhsBrVal = borderIntgral.value(null);
-							globalStiff.add(nGlobalRow, nGlobalCol, lhsBrVal);
+						if(g_d != null) {
+							for(int j=1;j<=nBeDOF;j++) {
+								DOF dofJ = beDOFs.at(j);
+								ScalarShapeFunction sfJ = dofJ.getSSF();
+								int nGlobalCol = dofJ.getGlobalIndex();
+								//Stiff matrix for border
+								Function borderIntegrand = FOBasic.Mult(FOBasic.Mult(fd, sfI), sfJ);
+								//Numerical integrate the border 'be' of element 'e'
+								Function borderIntgral = FOIntegrate.intOnLinearRefElement(
+										FOBasic.Mult(borderIntegrand, be.getJacobin()),5
+									);
+								double lhsBrVal = borderIntgral.value(null);
+								globalStiff.add(nGlobalRow, nGlobalCol, lhsBrVal);
+							}
 						}
 						//Load vector for border
 						if(g_q != null) {

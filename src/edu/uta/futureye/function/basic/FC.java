@@ -17,17 +17,22 @@ public class FC extends AbstractFunction{
 	//Predefined constant
 	public static FC c0 = new FC(0.0);
 	public static FC c1 = new FC(1.0);
+	public static FC PI = new FC(Math.PI);
+	public static FC E = new FC(Math.E);
 	
 	protected double val = 0.0;
 	protected static Map<Double, FC> cs = new HashMap<Double, FC>();
+	
+	public FC() {
+	}
 	
 	public FC(double val) {
 		this.val = val;
 	}
 	
 	/**
-	 * ·µ»Ø³£Öµº¯Êı£¬²¢ÇÒ±£´æÔÚ¾²Ì¬MapÖĞ£¬ÒÔ±ã¶à´ÎÊ¹ÓÃ£¬½ÚÊ¡ÄÚ´æ
-	 * ×¢Òâ£º²»ÒªÊ¹ÓÃ¸Ãº¯ÊıÉú³É´óÁ¿³£Êı£¬·ñÔòÄÚ´æÔÚ³ÌĞòÍË³öÇ°²»»áÊÍ·Å
+	 * è¿”å›å¸¸å€¼å‡½æ•°ï¼Œå¹¶ä¸”ä¿å­˜åœ¨é™æ€Mapä¸­ï¼Œä»¥ä¾¿å¤šæ¬¡ä½¿ç”¨ï¼ŒèŠ‚çœå†…å­˜
+	 * æ³¨æ„ï¼šä¸è¦ä½¿ç”¨è¯¥å‡½æ•°ç”Ÿæˆå¤§é‡å¸¸æ•°ï¼Œå¦åˆ™å†…å­˜åœ¨ç¨‹åºé€€å‡ºå‰ä¸ä¼šé‡Šæ”¾
 	 * @param v
 	 * @return
 	 */
@@ -53,10 +58,21 @@ public class FC extends AbstractFunction{
 	}
 	
 	@Override
-	public Function d(String varName) {
-		return c(0.0);
+	public Function _d(String varName) {
+		return c0;
 	}
 	
+	@Override
+	public int getOpOrder() {
+		return OP_ORDER0;
+	}
+	
+	@Override
+	public Function copy() {
+		return new FC(this.val);
+	}
+	
+	@Override
 	public String toString() {
 		return String.valueOf(val);
 	}

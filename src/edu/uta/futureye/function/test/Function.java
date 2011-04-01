@@ -3,36 +3,36 @@ package edu.uta.futureye.function.test;
 public interface Function extends Item {
 
 	/**
-	 * ´´½¨º¯Êı±í´ïÊ½
+	 * åˆ›å»ºå‡½æ•°è¡¨è¾¾å¼
 	 */
 	public void createChain();
 	
 	/**
-	 *  »ñÈ¡±í´ïÊ½
+	 *  è·å–è¡¨è¾¾å¼
 	 * @return
 	 */
 	public Chain getChain();
 	
 	/**
-	 * ÉèÖÃ±í´ïÊ½
+	 * è®¾ç½®è¡¨è¾¾å¼
 	 */
 	public void setChain(Chain chain);
 	
 	/**
-	 * ¸´ºÏº¯Êı
+	 * å¤åˆå‡½æ•°
 	 * @param f
 	 * @return
 	 */
 	public Function compose(ComposePair ...pairs);
 	
 	/**
-	 * Õ¹¿ª¶àÏîÊ½
+	 * å±•å¼€å¤šé¡¹å¼
 	 * @return
 	 */
 	public Function expand();	
 	
 	/**
-	 * º¯ÊıÇóÖµ£¨¶à×Ô±äÁ¿£©
+	 * å‡½æ•°æ±‚å€¼ï¼ˆå¤šè‡ªå˜é‡ï¼‰
 	 * @param v
 	 * @return
 	 */

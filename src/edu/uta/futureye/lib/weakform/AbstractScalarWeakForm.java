@@ -11,7 +11,7 @@ import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.FutureyeException;
 
-public class AbstractScalarWeakForm implements WeakForm {
+public abstract class AbstractScalarWeakForm implements WeakForm {
 	protected ScalarShapeFunction u = null;
 	protected ScalarShapeFunction v = null;
 	protected int uDOFLocalIndex;
@@ -48,25 +48,25 @@ public class AbstractScalarWeakForm implements WeakForm {
 		Function integral = null;
 		if(e.eleDim() == 2) {
 			if(e.vertices().size() == 3) {
-				//Èı½ÇĞÎµ¥Ôª
+				//ä¸‰è§’å½¢å•å…ƒ
 				integral = FOIntegrate.intOnTriangleRefElement(
-						FOBasic.Mult(fun, e.getJacobin()),5
+						FOBasic.Mult(fun, e.getJacobin()),4
 						);
 			} else if (e.vertices().size() == 4) {
-				//ËÄ±ßĞÎµ¥Ôª
+				//å››è¾¹å½¢å•å…ƒ
 				integral = FOIntegrate.intOnRectangleRefElement(
 						FOBasic.Mult(fun, e.getJacobin()),2 //TODO
 						);
 			}
 		} else if(e.eleDim() == 3) {
 			if(e.vertices().size() == 4) {
-				//ËÄÃæÌåµ¥Ôª
+				//å››é¢ä½“å•å…ƒ
 				integral = FOIntegrate.intOnTetrahedraRefElement(
 						FOBasic.Mult(fun, e.getJacobin()),2
 					);
 			}
 		} else if(e.eleDim() == 1) {
-			//Ò»Î¬µ¥Ôª
+			//ä¸€ç»´å•å…ƒ
 			integral = FOIntegrate.intOnLinearRefElement(
 					FOBasic.Mult(fun, e.getJacobin()),5
 				);

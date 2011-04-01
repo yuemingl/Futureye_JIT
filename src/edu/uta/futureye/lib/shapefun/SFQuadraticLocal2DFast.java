@@ -1,8 +1,5 @@
 package edu.uta.futureye.lib.shapefun;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
@@ -12,10 +9,10 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 /**
- * 三角形局部坐标，二次函数
+ * 涓夎褰㈠眬閮ㄥ潗鏍囷紝浜屾鍑芥暟
  * 
  * 3
  * | \
@@ -60,7 +57,7 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 			this.funIndex = funIndex;
 		}
 		@Override
-		public Function d(String var) {
+		public Function _d(String var) {
 			if(area < 0.0) {
 				FutureyeException e = new FutureyeException("SFLinearLocal2D: area < 0.0");
 				e.printStackTrace();
@@ -159,8 +156,9 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 	public SFQuadraticLocal2DFast(int funID) {
 		funIndex = funID - 1;
 		if(funID<1 || funID>6) {
-			System.out.println("ERROR: funID should be 1~6.");
-			return;
+			FutureyeException ex = new FutureyeException("ERROR: funID should be 1~6.");
+			ex.printStackTrace();
+			System.exit(-1);
 		}
 		
 		varNames.add("r");
@@ -194,7 +192,7 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 		}
 	}
 
-	//TODO ??? 应该采用一维二次型函数
+	//TODO ??? 搴旇閲囩敤涓�缁翠簩娆″瀷鍑芥暟
 	ScalarShapeFunction sf1d1 = new SFQuadraticLocal1D(1);
 	ScalarShapeFunction sf1d2 = new SFQuadraticLocal1D(2);
 	ScalarShapeFunction sf1d3 = new SFQuadraticLocal1D(3);
@@ -211,8 +209,8 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 	}
 
 	@Override
-	public Function d(String varName) {
-		return funOuter.d(varName);
+	public Function _d(String varName) {
+		return funOuter._d(varName);
 	}
 
 	@Override

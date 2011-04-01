@@ -8,6 +8,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.function.operator.FOVector;
 
 public class TestVector {
@@ -16,12 +17,12 @@ public class TestVector {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//2D
+		//2D Vectors
 		SpaceVector a = new SpaceVector(1.0,0.0);
 		SpaceVector b = new SpaceVector(0.0,1.0);
 		System.out.println(a.dot(b));
 		
-		//3D
+		//3D Vectors
 		SpaceVector a3 = new SpaceVector(1,0,0);
 		SpaceVector b3 = new SpaceVector(0,1,0);
 		a3.crossProduct(b3).print();
@@ -33,25 +34,29 @@ public class TestVector {
 		sv.print();
 		
 		//Space Vector Function
-		Function f1 = new FAxpb("x",1,1);
-		Function f2 = new FAxpb("y",2,2);
-		Function f3 = new FAxpb("z",3,3);
+		Function f1 = new FAxpb("x",1.0,1.0);
+		Function f2 = new FAxpb("y",2.0,2.0);
+		Function f3 = new FAxpb("z",3.0,3.0);
 		
 		SpaceVectorFunction svf = new SpaceVectorFunction(f1,f2,f3);
-		System.out.println(svf);
-		System.out.println(svf.value(new Variable(
-				new VarPair("x",1),
-				new VarPair("y",1),
-				new VarPair("z",1)
-				)));
-		System.out.println(FOVector.Div(svf));
+		System.out.println("svf(x,y,z)="+svf);
+		System.out.println("svf(1,1,1)="+svf.value(
+				new Variable().set("x",1).set("y",1).set("z",1))
+				);
+		
 		System.out.println(svf.dot(new SpaceVector(1,2,3)));
-		System.out.println(svf.dot(svf));
-		System.out.println(svf.dot(svf).value(new Variable(
-				new VarPair("x",1),
-				new VarPair("y",1),
-				new VarPair("z",1)
+		Function dot2 = svf.dot(svf);
+		System.out.println(dot2);
+		System.out.println(dot2.value(
+				new Variable(
+						new VarPair("x",1),
+						new VarPair("y",1),
+						new VarPair("z",1)
 				)));
+		
+		//FMath
+		System.out.println("div(svf)="+FMath.Div(svf));
+
 		
 		//SparseBlockVector 
 		SparseBlockVector sbv = new SparseBlockVector(2);

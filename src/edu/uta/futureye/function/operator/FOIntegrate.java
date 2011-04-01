@@ -6,7 +6,7 @@ import edu.uta.futureye.function.intf.Function;
 
 public class FOIntegrate{
 	/**
-	 * ÔÚ²Î¿¼Èı½ÇĞÎµ¥ÔªÉÏ»ı·Ö
+	 * åœ¨å‚è€ƒä¸‰è§’å½¢å•å…ƒä¸Šç§¯åˆ†
 	 * @param integrand
 	 * @param degree
 	 * @return Function
@@ -98,7 +98,7 @@ public class FOIntegrate{
 	}
 	
 	/**
-	 * Ò»Î¬²Î¿¼µ¥Ôª[-1,1]ÉÏµÄÊıÖµ»ı·Ö
+	 * ä¸€ç»´å‚è€ƒå•å…ƒ[-1,1]ä¸Šçš„æ•°å€¼ç§¯åˆ†
 	 * @param integrand
 	 * @param degree
 	 * @return

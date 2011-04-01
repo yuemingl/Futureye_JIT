@@ -2,101 +2,171 @@ package edu.uta.futureye.algebra.intf;
 
 /**
  * General vector interface
- * Ò»°ãÏòÁ¿½Ó¿Ú£¬²»ÊÊÓÃÓÚÇó½â´úÊı·½³Ì×é£¨Çó½â´úÊı·½³Ì×éµÄÏòÁ¿½Ó¿Ú²Î¼ûAlgebraVector£©
- * ÓÃÍ¾£º
- * 1. ¶şÎ¬¡¢ÈıÎ¬¡°¿Õ¼äÏòÁ¿¡±£¬ÓÃÓÚÏòÁ¿º¯Êı
- * 2. ÓÃÀ´±£´æÓÒ¶ËÏòÁ¿ºÏ³É²½ÖèÖĞµÄ¾Ö²¿ºÍÈ«¾ÖÏòÁ¿
- * 3. ¾ØÕóÏ¡Êè´æÖüµÄ¡°½âÏòÁ¿¡±£¬ÓÃÓÚ´òÓ¡Êä³ö
+ * ä¸€èˆ¬å‘é‡æ¥å£ï¼Œä¸é€‚ç”¨äºæ±‚è§£ä»£æ•°æ–¹ç¨‹ç»„ï¼ˆæ±‚è§£ä»£æ•°æ–¹ç¨‹ç»„çš„å‘é‡æ¥å£å‚è§AlgebraVectorï¼‰
+ * ç”¨é€”ï¼š
+ * 1. äºŒç»´ã€ä¸‰ç»´â€œç©ºé—´å‘é‡â€ï¼Œç”¨äºå‘é‡å‡½æ•°
+ * 2. ç”¨æ¥ä¿å­˜å³ç«¯å‘é‡åˆæˆæ­¥éª¤ä¸­çš„å±€éƒ¨å’Œå…¨å±€å‘é‡
+ * 3. çŸ©é˜µç¨€ç–å­˜è´®çš„â€œè§£å‘é‡â€ï¼Œç”¨äºæ‰“å°è¾“å‡º
  * 
  * @author liuyueming
  * 
  */
 public interface Vector {
 	/**
-	 * ÉèÖÃÏòÁ¿µÄÎ¬¶È
+	 * Get dimension of the vector
+	 * è·å¾—å‘é‡çš„ç»´åº¦
+	 * 
+	 * @return
+	 */
+	int getDim();
+	
+	/**
+	 * Set dimension of the vector
+	 * è®¾ç½®å‘é‡çš„ç»´åº¦
+	 * 
 	 * @param dim
 	 */
-	public void setDim(int dim);
+	void setDim(int dim);
 	
 	/**
-	 * »ñµÃÏòÁ¿µÄÎ¬¶È
-	 * @return
+	 * Get <code>x(index)</code>
+	 * è·å¾—åˆ†é‡<tt>index</tt>çš„å€¼
+	 * 
+	 * @param index
+	 * @return <code>x(index)</code>
 	 */
-	public int getDim();
+	double get(int index);
 
 	/**
-	 * ½«·ÖÁ¿indexµÄÖµÉèÖÃÎªvalue
+	 * <code>x(index) = value</code>
+	 * å°†åˆ†é‡<tt>index</tt>çš„å€¼è®¾ç½®ä¸º<tt>value</tt>
+	 * 
 	 * @param index
 	 * @param value
 	 */
-	public void set(int index, double value);
+	void set(int index, double value);
 	
 	/**
-	 * ½«ÏòÁ¿vµÄÖµ¸³Öµ¸øthis
-	 * @param v
-	 */
-	public void set(Vector v);
-
-	/**
-	 * »ñµÃ·ÖÁ¿indexµÄÖµ
-	 * @param index
-	 * @return
-	 */
-	public double get(int index);
-
-	/**
-	 * v(index) += value
-	 * ·ÖÁ¿indexµÄÖµÔÙ¼ÓÉÏvalue
+	 * <code>x(index) += value</code>
+	 * åˆ†é‡<tt>index</tt>çš„å€¼å†åŠ ä¸Š<tt>value</tt>ï¼Œ
+	 * é€‚ç”¨äºè£…é…åˆšåº¦çŸ©é˜µå’Œè½½è·å‘é‡
+	 * 
 	 * @param index
 	 * @param value
 	 */
-	public void add(int index,double value);
+	void add(int index,double value);
+	
+	////////////////////////////////////////////////
 	
 	/**
-	 * this += a*v
+	 * <code>x(i)=y(i), i=1...dim</code>
+	 * å°†å‘é‡yçš„å€¼èµ‹å€¼ç»™x
+	 * 
+	 * @param y
+	 */
+	Vector set(Vector y);
+	
+	/**
+	 * <code>x(i)=a*y(i), i=1...dim</code>
+	 * å°†å‘é‡a*yçš„å€¼èµ‹å€¼ç»™x
+	 * 
+	 * @param y
+	 */
+    Vector set(double a, Vector y);
+	
+	/**
+	 * <code>x = x + y</code>
 	 * 
 	 * @param a
-	 * @param v
+	 * @param y
 	 */
-	public void add(double a, Vector v);
-
-	/**
-	 * ¸´ÖÆ×Ô¼º£¬Éî¿½±´
-	 * @return
-	 */
-	public Vector copy();
+	Vector add(Vector y);
 	
 	/**
-	 * µã³Ë£¨ÄÚ»ı£©
-	 * Dot product
+	 * <code>x = x + a*y</code>
 	 * 
-	 * @param b = (b1 b2 ... bn)'
-	 * @return = a1*b1 + a2*b2 + ... + an*bn
+	 * @param a
+	 * @param y
 	 */
-	public double dot(Vector b);
+	Vector add(double a, Vector y);
 	
 	/**
-	 * ¶ş·¶Êı
+	 * <code>x = a*x</code>
+	 * 
+	 * @param a
 	 * @return
 	 */
-	public double norm2();
+	Vector scale(double a);
 	
 	/**
-	 * ÎŞÇî·¶Êı
+	 * <code>x = a*x</code>
+	 * 
+	 * @param a
 	 * @return
 	 */
-	public double normInf();
+	Vector ax(double a);
 	
 	/**
-	 * Çå¿ÕÏòÁ¿µÄËùÓĞÔªËØ
+	 * <code>x = a*x + y</code>
+	 * 
+	 * @param a
+	 * @param y
+	 * @return
 	 */
-	public void clear();
+	Vector axpy(double a, Vector y);
 	
 	/**
-	 * print the component values of this vector
-	 * ´òÓ¡ÏòÁ¿ÔªËØ
+	 * Dot product, returns <code>x1*y1 + x2*y2 + ... + xn*yn</code>
+	 * ç‚¹ä¹˜ï¼ˆå†…ç§¯ï¼‰
+	 * 
+	 * @param y = (y1 y2 ... yn)'
+	 * @return
 	 */
-	public void print();
+	double dot(Vector y);
 	
+	/**
+	 * <code>sum(abs(x))</code>
+	 * ä¸€èŒƒæ•°
+	 * 
+	 * @return
+	 */
+	double norm1();
 
+	/**
+	 * <code>sqrt(sum(abs(x).^2))</code>
+	 * äºŒèŒƒæ•°
+	 * 
+	 * @return
+	 */
+	double norm2();
+	
+	/**
+	 * <code>max(abs(x))</code>
+	 * æ— ç©·èŒƒæ•°
+	 * 
+	 * @return
+	 */
+	double normInf();
+	
+	///////////////////////////////////////////////////////
+	
+	/**
+	 * Deep copy
+	 * æ·±æ‹·è´
+	 * 
+	 * @return
+	 */
+	Vector copy();
+
+	/**
+	 * Set vector dimension to zero. (SparseVector only?) 
+	 * æ¸…ç©ºå‘é‡çš„æ‰€æœ‰å…ƒç´ ï¼ˆæ˜¯å¦å®šä¹‰ç¨€ç–å‘é‡æ¥å£ï¼Ÿï¼‰
+	 */
+	void clear();
+	
+	/**
+	 * Print the component values of the vector
+	 * æ‰“å°å‘é‡å…ƒç´ 
+	 */
+	void print();
 }

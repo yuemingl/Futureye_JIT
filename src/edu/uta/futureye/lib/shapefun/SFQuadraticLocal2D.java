@@ -15,10 +15,11 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.container.ObjList;
 
 /**
- * Èı½ÇĞÎ¾Ö²¿×ø±ê£¬¶ş´Îº¯Êı
+ * ä¸‰è§’å½¢å±€éƒ¨åæ ‡ï¼ŒäºŒæ¬¡å‡½æ•°
  * 
  * 3
  * | \
@@ -51,8 +52,9 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 	public SFQuadraticLocal2D(int funID) {
 		funIndex = funID - 1;
 		if(funID<1 || funID>6) {
-			System.out.println("ERROR: funID should be 1~6.");
-			return;
+			FutureyeException ex = new FutureyeException("ERROR: funID should be 1~6.");
+			ex.printStackTrace();
+			System.exit(-1);
 		}
 		
 		varNames.add("r");
@@ -60,7 +62,7 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 		//varNames.add("t");
 		innerVarNames = new ObjList<String>("x","y");
 		
-		//¸´ºÏº¯Êı
+		//å¤åˆå‡½æ•°
 		Map<String, Function> fInners = new HashMap<String, Function>(4);
 		
 		for(final String varName : varNames) {
@@ -68,10 +70,10 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
-				public Function d(String var) {
+				public Function _d(String var) {
 					//Coordinate transform and Jacbian on element e
 					List<Function> funs = trans.getTransformFunction(
-							//Á½ÖÖ±ä»»¶¼¿ÉÒÔ£¬¶ş´ÎµÄÒªÂıÒ»Ğ©
+							//ä¸¤ç§å˜æ¢éƒ½å¯ä»¥ï¼ŒäºŒæ¬¡çš„è¦æ…¢ä¸€äº›
 							//trans.getTransformShapeFunctionByElement(e)
 							trans.getTransformLinear2DShapeFunction(e)
 								);
@@ -96,10 +98,10 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 //					fxCompose.setVarNames(independentVarNames);
 //					fyCompose.setVarNames(independentVarNames);
 
-					Function x_r = fx.d("r");
-					Function x_s = fx.d("s");
-					Function y_r = fy.d("r");
-					Function y_s = fy.d("s");
+					Function x_r = fx._d("r");
+					Function x_s = fx._d("s");
+					Function y_r = fy._d("r");
+					Function y_s = fy._d("s");
 					
 					//Function jac = (Function) trans.getJacobian2D();
 					Function jac = (Function) e.getJacobin();
@@ -172,13 +174,13 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 		else if(funIndex == 5)
 			funOuter = FMath.Mult(new FC(4.0), FMath.Mult(fr, ftCompose));
 		
-		//ÉèÖÃfunOuterµÄ¶ÀÁ¢×Ô±äÁ¿Ãû³Æ
+		//è®¾ç½®funOuterçš„ç‹¬ç«‹è‡ªå˜é‡åç§°
 //		List<String> independentVarNames = new LinkedList<String>();
 //		independentVarNames.add("r");
 //		independentVarNames.add("s");
 //		funOuter.setVarNames(independentVarNames);
 		funOuter.setVarNames(varNames);
-		//Ê¹ÓÃ¸´ºÏº¯Êı¹¹ÔìĞÎº¯Êı
+		//ä½¿ç”¨å¤åˆå‡½æ•°æ„é€ å½¢å‡½æ•°
 		funCompose = FMath.Compose(funOuter, fInners);
 		
 	}
@@ -188,7 +190,7 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 		this.e = e;
 	}
 
-	//TODO ??? Ó¦¸Ã²ÉÓÃÒ»Î¬¶ş´ÎĞÍº¯Êı
+	//TODO ??? åº”è¯¥é‡‡ç”¨ä¸€ç»´äºŒæ¬¡å‹å‡½æ•°
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
 	ScalarShapeFunction sf1d2 = new SFLinearLocal1D(2);
 	@Override
@@ -198,8 +200,8 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 	}
 
 	@Override
-	public Function d(String varName) {
-		return funCompose.d(varName);
+	public Function _d(String varName) {
+		return funCompose._d(varName);
 	}
 
 	@Override
@@ -228,7 +230,7 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 		for(int i=1;i<=6;i++) {
 			SFQuadraticLocal2D s = new SFQuadraticLocal2D(i);
 			System.out.println(s);
-			System.out.println(s.d("r"));
+			System.out.println(s._d("r"));
 		}
 	}
 

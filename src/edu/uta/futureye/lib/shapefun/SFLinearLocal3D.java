@@ -11,23 +11,23 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.list.ObjList;
+import edu.uta.futureye.util.container.ObjList;
 
 /**
  * 3D tetrahedral coordinates
  * 
- * 3D ËÄÃæÌå ¾Ö²¿×ø±ê ÏßĞÔĞÎº¯Êı
+ * 3D å››é¢ä½“ å±€éƒ¨åæ ‡ çº¿æ€§å½¢å‡½æ•°
  * 
- * ´´½¨ĞÎº¯ÊıĞèÒªµÄÖ÷Òª²½Öè£º
+ * åˆ›å»ºå½¢å‡½æ•°éœ€è¦çš„ä¸»è¦æ­¥éª¤ï¼š
  * 
- * 1. ´´½¨ĞÎº¯Êı±í´ïÊ½£¨¾Ö²¿×ø±ê£©
- * 2. £¨¸´ºÏ£©º¯ÊıÇóÖµ£¨¾Ö²¿×ø±ê£©£¬£¨¸´ºÏ£©º¯ÊıÇóµ¼Êı£¨¹ØÓÚÎïÀí×ø±ê£©
- * 3. Ìá¹©½µÎ¬ºóµÄĞÎº¯Êı
+ * 1. åˆ›å»ºå½¢å‡½æ•°è¡¨è¾¾å¼ï¼ˆå±€éƒ¨åæ ‡ï¼‰
+ * 2. ï¼ˆå¤åˆï¼‰å‡½æ•°æ±‚å€¼ï¼ˆå±€éƒ¨åæ ‡ï¼‰ï¼Œï¼ˆå¤åˆï¼‰å‡½æ•°æ±‚å¯¼æ•°ï¼ˆå…³äºç‰©ç†åæ ‡ï¼‰
+ * 3. æä¾›é™ç»´åçš„å½¢å‡½æ•°
  * 
- * ±¾Àà²ÉÓÃÖ±½Ó¶¨Òå·¨£¬²¢ÇÒº¯ÊıÖµºÍµ¼ÊıÒÑ¾­ÓĞÍÆµ¼³öÀ´µÄ±í´ïÊ½¡£
- * ¸´ºÏº¯Êı·¨¼û£º
- * SFQuadraticLocal2Dº¯ÊıÖµºÍµ¼ÊıÃ»ÓĞÍêÈ«ÍÆµ½³öÀ´£¬ĞèÒªµÄ¼ÆËãÁ¿½Ï´ó
- * SFLinearLocal2Dº¯ÊıÖµºÍµ¼ÊıÒÑ¾­ÓĞÍÆµ¼³öÀ´µÄ±í´ïÊ½¡£
+ * æœ¬ç±»é‡‡ç”¨ç›´æ¥å®šä¹‰æ³•ï¼Œå¹¶ä¸”å‡½æ•°å€¼å’Œå¯¼æ•°å·²ç»æœ‰æ¨å¯¼å‡ºæ¥çš„è¡¨è¾¾å¼ã€‚
+ * å¤åˆå‡½æ•°æ³•è§ï¼š
+ * SFQuadraticLocal2Då‡½æ•°å€¼å’Œå¯¼æ•°æ²¡æœ‰å®Œå…¨æ¨åˆ°å‡ºæ¥ï¼Œéœ€è¦çš„è®¡ç®—é‡è¾ƒå¤§
+ * SFLinearLocal2Då‡½æ•°å€¼å’Œå¯¼æ•°å·²ç»æœ‰æ¨å¯¼å‡ºæ¥çš„è¡¨è¾¾å¼ã€‚
  * 
  * N = N(r,s,t,u) = N( r(x,y,z), s(x,y,z), t(x,y,z), u(x,y,z) )
  * N1 = r
@@ -53,7 +53,7 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 	private double volume;
 	
 	/**
-	 * ¹¹ÔìÏÂÁĞĞÎº¯ÊıÖĞµÄÒ»¸ö£º
+	 * æ„é€ ä¸‹åˆ—å½¢å‡½æ•°ä¸­çš„ä¸€ä¸ªï¼š
 	 * @param funID = 1,2,3,4 (N1,N2,N3,N4)
 	 * 
 	 */
@@ -116,7 +116,7 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 		volume = (x2-x1)*((y3-y1)*(z4-z1)-(y4-y1)*(z3-z1))
 			   + (y2-y1)*((x4-x1)*(z3-z1)-(x3-x1)*(z4-z1))
 			   + (z2-z1)*((x3-x1)*(y4-y1)-(x4-x1)*(y3-y1));
-		//TODO È¥µô¾ø¶ÔÖµ
+		//TODO å»æ‰ç»å¯¹å€¼
 		volume = Math.abs(volume/6.0);
 		
 	}
@@ -133,14 +133,14 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 	}
 
 	@Override
-	public Function d(String var) {
+	public Function _d(String var) {
 		if(this.volume < 0.0) {
 			FutureyeException e = new FutureyeException("SFLinearLocal3D: volume < 0.0");
 			e.printStackTrace();
 			return null;
 		}
 		
-		//¹ØÓÚ×ÔÓÉ±äÁ¿r,s,tÇóµ¼£¬uÎª·Ç×ÔÓÉ±äÁ¿
+		//å…³äºè‡ªç”±å˜é‡r,s,tæ±‚å¯¼ï¼Œuä¸ºéè‡ªç”±å˜é‡
 		if( var.equals("r") || var.equals("s") || var.equals("t") ) {
 			//u=1-r-s-t
 			if(funIndex == 3)
@@ -155,7 +155,7 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 			System.exit(0);
 		}
 		
-		//¹ØÓÚx,y,zÇóµ¼
+		//å…³äºx,y,zæ±‚å¯¼
 		if(var.equals("x")) {
 			if(funIndex == 0)
 				return new FC(a1/(6*volume));

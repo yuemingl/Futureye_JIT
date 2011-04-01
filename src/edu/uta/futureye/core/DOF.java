@@ -16,6 +16,21 @@ public class DOF {
 	protected ShapeFunction shapeFun;
 	protected GeoEntity owner;
 	
+	//component index of vector valued function
+	//e.g. Stokes: (u v p)
+	//vvfIndex=1: DOF of u
+	//vvfIndex=2: DOF of v
+	//vvfIndex=3: DOF of p
+	protected int vvfIndex;
+	
+	public int getVvfIndex() {
+		return vvfIndex;
+	}
+
+	public void setVvfIndex(int vvfIndex) {
+		this.vvfIndex = vvfIndex;
+	}
+
 	public DOF(int localIndex, int globalIndex, ShapeFunction shape) {
 		this.localIndex = localIndex;
 		this.globalIndex = globalIndex;
@@ -37,7 +52,7 @@ public class DOF {
 	
 	
 	/**
-	 * ·µ»ØĞÎº¯Êı
+	 * è¿”å›å½¢å‡½æ•°
 	 * @return
 	 */
 	public ShapeFunction getSF() {
@@ -45,7 +60,7 @@ public class DOF {
 	}
 	
 	/**
-	 * ·µ»Ø±êÁ¿ĞÎº¯Êı
+	 * è¿”å›æ ‡é‡å½¢å‡½æ•°
 	 * @return
 	 */
 	public ScalarShapeFunction getSSF() {
@@ -53,7 +68,7 @@ public class DOF {
 	}
 	
 	/**
-	 * ·µ»ØÏòÁ¿ĞÎº¯Êı
+	 * è¿”å›å‘é‡å½¢å‡½æ•°
 	 * @return
 	 */
 	public VectorShapeFunction getVSF() {
