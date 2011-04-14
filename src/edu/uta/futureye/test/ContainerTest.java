@@ -24,7 +24,6 @@ public class ContainerTest {
 		vec.set(5, 50);
 		System.out.println(vec);
 		
-		
 		System.out.println(vec.subVector(2, 4));
 		System.out.println(vec.subVector(new ObjIndex(1,3,5)));
 

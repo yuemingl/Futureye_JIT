@@ -74,11 +74,11 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 				else if(funIndex == 2)
 					return new FAxpb("t",dlx[2]*4.0,-dlx[2]);
 				else if(funIndex == 3)
-					return FMath.LinearCombination(4.0*dlx[0], fs, 4.0*dlx[1], fr);
+					return FMath.linearCombination(4.0*dlx[0], fs, 4.0*dlx[1], fr);
 				else if(funIndex == 4)
-					return FMath.LinearCombination(4.0*dlx[1], ft, 4.0*dlx[2], fs);
+					return FMath.linearCombination(4.0*dlx[1], ft, 4.0*dlx[2], fs);
 				else if(funIndex == 5)
-					return FMath.LinearCombination(4.0*dlx[0], ft, 4.0*dlx[2], fr);		
+					return FMath.linearCombination(4.0*dlx[0], ft, 4.0*dlx[2], fr);		
 				else {
 					FutureyeException e = new FutureyeException("Error: SF123456.derivative(x)");
 					e.printStackTrace();
@@ -91,11 +91,11 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 				else if(funIndex == 2)
 					return new FAxpb("t",dly[2]*4.0,-dly[2]);
 				else if(funIndex == 3)
-					return FMath.LinearCombination(4.0*dly[0], fs, 4.0*dly[1], fr);
+					return FMath.linearCombination(4.0*dly[0], fs, 4.0*dly[1], fr);
 				else if(funIndex == 4)
-					return FMath.LinearCombination(4.0*dly[1], ft, 4.0*dly[2], fs);
+					return FMath.linearCombination(4.0*dly[1], ft, 4.0*dly[2], fs);
 				else if(funIndex == 5)
-					return FMath.LinearCombination(4.0*dly[0], ft, 4.0*dly[2], fr);		
+					return FMath.linearCombination(4.0*dly[0], ft, 4.0*dly[2], fr);		
 				else {
 					FutureyeException e = new FutureyeException("Error: SF123456.derivative(y)");
 					e.printStackTrace();
@@ -202,9 +202,7 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 		else if(funIndex == 2) return sf1d2;
 		else if(funIndex == 3) return sf1d3;
 		else {
-			FutureyeException e = new FutureyeException("Error: SF123456.restrictTo()");
-			e.printStackTrace();
-			return null;
+			throw new FutureyeException("Error: SF123456.restrictTo()");
 		}
 	}
 

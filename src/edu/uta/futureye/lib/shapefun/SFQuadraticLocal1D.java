@@ -13,7 +13,6 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
@@ -79,13 +78,13 @@ public class SFQuadraticLocal1D extends AbstractFunction implements ScalarShapeF
 		Function fr = new FX("r");
 		//使用复合函数构造形函数
 		if(funIndex == 0)
-			funOuter = FMath.Mult(fr, new FAxpb("r",0.5,-0.5));
+			funOuter = fr.M(new FAxpb("r",0.5,-0.5));
 		else if(funIndex == 1)
-			funOuter = FMath.Mult(fr, new FAxpb("r",0.5,0.5));
+			funOuter = fr.M(new FAxpb("r",0.5,0.5));
 		else if(funIndex == 2)
-			funOuter = FMath.Minus(new FC(1.0), FMath.Mult(fr, fr));
+			funOuter = FC.c1.S(fr.M(fr));
 		
-		funCompose = FMath.Compose(funOuter, fInners);
+		funCompose = funOuter.compose(fInners);
 	}
 	
 	@Override

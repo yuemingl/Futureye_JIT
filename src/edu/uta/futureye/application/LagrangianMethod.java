@@ -10,7 +10,6 @@ import edu.uta.futureye.algebra.Solver;
 import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
@@ -19,7 +18,6 @@ import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -225,15 +223,13 @@ public class LagrangianMethod {
 		weakForm.setParam(
 				FC.c(-1.0), //注意，有负号!!!
 				param_c, 
-				FMath.Mult(FC.c(2.0),b1),
-				FMath.Mult(FC.c(2.0),b2));
+				FC.c(2.0).M(b1),
+				FC.c(2.0).M(b2));
 		//q = d = 1 + \partial_{n}{lnu_0}
-		Function param_qd = FMath.Plus(
-				FC.c(1.0), new DuDn(b1, b2, null)
-				);
+		Function param_qd = FC.c(1.0).A(new DuDn(b1, b2, null));
 		//Robin:  d*u + k*u_n = q (自然边界：d==k, q=0)
-		weakForm.setRobin(FMath.Mult(FC.c(-1.0),param_qd),
-				FMath.Mult(FC.c(-1.0),param_qd));
+		weakForm.setRobin(FC.c(-1.0).M(param_qd),
+				FC.c(-1.0).M(param_qd));
 
 		mesh.clearBorderNodeMark();
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
@@ -286,8 +282,8 @@ public class LagrangianMethod {
 						new SparseVector(a.getDim(),k*k)))));
 		
 		//\Nabla{lnu0}
-		Function b1 = FMath.Divi(fu0_x,fu0);
-		Function b2 = FMath.Divi(fu0_y,fu0);
+		Function b1 = fu0_x.D(fu0);
+		Function b2 = fu0_y.D(fu0);
 		WeakFormGCM weakForm = new WeakFormGCM();
 
 		//(v - g)_\partial{\Omega} 
@@ -320,20 +316,18 @@ public class LagrangianMethod {
 		weakForm.setParam(
 				FC.c(-1.0),//注意，有负号!!!
 				param_c, 
-				FMath.Mult(FC.c(-2.0),b1),
-				FMath.Mult(FC.c(-2.0),b2)
+				FC.c(-2.0).M(b1),
+				FC.c(-2.0).M(b2)
 			);
 		
 		
 		plotFunction(mesh, fv_g, "Lagrangian_v_g"+s_i+".dat");
-		Function param_d = FMath.Minus(
-				FC.c(1.0), new DuDn(b1, b2, null)
-				);
+		Function param_d = FC.c(1.0).S(new DuDn(b1, b2, null));
 		
 		//q=v-g_tidle, d=\partial_{n}{lnu_0}
 		//Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
-		weakForm.setRobin(FMath.Mult(FC.c(-1.0),fv_g),
-				FMath.Mult(FC.c(-1.0), param_d));
+		weakForm.setRobin(FC.c(-1.0).M(fv_g),
+				FC.c(-1.0).M(param_d));
 		//Test: v_g在整个区域上都已知
 		//weakForm.setRobin(FC.c(0.0),
 		//		FMath.Mult(FC.c(-1.0), param_d));
@@ -392,13 +386,13 @@ public class LagrangianMethod {
 		ElementList eList = meshBig.getElementList();
 		FELinearTriangle linearTriangle = new FELinearTriangle();
 		for(int i=1;i<=eList.size();i++)
-			linearTriangle.assign(eList.at(i));
+			linearTriangle.assignTo(eList.at(i));
 		meshBig.computeNodeBelongsToElements();
 		meshBig.computeNeighborNodes();
 		
 		eList = meshSmall.getElementList();
 		for(int i=1;i<=eList.size();i++)
-			linearTriangle.assign(eList.at(i));
+			linearTriangle.assignTo(eList.at(i));
 		meshSmall.computeNodeBelongsToElements();
 		meshSmall.computeNeighborNodes();
 
@@ -409,7 +403,7 @@ public class LagrangianMethod {
 				0.2, //init 'a_glob(x)'
 				1);
 		Vector a_glob = model.discreteFunction(meshSmall,
-				FMath.Divi(model.mu_a,model.k)
+				model.mu_a.D(model.k)
 				);
 		plotVector(meshSmall, a_glob, "a_glob.dat");
 

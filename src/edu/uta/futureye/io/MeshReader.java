@@ -11,8 +11,11 @@ import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 
 public class MeshReader {
+	
 	Mesh mesh = new Mesh();
 	String file = null;
+	
+	public boolean debug = false;
 	
 	public MeshReader(String fileName) {
 		this.file = fileName;
@@ -31,7 +34,8 @@ public class MeshReader {
 			int nElement = 0;
 			mesh.clearAll();
 			while((str = br.readLine()) != null){
-				System.out.println(str);
+				if(debug)
+					System.out.println(str);
 				if(str.startsWith("#")) continue;
 				String[] line = str.split("(\\s)+");
 				if(nNode == 0) {
@@ -89,6 +93,8 @@ public class MeshReader {
 			int nElement = 0;
 			mesh.clearAll();
 			while((str = br.readLine()) != null){
+				if(debug)
+					System.out.println(str);
 				if(str.startsWith("#")) continue;
 				String[] line = str.split("(\\s)+");
 				if(nNode == 0) {

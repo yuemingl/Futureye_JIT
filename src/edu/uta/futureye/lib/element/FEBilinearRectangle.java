@@ -21,7 +21,7 @@ public class FEBilinearRectangle implements FiniteElementType {
 	 * @param e
 	 */
 	@Override
-	public void assign(Element e) {
+	public void assignTo(Element e) {
 		//Asign degree of freedom to element
 		VertexList vertices = e.vertices();
 		for(int j=1;j<=vertices.size();j++) {

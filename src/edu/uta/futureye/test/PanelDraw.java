@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
@@ -19,6 +18,12 @@ public class PanelDraw extends JPanel{
 	public Function fx;
 	public Function fy;
 	
+	public double[] convert(int[] iArray) {
+		double[] dArray = new double[iArray.length];
+		for(int i=0; i<iArray.length; i++)
+			dArray[i] = iArray[i];
+		return dArray;
+	}
 	
 	public void paintComponent(Graphics g){
 		super.paintComponent(g); 
@@ -31,15 +36,8 @@ public class PanelDraw extends JPanel{
 		for(int i=1;i<=n;i++)
 			shapeFun[i-1] = new SFBilinearLocal2D(i);
 		
-		fx = new FC(0.0);
-		fy = new FC(0.0);
-		
-		for(int i=0;i<n;i++) {
-			fx = FMath.Plus(fx, 
-					FMath.Mult(new FC(xs[i]), shapeFun[i]));
-			fy = FMath.Plus(fy, 
-					FMath.Mult(new FC(ys[i]), shapeFun[i]));
-		}
+		fx = FMath.linearCombination(convert(xs), shapeFun);
+		fy = FMath.linearCombination(convert(ys), shapeFun);
 		
 		Variable p1 = new Variable();
 		Variable p2 = new Variable();

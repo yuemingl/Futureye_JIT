@@ -55,14 +55,14 @@ public class WeakFormGCM extends AbstractScalarWeakForm {
 			Function fb1 = Utils.interplateFunctionOnElement(g_b1,e);
 			Function fb2 = Utils.interplateFunctionOnElement(g_b2,e);
 			
-			integrand = FMath.PlusAll(
-						FMath.Mult(fk, FMath.Plus(
-								FMath.Mult(u._d("x"), v._d("x")),
-								FMath.Mult(u._d("y"), v._d("y"))
+			integrand = FMath.sum(
+						fk.M(
+								u._d("x").M(v._d("x")).A(
+								u._d("y").M(v._d("y"))
 						)),
-						FMath.Mult(fb1,FMath.Mult(u._d("x"), v)),
-						FMath.Mult(fb2,FMath.Mult(u._d("y"), v)),
-						FMath.Mult(fc, FMath.Mult(u, v))
+						fb1.M(u._d("x").M(v)),
+						fb2.M(u._d("y").M(v)),
+						fc.M(u.M(v))
 					);
 			return integrand;
 		}
@@ -70,7 +70,7 @@ public class WeakFormGCM extends AbstractScalarWeakForm {
 			if(g_d != null) {
 				Element be = e;
 				Function fd = Utils.interplateFunctionOnElement(g_d, be);
-				Function borderIntegrand = FMath.Mult(FMath.Mult(fd, u), v);
+				Function borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
 		}
@@ -81,12 +81,12 @@ public class WeakFormGCM extends AbstractScalarWeakForm {
 	public Function rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			Function ff = Utils.interplateFunctionOnElement(g_f, e);
-			Function integrand = FMath.Mult(ff,v);
+			Function integrand = ff.M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
 			Function fq = Utils.interplateFunctionOnElement(g_q, be);
-			Function borderIntegrand = FMath.Mult(fq, v);
+			Function borderIntegrand = fq.M(v);
 			return borderIntegrand;
 		} 
 		return null;

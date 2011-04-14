@@ -16,7 +16,7 @@ public class FEQuadraticTriangle implements FiniteElementType {
 	}
 	
 	@Override
-	public void assign(Element e) {
+	public void assignTo(Element e) {
 		//Assign shape function to DOF
 		for(int j=1;j<=e.nodes.size();j++) {
 			//Asign shape function to DOF

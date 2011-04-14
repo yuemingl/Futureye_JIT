@@ -48,7 +48,7 @@ public class Laplace {
 		ElementList eList = mesh.getElementList();
 		FELinearTriangle linearTriangle = new FELinearTriangle();
 		for(int i=1;i<=eList.size();i++)
-			linearTriangle.assign(eList.at(i));
+			linearTriangle.assignTo(eList.at(i));
 
 		//Laplace2D weak form
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();

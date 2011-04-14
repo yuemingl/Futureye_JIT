@@ -7,6 +7,18 @@ import edu.uta.futureye.function.intf.VectorShapeFunction;
 
 /**
  * Degree Of Freedom
+ * 
+ * U   = \sum_{j=1}^{N}(u_j*w), on whole domain
+ * U_e = \sum_{i=1}^{n}(u_i*v), on element e
+ * 
+ * 
+ * u_i*v => DOF object: <tt>dof</tt>
+ * i     => <tt>dof.localIndex</tt>
+ * v     => <tt>dof.shapeFun</tt>
+ * j     => <tt>dof.globalIndex</tt>
+ * w     => base function that constructed by combining
+ *          shape functions on neighboring elements
+ * 
  * @author liuyueming
  *
  */
@@ -23,14 +35,6 @@ public class DOF {
 	//vvfIndex=3: DOF of p
 	protected int vvfIndex;
 	
-	public int getVvfIndex() {
-		return vvfIndex;
-	}
-
-	public void setVvfIndex(int vvfIndex) {
-		this.vvfIndex = vvfIndex;
-	}
-
 	public DOF(int localIndex, int globalIndex, ShapeFunction shape) {
 		this.localIndex = localIndex;
 		this.globalIndex = globalIndex;
@@ -40,16 +44,25 @@ public class DOF {
 	public int getLocalIndex() {
 		return localIndex;
 	}
+	
 	public void setLocalIndex(int localIndex) {
 		this.localIndex = localIndex;
 	}
+	
 	public int getGlobalIndex() {
 		return globalIndex;
 	}
+	
 	public void setGlobalIndex(int globalIndex) {
 		this.globalIndex = globalIndex;
 	}
 	
+	public int getVvfIndex() {
+		return vvfIndex;
+	}
+	public void setVvfIndex(int vvfIndex) {
+		this.vvfIndex = vvfIndex;
+	}	
 	
 	/**
 	 * 返回形函数

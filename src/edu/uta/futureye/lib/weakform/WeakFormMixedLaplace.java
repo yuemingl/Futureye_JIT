@@ -5,16 +5,14 @@ import edu.uta.futureye.algebra.intf.BlockVector;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
-import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
-import edu.uta.futureye.function.operator.FOBasic;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.function.operator.FOIntegrate;
-import edu.uta.futureye.function.operator.FOVector;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
 
@@ -27,8 +25,10 @@ import edu.uta.futureye.util.container.DOFList;
  * Weak Form: 
  *  seek q \in H_{g,N}(div,\Omega) and u \in L^{2}(\Omega)
  *  such that
- *  (p,q)_{\Omega} + (u,\div{q})_{\Omega} = u_D*(q,\mu)_{\Gamma_{D}},  for all q \in H_{0,N}(div,\Omega)
- *  (v,\div{p})_{\Omega} = -(v,f)_{\Omega}, for all v \in L^{2}(\Omega)
+ *  (p,q)_{\Omega} + (u,\div{q})_{\Omega} = u_D*(q,\mu)_{\Gamma_{D}},  
+ *  							for all q \in H_{0,N}(div,\Omega)
+ *  (v,\div{p})_{\Omega} = -(v,f)_{\Omega}, 
+ *  							for all v \in L^{2}(\Omega)
  * 
  * Algebra System:
  * 
@@ -56,15 +56,17 @@ public class WeakFormMixedLaplace implements WeakForm {
 	public void assembleElement(Element e, 
 			Matrix globalStiff, Vector globalLoad){
 		
-		DOFList edgeDOFs = e.getAllEdgeDOFList(DOFOrder.NEFV);
-		DOFList eleDOFs = e.getElementDOFList();
+		DOFList edgeDOFs = e.getAllEdgeDOFList();
+		//
+		DOFList eleDOFs = e.getVolumeDOFList();
 		int nEdgeDOF = edgeDOFs.size();
 		int nElementDOF = eleDOFs.size();
 
 		BlockMatrix blockMat = (BlockMatrix)globalStiff;
 		BlockVector blockVec = (BlockVector)globalLoad;
-//不需要使用分块矩阵，直接使用整个矩阵就可以了，合成过程由于块矩阵的性质
-//会自动将相应的元素放入对应的块中。		
+		
+//不需要使用单独的每个分块子矩阵，直接使用整个块矩阵就可以了，
+//合成过程由于整个块矩阵的特性，会自动将相应的元素放入对应的子块中。		
 //		Matrix m11 = blockMat.getBlock(1, 1);
 //		Matrix m12 = blockMat.getBlock(1, 2);
 //		Matrix m21 = blockMat.getBlock(2, 1);
@@ -90,7 +92,7 @@ public class WeakFormMixedLaplace implements WeakForm {
 				Function integralB = null;
 				if(e.vertices().size() == 3) {
 					integralB = FOIntegrate.intOnTriangleRefElement(
-							FOBasic.Mult(integrandB, e.getJacobin()),5
+							integrandB.M(e.getJacobin()),5
 					);
 					double val = integralB.value(null);
 					blockMat.add(dofU.getGlobalIndex(), dofV.getGlobalIndex(), val);
@@ -101,9 +103,9 @@ public class WeakFormMixedLaplace implements WeakForm {
 				DOF dofE = eleDOFs.at(k);
 				//C: (u,\div{q})_{\Omega}
 				Function integrandC = null;
-				integrandC = FOVector.Div(vecV);
+				integrandC = FMath.div(vecV);
 				Function integralC = FOIntegrate.intOnTriangleRefElement(
-						FOBasic.Mult(integrandC, e.getJacobin()),5
+						integrandC.M(e.getJacobin()),5
 						);
 				double val = integralC.value(null);
 				blockMat.add(dofV.getGlobalIndex(), dofE.getGlobalIndex(), val);
@@ -119,15 +121,15 @@ public class WeakFormMixedLaplace implements WeakForm {
 			//ShapeFunction sf = dofE.getSF(); //分片常数元，在积分项中系数是1
 			Function integrand = Utils.interplateFunctionOnElement(g_f, e);
 			//bf: -(v,f)_{\Omega}
-			integrand = FOBasic.Mult(new FC(-1.0), integrand);
+			integrand = FC.c(-1.0).M(integrand);
 			Function integral = null;
 			if(e.vertices().size() == 3) {
 				integral = FOIntegrate.intOnTriangleRefElement(
-						FOBasic.Mult(integrand, e.getJacobin()),5
+						integrand.M(e.getJacobin()),5
 					);
 			} else if (e.vertices().size() == 4) {
 				integral = FOIntegrate.intOnRectangleRefElement(
-						FOBasic.Mult(integrand, e.getJacobin()),2 //TODO
+						integrand.M(e.getJacobin()),2 //TODO
 						);
 			}
 			double val = integral.value(null);

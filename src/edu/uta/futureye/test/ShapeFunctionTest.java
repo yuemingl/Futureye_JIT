@@ -7,7 +7,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
-import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
+import edu.uta.futureye.lib.shapefun.SFLinearLocal2DTest;
 import edu.uta.futureye.util.container.NodeList;
 
 public class ShapeFunctionTest {
@@ -28,10 +28,14 @@ public class ShapeFunctionTest {
 		
 		Element e = new Element(nodes);
 		
-		SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
-		shapeFun[0] = new SFLinearLocal2D(1);
-		shapeFun[1] = new SFLinearLocal2D(2);
-		shapeFun[2] = new SFLinearLocal2D(3);
+//		SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
+//		shapeFun[0] = new SFLinearLocal2D(1);
+//		shapeFun[1] = new SFLinearLocal2D(2);
+//		shapeFun[2] = new SFLinearLocal2D(3);
+		SFLinearLocal2DTest[] shapeFun = new SFLinearLocal2DTest[3];
+		shapeFun[0] = new SFLinearLocal2DTest(1);
+		shapeFun[1] = new SFLinearLocal2DTest(2);
+		shapeFun[2] = new SFLinearLocal2DTest(3);
 		
 		//Test the derivatives of shape function
 		
@@ -105,8 +109,9 @@ public class ShapeFunctionTest {
 		Function SF0dx = shapeFun[0]._d("x");
 		Function SF0dy = shapeFun[0]._d("y");
 		System.out.println(SF0dx);
+		System.out.println("SF0dx("+v+")="+SF0dx.value(v));
 		System.out.println(SF0dy);
-		System.out.println(SF0dx.value(v));
+		System.out.println("SF0dy("+v+")="+SF0dy.value(v));
 		
 		shapeFun[1].asignElement(e);
 		Function SF1dx = shapeFun[1]._d("x");

@@ -14,7 +14,6 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.container.ObjList;
 
 /**
@@ -111,14 +110,14 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 					
 					if(varName.equals("r")) {
 						if(var.equals("x"))
-							return FMath.Divi(y_s, jac);
+							return y_s.D(jac);
 						if(var.equals("y"))
-							return FMath.Minus(new FC(0.0),FMath.Divi(x_s, jac));
+							return FC.c0.S(x_s.D(jac));
 					} else if(varName.equals("s")) {
 						if(var.equals("x"))
-							return FMath.Minus(new FC(0.0),FMath.Divi(y_r, jac));
+							return FC.c0.S(y_r.D(jac));
 						if(var.equals("y"))
-							return FMath.Divi(x_r, jac);
+							return x_r.D(jac);
 					}
 					
 					return null;
@@ -135,48 +134,24 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 		Function f1py = new FAxpb("s",1.0,1.0);
 		
 		if(funIndex == 0)
-			funOuter = FMath.Mult(
-					FMath.Mult(
-					FMath.Mult(new FC(-0.25), f1mx),f1my),
-					FMath.Plus(f1px, fy));
+			funOuter = FC.c(-0.25).M(f1mx).M(f1my).M(f1px.A(fy));
 		else if(funIndex == 1)
-			funOuter = FMath.Mult(
-					FMath.Mult(
-					FMath.Mult(new FC(-0.25), f1px),f1my),
-					FMath.Plus(f1mx, fy));
+			funOuter = FC.c(-0.25).M(f1px).M(f1my).M(f1mx.A(fy));
 		else if(funIndex == 2)
-			funOuter = FMath.Mult(
-					FMath.Mult(
-					FMath.Mult(new FC(-0.25), f1px),f1py),
-					FMath.Minus(f1mx, fy));
+			funOuter = FC.c(-0.25).M(f1px).M(f1py).M(f1mx.S(fy));
 		else if(funIndex == 3)
-			funOuter = FMath.Mult(
-					FMath.Mult(
-					FMath.Mult(new FC(-0.25), f1mx),f1py),
-					FMath.Minus(f1px, fy));
+			funOuter = FC.c(-0.25).M(f1mx).M(f1py).M(f1px.S(fy));
 		else if(funIndex == 4)
-			funOuter = FMath.Mult(
-					FMath.Mult(new FC(0.5), f1my),
-					FMath.Minus(new FC(1.0), 
-							FMath.Mult(fx,fx)));
+			funOuter = FC.c(0.5).M(f1my).M(FC.c1.S(fx.M(fx)));
 		else if(funIndex == 5)
-			funOuter = FMath.Mult(
-					FMath.Mult(new FC(0.5), f1px),
-					FMath.Minus(new FC(1.0), 
-							FMath.Mult(fy,fy)));
+			funOuter = FC.c(0.5).M(f1px).M(FC.c1.S(fy.M(fy)));
 		else if(funIndex == 6)
-			funOuter = FMath.Mult(
-					FMath.Mult(new FC(0.5), f1py),
-					FMath.Minus(new FC(1.0), 
-							FMath.Mult(fx,fx)));
+			funOuter = FC.c(0.5).M(f1py).M(FC.c1.S(fx.M(fx)));
 		else if(funIndex == 7)
-			funOuter = FMath.Mult(
-					FMath.Mult(new FC(0.5), f1mx),
-					FMath.Minus(new FC(1.0), 
-							FMath.Mult(fy,fy)));
+			funOuter = FC.c(0.5).M(f1mx).M(FC.c1.S(fy.M(fy)));
 
 		//使用复合函数构造形函数
-		funCompose = FMath.Compose(funOuter, fInners);		
+		funCompose = funOuter.compose(fInners);		
 	}
 	
 	@Override

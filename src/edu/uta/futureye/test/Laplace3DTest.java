@@ -73,7 +73,7 @@ public class Laplace3DTest {
 		ElementList eList = mesh.getElementList();
 		FELinearTetrahedron fe = new FELinearTetrahedron();
 		for(int i=1;i<=eList.size();i++)
-			fe.assign(eList.at(i));
+			fe.assignTo(eList.at(i));
 		
 		//User defined weak form of PDE (including bounder conditions)
 		//-\Delta{u} = f
@@ -221,8 +221,8 @@ public class Laplace3DTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		triangleTest();
-		//triangleTest_WeakFormxD();
+		//triangleTest();
+		triangleTest_WeakFormxD();
 	}
 
 }

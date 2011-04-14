@@ -12,7 +12,6 @@ import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
@@ -40,9 +39,7 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 	public SFLinearLocal1D(int funID) {
 		funIndex = funID - 1;
 		if(funID<1 || funID>2) {
-			FutureyeException ex = new FutureyeException("ERROR: funID should be 1 or 2.");
-			ex.printStackTrace();
-			System.exit(-1);	
+			throw new FutureyeException("ERROR: funID should be 1 or 2.");
 		}
 		
 		varNames.add("r");
@@ -70,7 +67,8 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 						double delta = vl.at(2).coord(1)-vl.at(1).coord(1);
 						return new FC(2.0/delta);
 					} else {
-						System.out.println("ERROR: SFLinearLocal1D vl.size()!=2, vl.size()="+vl.size());
+						throw new FutureyeException(
+								"ERROR: SFLinearLocal1D vl.size()!=2, vl.size()="+vl.size());
 					}
 				}
 				return null;
@@ -82,7 +80,7 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 			funOuter = new FAxpb("r",-0.5,0.5);
 		else
 			funOuter = new FAxpb("r",0.5,0.5);
-		funCompose = FMath.Compose(funOuter, fInners);
+		funCompose = funOuter.compose(fInners);
 	}
 	
 	@Override

@@ -7,7 +7,6 @@ import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.FutureyeException;
 
@@ -50,31 +49,29 @@ public abstract class AbstractScalarWeakForm implements WeakForm {
 			if(e.vertices().size() == 3) {
 				//三角形单元
 				integral = FOIntegrate.intOnTriangleRefElement(
-						FOBasic.Mult(fun, e.getJacobin()),4
+						fun.M(e.getJacobin()),4
 						);
 			} else if (e.vertices().size() == 4) {
 				//四边形单元
 				integral = FOIntegrate.intOnRectangleRefElement(
-						FOBasic.Mult(fun, e.getJacobin()),2 //TODO
+						fun.M(e.getJacobin()),2 //TODO
 						);
 			}
 		} else if(e.eleDim() == 3) {
 			if(e.vertices().size() == 4) {
 				//四面体单元
 				integral = FOIntegrate.intOnTetrahedraRefElement(
-						FOBasic.Mult(fun, e.getJacobin()),2
+						fun.M(e.getJacobin()),2
 					);
 			}
 		} else if(e.eleDim() == 1) {
 			//一维单元
 			integral = FOIntegrate.intOnLinearRefElement(
-					FOBasic.Mult(fun, e.getJacobin()),5
+					fun.M(e.getJacobin()),5
 				);
 		} else {
-			FutureyeException ex = new FutureyeException(
-					"Can integrate on e" + e.vertices());
-			ex.printStackTrace();
-			System.exit(-1);
+			throw new FutureyeException(
+					"Can NOT integrate on e" + e.vertices());
 		}
 		return integral.value(null);
 	}

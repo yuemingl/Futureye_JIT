@@ -14,7 +14,7 @@ import edu.uta.futureye.core.Refiner;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FOBasic;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -31,17 +31,16 @@ public class TestAdaptive {
 		MeshReader reader = new MeshReader("patch_rectangle2.grd");
 //		MeshReader reader = new MeshReader("patch_rectangle_refine.grd");
 		Mesh mesh = reader.read2DMesh();
+
+		mesh.computeNodeBelongsToElements();
+		mesh.computeNeighborNodes();
+		mesh.computeGlobalEdge();
+		mesh.computeNeighborElements();
+		
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		mapNTF.put(NodeType.Dirichlet, null);	
-
-		mesh.computeNodeBelongsToElements();
-		mesh.computeNeighborNodes();
 		mesh.markBorderNode(mapNTF);
-
-		mesh.computeNodeBelongsToElements();
-		mesh.computeNeighborNodes();
-		mesh.computeNeighborElements();
-
+		
 		SFBilinearLocal2D[] shapeFun = new SFBilinearLocal2D[4];
 		for(int i=0;i<4;i++)
 			shapeFun[i] = new SFBilinearLocal2D(i+1);
@@ -67,16 +66,14 @@ public class TestAdaptive {
 		Function fxm5 = new FAxpb("x",1.0,-5.0);
 		Function fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
-				FOBasic.Plus(
-					FOBasic.Plus(
-						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fxm5, new FC(2.0)) ),
-						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fym5, new FC(2.0)) )
-						),new FC(100.0)
-					)
+				FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
+						FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )
+						).A(FC.c(100.0))
 				);
 		
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
+		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		assembler.imposeDirichletCondition(new FC(0.0));
@@ -256,6 +253,7 @@ public class TestAdaptive {
 		mesh.computeNodeBelongsToElements();
 		mesh.computeNeighborNodes();
 		mesh.markBorderNode(mapNTF);
+		mesh.computeGlobalEdge();
 		mesh.computeNeighborElements();
 
 		ElementList eList = mesh.getElementList();
@@ -321,16 +319,14 @@ public class TestAdaptive {
 		Function fxm5 = new FAxpb("x",1.0,-5.0);
 		Function fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
-				FOBasic.Plus(
-					FOBasic.Plus(
-						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fxm5, new FC(2.0)) ),
-						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fym5, new FC(2.0)) )
-						),new FC(100.0)
-					)
+				FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
+						FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )
+						).A(FC.c(100.0))
 				);
 		
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
+		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		assembler.imposeDirichletCondition(new FC(0.0));
@@ -369,20 +365,22 @@ public class TestAdaptive {
 		MeshReader reader = new MeshReader("patch_triangle.grd");
 	
 		Mesh mesh = reader.read2DMesh();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
-		mapNTF.put(NodeType.Dirichlet, null);	
-
 		mesh.computeNodeBelongsToElements();
 		mesh.computeNeighborNodes();
-		mesh.markBorderNode(mapNTF);
+		mesh.computeGlobalEdge();
 		mesh.computeNeighborElements();
+		
+		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		mapNTF.put(NodeType.Dirichlet, null);	
+		mesh.markBorderNode(mapNTF);
 
 		ElementList eList = mesh.getElementList();
 		ElementList eToRefine = new ElementList();
-//		eToRefine.add(eList.at(6));
-//		eToRefine.add(eList.at(16));
-//		eToRefine.add(eList.at(3));
-//		eToRefine.add(eList.at(4));
+//直接指定需要加密的单元编号
+		eToRefine.add(eList.at(6));
+		eToRefine.add(eList.at(16));
+		eToRefine.add(eList.at(3));
+		eToRefine.add(eList.at(4));
 		
 		Refiner.refineOnce(mesh, eToRefine);
 		mesh.markBorderNode(mapNTF);
@@ -439,16 +437,14 @@ public class TestAdaptive {
 		Function fxm5 = new FAxpb("x",1.0,-5.0);
 		Function fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
-				FOBasic.Plus(
-					FOBasic.Plus(
-						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fxm5, new FC(2.0)) ),
-						FOBasic.Mult(new FC(-2.0), FOBasic.Power(fym5, new FC(2.0)) )
-						),new FC(100.0)
-					)
+						FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
+						FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )
+						).A(FC.c(100.0))
 				);
 		
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
+		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		assembler.imposeDirichletCondition(new FC(0.0));
@@ -483,8 +479,8 @@ public class TestAdaptive {
 	}
 	
 	public static void main(String[] args) {
-		//beforeRefinement();
-		//adaptiveTestRectangle();
+		beforeRefinement();
+		adaptiveTestRectangle();
 		adaptiveTestTriangle();
 	}
 }

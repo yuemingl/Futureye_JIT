@@ -16,7 +16,6 @@ import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssembleMixedLaplace;
@@ -82,7 +81,7 @@ public class MixedLaplaceTest {
 				//Associate DOF to edge
 				e.addEdgeDOF(j, dof);
 			}
-			e.addElementDOF(new DOF(
+			e.addVolumeDOF(new DOF(
 					1,
 					nEdges + i,
 					null));
@@ -110,22 +109,16 @@ public class MixedLaplaceTest {
 				//\Omega = [-3,3]*[-3,3]
 				//u=(x^2-9)*(y^2-9)
 				//f=-2*(x^2+y^2)+36
-				FOBasic.Plus(
-						FOBasic.Plus(
-							FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("x"),new FX("x") )),
-							FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("y"),new FX("y") ))
-							),new FC(36.0)
-						)
+				FC.c(-2.0).M(
+						FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+					).A(FC.c(36.0))
 					
 				);
 		weakForm.setParam(
 					null,
 					null,
-					FOBasic.Minus(
-							FOBasic.Mult(new FC(6.0), 
-							FOBasic.Mult(new FX("y"),new FX("y") )
-							),
-					new FC(54.0)),null //Robin: 6*y^2-54
+					FC.c(6.0).M(FX.fy.M(FX.fy)).S(FC.c(54.0)),
+					null //Robin: 6*y^2-54
 				);
 		
 		AssembleMixedLaplace assembler = new AssembleMixedLaplace(mesh, weakForm);
@@ -134,7 +127,7 @@ public class MixedLaplaceTest {
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new FC(0.0));
+		//assembler.imposeDirichletCondition(new FC(0.0));
 		long end = System.currentTimeMillis();
 		System.out.println("Assemble done!");
 		System.out.println("Time used:"+(end-begin));

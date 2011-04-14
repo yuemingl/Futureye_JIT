@@ -191,7 +191,7 @@ public class Stokes {
 		FEQuadraticV_LinearP fe = new FEQuadraticV_LinearP();
 		fe.initDOFIndexGenerator(nodes.size());
 		for(int i=1;i<=eList.size();i++) {
-			fe.assign(eList.at(i));
+			fe.assignTo(eList.at(i));
 			//eList.at(i).printDOFInfo();
 		}
 

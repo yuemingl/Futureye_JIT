@@ -9,7 +9,6 @@ import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.operator.FMath;
-import edu.uta.futureye.function.operator.FOVector;
 
 public class TestVector {
 
@@ -55,7 +54,7 @@ public class TestVector {
 				)));
 		
 		//FMath
-		System.out.println("div(svf)="+FMath.Div(svf));
+		System.out.println("div(svf)="+FMath.div(svf));
 
 		
 		//SparseBlockVector 

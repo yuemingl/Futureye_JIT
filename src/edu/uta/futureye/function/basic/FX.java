@@ -28,16 +28,19 @@ public class FX extends AbstractFunction{
 	public final static FX fs = new FX(Constant.s); 
 	public final static FX ft = new FX(Constant.t); 
 	
+	protected String activeName = null;
+	
 	/**
 	 * Use this to construct f(varName)
 	 */
 	public FX(String varName) {
 		super(varName);
+		this.activeName = varName;
 	}
 
 	@Override
 	public Function _d(String varName) {
-		if( this.varNames.contains(varName))
+		if(this.activeName.equals(varName))
 			return FC.c1;
 		else
 			return FC.c0;
@@ -45,7 +48,7 @@ public class FX extends AbstractFunction{
 
 	@Override
 	public double value(Variable v) {
-		return v.get(varNames.get(0));
+		return v.get(activeName);
 	}
 	
 	@Override
@@ -55,11 +58,11 @@ public class FX extends AbstractFunction{
 	
 	@Override
 	public Function copy() {
-		return new FX(this.varNames.get(0));
+		return new FX(this.activeName);
 	}
 	
 	@Override
 	public String toString() {
-		return varNames.get(0);
+		return activeName;
 	}
 }

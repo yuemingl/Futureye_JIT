@@ -12,7 +12,6 @@ import edu.uta.futureye.function.basic.FPolynomial1D;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.operator.FMath;
-import edu.uta.futureye.function.operator.FOBasic;
 
 public class FunctionTest {
 	
@@ -89,31 +88,29 @@ public class FunctionTest {
 		FC c3 = new FC(3.0);
 		
 		FX fi = FX.fx;
-		Function ftest1 = FOBasic.Plus(FOBasic.Mult(c3, fi),c2);
+		Function ftest1 = c3.M(fi).A(c2);
 		System.out.println("ftest1 = "+ftest1);
-		Function ftest2 = FOBasic.Plus(FOBasic.Mult(c1, fi),c0);
+		Function ftest2 = c1.M(fi).A(c0);
 		System.out.println("ftest2 = "+ftest2);
-		Function ftest3 = FOBasic.Plus(FOBasic.Divi(c1, fi),c3);
+		Function ftest3 = c1.D(fi).A(c3);
 		System.out.println("ftest3 = "+ftest3);
 		
 		//f(x) = c1*l1(x)+c2
 		FLinear1D l1 = new FLinear1D(1,5,2,20);
 		System.out.println(l1);
 
-		Function l2 = FOBasic.Plus(FOBasic.Mult(c1, l1),c2);
+		Function l2 = c1.M(l1).A(c2);
 		System.out.println(l2);
 		Variable var = new Variable(0.5);
 		System.out.println(l2.value(var));
 		
-		//导数：fd_x = fd'(x) , fd_xx = fd_x'(x)
-//		FunctionDerivable fd = FOBasicDerivable.Plus(FOBasicDerivable.Mult(c1, fi),c3);
-		Function fd = FMath.Plus(FMath.Divi(c1, fi),c3);
-		Function fd_x = fd._d("x");
-		Function fd_xx = fd_x._d("x");
-		System.out.println("fd = "+fd);
-		System.out.println("fd_x = "+fd_x);
-		System.out.println("fd_xx = "+fd_xx);
-		System.out.println(fd_x.value(var));
+		Function ff = c1.D(fi).A(c3);
+		Function ff_dx = ff._d("x");
+		Function ff_dxx = ff_dx._d("x");
+		System.out.println("ff = "+ff);
+		System.out.println("ff_dx = "+ff_dx);
+		System.out.println("ff_dxx = "+ff_dxx);
+		System.out.println(ff_dx.value(var));
 		
 		//f(x) = 6*x^3 + 5*x^2 + 4*x + 3 多项式的导数
 		List<Double> coef = new ArrayList<Double>();
@@ -129,9 +126,8 @@ public class FunctionTest {
 		Function fp_x3 = fp_x2d._d("X");
 		System.out.println(fp_x3.value(new Variable(3.0)));
 		
-		Function power = FOBasic.Power(c2, c3);
-		System.out.println(power);
-		System.out.println(power.value(null));
+		Function power = FMath.pow(c2, c3);
+		System.out.println(power+"="+power.value(null));
 		
 	}
 	
@@ -162,9 +158,9 @@ public class FunctionTest {
 	
 	
 	public static void main(String[] args) {
-		
-		//constantTest();
-		//testOperation();
+		test();
+		constantTest();
+		testOperation();
 		
 		severalVariableFunctions();
 	}

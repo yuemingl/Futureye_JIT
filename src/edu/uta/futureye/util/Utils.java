@@ -23,10 +23,9 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.util.container.DOFList;
-import edu.uta.futureye.util.container.ObjIndex;
 import edu.uta.futureye.util.container.NodeList;
+import edu.uta.futureye.util.container.ObjIndex;
 import edu.uta.futureye.util.container.ObjList;
 
 public class Utils {
@@ -175,10 +174,8 @@ public class Utils {
 		NodeList list = mesh.getNodeList();
 		int nNode = list.size();
 		if(nNode != u.getDim()) {
-			FutureyeException e = new FutureyeException("Node number of mesh != length of vector u: "+
+			throw new FutureyeException("Node number of mesh != length of vector u: "+
 					"nNode="+nNode+"  dim(u)="+u.getDim());
-			e.printStackTrace();
-			return null;
 		}
 		
 	    Vector su = new SparseVector(nNode);
@@ -198,7 +195,8 @@ public class Utils {
 		    	}
 		    	nbList.addAll(node.neighbors);
 		    	if(nbList.size() == 0) {
-					throw new FutureyeException("No beighbors of Node "+node.globalIndex+", call mesh.computeNeiborNode() first!");
+					throw new FutureyeException("No beighbors of Node "+node.globalIndex+
+							", call mesh.computeNeiborNode() first!");
 		    	}
 		    	double nbV = 0.0;
 		    	for(int j=1;j<=nbList.size();j++) {
@@ -217,10 +215,9 @@ public class Utils {
 
 		    	NodeList nbList = node.neighbors;
 		    	if(nbList.size() == 0) {
-					FutureyeException e = new FutureyeException("No beighbors of Node "+node.globalIndex+", call mesh.computeNeiborNode() first!");
-					e.printStackTrace();
-					return null;
-		    	}		    	
+					throw new FutureyeException("No beighbors of Node "+node.globalIndex+
+							", call mesh.computeNeiborNode() first!");
+		    	}
 		    	for(int j=1;j<=nbList.size();j++) {
 		    		Node nbNode = nbList.at(j);
 		    		map.put(nbNode, 1);
@@ -255,6 +252,50 @@ public class Utils {
 	    return su;
 	}
 	
+	/**
+	 * 每个结点的值取为周围结点的最大值
+	 * @param mesh
+	 * @param u
+	 * @return
+	 */
+	public static Vector gaussMax(Mesh mesh, Vector u) {
+		NodeList list = mesh.getNodeList();
+		int nNode = list.size();
+		if(nNode != u.getDim()) {
+			throw new FutureyeException("Node number of mesh != length of vector u: "+
+					"nNode="+nNode+"  dim(u)="+u.getDim());
+		}
+		
+	    Vector su = new SparseVector(nNode);
+	    for(int i=1;i<=nNode;i++) {
+	    	NodeList nbList = new NodeList();
+	    	Node node = list.at(i);
+	    	//TODO 自适应网格节点需要注意
+	    	if(node instanceof NodeRefined) {
+	    		if(((NodeRefined) node).isHangingNode()) {
+	    			NodeList cns = ((NodeRefined) node).constrainNodes;
+	    			for(int k=1;k<=cns.size();k++) {
+	    				nbList.addAll(cns.at(k).neighbors);
+	    			}
+	    		}
+	    	}
+	    	nbList.addAll(node.neighbors);
+	    	if(nbList.size() == 0) {
+				throw new FutureyeException("No beighbors of Node "+node.globalIndex+
+						", call mesh.computeNeiborNode() first!");
+	    	}
+	    	double nbV = Double.MIN_VALUE;
+	    	for(int j=1;j<=nbList.size();j++) {
+	    		Node nbNode = nbList.at(j);
+	    		if(nbV < u.get(nbNode.globalIndex))
+	    			nbV = u.get(nbNode.globalIndex);
+	    	}
+	    	double rlt = nbV;
+	    	su.set(node.globalIndex, rlt);
+	    }
+	    return su;
+	}
+	
 	public static Function interplateFunctionOnElement(Function fun, Element e) {
 		if(fun instanceof FC)
 			return fun;
@@ -284,7 +325,7 @@ public class Utils {
 				Variable var = Variable.createFrom(fun, p, index);
 				var.setElement(e);
 				Function PValue = new FC(fun.value(var));
-				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, sf));			
+				rlt = rlt.A(PValue.M(sf));			
 			}
 			
 		} else if(e.eleDim() == 2) {
@@ -302,7 +343,7 @@ public class Utils {
 				Variable var = Variable.createFrom(fun, p, index);
 				var.setElement(e);
 				Function PValue = new FC(fun.value(var));
-				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, sf));			
+				rlt = rlt.A(PValue.M(sf));	
 			}
 		} else if(e.eleDim()==3) {
 			//TODO 有没有更简洁的办法？
@@ -320,7 +361,7 @@ public class Utils {
 				Variable var = Variable.createFrom(fun, p, index);
 				var.setElement(e);
 				Function PValue = new FC(fun.value(var));
-				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, sf));			
+				rlt = rlt.A(PValue.M(sf));			
 			}
 		}
 		return rlt;

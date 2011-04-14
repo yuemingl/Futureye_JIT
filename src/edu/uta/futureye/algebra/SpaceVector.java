@@ -108,6 +108,13 @@ public class SpaceVector implements Vector {
 			this.data[i] += a*this.data[i] + y.get(i+1);
 		return this;
 	}
+	
+	@Override
+	public Vector shift(double dv) {
+		for(int i=0;i<dim;i++)
+			this.data[i] = this.data[i]+dv;
+		return this;
+	}	
 
 	@Override
 	public double dot(Vector u) {
@@ -234,5 +241,6 @@ public class SpaceVector implements Vector {
 			rlt.set(i, a*x.get(i)*y.get(i));
 		}
 		return rlt;
-	}	
+	}
+
 }

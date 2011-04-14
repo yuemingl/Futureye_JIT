@@ -11,7 +11,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FOBasic;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
@@ -65,35 +65,27 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 	public Function leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			Function integrand = null;
-			integrand = FOBasic.PlusAll(
-				FOBasic.Mult(u._d("x"), v._d("x")),
-				FOBasic.Mult(u._d("y"), v._d("y")),
-				FOBasic.Mult(u._d("z"), v._d("z"))
-				);
 			if(g_k == null) {
-				integrand = FOBasic.PlusAll(
-						FOBasic.Mult(u._d("x"), v._d("x")),
-						FOBasic.Mult(u._d("y"), v._d("y")),
-						FOBasic.Mult(u._d("z"), v._d("z"))
-						);
+				integrand = FMath.sum(
+						u._d("x").M(v._d("x")),
+						u._d("y").M(v._d("y")),
+						u._d("z").M(v._d("z"))
+					);
 			} else {
 				Function fk = Utils.interplateFunctionOnElement(g_k,e);
 				Function fc = Utils.interplateFunctionOnElement(g_c,e);
-				integrand = FOBasic.Plus(
-						FOBasic.Mult(fk, FOBasic.PlusAll(
-								FOBasic.Mult(u._d("x"), v._d("x")),
-								FOBasic.Mult(u._d("y"), v._d("y")),
-								FOBasic.Mult(u._d("z"), v._d("z"))
-					)),
-						FOBasic.Mult(fc, FOBasic.Mult(u, v))
-					);
+				integrand = fk.M(FMath.sum(
+								u._d("x").M(v._d("x")),
+								u._d("y").M(v._d("y")),
+								u._d("z").M(v._d("z"))
+							)).A(fc.M(u.M(v)));
 			}
 			return integrand;
 		} else if(itemType==ItemType.Border) {//Neumann border integration on LHS
 			if(g_d != null) {
 				Element be = e;
 				Function fd = Utils.interplateFunctionOnElement(g_d, be);
-				Function borderIntegrand = FOBasic.Mult(FOBasic.Mult(fd, u), v);
+				Function borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
 		}
@@ -104,12 +96,12 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 	public Function rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			Function ff = Utils.interplateFunctionOnElement(g_f, e);
-			Function integrand = FOBasic.Mult(ff,v);
+			Function integrand = ff.M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {//Neumann border type
 			Element be = e;
 			Function fq = Utils.interplateFunctionOnElement(g_q, be);
-			Function borderIntegrand = FOBasic.Mult(fq, v);
+			Function borderIntegrand = fq.M(v);
 			return borderIntegrand;
 		}
 		return  null;
@@ -161,26 +153,26 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 				//Integrand part of Weak Form on element e
 				Function integrand = null;
 				if(g_k == null) {
-					integrand = FOBasic.PlusAll(
-						FOBasic.Mult(mapShape_x.get(nLocalRow), mapShape_x.get(nLocalCol)),
-						FOBasic.Mult(mapShape_y.get(nLocalRow), mapShape_y.get(nLocalCol)),
-						FOBasic.Mult(mapShape_z.get(nLocalRow), mapShape_z.get(nLocalCol))
+					integrand = FMath.sum(
+						mapShape_x.get(nLocalRow).M(mapShape_x.get(nLocalCol)),
+						mapShape_y.get(nLocalRow).M(mapShape_y.get(nLocalCol)),
+						mapShape_z.get(nLocalRow).M(mapShape_z.get(nLocalCol))
 						);
 				} else {
-					integrand = FOBasic.Plus(
-							FOBasic.Mult(fk, FOBasic.PlusAll(
-							FOBasic.Mult(mapShape_x.get(nLocalRow), mapShape_x.get(nLocalCol)),
-							FOBasic.Mult(mapShape_y.get(nLocalRow), mapShape_y.get(nLocalCol)),
-							FOBasic.Mult(mapShape_z.get(nLocalRow), mapShape_z.get(nLocalCol))
-						)),
-							FOBasic.Mult(fc, FOBasic.Mult(dofI.getSSF(), dofJ.getSSF()))
-						);
+					integrand = fk.M(FMath.sum(
+									mapShape_x.get(nLocalRow).M(mapShape_x.get(nLocalCol)),
+									mapShape_y.get(nLocalRow).M(mapShape_y.get(nLocalCol)),
+									mapShape_z.get(nLocalRow).M(mapShape_z.get(nLocalCol))
+									)
+								).A(
+									fc.M(dofI.getSSF().M(dofJ.getSSF()))
+								);
 				}
 				//Numerical integration on element e
 				Function integral = null;
 				if (e.vertices().size() == 4) {
 					integral = FOIntegrate.intOnTetrahedraRefElement(
-							FOBasic.Mult(integrand, e.getJacobin()),2
+							integrand.M(e.getJacobin()),2
 							);
 				}
 				double lhsVal = integral.value(null);
@@ -188,11 +180,11 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 			}
 			//Load vector
 			Function ff = Utils.interplateFunctionOnElement(g_f, e);
-			Function integrand = FOBasic.Mult(ff,sfI);
+			Function integrand = ff.M(sfI);
 			Function integral = null;
 			if (e.vertices().size() == 4) {
 				integral = FOIntegrate.intOnTetrahedraRefElement(
-						FOBasic.Mult(integrand, e.getJacobin()),2
+						integrand.M(e.getJacobin()),2
 						);
 			}
 			double rhsVal = integral.value(null);
@@ -232,16 +224,16 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 							ScalarShapeFunction sfJ = dofJ.getSSF();
 							int nGlobalCol = dofJ.getGlobalIndex();
 							//Stiff matrix for border
-							Function borderIntegrand = FOBasic.Mult(FOBasic.Mult(fd, sfI), sfJ);
+							Function borderIntegrand = fd.M(sfI.M(sfJ));
 							//Numerical integrate the border 'be' of element 'e'
 							Function borderIntgral = null;
 							if(be.vertices().size() == 3) {
 								borderIntgral = FOIntegrate.intOnTriangleRefElement(
-										FOBasic.Mult(borderIntegrand, be.getJacobin()),5
+											borderIntegrand.M(be.getJacobin()),5
 										);
 							} else if (be.vertices().size() == 4) {
 								borderIntgral = FOIntegrate.intOnRectangleRefElement(
-										FOBasic.Mult(borderIntegrand, be.getJacobin()),2 //TODO
+											borderIntegrand.M(be.getJacobin()),2 //TODO
 										);
 							}
 							double lhsBrVal = borderIntgral.value(null);
@@ -250,15 +242,15 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 						//Load vector for border
 						if(g_q != null) {
 							Function fq = Utils.interplateFunctionOnElement(g_q, be);
-							Function borderIntegrand = FOBasic.Mult(fq, v);
+							Function borderIntegrand = fq.M(v);
 							Function borderIntgral = null;
 							if(be.vertices().size() == 3) {
 								borderIntgral = FOIntegrate.intOnTriangleRefElement(
-										FOBasic.Mult(borderIntegrand, be.getJacobin()),5
+											borderIntegrand.M(be.getJacobin()),5
 										);
 							} else if (be.vertices().size() == 4) {
 								borderIntgral = FOIntegrate.intOnRectangleRefElement(
-										FOBasic.Mult(borderIntegrand, be.getJacobin()),2 //TODO
+											borderIntegrand.M(be.getJacobin()),2 //TODO
 										);
 							}
 							double rhsBrVal = borderIntgral.value(null);

@@ -3,7 +3,7 @@ package edu.uta.futureye.lib.element;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
+import edu.uta.futureye.lib.shapefun.SFLinearLocal2DTest;
 import edu.uta.futureye.util.container.VertexList;
 
 /**
@@ -14,19 +14,23 @@ import edu.uta.futureye.util.container.VertexList;
  *
  */
 public class FELinearTriangle implements FiniteElementType {
-	protected static SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
+	//protected static SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
+	protected static SFLinearLocal2DTest[] shapeFun = new SFLinearLocal2DTest[3];
 	
 	public FELinearTriangle() {
-		shapeFun[0] = new SFLinearLocal2D(1);
-		shapeFun[1] = new SFLinearLocal2D(2);
-		shapeFun[2] = new SFLinearLocal2D(3);
+//		shapeFun[0] = new SFLinearLocal2D(1);
+//		shapeFun[1] = new SFLinearLocal2D(2);
+//		shapeFun[2] = new SFLinearLocal2D(3);
+		shapeFun[0] = new SFLinearLocal2DTest(1);
+		shapeFun[1] = new SFLinearLocal2DTest(2);
+		shapeFun[2] = new SFLinearLocal2DTest(3);
 	}
 	
 	/**
 	 * Assign degree of freedom to element
 	 * @param e
 	 */
-	public void assign(Element e) {
+	public void assignTo(Element e) {
 		VertexList vertices = e.vertices();
 		for(int j=1;j<=vertices.size();j++) {
 			Vertex v = vertices.at(j);

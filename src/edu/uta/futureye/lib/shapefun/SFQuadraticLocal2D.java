@@ -108,14 +108,14 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 					
 					if(varName.equals("r")) {
 						if(var.equals("x"))
-							return FMath.Divi(y_s, jac);
+							return y_s.D(jac);
 						if(var.equals("y"))
-							return FMath.Minus(new FC(0.0),FMath.Divi(x_s, jac));
+							return FC.c0.S(x_s.D(jac));
 					} else if(varName.equals("s")) {
 						if(var.equals("x"))
-							return FMath.Minus(new FC(0.0),FMath.Divi(y_r, jac));
+							return FC.c0.S(y_r.D(jac));
 						if(var.equals("y"))
-							return FMath.Divi(x_r, jac);
+							return x_r.D(jac);
 					} 
 //					else if(varName.equals("t")) {
 //						//t = 1 - r - s
@@ -138,17 +138,13 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 		Function fr = new FX("r");
 		Function fs = new FX("s");
 		Function ft = //new FX("t");
-		FMath.Minus(
-				new FC(1.0), 
-				FMath.Plus(fr, fs));
+				FC.c1.S(fr.A(fs));
 				
 				
 		Function f2rm1 = new FAxpb("r",2.0,-1.0);
 		Function f2sm1 = new FAxpb("s",2.0,-1.0);
 		Function f2tm1 = //new FAxpb("t",2.0,-1.0);
-			FMath.Minus(
-					new FC(1.0), 
-					FMath.LinearCombination(2.0, fr, 2.0, fs));
+				FC.c1.S(FMath.linearCombination(2.0, fr, 2.0, fs));
 
 
 //		Map<String, Function> fInner_t = new HashMap<String, Function>(4);
@@ -162,17 +158,17 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 		Function f2tm1Compose = f2tm1;
 		
 		if(funIndex == 0)
-			funOuter = FMath.Mult(f2rm1, fr);
+			funOuter = f2rm1.M(fr);
 		else if(funIndex == 1)
-			funOuter = FMath.Mult(f2sm1, fs);
+			funOuter = f2sm1.M(fs);
 		else if(funIndex == 2)
-			funOuter = FMath.Mult(f2tm1Compose, ftCompose);
+			funOuter = f2tm1Compose.M(ftCompose);
 		else if(funIndex == 3)
-			funOuter = FMath.Mult(new FC(4.0), FMath.Mult(fr, fs));
+			funOuter = FC.c(4.0).M(fr.M(fs));
 		else if(funIndex == 4)
-			funOuter = FMath.Mult(new FC(4.0), FMath.Mult(fs, ftCompose));
+			funOuter = FC.c(4.0).M(fs.M(ftCompose));
 		else if(funIndex == 5)
-			funOuter = FMath.Mult(new FC(4.0), FMath.Mult(fr, ftCompose));
+			funOuter = FC.c(4.0).M(fr.M(ftCompose));
 		
 		//设置funOuter的独立自变量名称
 //		List<String> independentVarNames = new LinkedList<String>();
@@ -181,7 +177,7 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 //		funOuter.setVarNames(independentVarNames);
 		funOuter.setVarNames(varNames);
 		//使用复合函数构造形函数
-		funCompose = FMath.Compose(funOuter, fInners);
+		funCompose = funOuter.compose(fInners);
 		
 	}
 

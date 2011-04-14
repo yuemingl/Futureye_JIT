@@ -86,25 +86,18 @@ public abstract class AbstractFunction implements Function {
 					Variable newVar = new Variable();
 					for(String varName : fOuter.varNames()) {
 						Function f = fInners.get(varName);
-						if(f != null ) {
+						if(f != null )
 							newVar.set(varName, f.value(v));
-						}
-						else {
-							FutureyeException e = new FutureyeException("ERROR: Can not find "+varName+" in fInners.");
-							e.printStackTrace();
-							System.exit(0);
-							return 0.0;
-						}
+						else
+							throw new FutureyeException("\nERROR:\n Can not find "+
+									varName+" in fInners.");
 					}
 					return fOuter.value(newVar);
 				} else {
-					FutureyeException e = new FutureyeException(
-							"ERROR: Variable Number Mismatch of fOuter("+
+					throw new FutureyeException(
+							"\nERROR:\n Variable number mismatch of fOuter("+
 							fOuter.varNames()+") and fInner("+fInners+").");
-					e.printStackTrace();
-					System.exit(0);
 				}
-				return 0.0;
 			}
 			/**
 			 * 链式求导
@@ -125,7 +118,7 @@ public abstract class AbstractFunction implements Function {
 						if(fInner != null) {
 							Function rltOuter = fOuter._d(innerVarName);
 							if(!(rltOuter instanceof FC))
-								rltOuter = fOuter.compose(fInners);
+								rltOuter = rltOuter.compose(fInners);
 							Function rltInner = fInner._d(varName);
 							//f_x * x_r + f_y * y_r
 							rlt = rlt.A(
@@ -145,7 +138,8 @@ public abstract class AbstractFunction implements Function {
 				String rlt = fOuter.toString();
 				for(Entry<String,Function> map : fInners.entrySet()) {
 					String names = map.getValue().varNames().toString();
-					rlt = rlt.replace(map.getKey(), map.getKey()+"("+names.substring(1,names.length()-1)+")");
+					rlt = rlt.replace(map.getKey(), 
+							map.getKey()+"("+names.substring(1,names.length()-1)+")");
 				}
 				return rlt;
 			}
@@ -224,7 +218,10 @@ public abstract class AbstractFunction implements Function {
 						sb.append(f1.toString());
 					}
 					sb.append(" - ");
-					sb.append(f2.toString());
+					if(f2.getOpOrder() >= OP_ORDER3)
+						sb.append("(").append(f2.toString()).append(")");
+					else
+						sb.append(f2.toString());
 					return sb.toString();
 				}
 			};
@@ -306,10 +303,8 @@ public abstract class AbstractFunction implements Function {
 				}
 				@Override
 				public Function _d(String varName) {
-					return f1._d(varName).M(f2).S(
-						   f1.M(f2._d(varName)).D(
-								   f2.M(f2))
-							);
+					return f1._d(varName).M(f2).S(f1.M(f2._d(varName)))
+							.D(f2.M(f2));
 				}
 				@Override
 				public int getOpOrder() {
@@ -323,7 +318,7 @@ public abstract class AbstractFunction implements Function {
 					else
 						sb.append(f1.toString());
 					sb.append(" / ");
-					if(f2.getOpOrder() > OP_ORDER2)
+					if(f2.getOpOrder() >= OP_ORDER2) //!!!
 						sb.append("(").append(f2.toString()).append(")");
 					else
 						sb.append(f2.toString());

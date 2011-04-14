@@ -1,7 +1,6 @@
 package edu.uta.futureye.lib.shapefun;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,18 +12,20 @@ import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.container.ObjList;
+import edu.uta.futureye.util.container.VertexList;
 
 public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFunction {
 	private int funIndex;
 	private Function funCompose = null;
 	private Function funOuter = null;
-	private List<String> varNames = new LinkedList<String>();
 	private ObjList<String> innerVarNames = null;
 	private double coef = 1.0;
 
 	private Element e;
+	private double jac = 0.0;
+	private double[] x = new double[4];
+	private double[] y = new double[4];
 	
 	
 	/**
@@ -84,16 +85,14 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 					
 					if(varName.equals("r")) {
 						if(var.equals("x"))
-							return FMath.Divi(y_s, jac);
+							return y_s.D(jac);
 						if(var.equals("y"))
-							//return FOBasicDerivable.Divi(x_s, jac);
-							return FMath.Minus(new FC(0.0),FMath.Divi(x_s, jac));
+							return FC.c0.S(x_s.D(jac));
 					} else if(varName.equals("s")) {
 						if(var.equals("x"))
-							//return FOBasicDerivable.Divi(y_r, jac);
-							return FMath.Minus(new FC(0.0),FMath.Divi(y_r, jac));
+							return FC.c0.S(y_r.D(jac));
 						if(var.equals("y"))
-							return FMath.Divi(x_r, jac);
+							return x_r.D(jac);
 					}
 					return null;
 				}
@@ -101,22 +100,23 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 		}
 		
 		if(funIndex == 0)
-			funOuter = FMath.Mult(new FAxpb("r",-0.5,0.5), 
+			funOuter = new FAxpb("r",-0.5,0.5).M(
 					new FAxpb("s",-0.5,0.5));
 		else if(funIndex == 1)
-			funOuter = FMath.Mult(new FAxpb("r",0.5,0.5), 
+			funOuter = new FAxpb("r",0.5,0.5).M( 
 					new FAxpb("s",-0.5,0.5));
 		else if(funIndex == 2)
-			funOuter = FMath.Mult(new FAxpb("r",0.5,0.5), 
+			funOuter = new FAxpb("r",0.5,0.5).M( 
 					new FAxpb("s",0.5,0.5));
 		else if(funIndex == 3)
-			funOuter = FMath.Mult(new FAxpb("r",-0.5,0.5), 
+			funOuter = new FAxpb("r",-0.5,0.5).M( 
 					new FAxpb("s",0.5,0.5));
 		
 		//使用复合函数构造形函数
 		this.coef = coef;
-		funCompose = FMath.Mult(new FC(this.coef), 
-				FMath.Compose(funOuter, fInners));
+		funCompose = FC.c(this.coef).M(
+					funOuter.compose(fInners)
+				);
 	}
 
 	public SFBilinearLocal2D(int funID,double coef) {
@@ -138,18 +138,21 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 	@Override
 	public void asignElement(Element e) {
 		this.e = e;
+		
+		VertexList vList = e.vertices();
+		x[0] = vList.at(1).coord(1);
+		x[1] = vList.at(2).coord(1);
+		x[2] = vList.at(3).coord(1);
+		x[3] = vList.at(4).coord(1);
+		y[0] = vList.at(1).coord(2);
+		y[1] = vList.at(2).coord(2);
+		y[2] = vList.at(3).coord(2);
+		y[3] = vList.at(4).coord(2);
+		
+		jac = Math.abs((x[0]-x[1])*(y[0]-y[3]))/4.0;
+		
 	}
 
-	@Override
-	public void setVarNames(List<String> varNames) {
-		this.varNames = varNames;
-	}
-
-	@Override
-	public List<String> varNames() {
-		return varNames;
-	}
-	
 	public String toString() {
 		return "N"+(funIndex+1)+": "+funOuter.toString();
 	}

@@ -21,7 +21,7 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FOBasic;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -277,17 +277,17 @@ public class Test1 {
 		
 		Function x = new FX("x");
 		Function y = new FX("y");
-		Function x2 = FOBasic.Mult(x,x);
-		Function y2 = FOBasic.Mult(y,y);
+		Function x2 = x.M(x);
+		Function y2 = y.M(y);
 		
 		Function f =
-				FOBasic.PlusAll(
-						FOBasic.Mult(new FC(2.0), x2),
-						FOBasic.Mult(new FC(2.0), y2),
-						FOBasic.Mult(new FC(2.0), FOBasic.Mult(x2,y)),
-						FOBasic.Mult(new FC(2.0), FOBasic.Mult(y2,x)),
-						FOBasic.Mult(new FC(-18.0), x),
-						FOBasic.Mult(new FC(-18.0), y),
+				FMath.sum(
+						FC.c(2.0).M(x2),
+						FC.c(2.0).M(y2),
+						FC.c(2.0).M(x2.M(y)),
+						FC.c(2.0).M(y2.M(x)),
+						FC.c(-18.0).M(x),
+						FC.c(-18.0).M(y),
 						new FC(-36.0)
 				);
 		System.out.println(f);
@@ -309,11 +309,9 @@ public class Test1 {
 				new FC(1.0)
 			);
 		
-		mesh.clearBorderNodeMark();
-		mesh.markBorderNode(mapNTF);
-
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveGCM");
+		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		//Dirichlet condition

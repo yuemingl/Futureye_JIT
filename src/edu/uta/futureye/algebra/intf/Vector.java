@@ -116,6 +116,14 @@ public interface Vector {
 	Vector axpy(double a, Vector y);
 	
 	/**
+	 * <code>x = x + dv</code>
+	 * 
+	 * @param dv
+	 * @return
+	 */
+	Vector shift(double dv);
+	
+	/**
 	 * Dot product, returns <code>x1*y1 + x2*y2 + ... + xn*yn</code>
 	 * 点乘（内积）
 	 * 

@@ -9,7 +9,6 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.util.container.DOFList;
 
 /**
@@ -33,7 +32,7 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 	public Function leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
-			Function integrand = FOBasic.Mult(u, v);
+			Function integrand = u.M(v);
 			return integrand;
 		}
 		return null;
@@ -52,11 +51,11 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 					Function PValue = new FC(g_U.value(var));
 					ScalarShapeFunction shape = dofI.getSSF();
 					//以前版本需要调用shapeFun.asignElement(e)，现在版本不需要调用了
-					rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, shape._d(varName)));
+					rlt = rlt.A(PValue.M(shape._d(varName)));
 				}
 			}
 			
-			Function integrand = FOBasic.Mult(rlt, v);
+			Function integrand = rlt.M(v);
 			return integrand;
 		}
 		return null;

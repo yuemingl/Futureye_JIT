@@ -6,6 +6,6 @@ package edu.uta.futureye.core;
  *
  */
 public enum DOFOrder {
-	NEFV, //Node, Edge, Face, Block
-	VFEN
+	NEFV, //Node, Edge, Face, Volume
+	VFEN //Volume, Face, Edge, Node
 }

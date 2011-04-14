@@ -221,4 +221,9 @@ public class SparseBlockVector implements BlockVector {
 	public Vector set(double a, Vector v) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public Vector shift(double dv) {
+		throw new UnsupportedOperationException();
+	}
 }

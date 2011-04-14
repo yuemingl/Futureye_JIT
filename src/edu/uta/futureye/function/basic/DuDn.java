@@ -9,8 +9,7 @@ import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FOBasic;
-import edu.uta.futureye.function.operator.FOVector;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.FutureyeException;
 
 /**
@@ -58,22 +57,21 @@ public class DuDn extends AbstractFunction implements ElementDependentFunction {
 		Function rlt = null;
 		this.setElement(v.getElement());
 		if(u != null) {
-			rlt = FOVector.Grad(u).dot(norm);
+			rlt = FMath.grad(u).dot(norm);
 		} else if(this.norm.getDim() == 2) {
-			rlt = FOBasic.Plus(
-					FOBasic.Mult(u_x, new FC(norm.get(1))),
-					FOBasic.Mult(u_y, new FC(norm.get(2)))
+			rlt = u_x.M(new FC(norm.get(1)))
+					.A(
+				  u_y.M(new FC(norm.get(2)))
 					);
 		} else if(this.norm.getDim() == 3) {
-			rlt = FOBasic.PlusAll(
-					FOBasic.Mult(u_x, new FC(norm.get(1))),
-					FOBasic.Mult(u_y, new FC(norm.get(2))),
-					FOBasic.Mult(u_z, new FC(norm.get(3)))
+			rlt = FMath.sum(
+					u_x.M(new FC(norm.get(1))),
+					u_y.M(new FC(norm.get(2))),
+					u_z.M(new FC(norm.get(3)))
 					);
 		} else {
-			FutureyeException ex = new FutureyeException("Error");
-			ex.printStackTrace();
-			System.exit(-1);
+			throw new FutureyeException(
+					"Error: u="+u+", this.norm.getDim()="+this.norm.getDim());
 		}
 		return rlt.value(v);
 	}

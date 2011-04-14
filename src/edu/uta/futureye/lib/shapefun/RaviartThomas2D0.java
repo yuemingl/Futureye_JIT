@@ -20,7 +20,6 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
-import edu.uta.futureye.function.operator.FOVector;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 
@@ -91,8 +90,7 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 		
 		int[] nodeIndex = {3, 1, 2};
 		SpaceVector v = new SpaceVector(e.nodes.at(nodeIndex[funIndex]).coords());
-		this.funOuter = FOVector.ScalarProduct(coef, 
-				FOVector.Minus(svf, new SpaceVectorFunction(v)));
+		this.funOuter = svf.S(v).scale(coef);
 		
 		//复合函数
 		Map<String, Function> fInners = new HashMap<String, Function>();
@@ -131,7 +129,7 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 		
 		//使用复合函数构造形函数
 		//funOuter.setVarNames(varNames); //!!!
-		funCompose = FOVector.Compose(funOuter, fInners);
+		funCompose = funOuter.compose(fInners);
 	}
 
 	@Override

@@ -97,7 +97,8 @@ public class CoordinateTransform {
 			mapVS.put(vl.at(2), sf1d2);
 		}
 		else {
-			System.out.println("ERROR: transformLinear1D(), vl.size() != 2");
+			throw new FutureyeException(
+					"ERROR: transformLinear1D(), vl.size() != 2");
 		}
 		return mapVS;
 	}
@@ -135,11 +136,11 @@ public class CoordinateTransform {
 			mapVS.put(vl.at(4), sfb2d4);			
 		} else if(vl.size() == 5) {
 			//TODO
-			System.out.println("ERROR: getTransformLinear2DShapeFunction() vl.size() == "+vl.size());
+			throw new FutureyeException(
+					"ERROR: getTransformLinear2DShapeFunction() vl.size() == "+vl.size());
 		} else {
-			FutureyeException ex = new FutureyeException("ERROR: getTransformLinear2DShapeFunction() vl.size() == "+vl.size());
-			ex.printStackTrace();
-			System.exit(0);
+			throw new FutureyeException(
+					"ERROR: getTransformLinear2DShapeFunction() vl.size() == "+vl.size());
 		}
 		return mapVS;
 	}
@@ -168,9 +169,8 @@ public class CoordinateTransform {
 			mapVS.put(vl.at(3), sf3d3);
 			mapVS.put(vl.at(4), sf3d4);
 		} else {
-			FutureyeException ex = new FutureyeException("Error: getTransformLinear3DShapeFunction");
-			ex.printStackTrace();
-			System.exit(0);
+			throw new FutureyeException(
+					"Error: getTransformLinear3DShapeFunction");
 		}
 		return mapVS;
 	}
@@ -208,23 +208,24 @@ public class CoordinateTransform {
 	 * 利用后面的等式，可以简化运算
 	 * 
 	 * @param mapVS
-	 * @return 坐标变换函数列表
+	 * @return 坐标变换函数列表: 2D:[x,y]; 3D:[x,y,z]
 	 */
 	public List<Function> getTransformFunction(Map<Vertex,ScalarShapeFunction> mapVS) {
 		List<Function> r = new LinkedList<Function>();
 		int dim = fromVarNames.size();
+		
+		ScalarShapeFunction[] shapeFuns = new ScalarShapeFunction[mapVS.size()];
+		double[] coords = new double[mapVS.size()];
+		
 		for(int i=1;i<=dim;i++) {
-			Function a = new FC(0.0);
+			int j=0;
 			for(Entry<Vertex,ScalarShapeFunction> e : mapVS.entrySet()) {
 				Vertex v = e.getKey();
-				ScalarShapeFunction shapeFun = e.getValue();
-				Function fm = FMath.Mult(
-							new FC(v.coord(i)), shapeFun
-						);
-				a = FMath.Plus(a, fm);
+				coords[j] = v.coord(i);
+				shapeFuns[j] = e.getValue();
+				j++;
 			}
-			//???? a.setVarNames(toVarNames);
-			r.add(a);
+			r.add(FMath.linearCombination(coords, shapeFuns));
 		}
 		return r;	
 	}	
@@ -273,9 +274,8 @@ public class CoordinateTransform {
 		/*  
 		 *  det(Jac)= Sqrt(0^2 + 1^2)
 		 */
-		return FMath.Sqrt(FMath.Plus(
-				FMath.Mult(funs[0], funs[0]),
-				FMath.Mult(funs[1], funs[1]))
+		return FMath.sqrt(
+				funs[0].M(funs[0]) .A (funs[1].M(funs[1]))
 				);
 	}
 	
@@ -298,9 +298,7 @@ public class CoordinateTransform {
 		 *            |0 1|
 		 *  det(Jac)= |2 3| = 0*3-1*2
 		 */
-		return FMath.Minus(
-				FMath.Mult(funs[0], funs[3]),
-				FMath.Mult(funs[1], funs[2]));
+		return funs[0].M(funs[3]) .S (funs[1].M(funs[2]));
 	}
 	
 	
@@ -330,20 +328,15 @@ public class CoordinateTransform {
 		 *  det(Jac)= |3 4 5| = 0*3-1*2
 		 *            |6 7 8|
 		 */
-		Function det4875 = FMath.Minus(
-				FMath.Mult(funs[4], funs[8]),
-				FMath.Mult(funs[7], funs[5]));
-		Function det6538 = FMath.Minus(
-				FMath.Mult(funs[6], funs[5]),
-				FMath.Mult(funs[3], funs[8]));
-		Function det3764 = FMath.Minus(
-				FMath.Mult(funs[3], funs[7]),
-				FMath.Mult(funs[6], funs[4]));
+		Function det4875 = funs[4].M(funs[8]) .S (funs[7].M(funs[5]));
+		Function det6538 = funs[6].M(funs[5]) .S (funs[3].M(funs[8]));
+		Function det3764 = funs[3].M(funs[7]) .S (funs[6].M(funs[4]));
 
-		return FMath.Plus(FMath.Mult(funs[0], det4875), 
-			   FMath.Plus(FMath.Mult(funs[1], det6538), 
-					                 FMath.Mult(funs[2], det3764)
-					            ));
+		return FMath.sum(
+				funs[0].M(det4875), 
+			    funs[1].M(det6538),
+			    funs[2].M(det3764)
+			    );
 	}
 	
 	public Function getJacobian3DFast(Element e) {

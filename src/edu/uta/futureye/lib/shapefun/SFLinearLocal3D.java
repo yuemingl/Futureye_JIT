@@ -1,8 +1,5 @@
 package edu.uta.futureye.lib.shapefun;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
@@ -38,9 +35,9 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunction {
+public class SFLinearLocal3D extends AbstractFunction 
+							 implements ScalarShapeFunction {
 	private int funIndex;
-	private List<String> varNames = new LinkedList<String>();
 	private ObjList<String> innerVarNames = null;
 	
 	protected Element e = null;
@@ -121,12 +118,12 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 		
 	}
 
-	
 	SFLinearLocal2D[] faceSF = {
 			new SFLinearLocal2D(1),
 			new SFLinearLocal2D(2),
 			new SFLinearLocal2D(3)			
 		};
+	
 	@Override
 	public ShapeFunction restrictTo(int funIndex) {
 		return faceSF[funIndex-1];
@@ -134,11 +131,8 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 
 	@Override
 	public Function _d(String var) {
-		if(this.volume < 0.0) {
-			FutureyeException e = new FutureyeException("SFLinearLocal3D: volume < 0.0");
-			e.printStackTrace();
-			return null;
-		}
+		if(this.volume < 0.0)
+			throw new FutureyeException("SFLinearLocal3D: volume < 0.0");
 		
 		//关于自由变量r,s,t求导，u为非自由变量
 		if( var.equals("r") || var.equals("s") || var.equals("t") ) {
@@ -150,9 +144,7 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 			else
 				return new FC(0.0);
 		} else if(var.equals("u")) {
-			FutureyeException e = new FutureyeException("Error: u is not free variable");
-			e.printStackTrace();
-			System.exit(0);
+			throw new FutureyeException("Error: u is not free variable");
 		}
 		
 		//关于x,y,z求导
@@ -165,11 +157,8 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 				return new FC(a3/(6*volume));
 			else if(funIndex == 3)
 				return new FC(a4/(6*volume));
-			else {
-				FutureyeException e = new FutureyeException("Error: derivative(x)");
-				e.printStackTrace();
-				System.exit(0);
-			}
+			else 
+				throw new FutureyeException("Error: derivative(x), funIndex="+funIndex);
 		} else if(var.equals("y")) {
 			if(funIndex == 0)
 				return new FC(b1/(6*volume));
@@ -179,11 +168,8 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 				return new FC(b3/(6*volume));
 			else if(funIndex == 3)
 				return new FC(b4/(6*volume));
-			else {
-				FutureyeException e = new FutureyeException("Error: derivative(y)");
-				e.printStackTrace();
-				System.exit(0);
-			}
+			else 
+				throw new FutureyeException("Error: derivative(y), funIndex="+funIndex);
 		} else if(var.equals("z")) {
 			if(funIndex == 0)
 				return new FC(c1/(6*volume));
@@ -193,22 +179,10 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 				return new FC(c3/(6*volume));
 			else if(funIndex == 3)
 				return new FC(c4/(6*volume));
-			else {
-				FutureyeException e = new FutureyeException("Error: derivative(z)");
-				e.printStackTrace();
-				System.exit(0);
-			}
-		} else {
-			FutureyeException e = new FutureyeException("Error: derivative()");
-			e.printStackTrace();	
-			System.exit(0);
-		}
-		return null;
-	}
-
-	@Override
-	public void setVarNames(List<String> varNames) {
-		this.varNames = varNames;
+			else 
+				throw new FutureyeException("Error: derivative(z), funIndex="+funIndex);
+		} else
+			throw new FutureyeException("Error: derivative(), var="+var+", should be x,y or z!");
 	}
 
 	@Override
@@ -221,19 +195,10 @@ public class SFLinearLocal3D extends AbstractFunction implements ScalarShapeFunc
 			return v.get("t");
 		else if(funIndex == 3)
 			return v.get("u");
-		else {
-			FutureyeException e = new FutureyeException("Error: funIndex="+funIndex);
-			e.printStackTrace();
-			System.exit(0);
-		}
-		return 0.0;
+		else
+			throw new FutureyeException("Error: funIndex="+funIndex);
 	}
 
-	@Override
-	public List<String> varNames() {
-		return this.varNames;
-	}
-	
 	public String toString() {
 		return varNames.get(funIndex);
 	}

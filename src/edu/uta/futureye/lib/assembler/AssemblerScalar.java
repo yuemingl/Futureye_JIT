@@ -20,11 +20,13 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 
 public class AssemblerScalar implements Assembler {
+	private int status = 0;
 	protected Mesh mesh;
 	protected WeakForm weakForm;
 	protected Matrix globalStiff;
@@ -42,22 +44,27 @@ public class AssemblerScalar implements Assembler {
 	
 	@Override
 	public Matrix getStiffnessMatrix() {
+		if(status == 0)
+			throw new FutureyeException("Call assemble() function first!");
 		return this.globalStiff;
 	}
 	
 	@Override
 	public Vector getLoadVector() {
+		if(status == 0)
+			throw new FutureyeException("Call assemble() function first!");
 		return this.globalLoad;
 	}
 	
 	@Override
 	public void assemble() {
+		status = 1;
 		ElementList eList = mesh.getElementList();
 		int nEle = eList.size();
 		for(int i=1; i<=nEle; i++) {
 			eList.at(i).adjustVerticeToCounterClockwise();
 			assembleGlobal(eList.at(i),	globalStiff,globalLoad);
-			if(i%3000==0)
+			if(i%100==0)
 				System.out.println("Assemble..."+
 						String.format("%.0f%%", 100.0*i/nEle));
 		}
@@ -66,6 +73,7 @@ public class AssemblerScalar implements Assembler {
 	
 	@Override
 	public void imposeDirichletCondition(Function diri) {
+		status = 2;
 		NodeList nList = mesh.getNodeList();
 		for(int i=1;i<=nList.size();i++) {
 			Node n = nList.at(i);
@@ -93,6 +101,7 @@ public class AssemblerScalar implements Assembler {
 	 * @param load
 	 */
 	public void assembleGlobal(Element e, Matrix stiff, Vector load) {
+		status = 3;
 		DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
 		int nDOFs = DOFs.size();
 		
@@ -191,6 +200,7 @@ public class AssemblerScalar implements Assembler {
 	public void assembleLocal(Element e, 
 			Matrix localStiff, Matrix localStiffBorder, 
 			Vector localLoad, Vector localLoadBorder) {
+		status = 4;
 		
 		localStiff.clear();
 		localLoad.clear();
@@ -281,7 +291,7 @@ public class AssemblerScalar implements Assembler {
 	//二维：刚度矩阵增加hanging node约束系数
 	// nh - 0.5*n1 - 0.5*n2 = 0
 	public void procHangingNode(Mesh mesh) {
-		
+		status = 5;
 		for(int i=1;i<=mesh.getNodeList().size();i++) {
 			Node node = mesh.getNodeList().at(i);
 			if(node instanceof NodeRefined) {

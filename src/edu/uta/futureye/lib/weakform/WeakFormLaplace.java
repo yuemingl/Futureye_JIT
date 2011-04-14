@@ -2,8 +2,7 @@ package edu.uta.futureye.lib.weakform;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FOBasic;
-import edu.uta.futureye.function.operator.FOVector;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.Utils;
 
 /**
@@ -16,8 +15,6 @@ import edu.uta.futureye.util.Utils;
  * 
  * where
  *   A(u, v) = (k*Grad{u}, Grad{v}) - (q-d*u,v)_\Gamma2 + (c*u, v)
- *=>
- *   A(u, v) = (k*Grad{u}, Grad{v}) + (k*u_z, v_z) + (d*u-q,v)_\Gamma2 + (c*u, v)
  *
  *   \Gamma1: Dirichlet boundary of \Omega
  *   \Gamma2: Neumann(Robin) boundary of \Omega
@@ -58,20 +55,20 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 			Function integrand = null;
 			if(g_k == null) {
 				integrand =  
-					FOVector.Grad(u,u.innerVarNames()).
+					FMath.grad(u,u.innerVarNames()).
 								  dot( 
-					FOVector.Grad(v,v.innerVarNames()) 
+					FMath.grad(v,v.innerVarNames()) 
 								  );
 			} else {
 				
 				Function fk = Utils.interplateFunctionOnElement(g_k,e);
 				Function fc = Utils.interplateFunctionOnElement(g_c,e);
-				integrand = FOBasic.Plus(
-							FOBasic.Mult(fk, 
-									FOVector.Grad(u,u.innerVarNames()).
+				integrand = fk.M(
+									FMath.grad(u,u.innerVarNames()).
 									dot(
-									FOVector.Grad(v,v.innerVarNames()))),
-							FOBasic.Mult(fc, FOBasic.Mult(u, v))
+									FMath.grad(v,v.innerVarNames())))
+							.A(
+									fc.M(u.M(v))
 							);
 			}
 			return integrand;
@@ -80,7 +77,7 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 			if(g_d != null) {
 				Element be = e;
 				Function fd = Utils.interplateFunctionOnElement(g_d, be);
-				Function borderIntegrand = FOBasic.Mult(FOBasic.Mult(fd, u), v);
+				Function borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
 		}
@@ -91,12 +88,12 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 	public Function rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			Function ff = Utils.interplateFunctionOnElement(g_f, e);
-			Function integrand = FOBasic.Mult(ff,v);
+			Function integrand = ff.M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
 			Function fq = Utils.interplateFunctionOnElement(g_q, be);
-			Function borderIntegrand = FOBasic.Mult(fq, v);
+			Function borderIntegrand = fq.M(v);
 			return borderIntegrand;
 		}
 		return null;		

@@ -13,6 +13,7 @@ import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.container.ObjList;
 
 /**
+ * Velocity: Quadratic shape function
  * 速度：三角形局部坐标，二次函数
  * 
  * 3
@@ -31,6 +32,7 @@ import edu.uta.futureye.util.container.ObjList;
  * NV5 = 4*s*t
  * NV6 = 4*r*t
  * 
+ * Pressure: Linear shape function
  * 压强：三角形局部坐标，线性型函数
  * 3
  * | \
@@ -44,29 +46,31 @@ import edu.uta.futureye.util.container.ObjList;
  * NP2 = s
  * NP3 = t
  *
+ * 2D vector valued shape functions
  * 二维单元上的形函数，速度压强共15个自由度：
- * N = (v1,v2,p)', in \Omega
+ * Ni = (v1,v2,p)', i=1,...,15
  * 
- * N1  =  (NV1,0,0)'
- * N2  =  (NV2,0,0)'
- * N3  =  (NV3,0,0)'
- * N4  =  (NV4,0,0)'
- * N5  =  (NV5,0,0)'
- * N6  =  (NV6,0,0)'
- * N7  =  (0,NV1,0)'
- * N8  =  (0,NV2,0)'
- * N9  =  (0,NV3,0)'
- * N10 =  (0,NV4,0)'
- * N11 =  (0,NV5,0)'
- * N12 =  (0,NV6,0)'
- * N13 =  (0,0,NP1)'
- * N14 =  (0,0,NP2)'
- * N15 =  (0,0,NP3)'
+ * N1  =  (NV1, 0, 0)'
+ * N2  =  (NV2, 0, 0)'
+ * N3  =  (NV3, 0, 0)'
+ * N4  =  (NV4, 0, 0)'
+ * N5  =  (NV5, 0, 0)'
+ * N6  =  (NV6, 0, 0)'
+ * N7  =  (0, NV1, 0)'
+ * N8  =  (0, NV2, 0)'
+ * N9  =  (0, NV3, 0)'
+ * N10 =  (0, NV4, 0)'
+ * N11 =  (0, NV5, 0)'
+ * N12 =  (0, NV6, 0)'
+ * N13 =  (0, 0, NP1)'
+ * N14 =  (0, 0, NP2)'
+ * N15 =  (0, 0, NP3)'
  *
  *
  * @author liuyueming
  */
-public class QuadraticV_LinearP extends AbstractVectorFunction implements VectorShapeFunction {
+public class QuadraticV_LinearP extends AbstractVectorFunction 
+								implements VectorShapeFunction {
 	//(u1,u2,p)
 	protected SpaceVectorFunction sf = new SpaceVectorFunction(3);
 	protected int funIndex;
@@ -121,8 +125,7 @@ public class QuadraticV_LinearP extends AbstractVectorFunction implements Vector
 
 	QuadraticV_LinearP1D []sf1D = null;
 	/**
-	 * restrict to boundary
-	 * 
+	 * Restrict to boundary
 	 * | \
 	 * |  \
 	 * |   \
@@ -138,7 +141,7 @@ public class QuadraticV_LinearP extends AbstractVectorFunction implements Vector
 	 * 1---- 2 
 	 * NP1,NP2
 	 * 
-	 * N = (v1,v2,p)', on boundary
+	 * Ni = (v1,v2,p)', i=1,...,8, on boundary
 	 * 
 	 * N1 =  (NV1,0,0)'
 	 * N2 =  (NV2,0,0)'
@@ -148,6 +151,7 @@ public class QuadraticV_LinearP extends AbstractVectorFunction implements Vector
 	 * N6 =  (0,NV3,0)'
 	 * N7 =  (0,0,NP1)'
 	 * N8 =  (0,0,NP2)'
+	 * 
 	 * @param funIndex
 	 * @return
 	 */

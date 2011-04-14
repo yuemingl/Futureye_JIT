@@ -207,7 +207,17 @@ public class SparseVector implements Vector {
 
 	@Override
 	public Vector add(Vector v) {
-		throw new UnsupportedOperationException();
+		if(v instanceof SparseVector) {
+			SparseVector tmp = (SparseVector)v;
+			for(Entry<Integer, Double> e : tmp.data.entrySet()) {
+				this.add(e.getKey(), e.getValue());
+			}
+		} else {
+			for(int i=1;i<=v.getDim();i++) {
+				this.add(i,v.get(i));
+			}
+		}
+		return this;
 	}
 
 	@Override
@@ -217,26 +227,36 @@ public class SparseVector implements Vector {
 
 	@Override
 	public Vector scale(double a) {
-		// TODO Auto-generated method stub
-		return null;
+		for(Entry<Integer, Double> e : data.entrySet()) {
+			this.set(e.getKey(), a*e.getValue());
+		}
+		return this;
 	}
 
 	@Override
 	public Vector ax(double a) {
-		// TODO Auto-generated method stub
-		return null;
+		for(Entry<Integer, Double> e : data.entrySet()) {
+			this.set(e.getKey(), a*e.getValue());
+		}
+		return this;
 	}
+	
+	@Override
+	public Vector shift(double dv) {
+		for(Entry<Integer, Double> e : data.entrySet()) {
+			this.set(e.getKey(), e.getValue() + dv);
+		}
+		return this;
+	}	
 
 	@Override
 	public double norm1() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Vector set(double a, Vector v) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}	
 
 }

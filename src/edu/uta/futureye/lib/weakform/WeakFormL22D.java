@@ -9,7 +9,6 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
 
@@ -33,7 +32,7 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 			//Integrand part of Weak Form on element e
 			Function integrand = null;
 			Function fU = Utils.interplateFunctionOnElement(g_U, e);
-			integrand = FOBasic.Mult(fU, FOBasic.Mult(u, v));
+			integrand = fU.M(u.M(v));
 			return integrand;
 		}
 		return null;
@@ -56,18 +55,18 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 					Function PValue = new FC(g_U.value(var));
 					ScalarShapeFunction shape = dofI.getSSF();
 					//以前版本需要调用shapeFun.asignElement(e)，现在版本不需要调用了
-					rlt_dx = FOBasic.Plus(rlt_dx, FOBasic.Mult(PValue, shape._d("x")));
-					rlt_dy = FOBasic.Plus(rlt_dy, FOBasic.Mult(PValue, shape._d("y")));
+					rlt_dx = rlt_dx.A(PValue.M(shape._d("x")));
+					rlt_dy = rlt_dy.A(PValue.M(shape._d("y")));
 				}
 			}
 			
-			Function integrand = FOBasic.Minus(
-				FOBasic.Mult(ff,v),
-				FOBasic.Mult(fk,
-						FOBasic.Plus(
-								FOBasic.Mult(rlt_dx, v._d("x")),
-								FOBasic.Mult(rlt_dy, v._d("y"))
-			)));
+			Function integrand = 
+					ff.M(v)
+					.S(
+						fk.M(
+							rlt_dx.M(v._d("x")).A(rlt_dy.M(v._d("y")))
+						)
+					);
 			return integrand;
 		}
 		return null;

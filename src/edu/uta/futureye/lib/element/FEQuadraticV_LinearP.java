@@ -37,7 +37,7 @@ public class FEQuadraticV_LinearP implements FiniteElementType {
 	 * Assign degree of freedom to element
 	 * @param e
 	 */
-	public void assign(Element e) {
+	public void assignTo(Element e) {
 		if(nTotalNodes == -1 || nDOF_p == -1) {
 			FutureyeException ex = new FutureyeException("Call initDOFIndex() first!");
 			ex.printStackTrace();

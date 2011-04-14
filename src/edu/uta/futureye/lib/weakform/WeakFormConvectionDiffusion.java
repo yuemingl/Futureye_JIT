@@ -5,23 +5,23 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.function.operator.FOBasic;
-import edu.uta.futureye.function.operator.FOVector;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.Utils;
 
 /**
  * Convection-diffusion equation
- *   \frac{\partial{c}}{\partial{t}} = \Nabla{k*\Nabla{c}} - \mathbf{v}\dot\Nabla{c} + f
+ *   \frac{\partial{c}}{\partial{t}} = 
+ *   		\nabla\cdot(k\nabla{c}) - \mathbf{v}\cdot\nabla{c} + f
  * 
  * Time discrete form:
  *   Let:
  *   \frac{\partial{c}}{\partial{t}} = (c_n+1 - c_n)/Dt
  *   We have,
- *   -Dt*\Nabla{k*\Nabla{c_n+1}} + Dt*\mathbf{v}\dot\Nabla{c_n+1} + c_n+1 = Dt*f + c_n
+ *   -Dt*\nabla\cdot(k\nabla{c_n+1}) + Dt*\mathbf{v}\dot\nabla{c_n+1} + c_n+1 = Dt*f + c_n
  * 
  * Weak form:
  *   Let c_n+1 := u
- *   Dt*(k*\Nabla{u},\Nabla{w}) + Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) + b*(u,w) = (Dt*f + c_n,w)
+ *   Dt*(k*\nabla{u},\nabla{w}) + Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) + b*(u,w) = (Dt*f + c_n,w)
  *   
  * where
  *   c=c(x,y,z,t): particles or energy(e.g. salt density, Heat...) are transferred inside 
@@ -90,14 +90,16 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 			for(int dim=1;dim<=g_v.getDim();dim++)
 				fv.set(dim, Utils.interplateFunctionOnElement(g_v.get(dim),e));
 			
-			//Dt*(k*\Nabla{u},\Nabla{w}) + Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) + b*(u,w)
+			//Dt*(k*\nabla{u},\nabla{w}) + 
+			//Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) + 
+			//b*(u,w)
 			Function integrand = null;
 			integrand = fk.M(
-							FOVector.Grad(u,u.innerVarNames()).
+							FMath.grad(u,u.innerVarNames()).
 								dot(
-							FOVector.Grad(v,v.innerVarNames()))
+							FMath.grad(v,v.innerVarNames()))
 						).A(
-							fv.dot(FOVector.Grad(u,u.innerVarNames()))
+							fv.dot(FMath.grad(u,u.innerVarNames()))
 						).M(FC.c(Dt)).A(
 							fb.M(u).M(v)
 						);
@@ -107,7 +109,7 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 			if(g_d != null) {
 				Element be = e;
 				Function fd = Utils.interplateFunctionOnElement(g_d, be);
-				Function borderIntegrand = FOBasic.Mult(FOBasic.Mult(fd, u), v);
+				Function borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
 		}
@@ -120,12 +122,12 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 			//(Dt*f + c_n,w)
 			Function ff = Utils.interplateFunctionOnElement(g_f, e);
 			Function fcn = Utils.interplateFunctionOnElement(g_cn, e);
-			Function integrand = FOBasic.Mult(ff.M(FC.c(Dt)).A(fcn),v);
+			Function integrand = ff.M(FC.c(Dt)).A(fcn).M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
 			Function fq = Utils.interplateFunctionOnElement(g_q, be);
-			Function borderIntegrand = FOBasic.Mult(fq, v);
+			Function borderIntegrand = fq.M(v);
 			return borderIntegrand;
 		}
 		return null;		

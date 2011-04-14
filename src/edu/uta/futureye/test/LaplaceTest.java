@@ -19,7 +19,6 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -75,7 +74,7 @@ public class LaplaceTest {
 		ElementList eList = mesh.getElementList();
 		FELinearTriangle linearTriangle = new FELinearTriangle();
 		for(int i=1;i<=eList.size();i++)
-			linearTriangle.assign(eList.at(i));
+			linearTriangle.assignTo(eList.at(i));
 		
 		//User defined weak form of PDE (including bounder conditions)
 		//-\Delta{u} = f
@@ -83,13 +82,9 @@ public class LaplaceTest {
 		//u=(x^2-9)*(y^2-9)
 		//f=-2*(x^2+y^2)+36
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		weakForm.setF(
-				FOBasic.Plus(
-					FOBasic.Plus(
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("x"),new FX("x") )),
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("y"),new FX("y") ))
-						),new FC(36.0)
-					)
+		weakForm.setF(FC.c(-2.0).M(
+						FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+					).A(FC.c(36.0))
 				);
 //		weakForm.setF(new FConstant(-2.0));
 		
@@ -172,18 +167,14 @@ public class LaplaceTest {
 		ElementList eList = mesh.getElementList();
 		FEBilinearRectangle bilinearRectangle = new FEBilinearRectangle();
 		for(int i=1;i<=eList.size();i++)
-			bilinearRectangle.assign(eList.at(i));
+			bilinearRectangle.assignTo(eList.at(i));
 		
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		weakForm.setF(
-				FOBasic.Plus(
-					FOBasic.Plus(
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("x"),new FX("x") )),
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("y"),new FX("y") ))
-						),new FC(36.0)
-					)
-				);
+		weakForm.setF(FC.c(-2.0).M(
+				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+			).A(FC.c(36.0))
+		);
 		
 		weakForm.setParam(
 				null,
@@ -264,14 +255,10 @@ public class LaplaceTest {
 		
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		weakForm.setF(
-				FOBasic.Plus(
-					FOBasic.Plus(
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("x"),new FX("x") )),
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("y"),new FX("y") ))
-						),new FC(36.0)
-					)
-				);
+		weakForm.setF(FC.c(-2.0).M(
+				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+			).A(FC.c(36.0))
+		);
 		weakForm.setParam(
 				null,
 				null,
@@ -365,14 +352,10 @@ public class LaplaceTest {
 		
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		weakForm.setF(
-				FOBasic.Plus(
-					FOBasic.Plus(
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("x"),new FX("x") )),
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("y"),new FX("y") ))
-						),new FC(36.0)
-					)
-				);
+		weakForm.setF(FC.c(-2.0).M(
+				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+			).A(FC.c(36.0))
+		);
 		
 		weakForm.setParam(
 				null,
@@ -482,23 +465,16 @@ public class LaplaceTest {
 		
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		weakForm.setF(
-				FOBasic.Plus(
-					FOBasic.Plus(
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("x"),new FX("x") )),
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("y"),new FX("y") ))
-						),new FC(36.0)
-					)
-				);
+		weakForm.setF(FC.c(-2.0).M(
+				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+			).A(FC.c(36.0))
+		);
 		
 		weakForm.setParam(
 				null,
 				null,
-				FOBasic.Minus(
-						FOBasic.Mult(new FC(6.0), 
-						FOBasic.Mult(new FX("y"),new FX("y") )
-						),
-				new FC(54.0)),null //Robin: 6*y^2-54
+				FC.c(6.0).M(FX.fy.M(FX.fy)).S(FC.c(54.0)),
+				null //Robin: 6*y^2-54
 				); 
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
@@ -557,14 +533,10 @@ public class LaplaceTest {
 		//u=(x^2-9)*(y^2-9)
 		//f=-2*(x^2+y^2)+36
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		weakForm.setF(
-				FOBasic.Plus(
-					FOBasic.Plus(
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("x"),new FX("x") )),
-						FOBasic.Mult(new FC(-2.0), FOBasic.Mult(new FX("y"),new FX("y") ))
-						),new FC(36.0)
-					)
-				);
+		weakForm.setF(FC.c(-2.0).M(
+				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+			).A(FC.c(36.0))
+		);
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
@@ -603,9 +575,9 @@ public class LaplaceTest {
 //TODO
 //		mixedTest(); //OK 数值积分的问题fixed
 		
-//		serendipityTest();
+		serendipityTest(); // java.lang.ArithmeticException: / by zero
 //		quadraticLocal2DTest();
-		triangleBDCTest();
+//		triangleBDCTest();
 	}
 		
 }

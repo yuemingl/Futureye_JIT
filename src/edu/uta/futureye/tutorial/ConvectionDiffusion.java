@@ -95,7 +95,7 @@ public class ConvectionDiffusion {
 		ElementList eList = mesh.getElementList();
 		FELinearTriangle linearTriangle = new FELinearTriangle();
 		for(int i=1;i<=eList.size();i++)
-			linearTriangle.assign(eList.at(i));
+			linearTriangle.assignTo(eList.at(i));
 	}
 	
 	public Vector solverOneStep(int step, Function c_n) {

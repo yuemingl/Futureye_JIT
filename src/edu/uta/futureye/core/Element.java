@@ -513,10 +513,7 @@ public class Element {
 	}
 	
 	
-	////////////////////////////////////////////////////////////////////
-
-	
-	
+	///////////////////Add and Get DOF(s)//////////////////////////
 	/**
 	 * 添加一个结点相关自由度（1D/2D/3D）
 	 * @param localNodeIndex
@@ -572,7 +569,10 @@ public class Element {
 	}
 	
 	/**
-	 * Alias of addElementDOF()
+	 * 添加一个单元相关自由度（1D/2D/3D），
+	 * 对于1D，为单元线上的自由度
+	 * 对于2D，为单元面上的自由度
+	 * 对于3D，为单元体上的自由度
 	 * @param dof
 	 */
 	public void addVolumeDOF(DOF dof) {
@@ -583,18 +583,6 @@ public class Element {
 		dof.setOwner(this.geoEntity);
 		volumeDOFList.add(dof);
 	}
-	
-	/**
-	 * 添加一个单元相关自由度（1D/2D/3D），
-	 * 对于1D，为单元线上的自由度
-	 * 对于2D，为单元面上的自由度
-	 * 对于3D，为单元体上的自由度
-	 * @param dof
-	 */
-	public void addElementDOF(DOF dof) {
-		addVolumeDOF(dof);
-	}
-	
 	
 	/**
 	 * 获取单元结点localNodeIndex对应的自由度列表
@@ -634,15 +622,8 @@ public class Element {
 	public DOFList getVolumeDOFList() {
 		return volumeDOFList;
 	}
-	/**
-	 * ==getVolumeDOFList()
-	 * @return
-	 */
-	public DOFList getElementDOFList() {
-		return volumeDOFList;
-	}
 	
-	public DOFList getAllNodeDOFList(DOFOrder order) {
+	public DOFList getAllNodeDOFList() {
 		DOFList rlt = new DOFList();
 		if(nodeDOFList != null) {
 			for(Entry<Integer,DOFList> entry : nodeDOFList.entrySet()) {
@@ -651,7 +632,7 @@ public class Element {
 		}
 		return rlt;
 	}
-	public DOFList getAllEdgeDOFList(DOFOrder order) {
+	public DOFList getAllEdgeDOFList() {
 		DOFList rlt = new DOFList();
 		if(edgeDOFList != null) {
 			for(Entry<Integer,DOFList> entry : edgeDOFList.entrySet()) {
@@ -660,7 +641,7 @@ public class Element {
 		}
 		return rlt;
 	}
-	public DOFList getAllFaceDOFList(DOFOrder order) {
+	public DOFList getAllFaceDOFList() {
 		DOFList rlt = new DOFList();
 		if(faceDOFList != null) {
 			for(Entry<Integer,DOFList> entry : faceDOFList.entrySet()) {
@@ -669,7 +650,7 @@ public class Element {
 		}
 		return rlt;
 	}
-	public DOFList getAllVolumeDOFList(DOFOrder order) {
+	public DOFList getAllVolumeDOFList() {
 		DOFList rlt = new DOFList();
 		if(volumeDOFList != null) {
 			rlt.addAll(volumeDOFList);
@@ -716,33 +697,34 @@ public class Element {
 	 * @param vectorDim: 自由度list index  
 	 * @return
 	 */
-	public DOFList getAllDOFListByVectorDim(DOFOrder order,int vectorDim) {
+	public DOFList getAllDOFListByVvfIndex(DOFOrder order,int vvfIndex) {
 		DOFList rlt = new DOFList();
 		if(nodeDOFList != null) {
 			for(Entry<Integer,DOFList> entry : nodeDOFList.entrySet()) {
-				if(entry.getValue().size()>=vectorDim)
-					rlt.add(entry.getValue().at(vectorDim));
+				if(entry.getValue().size()>=vvfIndex)
+					rlt.add(entry.getValue().at(vvfIndex));
 			}
 		}
 		if(edgeDOFList != null) {
 			for(Entry<Integer,DOFList> entry : edgeDOFList.entrySet()) {
-				if(entry.getValue().size()>=vectorDim)
-					rlt.add(entry.getValue().at(vectorDim));
+				if(entry.getValue().size()>=vvfIndex)
+					rlt.add(entry.getValue().at(vvfIndex));
 			}
 		}
 		if(faceDOFList != null) {
 			for(Entry<Integer,DOFList> entry : faceDOFList.entrySet()) {
-				if(entry.getValue().size()>=vectorDim)
-					rlt.add(entry.getValue().at(vectorDim));
+				if(entry.getValue().size()>=vvfIndex)
+					rlt.add(entry.getValue().at(vvfIndex));
 			}
 		}
 		if(volumeDOFList != null) {
-			if(volumeDOFList.size()>=vectorDim)
-				rlt.add(volumeDOFList.at(vectorDim));
+			if(volumeDOFList.size()>=vvfIndex)
+				rlt.add(volumeDOFList.at(vvfIndex));
 		}
 		return rlt;
 	}
 	
+	//////////////////////DOF Number///////////////////////////
 	public int getNodeDOFNumber() {
 		if(nodeDOFList == null) return 0;
 		int nTotal = 0;
@@ -768,21 +750,13 @@ public class Element {
 		return nTotal;
 	}
 	/**
-	 * Alias of getElementDOFNumber()
-	 * @return
-	 */
-	public int getVolumeDOFNumber() {
-		if(volumeDOFList == null) return 0;
-		return volumeDOFList.size();
-	}
-	/**
 	 * 获取单元相关自由度总数（1D/2D/3D），
 	 * 对于1D，为单元线上的自由度总数
 	 * 对于2D，为单元面上的自由度总数
 	 * 对于3D，为单元体上的自由度总数
 	 * @return
 	 */
-	public int getElementDOFNumber() {
+	public int getVolumeDOFNumber() {
 		if(volumeDOFList == null) return 0;
 		return volumeDOFList.size();
 	}
@@ -799,6 +773,7 @@ public class Element {
 		nTotal += this.getVolumeDOFNumber();
 		return nTotal;
 	}
+	///////////////////////////////////////////////
 	
 	/**
 	 * 局部自由度编号与全局自由度编号转换
@@ -1011,7 +986,7 @@ public class Element {
 		trans.transformLinear2D(this);
 		//jac = (Function) trans.getJacobian2D();
 		//TODO 不要用这个，修改函数运算
-		jac = FC.c(trans.getJacobian2D().value(null));
+		jac = trans.getJacobian2D();
 
 //TODO adaptive的时候不适用		
 //		List<FunctionDerivable> funs = trans.getTransformFunction(

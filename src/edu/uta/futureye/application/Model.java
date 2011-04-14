@@ -30,7 +30,6 @@ import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
-import edu.uta.futureye.function.operator.FOBasic;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -171,7 +170,7 @@ public class Model {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side
-		weakForm.setF(FMath.Mult(this.k,this.delta));
+		weakForm.setF(this.k.M(this.delta));
 		
 		// *** u + u_n = 0, on \Gamma2 ***
 		//   A(u, v) = ((k*u_x, v_x) + (k*u_y, v_y) ) - (k*u_n,v)_\Gamma2 + (c*u, v)
@@ -223,7 +222,7 @@ public class Model {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side
-		weakForm.setF(FMath.Mult(this.k,this.delta));
+		weakForm.setF(this.k.M(this.delta));
 
 		weakForm.setParam(
 				this.k, this.mu_a, null, this.k //d==k,q=0 (即：u_n + u =0)
@@ -288,20 +287,17 @@ public class Model {
 		
 		//Right hand side
 		Function lamd = 
-				FOBasic.Mult(
-						new FC(Math.PI*Math.PI*Math.pow(Math.E, iterNum-1)),
-						FOBasic.Power(
-								FOBasic.Minus(new Vector2Function(a_m), new Vector2Function(a_m_1)),
+						new FC(Math.PI*Math.PI*Math.pow(Math.E, iterNum-1)).M(
+						FMath.pow(
+								new Vector2Function(a_m).S(new Vector2Function(a_m_1)),
 								new FC(2.0)
 						)
 				);
 		//lamd = new FConstant(0.8);
 		
 		Function rhs = 
-			FOBasic.Mult(
-				FOBasic.Mult(FOBasic.Power(new FC(Math.E), lamd),new FC(Math.pow(1.05, -iterNum))),
-				FOBasic.Mult(
-					FOBasic.Minus(new Vector2Function(a_m), new Vector2Function(a_m_1)),
+				FMath.pow(new FC(Math.E), lamd).M(new FC(Math.pow(1.05, -iterNum))).M(
+					new Vector2Function(a_m).S(new Vector2Function(a_m_1)).M(
 					new Vector2Function(u_m_1)
 				));
 		
@@ -310,7 +306,7 @@ public class Model {
 		
 		weakForm.setParam(
 			new FC(1.0),
-			FOBasic.Minus(new FC(0.0), new Vector2Function(a_m)),
+			new FC(0.0).S(new Vector2Function(a_m)),
 			null,null
 		); 
 			

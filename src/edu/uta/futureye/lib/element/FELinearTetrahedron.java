@@ -27,7 +27,7 @@ public class FELinearTetrahedron implements FiniteElementType {
 	 * Assign degree of freedom to element
 	 * @param e
 	 */
-	public void assign(Element e) {
+	public void assignTo(Element e) {
 		VertexList vertices = e.vertices();
 		for(int j=1;j<=vertices.size();j++) {
 			Vertex v = vertices.at(j);

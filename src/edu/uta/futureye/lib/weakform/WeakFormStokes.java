@@ -8,23 +8,23 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.function.operator.FOVector;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.Utils;
 
 /**
  * Problem:
- * -\Nabla{k*\Nabla{\mathbf{u}} + \Nabla{p} = \mathbf{f}
+ * -\nabla{k*\nabla{\mathbf{u}} + \nabla{p} = \mathbf{f}
  * div{\mathbf{u}} = 0
  * 
  * Weak form:
  *   find \mathbf{u} \in H_0^1(div;\Omega), p \in L_2(\Omega)
  *   such that, for all \mathbf{v} \in H_0^1(div;\Omega), q \in L_2(\Omega)
  *   
- *   (\Nabla{\mathbf{v}},k*\Nabla{\mathbf{u}}) - (div{\mathbf{v}},p) 
+ *   (\nabla{\mathbf{v}},k*\nabla{\mathbf{u}}) - (div{\mathbf{v}},p) 
  *                   + (q,div{\mathbf{u}}) = (\mathbf{v},\mathbf{f})
  *
  *   (v1_x,k*u1_x) + (v1_y,k*u1_y) + (v2_x,k*u2_x) + (v2_y,k*u2_y) 
- *                   - (v1_x+v2_y,p) + (q,u1_x+u2_y) = (v1*f1+v2*f2)      
+ *                   - (v1_x+v2_y,p) + (q,u1_x+u2_y) = (v1,f1)+(v2,f2)    
  *
  * where
  *   \mathbf{u}=(u1,u2): velocity vector field    
@@ -74,8 +74,8 @@ public class WeakFormStokes extends AbstractVectorWeakform {
 			ScalarShapeFunction v2 = (ScalarShapeFunction)v.get(2);
 			ScalarShapeFunction q  = (ScalarShapeFunction)v.get(3);
 			//(v1_x,k*u1_x) + (v1_y,k*u1_y) + (v2_x,k*u2_x) + (v2_y,k*u2_y) - (v1_x+v2_y,p) + (q,u1_x+u2_y) 
-			Function uv1 = FOVector.Grad(u1,u1.innerVarNames()).dot(FOVector.Grad(v1,v1.innerVarNames()));
-			Function uv2 = FOVector.Grad(u2,u2.innerVarNames()).dot(FOVector.Grad(v2,v2.innerVarNames()));
+			Function uv1 = FMath.grad(u1,u1.innerVarNames()).dot(FMath.grad(v1,v1.innerVarNames()));
+			Function uv2 = FMath.grad(u2,u2.innerVarNames()).dot(FMath.grad(v2,v2.innerVarNames()));
 			Function div_v = v1._d("x").A(v2._d("y"));
 			Function div_u = u1._d("x").A(u2._d("y"));
 			integrand = fk.M( uv1.A(uv2) ).S( div_v.M(p) ).A( div_u.M(q) );

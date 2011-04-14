@@ -92,7 +92,7 @@ public class Wave {
 		FELinearTriangle fe = new FELinearTriangle();
 		//FEBilinearRectangle fe = new FEBilinearRectangle();
 		for(int i=1;i<=eList.size();i++)
-			fe.assign(eList.at(i));
+			fe.assignTo(eList.at(i));
 	}
 	
 	public Vector solverOneStep(final int step) {

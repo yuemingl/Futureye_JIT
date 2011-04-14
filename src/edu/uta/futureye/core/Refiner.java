@@ -259,6 +259,7 @@ public class Refiner {
 				}
 				mesh.computeNodeBelongsToElements();
 				mesh.computeNeighborNodes();
+				mesh.computeGlobalEdge();
 				mesh.computeNeighborElements();
 			} else {
 				directRefine(mesh,eToRefine);
@@ -268,6 +269,7 @@ public class Refiner {
 				}
 				mesh.computeNodeBelongsToElements();
 				mesh.computeNeighborNodes();
+				mesh.computeGlobalEdge();
 				mesh.computeNeighborElements();
 				break;
 			}
