@@ -15,16 +15,16 @@ public class IntegrationTest {
 		
 		Function integrand = sf1d1.A(sf1d2);
 		
-		Function integral;
+		double val;
 
-		integral = FOIntegrate.intOnTriangleRefElement(sf1d1, 4);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(sf1d1, 4);
+		System.out.println(val);
 		
-		integral = FOIntegrate.intOnTriangleRefElement(sf1d2, 4);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(sf1d2, 4);
+		System.out.println(val);
 		
-		integral = FOIntegrate.intOnLinearRefElement(integrand, 4);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnLinearRefElement(integrand, 4);
+		System.out.println(val);
 		
 //		0.16666666666666669
 //		0.33333333333333337
@@ -40,19 +40,19 @@ public class IntegrationTest {
 		Function integrand = shapeFun[0].A(shapeFun[1]);
 		integrand = integrand.A(shapeFun[2]);
 		
-		Function integral;
+		double val;
 		
-		integral = FOIntegrate.intOnTriangleRefElement(shapeFun[0], 3);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(shapeFun[0], 3);
+		System.out.println(val);
 		
-		integral = FOIntegrate.intOnTriangleRefElement(shapeFun[1], 3);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(shapeFun[1], 3);
+		System.out.println(val);
 		
-		integral = FOIntegrate.intOnTriangleRefElement(shapeFun[2], 3);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(shapeFun[2], 3);
+		System.out.println(val);
 		
-		integral = FOIntegrate.intOnTriangleRefElement(integrand, 3);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(integrand, 3);
+		System.out.println(val);
 		
 //		0.16666666666666666
 //		0.16666666666666666
@@ -71,22 +71,22 @@ public class IntegrationTest {
 		integrand = integrand.A(shapeFun[2]);
 		integrand = integrand.A(shapeFun[3]);
 		
-		Function integral;
+		double val;
 		
-		integral = FOIntegrate.intOnTriangleRefElement(shapeFun[0], 2);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(shapeFun[0], 2);
+		System.out.println(val);
 		
-		integral = FOIntegrate.intOnTriangleRefElement(shapeFun[1], 2);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(shapeFun[1], 2);
+		System.out.println(val);
 		
-		integral = FOIntegrate.intOnTriangleRefElement(shapeFun[2], 2);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(shapeFun[2], 2);
+		System.out.println(val);
 		
-		integral = FOIntegrate.intOnTriangleRefElement(shapeFun[3], 2);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(shapeFun[3], 2);
+		System.out.println(val);
 		
-		integral = FOIntegrate.intOnTriangleRefElement(integrand, 2);
-		System.out.println(integral.value(null));
+		val = FOIntegrate.intOnTriangleRefElement(integrand, 2);
+		System.out.println(val);
 		
 //		0.055555555555555566
 //		0.11111111111111112

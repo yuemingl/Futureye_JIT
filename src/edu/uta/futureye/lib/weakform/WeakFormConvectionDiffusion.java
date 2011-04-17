@@ -34,7 +34,7 @@ import edu.uta.futureye.util.Utils;
  * 
  * Boundary condition
  *   c = c0,                  on \Gamma1 (Dirichlet)
- *   d*c + k*c_n = q,         on \Gamma2 (Robin)
+ *   d*c + k*c_n = g,         on \Gamma2 (Robin)
  *
  * The following weak form just gives one step computation of c from c_n to c_n+1. 
  *   
@@ -45,7 +45,7 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 	protected Function g_f = null;
 	protected Function g_k = null;
 	protected Function g_b = null;
-	protected Function g_q = null;
+	protected Function g_g = null;
 	protected Function g_d = null;
 	protected VectorFunction g_v = null;
 	protected Function g_cn = null;
@@ -74,9 +74,9 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 		this.g_f = f;
 	}
 	
-	//Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
-	public void setRobin(Function q,Function d) {
-		this.g_q = q;
+	//Robin:  d*u + k*u_n= g (自然边界：d==k, g=0)
+	public void setRobin(Function g,Function d) {
+		this.g_g = g;
 		this.g_d = d;
 	}
 
@@ -84,11 +84,11 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 	public Function leftHandSide(Element e, ItemType itemType) {
 		 if(itemType==ItemType.Domain)  {
 			 //Interplate functions on element e
-			Function fk = Utils.interplateFunctionOnElement(g_k,e);
-			Function fb = Utils.interplateFunctionOnElement(g_b,e);
+			Function fk = Utils.interpolateFunctionOnElement(g_k,e);
+			Function fb = Utils.interpolateFunctionOnElement(g_b,e);
 			VectorFunction fv = new SpaceVectorFunction(g_v.getDim());
 			for(int dim=1;dim<=g_v.getDim();dim++)
-				fv.set(dim, Utils.interplateFunctionOnElement(g_v.get(dim),e));
+				fv.set(dim, Utils.interpolateFunctionOnElement(g_v.get(dim),e));
 			
 			//Dt*(k*\nabla{u},\nabla{w}) + 
 			//Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) + 
@@ -108,7 +108,7 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 		else if(itemType==ItemType.Border) {
 			if(g_d != null) {
 				Element be = e;
-				Function fd = Utils.interplateFunctionOnElement(g_d, be);
+				Function fd = Utils.interpolateFunctionOnElement(g_d, be);
 				Function borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
@@ -120,13 +120,13 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 	public Function rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//(Dt*f + c_n,w)
-			Function ff = Utils.interplateFunctionOnElement(g_f, e);
-			Function fcn = Utils.interplateFunctionOnElement(g_cn, e);
+			Function ff = Utils.interpolateFunctionOnElement(g_f, e);
+			Function fcn = Utils.interpolateFunctionOnElement(g_cn, e);
 			Function integrand = ff.M(FC.c(Dt)).A(fcn).M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
-			Function fq = Utils.interplateFunctionOnElement(g_q, be);
+			Function fq = Utils.interpolateFunctionOnElement(g_g, be);
 			Function borderIntegrand = fq.M(v);
 			return borderIntegrand;
 		}

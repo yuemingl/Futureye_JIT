@@ -68,8 +68,8 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 			if(g_k == null) {
 				integrand = u._d("x").M(v._d("x")) .A (u._d("y").M(v._d("y")));
 			} else {
-				Function fk = Utils.interplateFunctionOnElement(g_k,e);
-				Function fc = Utils.interplateFunctionOnElement(g_c,e);
+				Function fk = Utils.interpolateFunctionOnElement(g_k,e);
+				Function fc = Utils.interpolateFunctionOnElement(g_c,e);
 				integrand = fk.M(
 								u._d("x").M(v._d("x")) .A (u._d("y").M(v._d("y")))
 							).A(
@@ -81,7 +81,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 		else if(itemType==ItemType.Border) {//Neumann border integration on LHS
 			if(g_d != null) {
 				Element be = e;
-				Function fd = Utils.interplateFunctionOnElement(g_d, be);
+				Function fd = Utils.interpolateFunctionOnElement(g_d, be);
 				Function borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
@@ -92,13 +92,13 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 	@Override
 	public Function rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			Function ff = Utils.interplateFunctionOnElement(g_f, e);
+			Function ff = Utils.interpolateFunctionOnElement(g_f, e);
 			Function integrand = ff.M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			if(g_q != null) {
 				Element be = e;
-				Function fq = Utils.interplateFunctionOnElement(g_q, be);
+				Function fq = Utils.interpolateFunctionOnElement(g_q, be);
 				Function borderIntegrand = fq.M(v);
 				return borderIntegrand;
 			}
@@ -131,9 +131,9 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 		}
 
 		Function fk = null;
-		if(g_k != null) fk = Utils.interplateFunctionOnElement(g_k,e);
+		if(g_k != null) fk = Utils.interpolateFunctionOnElement(g_k,e);
 		Function fc = null;
-		if(g_c != null) fc = Utils.interplateFunctionOnElement(g_c,e);
+		if(g_c != null) fc = Utils.interpolateFunctionOnElement(g_c,e);
 
 		//所有自由度双循环
 		for(int i=1;i<=nDOFs;i++) {
@@ -163,33 +163,31 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 								);
 				}
 				//Numerical integration on element e
-				Function integral = null;
+				double lhsVal = 0.0;
 				if(e.vertices().size() == 3) {
-					integral = FOIntegrate.intOnTriangleRefElement(
+					lhsVal = FOIntegrate.intOnTriangleRefElement(
 							integrand.M(e.getJacobin()),4
 							);
 				} else if (e.vertices().size() == 4) {
-					integral = FOIntegrate.intOnRectangleRefElement(
+					lhsVal = FOIntegrate.intOnRectangleRefElement(
 							integrand.M(e.getJacobin()),2 //TODO
 							);
 				}
-				double lhsVal = integral.value(null);
 				globalStiff.add(nGlobalRow, nGlobalCol, lhsVal);
 			}
 			//Load vector
-			Function ff = Utils.interplateFunctionOnElement(g_f, e);
+			Function ff = Utils.interpolateFunctionOnElement(g_f, e);
 			Function integrand = ff.M(sfI);
-			Function integral = null;
+			double rhsVal = 0.0;
 			if(e.vertices().size() == 3) {
-				integral = FOIntegrate.intOnTriangleRefElement(
+				rhsVal = FOIntegrate.intOnTriangleRefElement(
 						integrand.M(e.getJacobin()),4
 						);
 			} else if (e.vertices().size() == 4) {
-				integral = FOIntegrate.intOnRectangleRefElement(
+				rhsVal = FOIntegrate.intOnRectangleRefElement(
 						integrand.M(e.getJacobin()),2 //TODO
 						);
 			}
-			double rhsVal = integral.value(null);
 			globalLoad.add(nGlobalRow, rhsVal);
 		}
 		
@@ -202,7 +200,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 				Element be = beList.at(n);
 				
 				Function fd = null;
-				if(g_d != null) fd = Utils.interplateFunctionOnElement(g_d, be);
+				if(g_d != null) fd = Utils.interpolateFunctionOnElement(g_d, be);
 				//Check node type
 				NodeType nodeType = be.getBorderNodeType();
 				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
@@ -230,21 +228,19 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 								//Stiff matrix for border
 								Function borderIntegrand = fd.M(sfI.M(sfJ));
 								//Numerical integrate the border 'be' of element 'e'
-								Function borderIntgral = FOIntegrate.intOnLinearRefElement(
+								double lhsBrVal = FOIntegrate.intOnLinearRefElement(
 										borderIntegrand.M(be.getJacobin()),5
 									);
-								double lhsBrVal = borderIntgral.value(null);
 								globalStiff.add(nGlobalRow, nGlobalCol, lhsBrVal);
 							}
 						}
 						//Load vector for border
 						if(g_q != null) {
-							Function fq = Utils.interplateFunctionOnElement(g_q, be);
+							Function fq = Utils.interpolateFunctionOnElement(g_q, be);
 							Function borderIntegrand = fq.M(sfI);
-							Function borderIntgral = FOIntegrate.intOnLinearRefElement(
+							double rhsBrVal = FOIntegrate.intOnLinearRefElement(
 									borderIntegrand.M(be.getJacobin()),5
 								);
-							double rhsBrVal = borderIntgral.value(null);
 							globalLoad.add(nGlobalRow, rhsBrVal);
 						}
 					}

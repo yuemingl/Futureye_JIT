@@ -18,7 +18,7 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
-import edu.uta.futureye.lib.assembler.AssembleMixedLaplace;
+import edu.uta.futureye.lib.assembler.AssemblerMixedLaplace;
 import edu.uta.futureye.lib.shapefun.RaviartThomas2D0;
 import edu.uta.futureye.lib.weakform.WeakFormMixedLaplace;
 import edu.uta.futureye.util.container.EdgeList;
@@ -121,7 +121,7 @@ public class MixedLaplaceTest {
 					null //Robin: 6*y^2-54
 				);
 		
-		AssembleMixedLaplace assembler = new AssembleMixedLaplace(mesh, weakForm);
+		AssemblerMixedLaplace assembler = new AssemblerMixedLaplace(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		long begin = System.currentTimeMillis();
 		assembler.assemble();

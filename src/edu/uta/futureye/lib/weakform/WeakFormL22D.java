@@ -31,7 +31,7 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
 			Function integrand = null;
-			Function fU = Utils.interplateFunctionOnElement(g_U, e);
+			Function fU = Utils.interpolateFunctionOnElement(g_U, e);
 			integrand = fU.M(u.M(v));
 			return integrand;
 		}
@@ -41,8 +41,8 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 	@Override
 	public Function rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			Function ff = Utils.interplateFunctionOnElement(g_f, e);
-			Function fk = Utils.interplateFunctionOnElement(g_k, e);
+			Function ff = Utils.interpolateFunctionOnElement(g_f, e);
+			Function fk = Utils.interpolateFunctionOnElement(g_k, e);
 			
 			Function rlt_dx = new FC(0.0);
 			Function rlt_dy = new FC(0.0);

@@ -82,16 +82,18 @@ public class MouseHeadPost {
 				370.875614945573, -237.500207785087
 		   };
 		
-		String format760 = ".\\MouseHead\\Results\\760nm_"+gridName+
+		String folderPostfix = "_factor=10000_rat6";
+		String format760 = ".\\MouseHead\\Results\\760nm_"+gridName+folderPostfix+
 						"\\final_alpha_omega_BL%02d.dat";
-		String format830 = ".\\MouseHead\\Results\\830nm_"+gridName+
+		String format830 = ".\\MouseHead\\Results\\830nm_"+gridName+folderPostfix+
 						"\\final_alpha_omega_BL%02d.dat";
 		String file760,file830;
 		Vector v1 = null;
 		Vector v2 = null;
 		//int [] set = {20,30};
 		//for(int i:set) {
-		for(int i=1;i<=37;i++) {
+		//for(int i=1;i<=37;i++) {
+		for(int i=1;i<=31;i++) {
 			file760 = String.format(format760,i);
 			file830 = String.format(format830,i);
 			v1 = DataReader.readVector(file760);
@@ -101,9 +103,9 @@ public class MouseHeadPost {
 			Vector Hb = v1.copy();
 			Hb.scale(invMat[2]).add(invMat[3], v2);
 
-			Tools.plotVector(meshOmega, "MouseHead\\Results\\"+gridName,
+			Tools.plotVector(meshOmega, "MouseHead\\Results\\"+gridName+folderPostfix,
 					String.format("Hbo%02d.dat",i), Hbo);
-			Tools.plotVector(meshOmega, "MouseHead\\Results\\"+gridName,
+			Tools.plotVector(meshOmega, "MouseHead\\Results\\"+gridName+folderPostfix,
 					String.format("Hb%02d.dat",i), Hb);
 			
 //			for(int k=1;k<=Hbo.getDim();k++) {
@@ -114,7 +116,7 @@ public class MouseHeadPost {
 //			}
 			double max = FMath.max(Hbo);
 			max += FMath.max(Hb);
-			Tools.plotVector(meshOmega, "MouseHead\\Results\\"+gridName,
+			Tools.plotVector(meshOmega, "MouseHead\\Results\\"+gridName+folderPostfix,
 					String.format("HboPercent%02d.dat",i), Hbo.scale(1/max));
 			System.out.println(i+" "+100*FMath.max(Hbo));
 		}

@@ -1,7 +1,6 @@
 package edu.uta.futureye.function.operator;
 
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 
 public class FOIntegrate{
@@ -11,7 +10,7 @@ public class FOIntegrate{
 	 * @param degree
 	 * @return Function
 	 */	
-	public static Function intOnTriangleRefElement(Function integrand, int degree) {
+	public static double intOnTriangleRefElement(Function integrand, int degree) {
 		double dOneThird = 1.0D/3.0D;
 		double dOneTwo = 0.5D;
 
@@ -94,7 +93,7 @@ public class FOIntegrate{
 			}	
 		}
 		//???  0.5 ???
-		return new FC(0.5*rlt);
+		return 0.5*rlt;
 	}
 	
 	/**
@@ -103,7 +102,7 @@ public class FOIntegrate{
 	 * @param degree
 	 * @return
 	 */
-	public static Function intOnLinearRefElement(Function integrand, int degree) {
+	public static double intOnLinearRefElement(Function integrand, int degree) {
 		double a1_1 = 0.0;
 		double h1_1 = 2.0;
 		
@@ -178,10 +177,10 @@ public class FOIntegrate{
 		} else {
 			System.out.println("ERROR: intOnLinearRefElement() Not supported degree = "+degree);
 		}
-		return new FC(rlt);
+		return rlt;
 	}
 	
-	public static Function intOnRectangleRefElement(Function integrand, int degree) {
+	public static double intOnRectangleRefElement(Function integrand, int degree) {
 		double a1_1 = 0.0;
 		double h1_1 = 4.0;
 		double a2 = 0.577350269189626;
@@ -210,10 +209,10 @@ public class FOIntegrate{
 			System.out.println("ERROR: intOnLinearRefElement() Not supported degree = "+degree);
 		}
 		
-		return new FC(rlt);
+		return rlt;
 	}		
 	
-	public static Function intOnTetrahedraRefElement(Function integrand, int degree) {
+	public static double intOnTetrahedraRefElement(Function integrand, int degree) {
 		double a1_1 = 0.25;
 		double h1_1 = 1;
 		
@@ -241,6 +240,6 @@ public class FOIntegrate{
 			System.out.println("ERROR: intOnLinearRefElement() Not supported degree = "+degree);
 		}
 		
-		return new FC(rlt);
+		return rlt;
 	}		
 }

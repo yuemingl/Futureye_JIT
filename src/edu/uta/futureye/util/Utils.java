@@ -296,7 +296,7 @@ public class Utils {
 	    return su;
 	}
 	
-	public static Function interplateFunctionOnElement(Function fun, Element e) {
+	public static Function interpolateFunctionOnElement(Function fun, Element e) {
 		if(fun instanceof FC)
 			return fun;
 		Function rlt = new FC(0.0);

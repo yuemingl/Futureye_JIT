@@ -1038,6 +1038,7 @@ public class MouseHead {
 		mapNTF.put(NodeType.Dirichlet, null);
 		meshOmega1.clearBorderNodeMark();
 		meshOmega1.markBorderNode(mapNTF);
+		
 		if(debug) {
 			//打印Robin边界条件，检查是否标记正确
 			NodeList o1_nodes = meshOmega1.getNodeList();
@@ -1057,6 +1058,19 @@ public class MouseHead {
 		Vector u1 = solveForwardDirichlet(meshOmega1,diri);
 		Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1.dat", u1);
 		
+		//输出Omega1的Dirichlet边界数据
+		if(outputMiddleData) {
+			Vector u1Border = new SparseVector(meshOmega1.getNodeList().size());
+			NodeList o1_nodes = meshOmega1.getNodeList();
+			for(int i=1;i<=o1_nodes.size();i++) {
+				if(o1_nodes.at(i).getNodeType()==NodeType.Dirichlet) {
+					Variable v = new Variable();
+					v.setIndex(i);
+					u1Border.set(i,diri.value(v));
+				}
+			}
+			Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1Border.dat", u1Border);
+		}
 	
 		//构造tail bottom
 		if(tailType==TailType.bottom) {
@@ -1314,7 +1328,7 @@ public class MouseHead {
 	 * Omega00: [-2.1,2.1]*[-1.0,1.4]
 	 * Omega11: Omega00\Omega
 	 */
-	public static void main(String[] args) {
+	public static void runRat1() {
 		MouseHead m = new MouseHead();
 		MouseHead.outputMiddleData = true;
 		
@@ -1328,17 +1342,16 @@ public class MouseHead {
 		//830nm波长数据
 		//m.borderDataPath = "Omega11_Param_T37Groups\\830nm_"+gridName;
 		
-		m.factor = 5000;
-		
+		m.factor = 10000;
 		/////////////////////////////////////////////////////
 		
 //		m.setDelta(0.0, 0.9);
 //		m.test();
 		
+		//back ground
 		m.mu_a = FC.c(0.1);
 //		//m.setMu_a(-0.5,0.2,0.1,1);
 	
-		
 		for(int timeId=1;timeId<=37;timeId++) {
 			//bottom tail
 //			m.setDelta(-0.9, 0.9); //S1 y(0.8->0.9)
@@ -1346,8 +1359,8 @@ public class MouseHead {
 //			m.setDelta(-0.4, 0.9); //S11 y(0.8->0.9)
 //			m.run(11,timeId,TailType.bottom);
 			
-			m.setDelta(0.0, 0.9);  //S12 y(0.8->0.9)
-			m.run(12,timeId,TailType.bottom);
+//			m.setDelta(0.0, 0.9);  //S12 y(0.8->0.9)
+//			m.run(12,timeId,TailType.bottom);
 			
 //			m.setDelta(0.4, 0.9);  //S13 y(0.8->0.9)
 //			m.run(13,timeId,TailType.bottom);
@@ -1388,5 +1401,43 @@ public class MouseHead {
 
 	}
 	
+	public static void runRat6() {
+		MouseHead m = new MouseHead();
+		MouseHead.outputMiddleData = true;
+		
+		//////////////////////Configure/////////////////////////
+		//mouse, mouse2 非结构网格 
+		//mouse3, mouse4, mouse5 结构网格
+		gridName = "mouse4"; 
+		
+		//760nm波长数据 Rat6
+		//m.borderDataPath = "Omega11_Param_T37Groups_Rat6\\760nm_"+gridName;
+		//830nm波长数据 Rat6
+		m.borderDataPath = "Omega11_Param_T37Groups_Rat6\\830nm_"+gridName;
 
+		m.factor = 10000;
+		
+		/////////////////////////////////////////////////////
+		//back ground
+		m.mu_a = FC.c(0.1);
+		
+		for(int timeId=1;timeId<=31;timeId++) {
+			//bottom tail
+//			m.setDelta(0.0, 0.9);  //S13 y(0.8->0.9)
+//			m.run(13,timeId,TailType.bottom);
+			m.setDelta(-0.4, 0.9);  //S12 y(0.8->0.9)
+			m.run(12,timeId,TailType.bottom);
+
+			//left tail
+//			m.setDelta(1.2, 0.4);  //S9 x(1.1->1.2)
+//			m.run(9,timeId,TailType.left);
+			m.setDelta(1.4, 0.0);  //S9 x(1.3->1.4)
+			m.run(10,timeId,TailType.left);
+		}
+	}
+	
+	public static void main(String[] args) {
+		//runRat1();
+		runRat6();
+	}
 }

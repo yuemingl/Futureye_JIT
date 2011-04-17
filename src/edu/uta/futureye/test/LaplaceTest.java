@@ -569,15 +569,15 @@ public class LaplaceTest {
 		
 	}
 	public static void main(String[] args) {
-//		triangleTest();
-//		rectangleTest();
+		triangleTest();
+		rectangleTest();
 	
 //TODO
-//		mixedTest(); //OK 数值积分的问题fixed
+		mixedTest(); //OK 数值积分的问题fixed
 		
-		serendipityTest(); // java.lang.ArithmeticException: / by zero
-//		quadraticLocal2DTest();
-//		triangleBDCTest();
+//		serendipityTest(); // java.lang.ArithmeticException: / by zero
+		quadraticLocal2DTest();
+		triangleBDCTest();
 	}
 		
 }

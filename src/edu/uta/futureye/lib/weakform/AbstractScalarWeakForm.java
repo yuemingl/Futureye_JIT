@@ -44,35 +44,34 @@ public abstract class AbstractScalarWeakForm implements WeakForm {
 	@Override
 	public double integrate(Element e, Function fun) {
 		if(fun == null) return 0.0;
-		Function integral = null;
 		if(e.eleDim() == 2) {
 			if(e.vertices().size() == 3) {
 				//三角形单元
-				integral = FOIntegrate.intOnTriangleRefElement(
+				return FOIntegrate.intOnTriangleRefElement(
 						fun.M(e.getJacobin()),4
 						);
 			} else if (e.vertices().size() == 4) {
 				//四边形单元
-				integral = FOIntegrate.intOnRectangleRefElement(
+				return FOIntegrate.intOnRectangleRefElement(
 						fun.M(e.getJacobin()),2 //TODO
 						);
 			}
 		} else if(e.eleDim() == 3) {
 			if(e.vertices().size() == 4) {
 				//四面体单元
-				integral = FOIntegrate.intOnTetrahedraRefElement(
+				return FOIntegrate.intOnTetrahedraRefElement(
 						fun.M(e.getJacobin()),2
 					);
 			}
 		} else if(e.eleDim() == 1) {
 			//一维单元
-			integral = FOIntegrate.intOnLinearRefElement(
+			return FOIntegrate.intOnLinearRefElement(
 					fun.M(e.getJacobin()),5
 				);
 		} else {
 			throw new FutureyeException(
 					"Can NOT integrate on e" + e.vertices());
 		}
-		return integral.value(null);
+		throw new FutureyeException("Error");
 	}
 }

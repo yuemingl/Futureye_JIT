@@ -19,7 +19,7 @@ public interface WeakForm {
 	
 	//////////////////////Fast Approach//////////////////////////
 	/**
-	 * Assemble element e here, instead of provide left hand side
+	 * Assemble element e here, instead of providing left hand side
 	 * and right hand side.
 	 * 
 	 * @param e
@@ -33,9 +33,10 @@ public interface WeakForm {
 	///////////////////////////////////////////////////////////////
 	
 	/**
-	 * 在单元e上对函数fun积分
+	 * Integrate on element
+	 * 
 	 * @param e
-	 * @param fun
+	 * @param fun: LHS or RHS
 	 * @return
 	 */
 	double integrate(Element e, Function fun);

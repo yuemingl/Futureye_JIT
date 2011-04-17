@@ -6,24 +6,30 @@ import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.Utils;
 
 /**
- * Solve
+ * Solve (2D or 3D):
  *   -k*Laplace(u) + c*u = f, in \Omega
  *   u = u0,                  on \Gamma1
- *   d*u + k*u_n = q,         on \Gamma2
- *=>
+ *   d*u + k*u_n = g,         on \Gamma2
+ *=>Weak formulation:
  *   A(u, v) = (f, v)
- * 
  * where
- *   A(u, v) = (k*Grad{u}, Grad{v}) - (q-d*u,v)_\Gamma2 + (c*u, v)
- *
+ *   A(u, v) = (k*Grad{u}, Grad{v}) - (g-d*u,v)_\Gamma2 + (c*u, v)
  *   \Gamma1: Dirichlet boundary of \Omega
  *   \Gamma2: Neumann(Robin) boundary of \Omega
  *   u_n: \frac{\pratial{u}}{\partial{n}}
- *   n: unit norm vector of \Omega
- *   k = k(x,y)
- *   c = c(x,y)
- *   d = d(x,y)
- *   q = q(x,y)
+ *   \vec{n}: unit norm vector of \Omega
+ *   k = k(\vec{x})
+ *   c = c(\vec{x})
+ *   d = d(\vec{x})
+ *   g = g(\vec{x})
+ *
+ * Remark:
+ * *Nature bounary condition
+ * *自然边界条件：
+ *   k*u_n + ku = 0
+ * =>
+ *   u_n + u = 0 
+ *   
  *   
  * @author liuyueming
  *
@@ -32,7 +38,7 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 	protected Function g_f = null;
 	protected Function g_k = null;
 	protected Function g_c = null;
-	protected Function g_q = null;
+	protected Function g_g = null;
 	protected Function g_d = null;
 
 	//right hand side function (source term)
@@ -40,11 +46,11 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 		this.g_f = f;
 	}
 	
-	//Robin: k*u_n + d*u = q (自然边界：d==c)
-	public void setParam(Function k,Function c,Function q,Function d) {
+	//Robin: d*u +  k*u_n = g
+	public void setParam(Function k,Function c,Function g,Function d) {
 		this.g_k = k;
 		this.g_c = c;
-		this.g_q = q;
+		this.g_g = g;
 		this.g_d = d;
 	}
 
@@ -61,8 +67,8 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 								  );
 			} else {
 				
-				Function fk = Utils.interplateFunctionOnElement(g_k,e);
-				Function fc = Utils.interplateFunctionOnElement(g_c,e);
+				Function fk = Utils.interpolateFunctionOnElement(g_k,e);
+				Function fc = Utils.interpolateFunctionOnElement(g_c,e);
 				integrand = fk.M(
 									FMath.grad(u,u.innerVarNames()).
 									dot(
@@ -76,7 +82,7 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 		else if(itemType==ItemType.Border) {
 			if(g_d != null) {
 				Element be = e;
-				Function fd = Utils.interplateFunctionOnElement(g_d, be);
+				Function fd = Utils.interpolateFunctionOnElement(g_d, be);
 				Function borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
@@ -87,12 +93,12 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 	@Override
 	public Function rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			Function ff = Utils.interplateFunctionOnElement(g_f, e);
+			Function ff = Utils.interpolateFunctionOnElement(g_f, e);
 			Function integrand = ff.M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
-			Function fq = Utils.interplateFunctionOnElement(g_q, be);
+			Function fq = Utils.interpolateFunctionOnElement(g_g, be);
 			Function borderIntegrand = fq.M(v);
 			return borderIntegrand;
 		}
