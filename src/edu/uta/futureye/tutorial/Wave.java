@@ -137,7 +137,7 @@ public class Wave {
 		System.out.println("end construct AlgebraMatrix!");
 		FullVector algLoad = new FullVector((SparseVector)load);
 		FullVector algU = new FullVector(u);
-		solver.CG(algStiff, algLoad, algU);
+		solver.solveCG(algStiff, algLoad, algU);
 		double[] data = algU.getData();
 		for(int i=0;i<data.length;i++) {
 			u.set(i+1, data[i]);

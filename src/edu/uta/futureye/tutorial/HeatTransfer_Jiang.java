@@ -31,7 +31,7 @@ import edu.uta.futureye.util.container.ElementList;
  * @author liuyueming
  *
  */
-public class HeatTransfer {
+public class HeatTransfer_Jiang {
 	protected Mesh mesh = null;
 	
 	//Laplace2D weak form
@@ -45,7 +45,7 @@ public class HeatTransfer {
 	
 	public void readMesh() {
 		//Read a triangle mesh from an input file
-		MeshReader reader = new MeshReader("triangle.grd");
+		MeshReader reader = new MeshReader("triangle_refine.grd");
 		mesh = reader.read2DMesh();
 		//Geometry relationship
 		mesh.computeNodeBelongsToElements();
@@ -77,7 +77,30 @@ public class HeatTransfer {
 	public Vector solverOneStep(int step, Function u_n) {
 		FC FDt = new FC(Dt);
 		
-		weakForm.setF(FDt.M(f).A(u_n));
+		if(step%4==1) {
+			f = FC.c(-2.0)
+			.M( 
+				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy)) )
+			.A(
+				FC.c(36.0)
+			);
+//			f = new AbstractFunction("x","y") {
+//				@Override
+//				public double value(Variable v) {
+//					double x = v.get("x");
+//					double y = v.get("y");
+//					if(Math.abs(x)<Constant.meshEps+0.1 && Math.abs(y)<Constant.meshEps+0.1) {
+//						return 36;
+//					} else
+//						return 0.0;
+//				}
+//			};
+			weakForm.setF(FDt.M(f).A(u_n));
+		} else {
+			weakForm.setF(u_n);
+		}
+		
+		
 		weakForm.setParam(FDt, new FC(1.0), null, null);
 		
 		//Assemble
@@ -110,7 +133,7 @@ public class HeatTransfer {
 		Dt = 0.2;
 		
 		Function u_n = new FC(0.0);
-		for(int i=1;i<=25;i++) {
+		for(int i=1;i<=40;i++) {
 			Vector rlt = solverOneStep(i, u_n);
 			u_n = new Vector2Function(rlt);
 		}

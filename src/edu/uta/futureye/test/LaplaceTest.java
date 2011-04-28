@@ -2,7 +2,7 @@ package edu.uta.futureye.test;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.Solver;
+import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
@@ -116,8 +116,8 @@ public class LaplaceTest {
 		System.out.println("Assemble done!");
 		System.out.println("Time used:"+(end-begin));
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.3f", u.get(i)));	
@@ -190,8 +190,8 @@ public class LaplaceTest {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.3f", u.get(i)));
@@ -272,8 +272,8 @@ public class LaplaceTest {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.3f", u.get(i)));
@@ -371,8 +371,8 @@ public class LaplaceTest {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.3f", u.get(i)));
@@ -485,8 +485,8 @@ public class LaplaceTest {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.3f", u.get(i)));
@@ -558,8 +558,8 @@ public class LaplaceTest {
 		System.out.println("Assemble done!");
 		System.out.println("Time used:"+(end-begin));
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.3f", u.get(i)));	

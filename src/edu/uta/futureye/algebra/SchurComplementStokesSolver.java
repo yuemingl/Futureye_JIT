@@ -108,7 +108,7 @@ public class SchurComplementStokesSolver {
 		
 		Solver sov = new Solver();
 		FullVector p = new FullVector(rhs.getDim(),1.0);
-		sov.CG(S, rhs, p);
+		sov.solveCG(S, rhs, p);
 		
 		
 		//u1=inv(B1)*(f1-C1*p)
@@ -142,7 +142,7 @@ public class SchurComplementStokesSolver {
 		FullVector x = new FullVector(v.getDim(),0.1);
 		x.setRandom(1.0);
 		Solver sov = new Solver();
-		sov.CGS(B, v, x);
+		sov.solveCGS(B, v, x);
 		return x;
 	}
 	
@@ -161,7 +161,7 @@ public class SchurComplementStokesSolver {
 		int colDim = C.getColDim();
 		for(int c=1; c<=colDim; c++) {
 			C.getColVector(c, v);
-			sov.CGS(B, v, x);
+			sov.solveCGS(B, v, x);
 			FullVector.SparseData sd = x.getSparseData();
 			BC.setCol(c, sd.index, sd.data);
 		}

@@ -27,9 +27,7 @@ public class SparseVector implements Vector {
 	
 	public SparseVector(double ...a) {
 		if(a == null || a.length ==0) {
-			Exception e = new FutureyeException("Dim of SparseVector should be > 0!");
-			e.printStackTrace();
-			System.exit(-1);
+			throw new FutureyeException("Dim of SparseVector should be > 0!");
 		} else {
 			dim = a.length;
 			for(int i=0; i<a.length; i++) {
@@ -127,10 +125,9 @@ public class SparseVector implements Vector {
 	public double dot(Vector v2) {
 		double rlt = 0.0;
 		if(this.getDim() != v2.getDim()) {
-			FutureyeException e = 
-				new FutureyeException("ERROR: Vector dot product dim1="+this.getDim()+" != dim2="+v2.getDim());
-			e.printStackTrace();
-			System.exit(0);
+			throw new FutureyeException(
+					"ERROR: Vector dot product dim1="+
+					this.getDim()+" != dim2="+v2.getDim());
 		} else {
 			for(int i=1;i<=getDim();i++) {
 				rlt += this.get(i)*v2.get(i);
@@ -152,7 +149,7 @@ public class SparseVector implements Vector {
 		}
 		System.out.println();
 		System.out.println();
-	}	
+	}
 	
 	public String toString() {
 		return "SparseVector("+

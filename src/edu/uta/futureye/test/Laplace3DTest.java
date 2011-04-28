@@ -5,6 +5,7 @@ import java.util.HashMap;
 import edu.uta.futureye.algebra.CompressedRowMatrix;
 import edu.uta.futureye.algebra.FullVector;
 import edu.uta.futureye.algebra.Solver;
+import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.SparseMatrix;
 import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.AlgebraMatrix;
@@ -118,7 +119,7 @@ public class Laplace3DTest {
 		System.out.println("end construct AlgebraMatrix!");
 		FullVector algLoad = new FullVector((SparseVector)load);
 		FullVector algU = new FullVector(u);
-		solver.CG(algStiff, algLoad, algU);
+		solver.solveCG(algStiff, algLoad, algU);
 		double[] data = algU.getData();
 		for(int i=0;i<data.length;i++) {
 			u.set(i+1, data[i]);
@@ -206,8 +207,8 @@ public class Laplace3DTest {
 		System.out.println("Assemble done!");
 		System.out.println("Time used:"+(end-begin));
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.3f", u.get(i)));	

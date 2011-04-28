@@ -6,7 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.Solver;
+import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
@@ -243,8 +243,8 @@ public class LagrangianMethod {
 		Vector load = assembler.getLoadVector();
 		System.out.println("Assemble done!");
 
-		Solver solver = new Solver();
-		Vector v = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector v = solver.solveDGESV(stiff, load);
 		plotVector(mesh, v, "Lagrangian_v"+s_i+".dat");
 		return v;
 	}
@@ -344,8 +344,8 @@ public class LagrangianMethod {
 		Vector load = assembler.getLoadVector();
 		System.out.println("Assemble done!");
 
-		Solver solver = new Solver();
-		Vector lambda = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector lambda = solver.solveDGESV(stiff, load);
 		plotVector(mesh, lambda, "Lagrangian_lambda"+s_i+".dat");
 		return lambda;
 	}

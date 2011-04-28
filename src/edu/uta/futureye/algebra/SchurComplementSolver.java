@@ -76,8 +76,8 @@ public class SchurComplementSolver {
 	 * @return
 	 */
 	public Vector invM_v(Vector v) {
-		Solver sov = new Solver();
-		return sov.solve(A.getBlock(1, 1), v);
+		SolverJBLAS sov = new SolverJBLAS();
+		return sov.solveDGESV(A.getBlock(1, 1), v);
 	}
 	
 	/**

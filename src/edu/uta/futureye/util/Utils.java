@@ -21,8 +21,10 @@ import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
+import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
+import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.NodeList;
 import edu.uta.futureye.util.container.ObjIndex;
@@ -296,6 +298,13 @@ public class Utils {
 	    return su;
 	}
 	
+	public static VectorFunction interpolateFunctionOnElement(VectorFunction fun, Element e) {
+		SpaceVectorFunction rlt = new SpaceVectorFunction(fun.getDim());
+		for(int i=1;i<=fun.getDim();i++) {
+			rlt.set(i, interpolateFunctionOnElement(fun.get(i),e));
+		}
+		return rlt;
+	}
 	public static Function interpolateFunctionOnElement(Function fun, Element e) {
 		if(fun instanceof FC)
 			return fun;

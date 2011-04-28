@@ -82,7 +82,6 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 	 */
 	public QuadraticV_LinearP(int funID) {
 		dim = 3;
-		
 		funIndex = funID - 1;
 
 		varNames.add("r");
@@ -165,7 +164,8 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 		return sf1D[funIndex-1];
 	}
 	
-	public class QuadraticV_LinearP1D extends AbstractVectorFunction implements VectorShapeFunction {
+	public class QuadraticV_LinearP1D extends AbstractVectorFunction 
+						implements VectorShapeFunction {
 		//(u1,u2,p)
 		protected SpaceVectorFunction sf = new SpaceVectorFunction(3);
 		protected int funIndex;
@@ -206,13 +206,13 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 		}
 		
 		@Override
-		public Vector value(Variable v) {
-			return (Vector) this.sf.value(v);
+		public ObjList<String> innerVarNames() {
+			return innerVarNames;
 		}
 		
 		@Override
-		public ObjList<String> innerVarNames() {
-			return innerVarNames;
+		public Vector value(Variable v) {
+			return (Vector) this.sf.value(v);
 		}
 
 		@Override

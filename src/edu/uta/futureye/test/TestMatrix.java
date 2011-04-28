@@ -320,7 +320,7 @@ public class TestMatrix {
 		
 		aMat.mult(ax, ay);
 		ay.print();
-		solver.CG(aMat, ay, au);
+		solver.solveCG(aMat, ay, au);
 		au.print();
 	}
 }

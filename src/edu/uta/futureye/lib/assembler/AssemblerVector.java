@@ -34,7 +34,8 @@ public class AssemblerVector implements Assembler {
 	protected BlockMatrix globalStiff;
 	protected BlockVector globalLoad;
 	
-	public AssemblerVector(Mesh mesh, WeakForm weakForm, FiniteElementType feType) {
+	public AssemblerVector(Mesh mesh, WeakForm weakForm, 
+			FiniteElementType feType) {
 		this.mesh = mesh;
 		this.weakForm = weakForm;
 		
@@ -131,6 +132,7 @@ public class AssemblerVector implements Assembler {
 			ElementList beList = e.getBorderElements();
 			for(int n=1;n<=beList.size();n++) {
 				Element be = beList.at(n);
+				
 				be.updateJacobin();
 				DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
 				int nBeDOF = beDOFs.size();
@@ -167,11 +169,15 @@ public class AssemblerVector implements Assembler {
 							}
 						}
 					}
-					//Local load vector for border
-					weakForm.setShapeFunction(null,0,sfI,nLocalRow);
-					Function rhsBr = weakForm.rightHandSide(be, WeakForm.ItemType.Border);
-					double rhsBrVal = weakForm.integrate(be, rhsBr);
-					load.add(nGlobalRow, rhsBrVal);
+					//Check node type
+					NodeType nodeType = be.getBorderNodeType(vvfIndexI);
+					if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
+						//Local load vector for border
+						weakForm.setShapeFunction(null,0,sfI,nLocalRow);
+						Function rhsBr = weakForm.rightHandSide(be, WeakForm.ItemType.Border);
+						double rhsBrVal = weakForm.integrate(be, rhsBr);
+						load.add(nGlobalRow, rhsBrVal);
+					}
 				}
 			}
 		}

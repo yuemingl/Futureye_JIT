@@ -2,7 +2,7 @@ package edu.uta.futureye.application;
 
 import java.io.File;
 
-import edu.uta.futureye.algebra.Solver;
+import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
@@ -28,8 +28,8 @@ public class Tools {
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		
-		Solver solver = new Solver();
-		Vector w = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector w = solver.solveDGESV(stiff, load);
 		return w;
 	}
 	

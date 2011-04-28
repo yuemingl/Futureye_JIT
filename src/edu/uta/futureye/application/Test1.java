@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.Solver;
+import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
@@ -114,7 +114,7 @@ public class Test1 {
 			assembler.imposeDirichletCondition(new FC(0.0));
 			System.out.println("Assemble done!");
 			
-			Solver solver = new Solver();
+			SolverJBLAS solver = new SolverJBLAS();
 	//		Matrix stiff2 = new Matrix(stiff.getRowDim()+1,stiff.getColDim()+1);
 	//		Vector load2 = new Vector(load.getDim()+1);
 	//		for(int i=1;i<=stiff.getColDim();i++) {
@@ -138,7 +138,7 @@ public class Test1 {
 	//		load.plusValue(2, load.get(1));
 	//		load.set(1, 1000);
 			
-			Vector u = solver.solve(stiff, load);
+			Vector u = solver.solveDGESV(stiff, load);
 		    
 			System.out.println("u=");
 		    for(int i=1;i<=u.getDim();i++)
@@ -213,8 +213,8 @@ public class Test1 {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 		System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.3f", u.get(i)));	
@@ -243,8 +243,8 @@ public class Test1 {
 		assembler2.imposeDirichletCondition(new FC(0.1));
 		System.out.println("Assemble done!");
 		
-		Solver solver2 = new Solver();
-		Vector u2 = solver2.solve(stiff2, load2);
+		SolverJBLAS solver2 = new SolverJBLAS();
+		Vector u2 = solver.solveDGESV(stiff, load);
 		System.out.println("alpha=");
 	    for(int i=1;i<=u2.getDim();i++)
 	        System.out.println(String.format("%.3f", u2.get(i)));	
@@ -318,8 +318,8 @@ public class Test1 {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 		
 	    MeshWriter writer = new MeshWriter(mesh);
 	    writer.writeTechplot("testWeakFormGCM.dat", u);

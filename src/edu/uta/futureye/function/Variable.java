@@ -10,6 +10,17 @@ import edu.uta.futureye.util.Constant;
 
 /**
  * Function arguments (Independent variables of a function)
+ * 
+ * TODO 2011-4-26
+ * 是否考虑定义Variable接口，这样可以实现多个类，
+ * 1.只包括values
+ * 2.只包括index
+ * 3.values, index
+ * 4.values, index, element
+ * 这样的好处是可以减少Variable对象的大小
+ * 
+ * 
+ * 
  * @author liuyueming
  *
  */

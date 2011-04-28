@@ -2,7 +2,7 @@ package edu.uta.futureye.test;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.Solver;
+import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
@@ -79,8 +79,8 @@ public class TestAdaptive {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 		
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
@@ -332,8 +332,8 @@ public class TestAdaptive {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 		
 		//hanging node赋值
 		for(int i=1;i<=mesh.getElementList().size();i++) {
@@ -450,8 +450,8 @@ public class TestAdaptive {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 		
 		//hanging node赋值
 		for(int i=1;i<=mesh.getElementList().size();i++) {

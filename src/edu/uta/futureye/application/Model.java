@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import edu.uta.futureye.algebra.Solver;
+import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
@@ -193,8 +193,8 @@ public class Model {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 		return u;
 	}	
 
@@ -238,8 +238,8 @@ public class Model {
 		
 		System.out.println("Assemble done!");
 
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 		return u;
 	}	
 	
@@ -266,8 +266,8 @@ public class Model {
 		assembler.imposeDirichletCondition(new FC(0.1));
 		System.out.println("Assemble done!");
 		
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 		return u;
 	}
 	
@@ -318,8 +318,8 @@ public class Model {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 			
-		Solver solver = new Solver();
-		Vector u = solver.solve(stiff, load);
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
 		return u;
 	}
 
@@ -1722,8 +1722,8 @@ public class Model {
 			assembler.imposeDirichletCondition(diri);
 			System.out.println("Assemble done!");
 
-			Solver solver = new Solver();
-			qn = solver.solve(stiff, load);
+			SolverJBLAS solver = new SolverJBLAS();
+			qn = solver.solveDGESV(stiff, load);
 			plotVector(mesh, qn, "GCM_qn_"+n_1+"_"+iter+".dat");
 			
 			

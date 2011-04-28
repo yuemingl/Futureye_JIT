@@ -1,14 +1,5 @@
 package edu.uta.futureye.algebra;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
-import no.uib.cipr.matrix.sparse.CG;
-import no.uib.cipr.matrix.sparse.IterativeSolverNotConvergedException;
-
-import org.netlib.lapack.DGESV;
-import org.netlib.util.intW;
-
 import edu.uta.futureye.algebra.intf.AlgebraMatrix;
 import edu.uta.futureye.algebra.intf.AlgebraVector;
 import edu.uta.futureye.algebra.intf.Matrix;
@@ -16,80 +7,25 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.util.FutureyeException;
 
 public class Solver {
-	static double eps = 1e-10;
+	//迭代相对误差
+	public double epsIter = 1e-5;
+	//迭代绝对误差
+	public double epsAbsIter = 1e-15;
+	//迭代最大次数
+	public double maxIter = 1000;
 	
 	/**
+	 * Conjugate Gradients iterative method, solves 
+	 * symmetric positive definite linear system:
+	 * <tt>Ax = b</tt>
 	 * 
-	 * @param m
-	 * @param v
-	 * @return 方程的解向量，下标从1开始
+	 * @param A
+	 * @param b
+	 * @param x
+	 * @return
 	 */
-	public Vector solve(Matrix m,Vector v) {
-		if( !( m.getRowDim() == m.getColDim() &&
-				m.getRowDim() == v.getDim()) ) {
-			throw new FutureyeException(
-					"ERROR: Solver.solver() m.dim!=v.dim ");
-		}
-		
-	    int N = v.getDim();
-	    int nrhs = 1;
-	    int[]ipiv = new int[N];
-	    
-	    double[][]a = new double[N][N];
-	    double[][]b = new double[N][1];
-
-	    for(int i=0;i<N;i++) {
-	    	for(int j=0;j<N;j++) {
-	    		a[i][j] = m.get(i+1, j+1);
-	    		//System.out.print(a[i][j]+" ");
-	    	}
-	    	//System.out.println("");
-	    	b[i][0] = v.get(i+1);
-	    	//System.out.println(b[i][0]);
-	    }
-	    intW info = new intW(0);
-	    
-        System.out.println("Begin Solver...");
-        DGESV.DGESV(N, nrhs, a, ipiv, b, info);
-        System.out.println("Solver info = " + info.val);
-	    
-    	Vector rv = new SparseVector(N);
-	    for(int i=0;i<N;i++) {
-	    	if(Math.abs(b[i][0]) > eps)
-	    		rv.set(i+1, b[i][0]);
-	    }
-	    return rv;
-
-	}
-	
-	public Vector solveCGS(Matrix m,Vector v) {
-		if( !( m.getRowDim() == m.getColDim() &&
-				m.getRowDim() == v.getDim()) ) {
-			throw new FutureyeException(
-					"ERROR: Solver.solver() m.dim!=v.dim ");
-		}
-		//CGS
-		Solver solver = new Solver();
-		SparseVector u = new SparseVector(v.getDim(),1.0);
-		AlgebraMatrix algStiff = new CompressedRowMatrix((SparseMatrix)m,true);
-		FullVector algLoad = new FullVector((SparseVector)v);
-		FullVector algU = new FullVector(u);
-		solver.CGS(algStiff, algLoad, algU);
-		double[] data = algU.getData();
-		for(int i=0;i<data.length;i++) {
-			u.set(i+1, data[i]);
-		}
-		return u;
-	}
-	
-	//迭代相对误差
-	static double epsIter = 1e-5;
-	//迭代绝对误差
-	static double epsAbsIter = 1e-15;
-	//迭代最大次数
-	static double maxIter = 1000;
-
-	public AlgebraVector CG(AlgebraMatrix A, AlgebraVector b, AlgebraVector x) {
+	public AlgebraVector solveCG(AlgebraMatrix A, AlgebraVector b, 
+			AlgebraVector x) {
 
 		double alpha = 0, beta = 0, rho = 0, rho_1 = 0;
 		
@@ -110,7 +46,8 @@ public class Solver {
 		for(int i=0;i<maxIter;i++) {
 			norm2 = r.norm2();
 			if(norm2<epsIter*firstNorm2) {
-				System.out.println("Iter----->i="+i+"  RError="+String.format("%8.3e", norm2/firstNorm2));
+				System.out.println("Iter----->i="+i+"  RError="+
+						String.format("%8.3e", norm2/firstNorm2));
 				return x;
 			}
 			
@@ -141,8 +78,18 @@ public class Solver {
 		return x;
     }
 	
-	
-	public AlgebraVector CGS(AlgebraMatrix A, AlgebraVector b, AlgebraVector x) {
+	/**
+	 * Conjugate Gradients squared iterative method,
+	 * solves the unsymmetric linear system
+	 * <tt>Ax = b</tt>
+	 * 
+	 * @param A
+	 * @param b
+	 * @param x
+	 * @return
+	 */
+	public AlgebraVector solveCGS(AlgebraMatrix A, AlgebraVector b, 
+			AlgebraVector x) {
 
         double rho_1 = 0, rho_2 = 0, alpha = 0, beta = 0;
 		
@@ -170,7 +117,8 @@ public class Solver {
 		for(int i=0;i<maxIter;i++) {
 			norm2 = r.norm2();
 			if(norm2<epsIter*firstNorm2) {
-				System.out.println("Iter----->i="+i+"  RError="+String.format("%8.3e", norm2/firstNorm2));
+				System.out.println("Iter----->i="+i+"  RError="+
+						String.format("%8.3e", norm2/firstNorm2));
 				return x;
 			}
 			
@@ -207,7 +155,60 @@ public class Solver {
 		return x;
     }	
 	
-	public Vector CG1(Matrix A, Vector b, Vector x) {
+	/////////////////////////////////////////////////////////////
+	
+	public Vector solveCG(Matrix A, Vector b, Vector x) {
+		if( !( A.getRowDim() == A.getColDim() &&
+				A.getRowDim() == b.getDim()) ) {
+			throw new FutureyeException(
+					"ERROR: Solver.solver() m.dim!=v.dim ");
+		}
+		AlgebraMatrix algStiff = new CompressedRowMatrix((SparseMatrix)A,true);
+		FullVector algLoad = new FullVector(b);
+		FullVector algU = new FullVector(x);
+		solveCG(algStiff, algLoad, algU);
+		double[] data = algU.getData();
+		for(int i=0;i<data.length;i++) {
+			x.set(i+1, data[i]);
+		}
+		return x;
+	}
+	
+	public Vector solveCG(Matrix A, Vector b) {
+		SparseVector x = new SparseVector(b.getDim(),1.0);
+		return solveCG(A,b,x);
+	}
+	
+	public Vector solveCGS(Matrix A, Vector b, Vector x) {
+		if( !( A.getRowDim() == A.getColDim() &&
+				A.getRowDim() == b.getDim()) ) {
+			throw new FutureyeException(
+					"ERROR: Solver.solver() m.dim!=v.dim ");
+		}
+		//CGS
+		AlgebraMatrix algStiff = new CompressedRowMatrix((SparseMatrix)A,true);
+		FullVector algLoad = new FullVector(b);
+		FullVector algU = new FullVector(x);
+		solveCGS(algStiff, algLoad, algU);
+		double[] data = algU.getData();
+		for(int i=0;i<data.length;i++) {
+			x.set(i+1, data[i]);
+		}
+		return x;
+	}
+	
+	public Vector solveCGS(Matrix A, Vector b) {
+		Vector x = b.copy();
+		for(int i=1;i<x.getDim();i++) {
+			x.set(i, 0.1);
+		}
+		return solveCGS(A,b,x);
+	}
+	
+	////////////////////////////////////////////////////////////////
+	
+	@Deprecated
+	public Vector solveCG2(Matrix A, Vector b, Vector x) {
 
 		double alpha = 0, beta = 0, rho = 0, rho_1 = 0;
 		
@@ -260,57 +261,6 @@ public class Solver {
 		    rho_1 = rho;
 		}
 		System.out.println("Iter Max----->maxIter="+maxIter+"  norm2="+norm2);
-		return x;
-    }
-	
-	public Vector CG2(SparseMatrix A, SparseVector b, SparseVector x) {
-		int dim = b.getDim();
-		no.uib.cipr.matrix.sparse.SparseVector template = 
-			new no.uib.cipr.matrix.sparse.SparseVector(dim);
-		CG cg = new CG(template);
-		
-		no.uib.cipr.matrix.sparse.CompRowMatrix A2 = 
-			new no.uib.cipr.matrix.sparse.CompRowMatrix(
-					A.getRowDim(),A.getColDim(),A.getColIndex());
-		
-		Map<Integer, Map<Integer, Double>> data = A.getAll();
-		for(Entry<Integer,Map<Integer,Double>> row : data.entrySet()) {
-			int nRow = row.getKey();
-			for(Entry<Integer,Double> col : row.getValue().entrySet()) {
-				int nCol = col.getKey();
-				A2.set(nRow-1, nCol-1, col.getValue());
-			}
-			row.getValue().clear();
-		}
-		data.clear();
-		
-		no.uib.cipr.matrix.sparse.SparseVector b2 = new no.uib.cipr.matrix.sparse.SparseVector(dim);
-		no.uib.cipr.matrix.sparse.SparseVector x2 = new no.uib.cipr.matrix.sparse.SparseVector(dim);
-		Map<Integer,Double> bData = b.getAll();
-		for(Entry<Integer,Double> ety : bData.entrySet()) {
-			b2.set(ety.getKey()-1,ety.getValue());
-		}
-		for(int i=0;i<dim;i++) {
-			x2.set(i, 0.01);
-		}
-		
-		try {
-			long begin = System.currentTimeMillis();
-			cg.solve(A2, b2, x2);
-			long end = System.currentTimeMillis();
-			System.out.println("Solve time used:"+(end-begin));
-			System.out.println("Iterations: "+cg.getIterationMonitor().iterations());
-
-		} catch (IterativeSolverNotConvergedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		for(int i=1;i<=dim;i++) {
-			x.set(i, x2.get(i-1));
-		}
-		
 		return x;
     }
 	

@@ -52,7 +52,7 @@ public class AssemblerMixedLaplace implements Assembler {
 				System.out.println("Assemble..."+
 						String.format("%.0f%%", 100.0*i/nEle));
 		}
-		return;		
+		return;
 	}
 	
 	@Override

@@ -200,7 +200,7 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
 						eDOFList.at(j).getSF().restrictTo(dofIndex)
 					);
 			dof.setVvfIndex(eDOFList.at(j).getVvfIndex());
-			be.addNodeDOF(1, dof);
+			be.addNodeDOF(1, dof);//DOFs on first node
 			dofIndex += nNode;
 		}
 		dofIndex = 2;
@@ -212,7 +212,7 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
 						eDOFList.at(j).getSF().restrictTo(dofIndex)
 					);
 			dof.setVvfIndex(eDOFList.at(j).getVvfIndex());
-			be.addNodeDOF(2, dof);
+			be.addNodeDOF(2, dof);//DOFs on second node
 			dofIndex += nNode;
 		}
 		
@@ -228,7 +228,7 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
 						eDOFList.at(j).getSF().restrictTo(dofIndex)
 					);
 					dof.setVvfIndex(eDOFList.at(j).getVvfIndex());
-					be.addNodeDOF(edge.getEdgeNodes().at(i).localIndex, dof);
+					be.addNodeDOF(edge.getEdgeNodes().at(i).localIndex, dof);//DOFs on nodes 3th,4th,5th...
 					//dofIndex += DOFMatrix.rowDim()
 					dofIndex += nNode;
 				}
