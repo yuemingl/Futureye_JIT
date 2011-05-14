@@ -1,0 +1,4566 @@
+
+\documentclass{tran-l}
+\usepackage{txfonts}
+\usepackage{pifont}
+
+%\usepackage[active]{srcltx} % SRC Specials for DVI Searching
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subfig}
+
+\usepackage{listings}
+\lstset{language=Java}%这条命令可以让LaTeX排版时将Java键字突出显示
+\lstset{breaklines}%这条命令可以让LaTeX自动将长的代码行换行排版
+\lstset{extendedchars=false}%这一条命令可以解决代码跨页时，章节标题，页眉等汉字不显示的问题
+\lstset{numbers=left}
+\lstset{numberstyle=\tiny}
+\lstset{basicstyle=\small\ttfamily}
+%\lstset{stringstyle=\color{purple}}
+%\lstset{keywordstyle=\color{blue}}
+%\lstset{commentstyle=\color{olive}}
+%\lstset{directivestyle=\color{blue}}
+\lstset{frame=single}
+
+% Over-full v-boxes on even pages are due to the \v{c} in author's name
+\vfuzz2pt % Don't report over-full v-boxes if over-edge is small
+
+% THEOREM Environments ---------------------------------------------------
+ \newtheorem{thm}{Theorem}[subsection]
+ \newtheorem{cor}[thm]{Corollary}
+ \newtheorem{lem}[thm]{Lemma}
+ \newtheorem{prop}[thm]{Proposition}
+ \theoremstyle{definition}
+ \newtheorem{defn}[thm]{Definition}
+ \theoremstyle{remark}
+ \newtheorem{rem}[thm]{Remark}
+ \numberwithin{equation}{subsection}
+% MATH -------------------------------------------------------------------
+ \DeclareMathOperator{\RE}{Re}
+ \DeclareMathOperator{\IM}{Im}
+ \DeclareMathOperator{\ess}{ess}
+ \newcommand{\eps}{\varepsilon}
+ \newcommand{\To}{\longrightarrow}
+ \newcommand{\h}{\mathcal{H}}
+ \newcommand{\s}{\mathcal{S}}
+ \newcommand{\A}{\mathcal{A}}
+ \newcommand{\J}{\mathcal{J}}
+ \newcommand{\M}{\mathcal{M}}
+ \newcommand{\W}{\mathcal{W}}
+ \newcommand{\X}{\mathcal{X}}
+ \newcommand{\BOP}{\mathbf{B}}
+ \newcommand{\BH}{\mathbf{B}(\mathcal{H})}
+ \newcommand{\KH}{\mathcal{K}(\mathcal{H})}
+ \newcommand{\Real}{\mathbb{R}}
+ \newcommand{\Complex}{\mathbb{C}}
+ \newcommand{\Field}{\mathbb{F}}
+ \newcommand{\RPlus}{\Real^{+}}
+ \newcommand{\Polar}{\mathcal{P}_{\s}}
+ \newcommand{\Poly}{\mathcal{P}(E)}
+ \newcommand{\EssD}{\mathcal{D}}
+ \newcommand{\Lom}{\mathcal{L}}
+ \newcommand{\States}{\mathcal{T}}
+ \newcommand{\abs}[1]{\left\vert#1\right\vert}
+ \newcommand{\set}[1]{\left\{#1\right\}}
+ \newcommand{\seq}[1]{\left<#1\right>}
+ \newcommand{\norm}[1]{\left\Vert#1\right\Vert}
+ \newcommand{\essnorm}[1]{\norm{#1}_{\ess}}
+%%% ----------------------------------------------------------------------
+\begin{document}
+
+
+\title[FuturEye]
+ {FuturEye User Manual}
+
+\author{ Yueming Liu }
+
+\address{Department of Mathematics, University of Texas at Arlington, Texas, USA}
+
+\email{nkliuyueming@gmail.com}
+
+\thanks{Last Modified:Apr. 28, 2011 Email:nkliuyueming@gmail.com}
+
+\dedicatory{}
+
+\commby{}
+
+%%% ----------------------------------------------------------------------
+
+%%% ----------------------------------------------------------------------
+\maketitle
+%%% ----------------------------------------------------------------------
+
+
+\tableofcontents
+
+\section{Introduction}
+
+FuturEye is a Java based Finite Element Method (FEM) Toolkit,
+providing concise, natural and easy understanding programming
+interfaces for users who wish to develop researching and/or
+engineering FEM algorithms for Forward and/or Inverse Problems.
+
+%优点？
+The essential components of FEM are abstracted out, such as nodes,
+elements, meshes, degrees of freedom and shape function etc. The
+data and operations of these classes are encapsulated together
+properly. The classes that different from other existing
+object-oriented FEM softwares or libraries are function classes. The
+behavior of the function classes in FuturEye is very similar to that
+in mathematical context. For example algebra of functions, function
+derivatives and composition of functions. Especially in FEM
+environment, shape functions, Jacobin of coordinate transforms and
+numerical integration are all based on the function classes. This
+feature leads to a more close integration between theory and
+computer implementation.
+
+%包括FEM的哪些功能
+Traditionally, the finite element analysis software consists of
+three stages:
+\begin{itemize}
+  \item preprocessing, e.g. mesh generation
+  \item problem solution
+  \item postprocessing, e.g. visualization of models and results
+\end{itemize}
+Nowadays, there are many pre and post processing softwares
+available. For example, Gridgen(NASA), GiD, Techplot etc. There is a
+long list of mesh generators:
+http://www-users.informatik.rwth-aachen.de/~roberts/software.html.
+FuturEye mainly focus on problem solution stage. Interfaces to
+several pre and post processing softwares are provided already.
+Because of easily understanding geometry classes in FuturEye, it is
+easy to write additional interfaces by end users.
+
+%都能够处理哪些应用问题？
+FuturEye is designed to solve 1D,2D and 3D partial differential
+equations(PDE) of scalar and/or vector valued unknown functions. The
+start point of development of this toolkit is solving inverse
+problems of PDE. In order to solve inverse problems, usually some
+forward problems must be solved first and many exterior data
+manipulations should be performed during the solving processes.
+There are many classes defined for those data operations. However,
+the data processes are complicated in actual applications, we can
+not write down all the tools for manipulating data. The design of
+the basic classes allows operations to all aspect of data structure
+directly or indirectly in an easily understanding way. This is
+important for users who need write their own operations or
+algorithms on the bases of data structure in FuturEye. Some other
+existing FEM softwares or libraries may over encapsulate the data
+and operations for such inverse applications.
+
+%应用领域？
+The toolkit can be used for various purposes:
+\begin{itemize}
+  \item Teaching: The feature of close integration between FEM theory and computer
+  implementation of this toolkit helps a student to understand basic FEM
+  concepts, e.g. shape functions, Jacobin and assembly process.
+  \item Researching: Helps researchers quickly develop and test their
+  models, experiment data and algorithms. e.g. new equations, new finite
+  elements and new solution methods.
+  \item Engineering: The performance and efficiency may be
+  unsatisfied for real applications, if an finite element class defined in
+  a mathematical manner without optimization. Thanks to the
+  interface conception in Java, we can implement the same interface in
+  many different ways, thus a carefully optimized finite element
+  class can be used in applications with huge number of elements.
+\end{itemize}
+
+
+%使用Java的优缺点
+The traditional programming language of FEM are Fortran(Fortran77)
+and C, which support procedural programming. In 1990s, there were
+many object-oriented design of FEM libraries or softwares welling
+up, especially in structural engineering fields. The limitations of
+the traditional programming languages are:
+\begin{itemize}
+  \item The global access to data structure and/or too many function
+  parameters decrease the flexibility of the system.
+  \item Clear modularity in language level is hard. A particular
+  algorithm usually associate to many data structure and functions.
+  It must be documented clearly for end users.
+  \item Reuse of existing codes to adapt them for new
+  models, new algorithms or slightly different applications is difficult or impossible.
+  Sometimes, a high degree of knowledge of the codes is necessary.
+\end{itemize}
+
+Object-oriented programming doesn't has the limitations listed
+above. The concepts of class, object, inheritance, polymorphism and
+encapsulation enables developers build big systems with clear
+modules and high reusability. It usually provides better data
+structure and management by the encapsulation of data. The
+capabilities of adding new models and algorithms can be easily
+achieved by inheriting from the existing classes in the systems.
+
+
+Comparing to C++, Java is not widely used in FEM softwares. This is
+because that Java is very young (from 1995) and Java byte code
+translation into native instructions leads to a slower operation at
+the beginning of it's birth. However, Just-In-Time compiler (JIT)
+and HotSpot Java Virtual Machine (JVM) can significantly speed up
+the execution of Java applications. For FEM computing, acceptable
+computational efficiency of the Java code can be achieved.
+
+
+Java is a simple object-oriented programming language. It's syntax
+is easier than C++. It has rich collection of libraries implementing
+various application programming interfaces. Java has built-in
+garbage collector (GC) relieving the loads of deleting objects by
+developers selves just like in C++ which is a chief criminal of
+runtime errors and memory leaks. The portability of Java is
+excellent. JVMs are developed for all major computer systems.
+Another advantage of java is that there are very good XDEs(eXtended
+Development Environments) for developers to use, e.g. Eclipse,
+NetBeans etc. These XDEs have excellent abilities of code editing,
+navigating, organization and refactor, especially for Java.
+
+
+%The FEM  Deal.II, OpenFORM
+%相对于全局数据结构来说，局部化的面向对象的结构对于同时计算若干个不同网格、不同类型的PDE问题，
+%非常简单。特别适用于反问题求解：可能需要求解若干个正问题
+%Java优点：
+%不需要用户去删除对象释放内存，JVM可以自动进行垃圾回收。
+%JStack, JMap工具, 用来查看运行堆栈和？
+
+
+%每章内容的简要介绍？
+
+%The abstraction of the data into classes of objects limits the
+%knowledge of the system required to work on the code, to only the
+%class of interest. Encapsulating the data and operations together
+%isolates the classes and promotes the reuse of code.
+
+%The authors abstracted out the essential components of the finite
+%element method (elements, nodes, materials, boundary conditions, and
+%loads) into a class structure used by most subsequent authors.
+
+%classes and programming styles
+
+%为什么要开发这个软件库？
+%利用OO方法，将数学理论与计算机实现之间的距离拉近
+
+%为什么选择使用java？ 与C++相比语法简单，非常好的IDE，内存自动回收
+
+%本软件的特点之一是提供函数类，用来描述任意一个数学函数，可以进行基本代数运算，复和函数以及导数计算。
+%类似于Mapple，Mathmatica和Matlab中的符号运算。
+
+
+%\textbf{Object oriented design of a finite element code in Java} .
+%\textbf{An Object Oriented Finite Element Toolkit}
+%FuturEye中的函数数学运算：以更加数学化的编程方法来做有限元问题。
+%函数的符号运算
+%  基本四则运算
+%  导数计算
+%  构造形函数
+%  构造参数和右端项函数
+%  构造边界条件函数
+%  坐标变换
+%弱形式的表达
+%有限元Element几何结构
+
+%自适应网格
+%  Hanging node的处理：
+%  1.增加必须的形函数，以保持连续性
+%  2.代数方程组法，修改刚度矩阵
+
+%缺少DOFHandler (DOFManager)
+%缺少参考单元上的有限元类：描述某种有限元形函数，相关结点、边、面和内部信息。
+%Deal.II是通过有限元类，e.g.
+%FE_Q<dim>与DOFHandler将自由度分布到实际剖分的单元上的。
+
+%本库提供形函数，形函数与剖分单元的关联留给用户自己去做。
+%形函数与剖分单元的关联是通过自由度类实现的。即单元面对的是自由度，
+%每个自由度都有一个形函数与之关联。
+
+%对于线性元，DOF的全局编号不一定与结点的全局编号一致。deal.II中有DoFRenumbering::Cuthill_McKee可以重新编号自由度，以使刚度矩阵的带宽减少。
+
+
+%怎样开发求解器和预条件子，而不是当作黑盒子使用。
+
+%It probably even is
+%more powerful and general, but we chose to introduce this material
+%here anyway to demonstrate how to work with block matrices and to
+%develop solvers and preconditioners, rather than using black box
+%components from the library.
+
+
+%\textbf{An Object-Oriented Framework for Finite Element Programming}
+
+%\textbf{A new object-oriented finite element analysis program architecture}
+
+
+%\textbf{History}
+
+%In 1990, Fenves [1] described the advantages of object- oriented
+%programming for the development of engineering software.
+
+
+%\textbf{Object-oriented programming in FEM and BEM: a bibliography
+%(1990–2003)}
+
+\section{Functions}
+
+The java interface $\mathbf{Function}$ provides an approach to
+define any mathematical functions. A function is composed by an
+expression and variables in it.
+
+\subsection{Constant functions}
+The simplest function in FuturEye is constant function, which is a
+predefined class $\mathbf{FC}$. The following code segment defines a
+constant function 2.0:
+\begin{lstlisting}
+    Function c2 = new FC(2.0);
+\end{lstlisting}
+There are several predefined constant function objects, which are
+often used in the code. Considering memory consumption and speed,
+these constant functions are define in $\mathbf{FC}$ as static
+objects.
+\begin{lstlisting}
+    Function c0 = FC.c0;
+    Function c1 = FC.c1;
+    Function PI = FC.PI;
+    Function E  = FC.E;
+\end{lstlisting}
+For the constants which are used frequently in your code and which
+are not predefined static objects in $\mathbf{FC}$, you can use the
+static function $\mathbf{FC.c(double~v)}$ to get the instance of the
+constant function. The object will be store in an inner map, when
+you call $\mathbf{FC.c(double~v)}$ again for the same constant
+function, it will be retrived from the map. By this way, operations
+of creating a new object every time when you need the same constant
+function can be easily avoided. For example:
+\begin{lstlisting}
+    for(int i=1; i<=10; i++) {
+        Function c = FC.c(-1.0*i);
+        //do something...
+    }
+    //This constant function -2.0 is retrived from the inner map
+    //instead of creating a new object
+    Function c2 = FC.c(-2.0);
+\end{lstlisting}
+
+\subsection{Single variable functions}
+Class $\mathbf{FX}$ represents the function $f(x)=x$. The predefined
+static object $\mathbf{FX.fx}$ is an instance of $\mathbf{FX}$,
+which is a quick and better way than new an object to form the
+function $f(x)=x$. The variable name of $\mathbf{FX.fx}$ is $x$. The
+following table is all the predefined static object of $FX$.
+\begin{center}
+\begin{tabular}{|l|c|}
+  \hline
+  Static Objects & Functions with different variable names  \\
+  \hline
+  FX.fx  & $f(x)=x$ \\
+  \hline
+  FX.fy  & $f(y)=y$ \\
+  \hline
+  FX.fz  & $f(z)=z$ \\
+  \hline
+  FX.fr  & $f(r)=r$ \\
+  \hline
+  FX.fs  & $f(s)=s$ \\
+  \hline
+  FX.ft  & $f(t)=s$ \\
+  \hline
+\end{tabular}
+\end{center}
+These predefined static objects are useful when you create new
+functions through combinations of functions(see Section
+\ref{Combinations}). Another way to defined a function with
+different variable name is to new an object:
+\begin{lstlisting}
+    Function fu = new FX("u");
+\end{lstlisting}
+
+
+The following table is a list of predefined single variable function
+classes:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+  \hline
+  Classes & Math Functions \\
+  \hline
+  FX              & $f(x)=x$ \\
+  \hline
+  FAx             & $f(x)=ax$ \\
+  \hline
+  FAxpb           & $f(x)=ax+b$ \\
+  \hline
+  FPolynomial1D   & $f(x)=\sum_{i=0}^{n}a_ix^i$ \\
+  \hline
+  FLinear1D       & $f(x)=\frac{y2-y1}{x2-x1}(x-x1)+y1, x1\neq x2$ \\
+  \hline
+\end{tabular}
+\end{center}
+
+\subsection{Evaluating Functions}
+To evaluate a function, the value of variable must be given first.
+Class $\mathbf{Variable}$ represents function variable(s).
+\begin{lstlisting}
+    Variable v = new Variable(2.0);
+    //f(x)=2.0*x + 3.0
+    Function f = new FAxpb(2.0,3.0);
+    System.out.println("f(x)="+f);
+    System.out.println("f("+v.get()+")="+f.value(v));
+\end{lstlisting}
+The output results are:
+\begin{lstlisting}
+    f(x)=2.0*x+3.0
+    f(2.0)=7.0
+\end{lstlisting}
+The constructor $new Variable(2.0)$ will construct a variable with
+default variable name $x$. Call $new Variable("r",2.0)$ can create a
+variable with name $r$.
+
+
+\subsection{Combinations of Functions}\label{Section Combinations of Functions}
+We just demonstrated how to form function $f(x)=2.0*x+3.0$, but this
+is not the only way. Through algebra of functions, we can also get
+the same function:
+\begin{lstlisting}
+    //f(x)=2.0*x+3.0
+    Function f = FC.c(2.0).M(FX.fx).A(FC.c(3.0));
+    System.out.println("f(x)="+f);
+\end{lstlisting}
+The output is:
+\begin{lstlisting}
+    f(x)=2.0 * x + 3.0
+\end{lstlisting}
+Every function inherited from class $\mathbf{AbstractFunction}$ will
+have the basic operation ability. The basic operations defined in
+$\mathbf{AbstractFunction}$ show in the following table:
+
+\begin{center}
+\begin{tabular}{|c|l|}
+  \hline
+  Operation functions in $\mathbf{AbstractFunction}$ & Operations \\
+  \hline
+  Function \textbf{A}(Function g)  & $f(x)+g(x)$ \\
+  \hline
+  Function \textbf{S}(Function g)  & $f(x)-g(x)$ \\
+  \hline
+  Function \textbf{M}(Function g)  & $f(x)*g(x)$ \\
+  \hline
+  Function \textbf{D}(Function g)  & $f(x)/g(x)$ \\
+  \hline
+\end{tabular}
+\end{center}
+
+\subsection{Composition of Functions}\label{Sec_Composition}
+Though composition, we can get new functions. This is useful in
+defining Finite Element shape functions. The best way to demo the
+composition procedure is the code segment:
+\begin{lstlisting}
+    Function fx = FX.fx; //Using predefined static object f(x)=x
+    Function fr = new FX("r");
+
+    Function fOut = fx.M(fx).S(FC.c1); //Algebra of Functions
+    System.out.println(fOut); //fOut(x) = x*x - 1.0
+    Function fIn = fr.M(fr).A(FC.c1); //Algebra of Functions
+    System.out.println(fIn); //fIn(r) = r*r + 1.0
+
+    //We need a map
+    Map<String,Function> map = new HashMap<String,Function>();
+    map.put("x", fIn); //x = fIn(r) = r*r + 1.0
+    Function fComp = fOut.compose(map);
+    System.out.println(fComp); //x(r) * x(r) - 1.0
+
+    //evaluate with respect to x
+    System.out.println(fComp.value(new Variable("x",2.0)));
+    //evaluate with respect to r
+    System.out.println(fComp.value(new Variable("r",2.0)));
+\end{lstlisting}
+The outputs are:
+\begin{lstlisting}
+    x * x - 1.0
+    r * r + 1.0
+    x(r) * x(r) - 1.0
+    3.0
+    24.0
+\end{lstlisting}
+
+
+\subsection{Derivative of Functions}\label{Sec_Derivative}
+The derivative of a function $f(x)$ is also a function. Continue
+with the above code segment:
+\begin{lstlisting}
+        System.out.println(fComp._d("x")); //$fComp'(x)$
+        Function dr = fComp._d("r"); //$fComp'(r)$
+        System.out.println(dr);
+        System.out.println(dr.value(new Variable("r",2.0)));
+\end{lstlisting}
+The outputs are:
+\begin{lstlisting}
+    x + x
+    (x(r) * x(r) - 1.0) * (r + r)
+    96.0
+\end{lstlisting}
+Because function $fComp$ is a composite function, we can compute the
+derivative of $fComp$ with respect to $x$ or $r$. That means:
+$$\frac{d}{dx}(x^2-1) = 2x$$
+$$\frac{d}{dr}((r^2+1)^2-1) = 2r(x^2-1)*(2r), x=r^2+1$$
+The last line of outputs shows the evaluation of $fComp$ with
+respect to $r=2.0$.
+
+\subsection{Functions of Several Variables}\label{Sec_SeveralVariablesFunctions}
+There are two ways to create functions of several variables. First
+is combinations of existing single or several variable functions.
+Second is user defined functions. We concentrate on the first
+approach. For example, define a function
+$f(x,y)=\frac{1}{4}(1-x)(1-y)$:
+\begin{lstlisting}
+    Function fx = FX.fx;
+    Function fy = FX.fy;
+    Function f = FC.c(0.25).M(FC.c1.S(fx)).M(FC.c1.S(fy));
+    System.out.println(f);
+    Variable v = new Variable("x",0.5).set("y", 0.5);
+    System.out.println(f.value(v));
+\end{lstlisting}
+The outputs are:
+\begin{lstlisting}
+    0.25 * (1.0 - x) * (1.0 - y)
+    0.0625
+\end{lstlisting}
+For functions of several variables, the evaluation progress is the
+same as single variable functions, the only difference is that the
+variable should be defined with several variable names. The member
+function
+\begin{lstlisting}
+    public Variable set(String name, double val)
+\end{lstlisting}
+ of class $Variable$ can be called to set value for specified variable
+ name. This member function returns the object itself, so it can be
+ used like this way
+\begin{lstlisting}
+    Variable v = new Variable("x",0.5).set("y", 0.5);
+\end{lstlisting}
+It equals
+\begin{lstlisting}
+    Variable v = new Variable("x",0.5);
+    v.set("y", 0.5);
+\end{lstlisting}
+
+
+Composition of functions of several variables is similar with single
+variable functions:
+\begin{lstlisting}
+    Map<String,Function> map = new HashMap<String,Function>();
+    map.put("x", fInx); //x = fInx(r,s)
+    map.put("y", fIny); //y = fIny(r,s)
+    Function fComp = fOut.compose(map);
+\end{lstlisting}
+Finite element shape functions are often with local coordinate
+system (e.g. barycenter coordinate system). The local variables can
+be tansformed to Cartesian coordinate system. We need composite
+functions to express the relation between the variables in local
+coordinate system and the variables in Cartesian coordinate system.
+
+\subsection{Vector and Vector Valued Functions}\label{Sec_VectorValuedFunctions}
+When we describe some physical quantities, for example displacement,
+velocity, electric field and magnetic field, vector and vector
+valued functions are needed. There are two java interfaces
+$\mathbf{Vector}$ and $\mathbf{VectorFunction}$, all vector objects
+should implements interface $\mathbf{Vector}$ and all vector valued
+function objects should implements interface
+$\mathbf{VectorFunction}$.
+
+
+Class $\mathbf{SpaceVector}$ is an implementation of interface
+$\mathbf{Vector}$. It acts as space vectors in mathematic context.
+For example:
+\begin{lstlisting}
+    //2D vectors
+    SpaceVector a = new SpaceVector(1.0,0.0);
+    SpaceVector b = new SpaceVector(0.0,1.0);
+    System.out.println(a.dot(b));
+
+    //3D vectors
+    SpaceVector a3 = new SpaceVector(1,0,0);
+    SpaceVector b3 = new SpaceVector(0,1,0);
+    a3.crossProduct(b3).print();
+\end{lstlisting}
+The outputs are:
+\begin{lstlisting}
+    0.0
+    0.0 0.0 1.0
+\end{lstlisting}
+The first line of outputs is the value of $\vec{a}\cdot \vec{b}$,
+the second line is the value of $\vec{a}\times \vec{b}$. It should
+be noted that function $crossProduct()$ is not declared in interface
+$\mathbf{Vector}$, because this function is mean less in other
+specific vectors, e.g. $\mathbf{SparseVector}$ and
+$\mathbf{SparseBlockVector}$.
+
+
+The following table shows the basic functions defined in interface
+$\mathbf{Vector}$
+
+
+\begin{center}
+\begin{tabular}{|l|c|}
+  \hline
+  edu.uta.futureye.algebra.intf.Vector & Comment  \\
+  \hline
+  int \textbf{getDim}() & Returns dimension \\
+  \hline
+  void \textbf{setDim}(int dim) & Set dimension \\
+  \hline
+  double \textbf{get}(int index) & Returns x(index) \\
+  \hline
+  void \textbf{set}(int index, double value) & Set x(index)=value \\
+  \hline
+  void \textbf{add}(int index,double value) & Set x(index) = x(index) + value \\
+  \hline
+\end{tabular}
+\end{center}
+
+
+The following table shows the linear algebra operations defined in
+interface $\mathbf{Vector}$ and the corresponding operations in
+Matlab and BLAS package.
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+  \hline
+  edu.uta.futureye.algebra.intf.Vector & Matlab & BLAS Level 1 (double)  \\
+  \hline
+  Vector \textbf{set}(Vector y) & x=y & dcopy(...) \\
+  \hline
+  Vector \textbf{set}(double a, Vector y) & x=a*y & - \\
+  \hline
+  Vector \textbf{add}(Vector y) & x=x+y & - \\
+  \hline
+  Vector \textbf{add}(double a, Vector y) & x=x+a*y & - \\
+  \hline
+  Vector \textbf{ax}() or Vector \textbf{scale}() & x=a*x & dscal(...) \\
+  \hline
+  Vector \textbf{axpy}(double a, Vector y) & x=a*x+y & daxpy(...)* \\
+  \hline
+  double \textbf{dot}(Vector y) & dot(x,y) & ddot(...) \\
+  \hline
+  double \textbf{norm1}() & norm(x,1) & dasum(...) \\
+  \hline
+  double \textbf{norm2}() & norm(x,2) & dnrm2(...) \\
+  \hline
+  double \textbf{normInf}() & norm(x,inf) & idamax(...)** \\
+  \hline
+
+\end{tabular}
+\end{center}
+
+
+* y=a*x+y
+
+
+** index of max abs value
+%Level1
+%file    dcopy.f for copy x into y
+%file    dscal.f for x = a*x
+%file    daxpy.f for y = a*x + y
+%file    ddot.f for dot product
+%file    dnrm2.f for Euclidean norm
+%dasum.f sum of absolute values
+%idamax.f index of max abs value
+
+
+It should be noted that this $\mathbf{Vector}$ interface and it's
+implementations are not designed for efficient linear algebra
+operations. It's existence is only for convenience in the finite
+element shape function construction and assemble procedures. For
+efficient linear algebra operations see interface
+$\mathbf{AlgebraVector}$.
+
+
+Class $\mathbf{SpaceVectorFunction}$ is an implementation of
+interface $\mathbf{VectorFunction}$. It's instance represents vector
+valued function in mathematic context. The following code segments
+will construct the function
+$$\vec{f}(x,y,z) = \left(
+                    \begin{array}{c}
+                     x+1 \\
+                     2y+2 \\
+                     3z+3
+                   \end{array}
+                   \right)
+$$
+and do some basic operations:
+\begin{lstlisting}
+    Function f1 = new FAxpb("x",1.0,1.0);
+    Function f2 = new FAxpb("y",2.0,2.0);
+    Function f3 = new FAxpb("z",3.0,3.0);
+
+    SpaceVectorFunction svf = new SpaceVectorFunction(f1,f2,f3);
+    System.out.println("svf(x,y,z)="+svf);
+    System.out.println("svf(1,1,1)="+svf.value(
+            new Variable().set("x",1).set("y",1).set("z",1))
+            );
+
+    System.out.println(svf.dot(new SpaceVector(1,2,3)));
+    Function dot2 = svf.dot(svf);
+    System.out.println(dot2);
+    System.out.println(dot2.value(
+            new Variable(
+                    new VarPair("x",1),
+                    new VarPair("y",1),
+                    new VarPair("z",1)
+            )));
+\end{lstlisting}
+The outputs are:
+\begin{lstlisting}
+svf(x,y,z)=(x+1.0  2.0*y+2.0  3.0*z+3.0  )
+svf(1,1,1)=(2.0  4.0  6.0  )
+x+1.0 + (2.0*y+2.0) * 2.0 + (3.0*z+3.0) * 3.0
+(x+1.0) * (x+1.0) + (2.0*y+2.0) * (2.0*y+2.0) + (3.0*z+3.0) * (3.0*z+3.0)
+56.0
+\end{lstlisting}
+
+First, three single valued functions $f1,f2,f3$ are created. Then
+they are passed to the constructor of
+$\mathbf{SpaceVectorFunction}$. Thus, we get the vector valued
+function $svf(x,y,z)=(x+1.0,2.0*y+2.0,3.0*z+3.0)^T$. We can evaluate
+it by passing variable name and value pairs. The code $new
+Variable().set("x",1).set("y",1).set("z",1)$ will create an object
+of $\mathbf{Variable}$. Function $Variable~~set(String name, double
+val)$ will return the object itself, so the chain expression can be
+used to simplify code typing. The most simplified expression can be
+ $new~~Variable("x",1).set("y",1).set("z",1)$. The constructor will
+also be used to set a name and value pair. There are another way to
+construct variable objects. The class $\mathbf{VarPair}$ represents
+the name and value pair of a variable object, it's instance can be
+passed to the constructor to construct variables. The last print
+part of the code segment shows the usage of this method.
+
+Now, we discuss the combinations of vector valued functions and
+composite vector valued functions. If we take out a component of a
+vector valued function, this component can be treated as a single
+valued function that is already described in Section \ref{Section
+Combinations of Functions}. The following table gives the similar
+operations with respect to every component of a vector valued
+functions.
+
+\begin{center}
+\begin{tabular}{|c|l|}
+  \hline
+  Operation functions in $\mathbf{AbstractFunction}$ & Operations \\
+  \hline
+  VectorFunction \textbf{A}(VectorFunction g)  & $\vec{f}(x)+\vec{g}(x)$ \\
+  \hline
+  VectorFunction \textbf{S}(VectorFunction g)  & $\vec{f}(x)-\vec{g}(x)$ \\
+  \hline
+  VectorFunction \textbf{M}(VectorFunction g)  & $f_i(x)*g_i(x), i=1,...,n$ \\
+  \hline
+  VectorFunction \textbf{D}(VectorFunction g)  & $f_i(x)/g_i(x), i=1,...,n$ \\
+  \hline
+\end{tabular}
+\end{center}
+
+The above functions are defined in class
+$\mathbf{AbstractVectorFunction}$. The returned values are instance
+of class $\mathbf{SpaceVectorFunction}$ which extends class
+$\mathbf{AbstractVectorFunction}$. Any class that extends from
+$\mathbf{AbstractVectorFunction}$ will automatically has the
+implemented member functions listed in the above table. These
+implemented functions will be convenient for user defined classes.
+Of course, these functions can be over ridded if necessary.
+
+
+Vector algebra operations of vector valued function is defined the
+same as in interface $\mathbf{Vector}$. The following table lists
+the operations.
+
+
+\begin{center}
+\begin{tabular}{|l|l|}
+  \hline
+  edu.uta.futureye.function.intf.VectorFunction & Operations  \\
+  \hline
+  VectorFunction \textbf{set}(VectorFunction g) & $\vec{f}(x)=\vec{g}(x)$\\
+  \hline
+  VectorFunction \textbf{set}(double a, VectorFunction g) & $\vec{f}(x)=a*\vec{g}(x)$\\
+  \hline
+  VectorFunction \textbf{add}(VectorFunction g) & $\vec{f}(x)=\vec{f}(x)+\vec{g}(x)$\\
+  \hline
+  VectorFunction \textbf{add}(double a, VectorFunction g) & $\vec{f}(x)=\vec{f}(x)+a*\vec{g}(x)$\\
+  \hline
+  \shortstack{VectorFunction \textbf{ax}(double a) or\\VectorFunction \textbf{scale}(double a)} & $\vec{f}(x)=a*\vec{f}(x)$\\
+  \hline
+  VectorFunction \textbf{axpy}(double a, VectorFunction g) & $\vec{f}(x)=a*\vec{f}(x)+\vec{g}(x)$\\
+  \hline
+  double \textbf{dot}(VectorFunction g) & $\vec{f}(x) \cdot \vec{g}(x)$\\
+  \hline
+\end{tabular}
+\end{center}
+It should be noted that these functions are implemented in class
+$\mathbf{AbstractVectorFunction}$, but are not the best
+implementation, because the actual storage is not known in
+$\mathbf{AbstractVectorFunction}$. The class
+$\mathbf{SpaceVectorFunction}$ implements all these functions. So,
+it's a good decision to form new vector valued function based on
+class $\mathbf{SpaceVectorFunction}$.
+
+
+Composite vector valued functions are easy to form. What you need to
+do is to compose each component of a vector valued function
+function. Class $\mathbf{AbstractVectorFunction}$ has the function
+$compose()$ that has already implemented this procedure:
+
+\begin{lstlisting}
+    public VectorFunction compose(Map<String,Function> fInners) {
+        for(int i=1; i<=dim; i++)
+            this.set(i,this.get(i).compose(fInners));
+        return this;
+    }
+\end{lstlisting}
+
+\subsection{Class FMath}
+
+The class \textbf{FMath} contains methods for performing basic
+numeric operations with objects of type $Function$, $Vector$ and
+$VectorFunction$. The following table shows all the methods in
+$FMath$.
+
+\begin{tabular}{|l|c|}
+  \hline
+  Methods in \textbf{FMath} & Comment \\
+  \hline
+  Function sqrt(final Function f) & $\sqrt{f(\mathbf{x})}$ \\
+  \hline
+  Function pow(Function f, double p) & $f(\mathbf{x})^p$ \\
+  \hline
+  \shortstack{Function power(\\
+  final Function f1, final Function f2)} & $f_1(\mathbf{x})^{f_2(\mathbf{y})}$ \\
+  \hline
+  Function abs(final Function f) & $|f(x)|$ \\
+  \hline
+  Function sum(Function ...fi) & $\sum_{i=1}^N{f_i(\mathbf{x})}$ \\
+  \hline
+  \shortstack{Function linearCombination(\\
+                    double c1, Function f1, double c2,Function f2)} & $c_1f_1(\mathbf{x})+c_2f_2(\mathbf{x})$ \\
+  \hline
+  \shortstack{Function linearCombination(\\
+                    double []ci, Function []fi)} & $\sum_{i=1}^N{c_if_i(\mathbf{x})}$ \\
+  \hline
+  VectorFunction grad(Function fun) & $Gradf(\mathbf{x})=\nabla{f(\mathbf{x})}$ \\
+  \hline
+  \shortstack{VectorFunction grad(\\
+                    Function fun,ObjList$<$String$>$ varNames)} & $Grad_\mathbf{x}f=\nabla_{\mathbf{x}}{f}$ \\
+  \hline
+  Function div(VectorFunction vFun) & $Div\vec{f}(\mathbf{x})$ \\
+  \hline
+  \shortstack{Function div(\\
+                    VectorFunction vFun,ObjList$<$String$>$ varNames)} & $Div_\mathbf{x}\vec{f}$ \\
+  \hline
+  Function curl(VectorFunction vFun) & $Curl\vec{f}(\mathbf{x})$ \\
+  \hline
+  \shortstack{Function curl(\\
+                    VectorFunction vFun,ObjList$<$String$>$ varNames)} & $Curl_\mathbf{x}\vec{f}$ \\
+  \hline
+  Vector log(Vector v) & $(lnv_1,lnv_2,...,lnv_n)^T$ \\
+  \hline
+  Vector abs(Vector v) & $(|v_1|,|v_2|,...,|v_n|)^T$ \\
+  \hline
+  double max(Vector v) & $max(v_1,v_2,...v_n)$ \\
+  \hline
+  Function double min(Vector v) & $min(v_1,v_2,...v_n)$ \\
+  \hline
+\end{tabular}
+
+We give some examples to show how to use class \textbf{FMath} to
+speed up our coding. In the main function of the following class
+\textbf{FMathTest}, two functions $u,v$ are defined first,
+$$u(x,y,z)=x^2 + y^2 + z^2$$
+$$v(x,y,z)=xyz$$
+Then we compute the expression
+$$u_xv_x+u_yv_y+u_zv_z$$
+by the following code
+\begin{lstlisting}
+    FMath.sum(
+        u._d("x").M(v._d("x")),
+        u._d("y").M(v._d("y")),
+        u._d("z").M(v._d("z"))
+    )
+\end{lstlisting}
+The result is
+$$u_xv_x+u_yv_y+u_zv_z=2xyz+2yxz+2zxy=6xyz$$
+Actually, the above expression can be written as
+$$\nabla{u}\cdot\nabla{v}=u_xv_x+u_yv_y+u_zv_z$$
+So, the following code equally gives the expression above in form of
+function operators
+\begin{lstlisting}
+    FMath.grad(u).dot(FMath.grad(v))
+\end{lstlisting}
+
+Next, we show another example, define
+$$invR(x,y,x)=\frac{1}{\sqrt{x^2+y^2+z^2}}$$
+Then we compute
+$$Div(Grad(invR))=\nabla^2{invR}=\Delta{invR}$$
+with code
+\begin{lstlisting}
+    FMath.div(FMath.grad(invR))
+\end{lstlisting}
+In order to demo how to use the second parameter of function
+operators, we define
+$$invR2(r)=\frac{1}{r}$$
+where $r=r(x,y,z)=\sqrt{x^2+y^2+z^2}$.
+
+When we compute gradient of $invR2$ with respect to different
+variables, the result will be different:
+$$\nabla_r(invR2)=\nabla_r\left(\frac{1}{r}\right)=\left(\frac{1}{r}\right)'=-\frac{1}{r^2}$$
+$$\nabla_{x,y,z}(invR2)=\nabla_{x,y,z}\left(\frac{1}{r(x,y,z)}\right)=
+\left(
+  \begin{array}{c}
+    -\frac{x}{(x^2+y^2+z^2)^{3/2}} \\
+    -\frac{y}{(x^2+y^2+z^2)^{3/2}} \\
+    -\frac{z}{(x^2+y^2+z^2)^{3/2}} \\
+  \end{array}
+\right)
+$$
+The code for the first equation is
+\begin{lstlisting}
+    FMath.grad(invR2)
+\end{lstlisting}
+and for the second equation is
+\begin{lstlisting}
+    ObjList<String> coordSys =
+                new ObjList<String>("x","y","z");
+    FMath.grad(invR2, coordSys);
+\end{lstlisting}
+That is to say, for composite functions, we must specify the seconde
+parameter of function operator methods to the coordinate which we
+want to perform the work.
+
+
+Interested users can check the operation results of function $invR$
+and $invR2$ as below:
+\begin{lstlisting}
+    FMath.div(FMath.grad(invR))
+    FMath.div(FMath.grad(invR2, coordSys),coordSys)
+\end{lstlisting}
+They are all equals to 0, because that
+$$\Delta{\left(\frac{1}{r}\right)}=\frac{1}{r^3}\left(-3+3\frac{x^2+y^2+z^2}{r^2}\right)=0$$
+The whole example code is listed bellow:
+
+\begin{lstlisting}
+package edu.uta.futureye.test;
+import java.util.HashMap;
+import java.util.Map;
+import edu.uta.futureye.function.basic.FC;
+import edu.uta.futureye.function.basic.FX;
+import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.util.container.ObjList;
+
+public class FMathTest {
+    public static void main(String[] args) {
+        //u(x,y,z) = x^2+y^2+z^2
+        Function u = FMath.sum(
+                        FX.fx.M(FX.fx),
+                        FX.fy.M(FX.fy),
+                        FX.fz.M(FX.fz));
+
+        //v(x,y,x) = x*y*z
+        Function v = FX.fx.M(FX.fy).M(FX.fz);
+
+        //Grad(u) \cdot Grad(v)
+        System.out.println(
+                FMath.sum(
+                    u._d("x").M(v._d("x")),
+                    u._d("y").M(v._d("y")),
+                    u._d("z").M(v._d("z"))));
+
+        //Grad(u) \cdot Grad(v)
+        System.out.println(
+                FMath.grad(u).dot(FMath.grad(v)));
+
+        //invR = 1/sqrt(x^2+y^2+z^2)
+        Function invR = FC.c1.D(FMath.sqrt(u));
+        //Div(Grad(invR))=Laplacian(invR)
+        System.out.println(FMath.div(FMath.grad(invR)));
+
+        //invR = 1/r(x,y,z) = 1/sqrt(x^2+y^2+z^2)
+        Function invR2 = FC.c1.D(FX.fr);
+        Map<String, Function> fInners =
+            new HashMap<String, Function>();
+        fInners.put("r", FMath.sqrt(u));
+        invR2 = invR2.compose(fInners);
+
+        //Grad(invR2), gradient respect to r
+        System.out.println(FMath.grad(invR2));
+        ObjList<String> coordSys =
+                    new ObjList<String>("x","y","z");
+
+        //Div_{x,y,z}(Grad_{x,y,z}(invR2))=Laplacian_{x,y,z}(invR2)
+        //gradient with respect to x,y,z
+        //divergence with respect to x,y,z
+        System.out.println(
+                FMath.div(FMath.grad(invR2, coordSys),coordSys)
+                );
+    }
+}
+\end{lstlisting}
+
+
+\subsection{User Defined Functions}\label{Section User Defined Functions}
+
+In this section, we describe how to define yourself function
+classes. Sometimes, a special function may be required in the
+application and the function can not be created from existing
+functions through function combinations and/or composition. The key
+thing to define yourself function classes is to implement the
+interface \textbf{Function} or to extend the abstract class
+\textbf{AbstractFunction}. Three examples will be given to
+demonstrate the way of definition of the function classes.
+
+Example 1. \textbf{DiscreteIndexFunction}
+
+
+This is a general function that can be evaluated at points
+referenced by discrete positive integer indices. It is useful when
+you have a list of external data and you want to use that data by
+it's indices. The full definition of the class
+\textbf{DiscreteIndexFunction} listed below:
+
+\begin{lstlisting}
+package edu.uta.futureye.function.basic;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.PairDoubleInteger;
+import edu.uta.futureye.util.container.ObjList;
+
+public class DiscreteIndexFunction extends AbstractFunction {
+    protected Map<Integer, Double> data = new HashMap<Integer, Double>();
+
+    public DiscreteIndexFunction() {
+    }
+
+    public DiscreteIndexFunction(ObjList<PairDoubleInteger> list) {
+        for(int i=1;i<=list.size();i++) {
+            PairDoubleInteger pair = list.at(i);
+            this.data.put(pair.i,pair.d);
+        }
+    }
+
+    public void set(int index, double value) {
+        this.data.put(index, value);
+    }
+
+    @Override
+    public double value(Variable v) {
+        if(v.getIndex()<=0)
+            throw new FutureyeException("v.getIndex()="+v.getIndex());
+        return data.get(v.getIndex());
+    }
+}
+\end{lstlisting}
+A member variable \textbf{data} of type Map$<$Integer, Double$>$ is
+used to contain the pair of index and value. Two constructor are
+given to construct an empty object and an object from a list
+containing element with type PairDoubleInteger. Member function
+\textbf{set()} is used to set special index and value pair. Member
+function \textbf{value()} is the key function. The positive integer
+index can be retrieved from the parameter \textbf{v}. Then the value
+corresponds to the index will be found from the map and returned.
+
+Class \textbf{Variable} is designed to take additional objects
+beside the regular values when used as function parameters. Code
+segment below shows how to use \textbf{Variable} object to take
+those additional objects. This feature is important for user defined
+function classes in special use cases.
+\begin{lstlisting}
+    Variable v = new Variable("x",5.0).set("y",6.0);
+    System.out.println(v.get("x"));
+    System.out.println(v.get("y"));
+    v.setIndex(20);
+    System.out.println(v.getIndex());
+    v.setElement(new Element());//Empty Element object
+    System.out.println(v.getElement());
+\end{lstlisting}
+
+
+Example 2. \textbf{Vector2Function}
+
+
+This function class is similar to \textbf{DiscreteIndexFunction}.
+They are all evaluated at positive integer indices. But the
+difference is that the constructor of this class needs an object of
+type \textbf{Vector}. The definition of the class below is very
+short, but it's useful in the case that you need an object of type
+\textbf{Function} instead of an object of type \textbf{Vector}. That
+is to say, the two object represent a same quantity or mathematical
+function. For example, when you get a vector result (e.g.
+temperature distribution) from a solver, and want to pass the result
+further to other object members as a parameter of type
+\textbf{Function}, class \textbf{Vector2Function} will be useful to
+do the converting.
+
+
+\begin{lstlisting}
+package edu.uta.futureye.function.basic;
+
+import edu.uta.futureye.algebra.intf.Vector; import
+edu.uta.futureye.function.AbstractFunction; import
+edu.uta.futureye.function.Variable; import
+edu.uta.futureye.util.FutureyeException;
+
+public class Vector2Function extends AbstractFunction {
+    Vector u = null;
+
+    public Vector2Function(Vector u) {
+        this.u = u;
+    }
+
+    @Override
+    public double value(Variable v) {
+        int index = v.getIndex();
+        if(index <= 0) {
+            throw new FutureyeException("Error: Vector2Function index="+index);
+        } else {
+            return u.get(index);
+        }
+    }
+}
+\end{lstlisting}
+
+
+Example 3. \textbf{DuDn}
+
+
+In the last example, we will give a function that usually used in
+FEM context. Class \textbf{DuDn} represents the function
+$$\frac{\partial u}{\partial n}$$ in mathematical context. Where $n$
+is the outer normal vector of the domain that function $u$ defined
+in it. The key part of implementation is according $$\frac{\partial
+u}{\partial n}=\mathbf{n} \cdot \nabla{u}=(n_1,n_2,n_3)\left(
+                                                         \begin{array}{c}
+                                                           u_x \\
+                                                           u_y \\
+                                                           u_z \\
+                                                         \end{array}
+                                                       \right)
+$$
+There are two constructors defined in class \textbf{DuDn} for
+convenience. Class \textbf{Element} will be explained in next
+section.
+\begin{lstlisting}
+public class DuDn extends AbstractFunction implements
+ElementDependentFunction {
+    protected Element e = null;
+    protected Function u = null;
+    protected Function u_x = null;
+    protected Function u_y = null;
+    protected Function u_z = null;
+    protected Vector norm = null;
+
+    public DuDn(Function u) {
+        this.u = u;
+    }
+
+    public DuDn(Function u_x, Function u_y, Function u_z) {
+        this.u_x = u_x;
+        this.u_y = u_y;
+        this.u_z = u_z;
+    }
+
+    @Override
+    public void setElement(Element e) {
+        this.e = e;
+        //Compute outer normal vector
+        GeoEntity ge = e.getGeoEntity();
+        if(ge instanceof Edge) {
+            norm = ((Edge)ge).getNormVector();
+        } else if(ge instanceof Face) {
+            norm = ((Face)ge).getNormVector();
+        } else {
+            throw new FutureyeException("Unsuported element type");
+        }
+    }
+
+    @Override
+    public double value(Variable v) {
+        Function rlt = null;
+        this.setElement(v.getElement());
+        if(u != null) {
+            //u is passed into constructor
+            rlt = FMath.grad(u).dot(norm);
+        } else if(this.norm.getDim() == 2) {
+            //2D case
+            rlt = u_x.M(new FC(norm.get(1)))
+                    .A(
+                  u_y.M(new FC(norm.get(2)))
+                    );
+        } else if(this.norm.getDim() == 3) {
+            //3D case
+            rlt = FMath.sum(
+                    u_x.M(new FC(norm.get(1))),
+                    u_y.M(new FC(norm.get(2))),
+                    u_z.M(new FC(norm.get(3)))
+                    );
+        } else {
+            throw new FutureyeException(
+                    "Error: u="+u+", this.norm.getDim()="+this.norm.getDim());
+        }
+        return rlt.value(v);
+    }
+
+    public String toString() {
+        return "DuDn";
+    }
+}
+\end{lstlisting}
+
+
+
+\section{Basic Finite Element Components}
+
+\subsection{Mesh, Element and Node Classes}
+
+\subsubsection{Basic Grid Properties}\label{Section Basic Grid Properties}
+Class $\mathbf{Mesh}$ is designed to store any grid of dimensions
+1,2 or 3 and different element types that generated from other
+software. The current version of FuturEye doesn't provide grid
+generation function. The following code gives an example of reading
+a grid from a file with ASCII UCD format that generated by Gridgen:
+
+\begin{lstlisting}
+    MeshReader reader = new MeshReader("patch_triangle.grd");
+    Mesh mesh = reader.read2DMesh();
+\end{lstlisting}
+
+The content of the file ``patch\_triangle.grd'' is:
+
+\begin{lstlisting}
+#    UCD geometry file from Gridgen 15.08R1,
+#    a product of Pointwise, Inc.
+#    01-Nov-10   23:08:59
+#
+13 16 0 0 0
+1   0.000000000e+000  0.000000000e+000  0.000000000e+000
+2   1.000000000e+001  0.000000000e+000  0.000000000e+000
+3   1.000000000e+001  1.000000000e+001  0.000000000e+000
+4   0.000000000e+000  1.000000000e+001  0.000000000e+000
+5   5.000000000e+000  0.000000000e+000  0.000000000e+000
+6   1.000000000e+001  5.000000000e+000  0.000000000e+000
+7   5.000000000e+000  1.000000000e+001  0.000000000e+000
+8   0.000000000e+000  5.000000000e+000  0.000000000e+000
+9   5.000000000e+000  5.000000000e+000  0.000000000e+000
+10   7.500000000e+000  2.500000000e+000  0.000000000e+000
+11   2.500000000e+000  7.500000000e+000  0.000000000e+000
+12   7.500000000e+000  7.500000000e+000  0.000000000e+000
+13   2.500000000e+000  2.500000000e+000  0.000000000e+000
+1 0 tri          9       5      10
+2 0 tri         11       4       8
+3 0 tri         10       2       6
+4 0 tri          3       7      12
+5 0 tri          1       5      13
+6 0 tri          9       7      11
+7 0 tri          9       8      13
+8 0 tri          9       6      12
+9 0 tri         10       5       2
+10 0 tri          9      10       6
+11 0 tri         13       5       9
+12 0 tri          1      13       8
+13 0 tri         12       7       9
+14 0 tri          3      12       6
+15 0 tri         11       7       4
+16 0 tri          9      11       8
+\end{lstlisting}
+
+\begin{figure}[ht]
+    \centering
+    \subfloat[]{\label{mesh_n}\includegraphics[width=0.5\textwidth]{patch_mesh_n}}
+    \subfloat[]{\label{mesh_e}\includegraphics[width=0.5\textwidth]{patch_mesh_e}}
+    \caption{\emph{patch\_triangle.grd}}
+    \label{patch_mesh}
+\end{figure}
+
+Fig.\ref{patch_mesh}(a) shows the grid with nodes numbers and
+Fig.\ref{patch_mesh}(b) shows the grid with elements numbers. We can
+see that there are total 13 nodes and 16 elements. Actually, the
+basic components of a $\mathbf{Mesh}$ object are nodes and elements.
+FuturEye provides two classes $\mathbf{NodeList}$ and
+$\mathbf{ElementList}$, which are list containers, the following
+code segments shows how they works:
+
+\begin{lstlisting}
+    NodeList nodes = mesh.getNodeList();
+    ElementList elements = mesh.getElementList();
+
+    for(int i=1;i<=nodes.size();i++) {
+        System.out.println(nodes.at(i));
+    }
+    for(int i=1;i<=elements.size();i++) {
+        System.out.println(elements.at(i));
+    }
+\end{lstlisting}
+It should be noted that the index starts from 1. It's in keeping
+with the mathematic context of FEM convention for object indexing.
+The outputs are:
+\begin{lstlisting}
+    GN1( 0.0 0.0 )
+    GN2( 10.0 0.0 )
+    GN3( 10.0 10.0 )
+    GN4( 0.0 10.0 )
+    GN5( 5.0 0.0 )
+    GN6( 10.0 5.0 )
+    GN7( 5.0 10.0 )
+    GN8( 0.0 5.0 )
+    GN9( 5.0 5.0 )
+    GN10( 7.5 2.5 )
+    GN11( 2.5 7.5 )
+    GN12( 7.5 7.5 )
+    GN13( 2.5 2.5 )
+    GE1( 9_ 5_ 10_ )
+    GE2( 11_ 4_ 8_ )
+    GE3( 10_ 2_ 6_ )
+    GE4( 3_ 7_ 12_ )
+    GE5( 1_ 5_ 13_ )
+    GE6( 9_ 7_ 11_ )
+    GE7( 9_ 8_ 13_ )
+    GE8( 9_ 6_ 12_ )
+    GE9( 10_ 5_ 2_ )
+    GE10( 9_ 10_ 6_ )
+    GE11( 13_ 5_ 9_ )
+    GE12( 1_ 13_ 8_ )
+    GE13( 12_ 7_ 9_ )
+    GE14( 3_ 12_ 6_ )
+    GE15( 11_ 7_ 4_ )
+    GE16( 9_ 11_ 8_ )
+\end{lstlisting}
+
+The capital prefix letters ``GN'' represents ``Global Node'' and
+``GE'' represents ``Global Element''. We will explain the ``\_''
+that following the numbers in the brackets of  global elements later
+(section \ref{Section Mark Boundary Types}).
+
+
+The global index of a node and it's coordinate can be accessed in
+the following ways:
+\begin{lstlisting}
+    Node node = nodes.at(9);
+    System.out.println("GN"+node.globalIndex+" coord:"+
+            node.coord(1)+","+node.coord(2));
+    double []coord = node.coords();
+    System.out.println("GN"+node.getIndex()+" coord:"+
+            coord[0]+","+coord[1]);
+\end{lstlisting}
+The outputs are:
+\begin{lstlisting}
+    GN9 coord:5.0,5.0
+    GN9 coord:5.0,5.0
+\end{lstlisting}
+
+
+To access the nodes in an element is easy:
+\begin{lstlisting}
+    Element ele = elements.at(1);
+    System.out.println("GE"+ele.globalIndex+":"+
+            ele.nodes);
+\end{lstlisting}
+We will get:
+\begin{lstlisting}
+    GE1:NodeList[GN9( 5.0 5.0 ), GN5( 5.0 0.0 ), GN10( 7.5 2.5 )]
+\end{lstlisting}
+Where $ele.nodes$ is an object of $\mathbf{NodeList}$ that contains
+all the nodes belong to the element. From the above output, we can
+find out that element 1 contains global nodes 9,5 and 10.
+
+
+\textbf{Remark.} All the list classes that have the index starts
+from 1 are extends from class $\mathbf{ObjList<T>}$. It's a template
+class that acts as a container class in keeping with the mathematic
+context of FEM convention for object indexing. It's also easy to
+convert from/to java native array or $\mathbf{java.util.List}$. For
+example, if we need sort the nodes by global index, all we need to
+do is call $toList()$ and sort it in the Java Collections Framework.
+\begin{lstlisting}
+    List<Node> list = nodes.toList();
+    Collections.sort(list, new Comparator<Node>(){
+        @Override
+        public int compare(Node o1, Node o2) {
+            //desc
+            if(o1.globalIndex > o2.globalIndex)
+                return -1;
+            else
+                return 1;
+        }
+    });
+\end{lstlisting}
+
+The following table gives a brief description of the member
+functions in $\mathbf{ObjList<T>}$.
+
+
+\begin{center}
+\begin{tabular}{|l|l|}
+  \hline
+  edu.uta.futureye.util.list.ObjList$<T>$ & Comment  \\
+  \hline
+  int \textbf{size}() & return list size\\
+  \hline
+  T \textbf{at}(int i) & return $i$th object\\
+  \hline
+  ObjList$<T>$ \textbf{add}(T e) & add one object\\
+  \hline
+  ObjList$<T>$ \textbf{addAll}(ObjList$<T>$ list) & add multi objects\\
+  \hline
+  void \textbf{clear}() & clear list\\
+  \hline
+  T \textbf{remove}(int i) & remove $i$th object\\
+  \hline
+  boolean \textbf{remove}(T e) & remove object e\\
+  \hline
+  ObjList$<T>$ \textbf{subList}(int begin,int end) & return sublist[begin:end]\\
+  \hline
+  ObjList$<T>$ \textbf{subList}(int begin,int end,int step) & return sublist[begin:step:end]\\
+  \hline
+  ObjList$<T>$ \textbf{subList}(List$<$Integer$>$ set) & return a sublist that index in the $set$\\
+  \hline
+  List$<T>$ \textbf{toList}() & convert to $\mathbf{java.util.List}$\\
+  \hline
+  Object[~] \textbf{toArray}() & convert to java native array\\
+  \hline
+  ObjList$<T>$ \textbf{fromList}(List$<T>$ list) & construct from $\mathbf{java.util.List}$\\
+  \hline
+  ObjList$<T>$ \textbf{fromArray}(T[~] array) & construct form java native array\\
+  \hline
+\end{tabular}
+\end{center}
+
+\subsubsection{Advanced Grid Properties}\label{Section Advanced Grid Properties}
+Now, we come to the advanced properties contained in
+$\mathbf{Mesh}$, $\mathbf{Element}$ and $\mathbf{Node}$ classes.
+Given a mesh, the following things may need to be known in some
+applications:
+
+\begin{enumerate}
+  \item A node belongs to which elements
+  \item A node's neighbor nodes
+  \item An element's neighbor elements
+  \item Inner nodes and border nodes of a mesh
+  \item The global edge(2D,3D) list or face(3D) list
+\end{enumerate}
+
+Class $\mathbf{Mesh}$ is designed to compute these properties based
+on the basic nodes and elements information.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+  \hline
+  edu.uta.futureye.util.list.Mesh & Comment  \\
+  \hline
+  void \textbf{computeNodeBelongsToElements}() & (1)A node belongs to which elements \\
+  \hline
+  void \textbf{computeNeighborNodes}() & (2)A node's neighbor nodes\\
+  \hline
+  void \textbf{computeNeighborElements}() & (3)An element's neighbor elements\\
+  \hline
+  \shortstack{void \textbf{markBorderNode}\\
+            (Map$<$NodeType,Function$>$ mapNTF)} & (4)Inner nodes and border nodes of a mesh\\
+  \hline
+  void \textbf{computeGlobalEdge}() & (5)The global edge list (2D,3D)\\
+  \hline
+  void \textbf{computeGlobalFace}() & (5)The global face list (3D)\\
+  \hline
+\end{tabular}
+\end{center}
+
+To know a node belongs to which elements is important, because based
+on this information we can get (2) and (4) listed above. In your
+applications, after reading a mesh file and getting a
+$\mathbf{Mesh}$ object, call the function
+$computeNodeBelongsToElements()$ first. In order to get (3),
+$computeGlobalEdge()$ must be called first in 2D case and call
+$computeGlobalFace()$ additionally in 3D case.
+
+
+The elements that a node is contained in, are stored in the node's
+public member \textbf{belongToElements}. It's an instance of
+$\mathbf{ElementList}$, so you can access them easily. Neighbor
+nodes or elements are similar. The following code segments gives a
+demo. All the information of these relations are printed out. We
+omit the long output results. Interested users can run this
+yourself.
+\begin{lstlisting}
+    MeshReader reader = new MeshReader("patch_triangle.grd");
+    Mesh mesh = reader.read2DMesh();
+    NodeList nodes = mesh.getNodeList();
+    ElementList elements = mesh.getElementList();
+
+    mesh.computeNodeBelongsToElements();
+    //Print all elements that a node is contained in them
+    for(int i=1;i<=nodes.size();i++) {
+        System.out.println(nodes.at(i)+": "+
+                nodes.at(i).belongToElements);
+    }
+
+    mesh.computeNeighborNodes();
+    //Print all neighbors of a node
+    for(int i=1;i<=nodes.size();i++) {
+        System.out.println(nodes.at(i)+": "+
+                nodes.at(i).neighbors);
+    }
+
+    mesh.computeGlobalEdge();
+    EdgeList edges = mesh.getEdgeList();
+    mesh.computeNeighborElements();
+    //Print all global edges
+    for(int i=1;i<=edges.size();i++) {
+        System.out.println(edges.at(i));
+    }
+    //Print all neighbors of an element
+    for(int i=1;i<=elements.size();i++) {
+        System.out.println(elements.at(i)+": "+
+                elements.at(i).neighbors);
+    }
+\end{lstlisting}
+
+
+\subsubsection{Mark Boundary Types}\label{Section Mark Boundary Types}
+Boundary types of a grid are needed when you solve PDE problems on
+the grid. The way to mark boundary types on the boundary nodes of a
+grid is provided by class $\mathbf{Mesh}$. There are total 4 kinds
+of node types that defined in enum type $\mathbf{NodeType}$
+\begin{lstlisting}
+    public enum NodeType {
+        Inner, //Inner
+        Dirichlet, Neumann, Robin //Border
+    }
+\end{lstlisting}
+Function $void markBorderNode(Map<NodeType,Function> mapNTF)$
+defined in class $\mathbf{Mesh}$ is used to mark node types of
+boundary nodes. The parameter of the function is a map,so different
+node types can be marked at the same time. The key of the map is a
+kind of node type and the value of the map is a user defined
+function that indicates which part of the domain to be marked as the
+node type corresponding to the key of the map. If a positive number
+is returned by the user defined function, the node will be marked.
+For example, if we have an object $\mathbf{mesh}$, a 2D rectangle
+domain [-3,3]*[-3,3], the following code segments will mark the
+nodes on the $\mathbf{mesh}$.
+
+\begin{lstlisting}
+    HashMap<NodeType, Function> mapNTF =
+        new HashMap<NodeType, Function>();
+    mapNTF.put(NodeType.Robin, new AbstractFunction("x","y"){
+        @Override
+        public double value(Variable v) {
+            if(3.0-v.get("x")<0.01)
+                return 1.0;
+            else
+                return -1.0;
+        }
+    });
+    mapNTF.put(NodeType.Dirichlet, null);
+    mesh.markBorderNode(mapNTF);
+\end{lstlisting}
+Nodes on the right side of the rectangle domain are marked as Robin
+type and other nodes are marked as Dirichlet type. The underlining
+procedure of the function goes like this way: It first checks a node
+whether it is a boundary node. If yes, iterates the map and evaluate
+the user defined functions at the coordinate of the node and marks
+the node as the type in the key when the function returns a positive
+number. If the the function is null, the type in the key will be
+default type for nodes that no positive number returned by the
+function. If the node is not a boundary node, it will be marked as
+Inner type.
+
+
+For some cases, more than one types must be marked on a single node,
+e.g. vector valued problems. The following code shows how to mark
+boundary nodes types for a 2D Stokes problem with unknown function
+$(u v p)$.
+
+\begin{lstlisting}
+    ElementList eList = mesh.getElementList();
+    for(int i=1;i<=eList.size();i++) {
+        System.out.println(i+"  " + eList.at(i));
+    }
+
+    //Mark border types for Stokes problem:  (u v p)
+    HashMap<NodeType, Function> mapNTF_uv =
+    new HashMap<NodeType, Function>();
+    //mapNTF.put(NodeType.Dirichlet,null);
+    mapNTF_uv.put(NodeType.Dirichlet, new AbstractFunction("x","y") {
+        @Override
+        public double value(Variable v) {
+         ...
+        }
+    });
+    mapNTF_uv.put(NodeType.Neumann, null);
+
+    HashMap<NodeType, Function> mapNTF_p =
+        new HashMap<NodeType, Function>();
+    mapNTF_p.put(NodeType.Dirichlet, new AbstractFunction("x","y") {
+        @Override
+        public double value(Variable v) {
+         ...
+        }
+    });
+    mapNTF_p.put(NodeType.Neumann, null);
+
+    mesh.markBorderNode(new ObjIndex(1,2),mapNTF_uv);
+    // or
+    //mesh.markBorderNode(1,mapNTF_uv);
+    //mesh.markBorderNode(2,mapNTF_uv);
+    mesh.markBorderNode(3,mapNTF_p);
+
+    for(int i=1;i<=eList.size();i++) {
+        System.out.println(i+"  " + eList.at(i));
+    }
+\end{lstlisting}
+The outputs are:
+\begin{lstlisting}
+1  GE1( 9_ 113_ 10_ 232_ 233_ 234_ )
+2  GE2( 4_ 56_ 64_ 235_ 236_ 237_ )
+3  GE3( 3_ 38_ 39_ 238_ 239_ 240_ )
+4  GE4( 1_ 63_ 9_ 241_ 242_ 243_ )
+5  GE5( 61_ 5_ 114_ 244_ 245_ 246_ )
+...
+1  GE1( 9DDN 113III 10DDN 232III 233III 234DDN )
+2  GE2( 4DDD 56DDN 64NND 235DDN 236III 237NND )
+3  GE3( 3DDN 38DDN 39DDN 238DDN 239III 240DDN )
+4  GE4( 1DDN 63DDN 9DDN 241DDN 242III 243DDN )
+5  GE5( 61DDN 5DDN 114III 244DDN 245III 246III )
+...
+\end{lstlisting}
+We can see that before marking the boundary types, there is a ``\_''
+that following the node numbers in the brackets and after marking
+the boundary types, there are capital letters following the node
+numbers. These letters are abbreviation of the node types
+\begin{itemize}
+  \item I: Inner ndoe
+  \item D: Dirichlet node
+  \item N: Neumann node
+  \item R: Robin node
+\end{itemize}
+
+
+
+
+\subsubsection{Create Element Objects}
+We have talked about $\mathbf{Mesh}$ class. The objects of
+$\mathbf{Node}$ and $\mathbf{Element}$ are contained in
+$\mathbf{Mesh}$ object. They are created when you read in a grid
+file by using the class $\mathbf{MeshReader}$. If we look into the
+code of class $\mathbf{MeshReader}$, we will see how these objects
+are created. By knowing these, you can read the grid file that has a
+format \textbf{FuturEye} doesn't support and create your own element
+objects.
+
+\begin{lstlisting}
+    Node node = new Node(index, x, y, z);
+\end{lstlisting}
+This line of code creates a node object with global index and 3D
+coordinate specified. When you have all the nodes that are needed to
+form an finite element you wanted, you can create an
+$\mathbf{Element}$ object like this:
+\begin{lstlisting}
+    NodeList list = new NodeList();
+    list.add(node1);
+    list.add(node2);
+    list.add(node3);
+    Element ele = new Element(list);
+\end{lstlisting}
+What you need is just a list of nodes in the element. Of cause,
+there are assumptions for the sequence of the list of nodes.
+Fig.\ref{mesh} shows a part of a grid. The numbers surrounded with
+small rectangles are global node indices of the grid. Taking element
+(41,79,82) for example, this element has global nodes 41,79 and 82.
+The global indices are created along with nodes themselves. If we
+focus on the element itself, these nodes also have their own local
+indices. (see Fig.\ref{mesh}
+($41\rightarrow1,79\rightarrow2,82\rightarrow3$))
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{mesh}
+    \caption{\emph{Global nodes and local nodes on elements}}
+    \label{mesh}
+\end{figure}
+
+Local node indices are important in the creating of an element
+object. Sequence of local node indices is the same as the sequence
+of parameter of the constructor of class $\mathbf{Element}$.
+Different sequence and nodes dimension and total nodes number mean
+different element types. We summarize in the following tables:
+
+
+\begin{table}[ht]
+\caption{Local indices of 1D elements} \centering
+\begin{tabular}{|c|c|c|}
+\hline
+ Linear & Quadratic & Cubic\\
+\hline
+ \includegraphics[scale=0.7]{1D2}&\includegraphics[scale=0.7]{1D3}&\includegraphics[scale=0.7]{1D4}\\
+\hline
+\end{tabular}
+\label{1D elements}
+\end{table}
+
+\begin{table}[ht]
+\caption{Local indices of 2D elements} \centering
+\begin{tabular}{|c|c|c|}
+\hline
+ Linear & Quadratic & Cubic\\
+\hline
+ \includegraphics[scale=0.7]{2D3}&\includegraphics[scale=0.7]{2D6}&\includegraphics[scale=0.7]{2D9}\\
+\hline
+ \includegraphics[scale=0.7]{2D4}&\includegraphics[scale=0.7]{2D8}&\includegraphics[scale=0.7]{2D12}\\
+\hline
+\end{tabular}
+\label{2D elements}
+\end{table}
+
+\begin{table}[ht]
+\caption{Local indices of 3D elements} \centering
+\begin{tabular}{|c|c|}
+\hline
+ Linear tetrahedron& Linear hexahedron\\
+\hline
+ \includegraphics[scale=0.7]{3D4}&\includegraphics[scale=0.7]{3D8}\\
+\hline
+\end{tabular}
+\label{3D elements}
+\end{table}
+
+Quadratic tetrahedron == Linear hexahedron ???
+
+
+Another way to create complicated element is passing an object of
+$\mathbf{GeoEntity0D}$ to the constructor of $\mathbf{Element}$. The
+class $\mathbf{GeoEntity0D}$ is the super class of template classes
+$\mathbf{GeoEntity1D}$, $\mathbf{GeoEntity2D}$ and
+$\mathbf{GeoEntity3D}$.
+
+Using these classes, any complicated element can be created.
+Actually, the above method with local indices assumption creates an
+element also needs to create the object that extends from the super
+type $\mathbf{GeoEntity0D}$. The structure of these classes are
+described in the following items:
+
+\begin{itemize}
+  \item $\mathbf{GeoEntity0D}$: contains all the vertices of a
+  geometry entity. The instance of this class presents the two
+  ends of an edge, the vertices of a face or the vertices of a
+  volume.
+  \item $\mathbf{GeoEntity1D}$: presents an edge(1D) of a geometry
+  entity and contains all the nodes on the edge (except the two nodes at the
+  ends). It also contains the two ends (vertices) inherited from super class $\mathbf{GeoEntity0D}$.
+  \item $\mathbf{GeoEntity2D}$: presents a face(2D) of a geometry
+  entity and contains all the nodes on the face (except the vertices) and contains additionally the edges of the
+  face. It also contains the vertices inherited from super class $\mathbf{GeoEntity0D}$.
+  \item $\mathbf{GeoEntity3D}$: presents a volume(3D) of a geometry
+  entity and contains all the nodes in the volume (except the
+  vertices) and contains additionally the faces of the volume. It
+  also contains the vertices inherited from super class $\mathbf{GeoEntity0D}$.
+\end{itemize}
+
+
+Let's take this element for example,
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.3\textwidth]{Geoeneity}
+    \caption{\emph{Creating element with GeoEntity}}
+    \label{Geoeneity}
+\end{figure}
+
+the following code segments create an element of the above type:
+
+\begin{lstlisting}
+    NodeList nodes = new NodeList();
+    nodes.add(new Node(1, 0.0,1.0));
+    nodes.add(new Node(2, 0.0,0.0));
+    nodes.add(new Node(3, 1.0,0.0));
+    nodes.add(new Node(4, 1.0,1.0));
+    nodes.add(new Node(5, 0.0,0.5));
+    nodes.add(new Node(6, 0.5,0.0));
+    nodes.add(new Node(7, 1.0,0.5));
+    nodes.add(new Node(8, 0.5,1.0));
+    nodes.add(new Node(9, 0.5,0.5));
+
+    Element e = new Element();
+    GeoEntity2D<EdgeLocal,NodeLocal> face =
+        new GeoEntity2D<EdgeLocal,NodeLocal>();
+    //vertices of face: 1,2,3,4
+    for(int i=1;i<=4;i++)
+        face.addVertex(new Vertex(i,new NodeLocal(i,nodes.at(i))));
+
+    int[] idxLoop = {1,2,3,4,1};
+    int[] edgeIdx = {5,6,7,8};
+    for(int i=0;i<4;i++) {
+        EdgeLocal el = new EdgeLocal(i,e);
+        int idxBeg = idxLoop[i];
+        int idxEnd = idxLoop[i+1];
+        //vertices of edge: idxBeg,idxEnd
+        el.addVertex(new Vertex(idxBeg,
+            new NodeLocal(idxBeg,nodes.at(idxBeg))));
+        el.addVertex(new Vertex(idxEnd,
+            new NodeLocal(idxEnd,nodes.at(idxEnd))));
+        //node on edge
+        el.addEdgeNode(new NodeLocal(edgeIdx[i],nodes.at(edgeIdx[i])));
+        //edge on face
+        face.addEdge(el);
+    }
+    //node on face
+    face.addFaceNode(new NodeLocal(9,nodes.at(9)));
+    //create the element
+    e.setGeoEntity(face);
+    //output info
+    System.out.println(e);
+    for(int i=1;i<=e.nodes.size();i++)
+        System.out.println(e.nodes.at(i));
+\end{lstlisting}
+The outputs are:
+\begin{lstlisting}
+GE( 1_ 2_ 3_ 4_ 5_ 6_ 7_ 8_ 9_ )
+GN1( 0.0 1.0 )
+GN2( 0.0 0.0 )
+GN3( 1.0 0.0 )
+GN4( 1.0 1.0 )
+GN5( 0.0 0.5 )
+GN6( 0.5 0.0 )
+GN7( 1.0 0.5 )
+GN8( 0.5 1.0 )
+GN9( 0.5 0.5 )
+\end{lstlisting}
+
+%单元形状考虑
+%  3D时，4个结点可以是一个六面体，但也可能退化成一个2D四边形
+%  需要单元形状检查器
+%MeshReader
+%MeshWriter
+
+
+\subsection{Shape Functions and Mappings}
+Finite element basis functions are constructed by combining shape
+functions on neighboring elements. There are many shape functions
+classes already defined in \textbf{FuturEye}. Usually, users doesn't
+need to defined shape functions themselves. But it's easy to
+implement new type shape functions by implementing the interfaces of
+shape functions in \textbf{FuturEye}.
+
+
+A shape function in \textbf{FuturEye} should implements two
+interfaces. For scalar valued shape functions, interfaces
+$\mathbf{ShapeFunction}$ and $\mathbf{Function}$ must be
+implemented. For vector valued shape functions, interfaces
+$\mathbf{ShapeFunction}$ and $\mathbf{VectorFunction}$ must be
+implemented. There are two interfaces $\mathbf{ScalarShapeFunction}$
+and $\mathbf{VectorShapeFunction}$ that defined in package
+$\mathbf{edu.uta.futureye.function.intf}$ extend the interfaces that
+a shape function need to implement. It's easy and clear to use the
+two interfaces instead of the previous ones.
+
+
+Let's explain how to create a shape function by examples. In
+mathematical context, 3 nodes linear shape functions defined on a 2D
+triangle in local coordinates (or area/barycentric coordinates)
+$(r,s,t)$ are:
+\begin{eqnarray}
+N_1(r,s,t)=r \\
+N_2(r,s,t)=s \\
+N_3(r,s,t)=t \\
+r + s + t =1
+\end{eqnarray}
+
+Any function $u$ can be approximated linearly on the element in
+local coordinates:
+\begin{eqnarray}\label{u(r,s,t)}
+u\approx U=u_1r+u_2s+u_3t
+\end{eqnarray}
+
+In Many application problems, the derivatives of $u$ with respect to
+the global Cartesian coordinates are needed. Is is implemented by
+coordinates transform from local coordinates to global coordinates.
+The relation is given by
+\begin{eqnarray}
+x=x_1r+x_2s+x_3t \label{(r,s,t)->(x,y)1}\\
+y=y_1r+y_2s+y_3t \label{(r,s,t)->(x,y)2}\\
+r + s + t =1 \label{(r,s,t)->(x,y)3}
+\end{eqnarray}
+where $(x_i,y_i), i=1,2,3$ are nodes coordinates of the triangle.
+This relation can be derived intuitively if we think the global
+coordinates $x$ and $y$ as function just like $u$ in
+(\ref{u(r,s,t)}). For example, $u(1,0,0)=u_1, u(0,1,0)=u_2,
+u(0,0,1)=u_3$ correspond to $x(1,0,0)=x_1, x(0,1,0)=x_2,
+x(0,0,1)=x_3$. Now, considering the derivatives of $u$ with respect
+to the global Cartesian coordinates.
+$$u_x(r,s,t)\approx U_x(r,s,t) = u_rr_x+u_ss_x+u_tt_x = u_1r_x+u_2s_x+u_3t_x$$
+$$u_y(r,s,t)\approx U_y(r,s,t) = u_rr_y+u_ss_y+u_tt_y = u_1r_y+u_2s_y+u_3t_y$$
+The unknown items in the above equation are $r_x,s_x,t_x,r_y,s_y$
+and $t_y$.
+
+
+A final step that concerned with shape function in FEM is the
+numerical integration on local coordinates. It is performed in order
+to get the algebra systems. So, arrived at here, we can see that a 3
+nodes linear shape function defined on a triangle element should be
+a composite function and must provides the following minimum
+required abilities:
+\begin{itemize}
+  \item It can associate with a specified physical element
+  \item It can be evaluated with respect to variable $r,s,t$
+  \item The derivative with respect to variable $x,y$ can be
+  obtained and evaluated with respect to $r,s,t$
+\end{itemize}
+
+There are 3 shape functions on a triangle element, but we don't want
+to define 3 classes for each shape function. What we do here is
+define only one class and pass a function index (e.g. 1,2,3) to the
+class constructor to create the 3 shape function objects. In order
+to create composite functions, we need the outer functions and a map
+of outer variables to inner functions. Of cause, to create real
+composite functions is not necessary according to the minimum
+abilities requirements listed above. At first, we give out the way
+of creating real composite functions.
+
+
+The local coordinates of shape functions have 3 variables, but there
+are only 2 variables are free and the third one depends on the other
+tow variables. For convenience, we can still create the shape
+function with three outer variables $r,s,t$. To do that, we need
+define a special outer function class that keep the relation
+$r+s+t=1$. For example, inner class $\mathbf{SF123}$ that contained
+in class $\mathbf{SFLinearLocal2D}$ represents shape functions
+$N1=r,N2=s,N3=t$. The following simplified code segments from
+$\mathbf{SFLinearLocal2D}$ show the basic idea of this way:
+
+\begin{lstlisting}
+public class SFLinearLocal2D  extends AbstractFunction
+                              implements ScalarShapeFunction {
+    protected int funIndex;
+    ...
+    class SF123 extends AbstractFunction {
+        public SF123() {
+            super(SFLinearLocal2D.this.varNames);
+        }
+        @Override
+        public Function _d(String var) {
+            if(varNames.get(funIndex).equals(var)) {
+                //d(N1)/dr = 1.0
+                //d(N2)/ds = 1.0
+                //d(N3)/dt = 1.0
+                return new FC(1.0);
+            } else if(funIndex == 2){
+                //N3 = r = 1 - s - t, not free variable
+                //d(N3)/ds = -1.0
+                //d(N3)/dt = -1.0
+                return new FC(-1.0);
+            } else {
+                return new FC(0.0);
+            }
+        }
+        @Override
+        public double value(Variable v) {
+            return v.get(varNames.get(funIndex));
+        }
+        public String toString() {
+            return varNames.get(funIndex);
+        }
+    }
+    ...
+    public void SFLinearLocal2D(int funID) {
+        funIndex = funID - 1;
+        //3 variable names
+        varNames.add("r");
+        varNames.add("s");
+        varNames.add("t");
+        ...
+        //Composite function
+        innerVarNames = new ObjList<String>("x","y");
+        Map<String, Function> fInners = new HashMap<String, Function>();
+        final String varName = varNames.get(funIndex);
+        fInners.put(varName,
+            new AbstractFunction(innerVarNames.toList()) {
+            ...
+            }
+        });
+        funOuter = new SF123();
+        funCompose = funOuter.compose(fInners);
+    }
+    ...
+    public String toString() {
+        String varName = varNames.get(funIndex);
+        return "N"+(funIndex+1)+"( "+varName+"(x,y) )="+
+            funOuter.toString();
+    }
+}
+\end{lstlisting}
+When we create the 3 shape function objects and print out them
+\begin{lstlisting}
+    SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
+    shapeFun[0] = new SFLinearLocal2D(1);
+    shapeFun[1] = new SFLinearLocal2D(2);
+    shapeFun[2] = new SFLinearLocal2D(3);
+    System.out.println(shapeFun[0]);
+    System.out.println(shapeFun[1]);
+    System.out.println(shapeFun[2]);
+\end{lstlisting}
+We will see the results
+\begin{lstlisting}
+    N1( r(x,y) )=r
+    N2( s(x,y) )=s
+    N3( t(x,y) )=t
+\end{lstlisting}
+
+
+Another way to create shape functions that just have 2 free
+variables only, can be implemented like this:
+\begin{lstlisting}
+public class SFLinearLocal2DTest extends AbstractFunction
+                              implements ScalarShapeFunction {
+    protected int funIndex;
+    ...
+    public void SFLinearLocal2DTest(int funID) {
+        funIndex = funID - 1;
+        //Just 2 free variables
+        varNames.add("r");
+        varNames.add("s");
+        ...
+        //Composite function
+        innerVarNames = new ObjList<String>("x","y");
+        Map<String, Function> fInners = new HashMap<String, Function>();
+        for(final String varName : varNames) {
+            fInners.put(varName,
+                new AbstractFunction(innerVarNames.toList()) {
+                ...
+            });
+        }
+        //Construct shape functions:
+        //r,s are free variables, t = 1 - r - s
+        if(funIndex == 0)
+            funOuter = new FX("r"); //N1=r
+        else if(funIndex == 1)
+            funOuter = new FX("s"); //N2=s
+        else
+            funOuter = FC.c1.S(FX.fr).S(FX.fs); //N3=1-r-s, (N3=t)
+        funOuter.setVarNames(varNames);
+        funCompose = funOuter.compose(fInners).M(FC.c(this.coef));
+    }
+    ...
+    public String toString() {
+        return "N"+(funIndex+1)+"(r,s)="+funOuter.toString();
+    }
+}
+\end{lstlisting}
+The results from the similar output code are:
+\begin{lstlisting}
+    N1(r,s)=r
+    N2(r,s)=s
+    N3(r,s)=1.0 - r - s
+\end{lstlisting}
+The difference of the two ways of constructing shape function is
+that in the second way the variable $t$ is replaced explicitly by
+$1-r-s$, while in the first way this replacement is implemented
+implicitly by class $\mathbf{SF123}$.
+
+
+
+Now, we come to the inner map of composite functions. The
+derivatives of $r,s,t$ with respect to $x,y$ should be returned by
+the inner function. From relation
+(\ref{(r,s,t)->(x,y)1})-(\ref{(r,s,t)->(x,y)3}), replace $t$ with
+$1-r-s$, we can get the Jacobian
+$$det(J_e)=\begin{vmatrix}
+      x_r & x_s \\
+      y_r & y_s \\
+\end{vmatrix}=
+\begin{vmatrix}
+      x_1-x_3 & x_2-x_3 \\
+      y_1-y_3 & y_2-y_3 \\
+\end{vmatrix}
+$$
+By inverting the mapping
+(\ref{(r,s,t)->(x,y)1})-(\ref{(r,s,t)->(x,y)3}) or by using the
+chain rule:
+$$U_x(r(x,y),s(x,y)) = U_rr_x+U_ss_x$$
+$$U_y(r(x,y),s(x,y)) = U_rr_y+U_ss_y$$
+and let U(r,s)=x:
+$$1 = x_rr_x+x_ss_x$$
+$$0 = x_rr_y+x_ss_y$$
+and let U(r,s)=y:
+$$0 = y_rr_x+y_ss_x$$
+$$1 = y_rr_y+y_ss_y$$
+We may show that
+\begin{eqnarray}
+r_x = \frac{y_s}{det(J_e)} = \frac{y_2-y_3}{\begin{vmatrix}
+      x_1-x_3 & x_2-x_3 \\
+      y_1-y_3 & y_2-y_3 \\
+\end{vmatrix}}\\
+r_y = -\frac{x_s}{det(J_e)} = -\frac{x_2-x_3}{\begin{vmatrix}
+      x_1-x_3 & x_2-x_3 \\
+      y_1-y_3 & y_2-y_3 \\
+\end{vmatrix}} \\
+s_x = -\frac{y_r}{det(J_e)} = -\frac{y_1-y_3}{\begin{vmatrix}
+      x_1-x_3 & x_2-x_3 \\
+      y_1-y_3 & y_2-y_3 \\
+\end{vmatrix}} \\
+s_y = \frac{x_r}{det(J_e)} = \frac{x_1-x_3}{\begin{vmatrix}
+      x_1-x_3 & x_2-x_3 \\
+      y_1-y_3 & y_2-y_3 \\
+\end{vmatrix}}
+\end{eqnarray}
+The following code segments give out the definition of the inner map
+of composite function in the second way above and the first way is
+similar.
+\begin{lstlisting}
+public class SFLinearLocal2DTest  extends AbstractFunction
+                              implements ScalarShapeFunction {
+    protected int funIndex;
+    private Function funCompose = null;
+    private Function funOuter = null;
+    protected ObjList<String> innerVarNames = null;
+
+    protected Element e = null;
+    private double jac = 0.0;
+    private double[] x = new double[3];
+    private double[] y = new double[3];
+
+    public void SFLinearLocal2DTest(int funID) {
+        //Just 2 free variables
+        varNames.add("r");
+        varNames.add("s");
+        ...
+        //Composite function
+        innerVarNames = new ObjList<String>("x","y");
+        Map<String, Function> fInners = new HashMap<String, Function>();
+        for(final String varName : varNames) {
+            fInners.put(varName,
+                new AbstractFunction(innerVarNames.toList()) {
+                public Function _d(String var) {
+                    if(varName.equals("r")) {
+                        if(var.equals("x"))
+                            return new FC( (y[1]-y[2]) / jac);
+                        if(var.equals("y"))
+                            return new FC( (x[2]-x[1]) / jac);
+                    } else if(varName.equals("s")) {
+                        if(var.equals("x"))
+                            return new FC( (y[2]-y[0]) / jac);
+                        if(var.equals("y"))
+                            return new FC( (x[0]-x[2]) / jac);
+                    } else
+                        throw new FuturEyeException(
+                            "\nERROR:\n varName="+varName);
+                    return null;
+                }
+                @Override
+                public double value(Variable v) {
+                    throw new FuturEyeException(
+                        "\nERROR:\n Not supported evaluate: "+v);
+                }
+            });
+        }
+        //Construct shape functions:
+        //r,s are free variables, t = 1 - r - s
+        if(funIndex == 0)
+            funOuter = new FX("r"); //N1=r
+        else if(funIndex == 1)
+            funOuter = new FX("s"); //N2=s
+        else
+            funOuter = FC.c1.S(FX.fr).S(FX.fs); //N3=1-r-s, (N3=t)
+        funOuter.setVarNames(varNames);
+        funCompose = funOuter.compose(fInners).M(FC.c(this.coef));
+    }
+    @Override
+    public void asignElement(Element e) {
+        this.e = e;
+        VertexList vList = e.vertices();
+        x[0] = vList.at(1).coord(1);
+        x[1] = vList.at(2).coord(1);
+        x[2] = vList.at(3).coord(1);
+        y[0] = vList.at(1).coord(2);
+        y[1] = vList.at(2).coord(2);
+        y[2] = vList.at(3).coord(2);
+        jac = (x[0]-x[2])*(y[1]-y[2])-(x[1]-x[2])*(y[0]-y[2]);
+    }
+\end{lstlisting}
+
+
+
+The last thing that a shape function should provide is the
+implementation of function
+\begin{lstlisting}
+    public ScalarShapeFunction restrictTo(int funIndex)
+\end{lstlisting}
+This function gives out the shape functions when it is restricted to
+one of it's border (edge or face). In our implementation, instead of
+really restrict the shape function to the border, we use directly
+the lower dim shape functions. For example:
+\begin{lstlisting}
+public class SFLinearLocal2DTest  extends AbstractFunction
+                              implements ScalarShapeFunction {
+    ...
+    ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
+    ScalarShapeFunction sf1d2 = new SFLinearLocal1D(2);
+    @Override
+    public ScalarShapeFunction restrictTo(int funIndex) {
+        if(funIndex == 1) return sf1d1;
+        else return sf1d2;
+    }
+    ...
+}
+\end{lstlisting}
+By this way, the border integral in some applications will be easy
+carried out.
+
+
+In the following, we will briefly describe how to create vector
+valued shape functions. For example, in the 2D Stokes problem, we
+may need quadratic shape functions for velocity and linear functions
+for pressure on a triangle element. For vector valued shape
+function, it should implements interface
+$\mathbf{VectorShapeFunction}$.
+\begin{lstlisting}
+public class QuadraticV_LinearP extends AbstractVectorFunction
+                                implements VectorShapeFunction {
+    ...
+}
+\end{lstlisting}
+Every component of the vector valued shape function actually is a
+$ScalarShapeFunction$. So it becomes easier by using existing
+classes that already defined for scalar shape functions. Take the 2D
+Stokes problem for example, we have to create vector valued shape
+function $(u_1, u_2, p)$, where $u_i,i=1,2$ can be defined by class
+$\mathbf{SFQuadraticLocal2D}$ and $p$ can be defined by class
+$\mathbf{SFLinearLocal2D}$. We order shape function $u_1$ first,
+$u_2$ second and $p$ last with local indices.
+\begin{lstlisting}
+/**
+ * Velocity: Quadratic shape function
+ * 3
+ * | \
+ * |  \
+ * 6   5
+ * |    \
+ * |     \
+ * 1--4-- 2
+ *
+ * NV = NV(r,s,t) = NV( r(x,y), s(x,y), t(x,y) )
+ * NV1 = (2*r-1)*r
+ * NV2 = (2*s-1)*s
+ * NV3 = (2*t-1)*t
+ * NV4 = 4*r*s
+ * NV5 = 4*s*t
+ * NV6 = 4*r*t
+ *
+ * Pressure: Linear shape function
+ * 3
+ * | \
+ * |  \
+ * |   \
+ * |    \
+ * 1---- 2
+ *
+ * NP = NP(r,s,t) = NP( r(x,y), s(x,y), t(x,y) )
+ * NP1 = r
+ * NP2 = s
+ * NP3 = t
+ *
+ * 2D vector valued shape functions
+ * Ni = (v1,v2,p)', i=1,...,15
+ *
+ * N1  =  (NV1, 0, 0)'
+ * N2  =  (NV2, 0, 0)'
+ * N3  =  (NV3, 0, 0)'
+ * N4  =  (NV4, 0, 0)'
+ * N5  =  (NV5, 0, 0)'
+ * N6  =  (NV6, 0, 0)'
+ * N7  =  (0, NV1, 0)'
+ * N8  =  (0, NV2, 0)'
+ * N9  =  (0, NV3, 0)'
+ * N10 =  (0, NV4, 0)'
+ * N11 =  (0, NV5, 0)'
+ * N12 =  (0, NV6, 0)'
+ * N13 =  (0, 0, NP1)'
+ * N14 =  (0, 0, NP2)'
+ * N15 =  (0, 0, NP3)'
+ *
+ */
+public class QuadraticV_LinearP extends AbstractVectorFunction
+                                implements VectorShapeFunction {
+    //(u1,u2,p)
+    protected SpaceVectorFunction sf = new SpaceVectorFunction(3);
+    protected int funIndex;
+    protected ObjList<String> innerVarNames = null;
+    ...
+    public QuadraticV_LinearP(int funID) {
+        dim = 3;
+        funIndex = funID - 1;
+        varNames.add("r");
+        varNames.add("s");
+        varNames.add("t");
+        innerVarNames = new ObjList<String>("x","y");
+        if(funIndex>=0 && funIndex<=5) {
+            sf.set(1, new SFQuadraticLocal2DFast(funIndex+1));
+            sf.set(2, new SF0(innerVarNames));
+            sf.set(3, new SF0(innerVarNames));
+        } else if(funIndex>=6 && funIndex<=11) {
+            sf.set(1, new SF0(innerVarNames));
+            sf.set(2, new SFQuadraticLocal2DFast(funIndex-5));
+            sf.set(3, new SF0(innerVarNames));
+        } else if(funIndex>=12 && funIndex<=14) {
+            sf.set(1, new SF0(innerVarNames));
+            sf.set(2, new SF0(innerVarNames));
+            sf.set(3, new SFLinearLocal2D(funIndex-11));
+        }
+    }
+    @Override
+    public Vector value(Variable v) {
+        return (Vector) this.sf.value(v);
+    }
+    @Override
+    public Function dot(VectorFunction b) {
+        return sf.dot(b);
+    }
+    ...
+}
+\end{lstlisting}
+
+
+
+\subsection{Degrees of Freedom}\label{Section Degrees of Freedom}
+Assume domain $\Omega$ is partitioned into a collection of finite
+elements. Any function $u(\mathbf{x})$ defined in $\Omega$ can be
+approximated by its interplant $U(\mathbf{x})$
+$$u(\mathbf{x})\approx U(\mathbf{x})=\sum_{i=1}^{N}c_i\phi_i(\mathbf{x}), \mathbf{x}\in \Omega$$
+where $i$ is the global index of degrees of freedom (DOF), $\phi_i$
+is the base function associated with DOF $i$, and $c_i$ is the value
+to be determined. $N$ is the total number of DOF. If we restrict
+$u(\mathbf{x})$ to an element $e\subset\Omega$, then
+$$u(\mathbf{x})\approx U(\mathbf{x})=\sum_{j=1}^{N_e}c_j\phi_j(\mathbf{x}), \mathbf{x}\in e$$
+where $N_e$ is the total number of DOF in element e and base
+function $\phi_j(\mathbf{x})$ becomes shape function after
+restricting to element e. In \textbf{FuturEye}, the items in the sum
+symbols above correspond to class $DOF$. Table \ref{dof} shows the
+relationship of them.
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  \shortstack{Symbols in\\
+                $\sum_{i=1}^{N}c_i\phi_i(\mathbf{x})$,\\
+                $\sum_{j=1}^{N_e}c_j\phi_j(\mathbf{x})$}  & \shortstack{Corresponding components\\
+                                                                        in class $\mathbf{DOF}$\\~} & \shortstack{Remark\\~}\\
+  \hline
+  i  & \shortstack{int \textbf{getGlobalIndex}()\\void \textbf{setGlobalIndex}(int globalIndex)} & Global index of DOF \\
+  \hline
+  j  & \shortstack{int \textbf{getLocalIndex}()\\void \textbf{setLocalIndex}(int localIndex)} & Local index of DOF \\
+  \hline
+  $\phi_j(\mathbf{x})$  & \shortstack{ShapeFunction \textbf{getSF}()\\
+                                        ScalarShapeFunction \textbf{getSSF}()\\
+                                        VectorShapeFunction \textbf{getVSF}()\\
+                                        void \textbf{setShapeFunction}(ShapeFunction sf)} & \shortstack{Shape function associated\\
+                                                                                                        with local DOF j} \\
+  \hline
+  \shortstack{$k$ of $\phi_{jk}\neq 0$, \\ $\vec{\phi_{j}}(\mathbf{x})=\left(
+  \begin{array}{c}
+    \cdots \\
+    \phi_{jk} \\
+    \cdots \\
+  \end{array}
+\right)$}  & \shortstack{int \textbf{getVvfIndex}()\\
+                                            void \textbf{setVvfIndex}(int vvfIndex)} & \shortstack{Nontrivial component\\
+                                                                                                    index of vector\\
+                                                                                                    valued shape function} \\
+  \hline
+\end{tabular}
+\caption{Degrees of freedom and class \textbf{DOF}}\label{dof}
+\end{table}
+
+
+Because shape function is contained in class \textbf{DOF}, the
+association of basis functions with mesh entities can be implemented
+by associating objects of class \textbf{DOF} to mesh entities. An
+object of class \textbf{DOF} can be associated to a node(including
+vertex), edge, or element in 2D and a node(including vertex), edge,
+face, or element in 3D. The association functions are provided by
+class \textbf{Element}, shown in table \ref{Associate DOF}
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|c|}
+  \hline
+  Functions in class \textbf{Element} & Comments \\
+  \hline
+  \shortstack{void \textbf{addNodeDOF}(int localNodeIndex,DOF dof)\\
+                DOFList \textbf{getNodeDOFList}(int localNodeIndex)\\
+                DOFList \textbf{getAllNodeDOFList}()\\
+                int \textbf{getNodeDOFNumber}()} & Associate DOFs with nodes \\
+  \hline
+  \shortstack{void \textbf{addEdgeDOF}(int localEdgeIndex,DOF dof)\\
+                DOFList \textbf{getEdgeDOFList}(int localEdgeIndex)\\
+                DOFList \textbf{getAllEdgeDOFList}()\\
+                int \textbf{getEdgeDOFNumber}()} & \shortstack{Associate DOFs with edges,\\
+                                                    in 2D and 3D case only}  \\
+  \hline
+  \shortstack{void \textbf{addFaceDOF}(int localFaceIndex,DOF dof)\\
+                DOFList \textbf{getFaceDOFList}(int localFaceIndex)\\
+                DOFList \textbf{getAllFaceDOFList}()\\
+                int \textbf{getFaceDOFNumber}()} &  \shortstack{Associate DOFs with faces,\\
+                                                    in 3D case only} \\
+  \hline
+  \shortstack{void \textbf{addVolumeDOF}(DOF dof)\\
+                DOFList \textbf{getVolumeDOFList}()\\
+                DOFList \textbf{getAllVolumeDOFList}()\\
+                int \textbf{getVolumeDOFNumber}()} & \shortstack{Associate DOFs with `volumes',\\
+                                                        here `volume' means \textbf{element} itself,\\
+                                                        in 3D is nature, but in 1D,2D\\
+                                                        should be especially noted}\\
+  \hline
+  \shortstack{DOFList \textbf{getAllDOFList}(DOFOrder order)\\
+                        int \textbf{getAllDOFNumber}()} & \shortstack{Get all DOFs in an element,\\
+                                                                    ordered by \textbf{order}}\\
+  \hline
+  \shortstack{DOFList \textbf{getAllDOFListByVvfIndex}(\\DOFOrder order,int vvfIndex)} & \shortstack{For vector valued shape\\
+                                                                                                 function, get the
+                                                                                                 component\\
+                                                                                                 with index \textbf{vvfIndex}\\
+                                                                                                 in an element,ordered by \textbf{order}} \\
+  \hline
+\end{tabular}
+\caption{Association DOFs with mesh entities}\label{Associate DOF}
+\end{table}
+
+
+In applications, there are two ways to associate objects of class
+DOF to elements. First way is that users can direct associate DOFs
+to elements through calling functions that provided in class
+\textbf{Element} shown in table \ref{Associate DOF}. This is the
+fundamental way to do the association. It can be used to associate
+any new type of finite element. The following code segment shows the
+association procedure for 2D linear triangle elements
+
+\begin{lstlisting}
+    //Create 2D linear triangle shape function
+    SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
+    for(int i=0;i<3;i++)
+        shapeFun[i] = new SFLinearLocal2D(i+1);
+
+    //Assign degree of freedom(DOF) to element
+    for(int i=1;i<=mesh.getElementList().size();i++) {
+        Element e = mesh.getElementList().at(i);
+        for(int j=1;j<=e.nodes.size();j++) {
+            //Create degree of freedom(DOF) object
+            DOF dof = new DOF(j,e.nodes.at(j).globalIndex,shapeFun[j-1]);
+            e.addNodeDOF(j, dof);
+        }
+    }
+\end{lstlisting}
+
+Another way to associate DOF to element is much easier, there are
+several classes defined in package
+\textbf{edu.uta.futureye.lib.element}. The have done the detail
+works just mentioned above. For example, the follow code segment do
+the same thing
+\begin{lstlisting}
+    //Use element library to assign degrees
+    //of freedom (DOF) to element
+    ElementList eList = mesh.getElementList();
+    FELinearTriangle linearTriangle = new FELinearTriangle();
+    for(int i=1;i<=eList.size();i++)
+        linearTriangle.assignTo(eList.at(i));
+\end{lstlisting}
+
+\begin{table}[ht]
+\caption{Element library classes} \centering
+\begin{tabular}{|l|l|}
+\hline
+ \textbf{Classes} & \textbf{Comments}\\
+\hline
+ FELinearTriangle & Linear element on triangle\\
+\hline
+ FEQuadraticTriangle & Quadratic element on triangle\\
+\hline
+ FEBilinearRectangle & Bilinear element on rectangle\\
+\hline
+  & Serendipity element on rectangle\\
+\hline
+ FEQuadraticV\_LinearP & \shortstack{Quadratic velocity and linear pressure\\ element on triangle}\\
+\hline
+  & Raviart-Thomas 2D element\\
+\hline
+ FELinearTetrahedron & Linear element on tetrahedron\\
+\hline
+\end{tabular}
+\label{Element library classes}
+\end{table}
+
+
+\subsection{Weak Form Classes}
+
+Any class that implements interface \textbf{WeakForm} will
+represents the weak formulation of a specified or a class of PED
+problems. There are two approaches defined in interface
+\textbf{WeakForm}. In the first approach (common approach), you just
+provide the expression of left and right hand side of the integrand
+in the weak formulation. The remain processes will be done by
+assembling classes in a standard way. In the second approach (fast
+approach), you should do all the things to compute the local
+stiffness matrix and load vector. Generally, the second approach is
+faster than the first approach. Because optimization of the
+algorithms in the progress can be achieved by yourself. The
+definition of interface \textbf{WeakForm} is below
+\begin{lstlisting}
+public interface WeakForm {
+    ...
+
+    //Common approach
+    void setShapeFunction(ShapeFunction trial, int trialDofLocalIndex,
+            ShapeFunction test, int testDofLocalIndex);
+
+    Function leftHandSide(Element e, ItemType itemType);
+    Function rightHandSide(Element e, ItemType itemType);
+
+    //Fast approach
+    void assembleElement(Element e,
+            Matrix globalStiff, Vector globalLoad);
+
+    //Integrate on element
+    double integrate(Element e, Function fun);
+}
+\end{lstlisting}
+
+A class that implements interface \textbf{WeakForm} is not necessary
+to implement all the methods defined in the interface. That is to
+say either the common approach or the fast approach be implemented.
+In order to decrease the coding load, we provide two abstract
+classes \textbf{AbstractScalarWeakForm} and
+\textbf{AbstractVectorWeakform}. A new class that represents a weak
+formulation just extends the proper abstract class.
+
+\subsubsection{Elliptic Problem}\label{Section Elliptic Problem}
+Let $\Omega$ be a bounded Lipschitz domain with unit normal
+$\textbf{n}$ on the boundary $\Gamma=\Gamma_D\cup\Gamma_N$. Given
+$f,g\in L^2(\Omega)$, $u_0\in H^1(\Omega)\cap C(\overline{\Omega})$,
+$q\in L^2(\Gamma_N)$, $k,c,d\in L^2(\Omega)$, seek $u\in
+H^1(\Omega)$ such that
+
+\begin{eqnarray}
+-\nabla(k\nabla u) + cu = f, in \Omega \label{Laplace EQ1}\\
+u=u_0, on \Gamma_D \label{Laplace EQ2}\\
+du+k\frac{\partial u}{\partial n}=g, on \label{Laplace EQ3}\Gamma_N
+\end{eqnarray}
+
+The weak formulation of the above reads: Given $f,g\in L^2(\Omega)$,
+$u_0\in H^1(\Omega)\cap C(\overline{\Omega})$, $k,c,d\in
+L^2(\Omega)$, seek $u\in H^1(\Omega)$ such that
+\begin{eqnarray}\label{Laplace Weak Formulation}
+(k\nabla u,\nabla v)_\Omega - (du,v)|_{\Gamma_2} + (cu,v)_\Omega =
+(f,v)_\Omega + (g,v)|_{\Gamma_2}
+\end{eqnarray}
+where $v\in H_0^1(\Omega)$ is arbitrary function.
+
+
+We list below the definition of weak formulation class
+\textbf{WeakFormLaplace} for problem (\ref{Laplace Weak
+Formulation}) in the common approach.
+
+\begin{lstlisting}
+public class WeakFormLaplace extends AbstractScalarWeakForm {
+    protected Function g_f = null;
+    protected Function g_k = null;
+    protected Function g_c = null;
+    protected Function g_g = null;
+    protected Function g_d = null;
+
+    //right hand side function (source term)
+    public void setF(Function f) {
+        this.g_f = f;
+    }
+
+    //Robin: d*u +  k*u_n = g
+    public void setParam(Function k,Function c,
+        Function g,Function d) {
+        this.g_k = k;
+        this.g_c = c;
+        this.g_g = g;
+        this.g_d = d;
+    }
+
+    @Override
+    public Function leftHandSide(Element e, ItemType itemType) {
+        if(itemType==ItemType.Domain)  {
+            //Integrand part of Weak Form on element e
+            Function integrand = null;
+            if(g_k == null) {
+                integrand =
+                    FMath.grad(u,u.innerVarNames()).
+                                  dot(
+                    FMath.grad(v,v.innerVarNames())
+                                  );
+            } else {
+
+                Function fk =
+                    Utils.interpolateFunctionOnElement(g_k,e);
+                Function fc =
+                    Utils.interpolateFunctionOnElement(g_c,e);
+                integrand = fk.M(
+                                    FMath.grad(u,u.innerVarNames()).
+                                    dot(
+                                    FMath.grad(v,v.innerVarNames())))
+                            .A(
+                                    fc.M(u.M(v))
+                            );
+            }
+            return integrand;
+        }
+        else if(itemType==ItemType.Border) {
+            if(g_d != null) {
+                Element be = e;
+                Function fd =
+                    Utils.interpolateFunctionOnElement(g_d, be);
+                Function borderIntegrand = fd.M(u.M(v));
+                return borderIntegrand;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Function rightHandSide(Element e, ItemType itemType) {
+        if(itemType==ItemType.Domain)  {
+            Function ff =
+                Utils.interpolateFunctionOnElement(g_f, e);
+            Function integrand = ff.M(v);
+            return integrand;
+        } else if(itemType==ItemType.Border) {
+            Element be = e;
+            Function fq =
+                Utils.interpolateFunctionOnElement(g_g, be);
+            Function borderIntegrand = fq.M(v);
+            return borderIntegrand;
+        }
+        return null;
+    }
+}
+\end{lstlisting}
+We can see that in function \textbf{leftHandSide}, $(k\nabla
+u,\nabla v)_\Omega + (cu,v)_\Omega$ in (\ref{Laplace Weak
+Formulation}) corresponds to the following part of code
+\begin{lstlisting}
+    integrand = fk.M(
+                        FMath.grad(u,u.innerVarNames()).
+                        dot(
+                        FMath.grad(v,v.innerVarNames())))
+                .A(
+                        fc.M(u.M(v))
+                );
+\end{lstlisting}
+and the border integration $(du,v)|_{\Gamma_2}$ in (\ref{Laplace
+Weak Formulation}) corresponds to
+\begin{lstlisting}
+    Function borderIntegrand = fd.M(u.M(v));
+\end{lstlisting}
+In function \textbf{rightHandSide}, $(f,v)_\Omega$  in (\ref{Laplace
+Weak Formulation}) corresponds to
+\begin{lstlisting}
+    Function integrand = ff.M(v);
+\end{lstlisting}
+and $(g,v)|_{\Gamma_2}$  in (\ref{Laplace Weak Formulation})
+corresponds to
+\begin{lstlisting}
+    Function borderIntegrand = fq.M(v);
+\end{lstlisting}
+Static method \textbf{Utils.interpolateFunctionOnElement} can
+interpolate any function on an element. All the parameters such as
+$k,c,f,d,g$ must be interpolated on element, because the standard
+integrate progress that defined in the above abstract classes need
+local coordinate system.
+
+
+It should be noted that class \textbf{WeakFormLaplace} can be used
+to solve both 2D and 3D problems. There are also two classes
+\textbf{WeakFormLaplace2D} and \textbf{WeakFormLaplace3D} defind in
+package \textbf{edu.uta.futureye.lib.weakform} which are used to
+solve 2D and 3D problems respectively. The strongpoints of these two
+class are that optimization of the code has been implemented for
+both of the classes and the two approach of implementing interface
+\textbf{WeakForm} have also been implemented.
+
+
+\subsubsection{Mixed Laplace Problem}
+In this section, we will describe how the fast approach of creating
+weak form classes and how to implement weak form of vector valued
+problems. Considering 2D case, problem (\ref{Laplace EQ1}) can be
+split into two equations
+\begin{eqnarray}
+\nabla\cdot\mathbf{p} + f = 0, in \Omega \label{Mixed Laplace EQ1}\\
+\mathbf{p} = \nabla u, in \Omega \label{Mixed Laplace EQ2}
+\end{eqnarray}
+for unknown $u\in H^1(\Omega)$ and $\mathbf{p}\in H(div, \Omega)$,
+where
+$$H(div,\Omega):=\{\mathbf{q}\in
+L^2(\Omega)^2:\nabla\cdot\mathbf{q}\in L^2(\Omega)\}$$ Here for
+simplicity, we just let $k=1,c=0$ in (\ref{Laplace EQ1}). The weak
+formulation of (\ref{Mixed Laplace EQ1})(\ref{Mixed Laplace EQ2})
+is: seek $q \in H_g(div,\Omega)$ and $u \in L^{2}(\Omega)$ such that
+\begin{eqnarray}
+(\mathbf{p},\mathbf{q})_{\Omega} +
+(u,\nabla\cdot\mathbf{q})_{\Omega} =
+(u_D,\mathbf{q}\cdot \mathbf{n})_{\Gamma_{D}} \label{Laplace Mixed EQ1}\\
+(v,\nabla\cdot\mathbf{p})_{\Omega} = -(v,f)_{\Omega} \label{Laplace
+Mixed EQ2}
+\end{eqnarray}
+for all $q \in H_0(div,\Omega)$ and $v \in L^{2}(\Omega)$. Where
+where $$H_0(div,\Omega):=\{\mathbf{q}\in
+H(div,\Omega):\mathbf{q}\cdot\mathbf{n}=0, on \Gamma_N\}$$
+$$H_g(div,\Omega):=\{\mathbf{q}\in
+H(div,\Omega):\mathbf{q}\cdot\mathbf{n}=g, on \Gamma_N\}$$ Here we
+consider Neumann boundary condition $\mathbf{q}\cdot\mathbf{n}=g, on
+\Gamma_N$.
+
+We choose an edge-oriented basis of $RT_0$ for solving (\ref{Laplace
+Mixed EQ1}),(\ref{Laplace Mixed EQ2}), then a linear system of the
+form will be get
+\begin{eqnarray}\label{Mixed Laplace Block Matrix}
+\left(
+  \begin{array}{cc}
+    B & C \\
+    C^T & 0 \\
+  \end{array}
+\right)
+\left(
+    \begin{array}{c}
+    \mathbf{p} \\
+    u \\
+    \end{array}
+\right)=
+\left(
+  \begin{array}{c}
+    0 \\
+    b_f \\
+  \end{array}
+\right)
+\end{eqnarray}
+
+In this case, by using block matrix and block vector will lead to
+easy assembling and post processing procedures. In weak form class
+\textbf{WeakFormMixedLaplace}, the method
+\begin{lstlisting}
+    void assembleElement(Element e,
+                Matrix globalStiff, Vector globalLoad)
+\end{lstlisting}
+should be implemented to assemble local stiffness matrix and vector
+to global ones. But you need not to care about whether the matrix
+and the vector that passed in by function parameters are block ones
+or not block ones. Because classes implemented the interfaces
+\textbf{BlockMatrix} and \textbf{BlockVector} are designed to access
+their components by the ways of either globally or locally.
+
+
+The following code gives a demo of how to implement the function
+\textbf{assembleElement}. Assuming that the elements are all
+triangles for simplicity.
+
+\begin{lstlisting}
+public void assembleElement(Element e,
+        Matrix globalStiff, Vector globalLoad){
+    DOFList edgeDOFs = e.getAllEdgeDOFList();
+    DOFList eleDOFs = e.getVolumeDOFList();
+    int nEdgeDOF = edgeDOFs.size();
+    int nElementDOF = eleDOFs.size();
+
+    //The type cast is not necessary in this case, but it gives a
+    //demo of that when you think it's better to use the block
+    //matrix and vector to do the assembling.
+    BlockMatrix blockMat = (BlockMatrix)globalStiff;
+    BlockVector blockVec = (BlockVector)globalLoad;
+    //Matrix m11 = blockMat.getBlock(1, 1);
+    //Matrix m12 = blockMat.getBlock(1, 2);
+    //Matrix m21 = blockMat.getBlock(2, 1);
+    //Matrix m22 = blockMat.getBlock(2, 2);
+
+    //The Jacobin of element e must be updated first
+    e.updateJacobinLinear2D();
+    for(int i=1;i<=nEdgeDOF;i++) {
+        edgeDOFs.at(i).getVSF().asignElement(e);
+    }
+
+    //Loop for edge degrees of freedom for p
+    for(int j=1;j<=nEdgeDOF;j++) {
+        DOF dofV = edgeDOFs.at(j);
+        VectorShapeFunction vecV = dofV.getVSF();
+        //Loop for edge degrees of freedom for q
+        for(int i=1;i<=nEdgeDOF;i++) {
+            DOF dofU = edgeDOFs.at(i);
+            VectorShapeFunction vecU = dofU.getVSF();
+            //B = (p,q)_{\Omega}
+            Function integrandB = vecU.dot(vecV);
+            double val = FOIntegrate.intOnTriangleRefElement(
+                            integrandB.M(e.getJacobin()),4);
+            blockMat.add(dofU.getGlobalIndex(), dofV.getGlobalIndex(),
+                            val);
+        }
+        //Loop for area degrees of greedom for u
+        for(int k=1;k<=nElementDOF;k++) {
+            DOF dofE = eleDOFs.at(k);
+            //C = (u,\div{q})_{\Omega}
+            Function integrandC = FMath.div(vecV);
+            Function val = FOIntegrate.intOnTriangleRefElement(
+                            integrandC.M(e.getJacobin()),4);
+            blockMat.add(dofV.getGlobalIndex(), dofE.getGlobalIndex(),
+                            val);
+            //C' = (v,\div{p})_{\Omega}
+            blockMat.add(dofE.getGlobalIndex(), dofV.getGlobalIndex(),
+                            val);
+        }
+    }
+    //Loop for area degrees of greedom for (v,f)
+    for(int k=1;k<=nElementDOF;k++) {
+        DOF dofE = eleDOFs.at(k);
+        Function integrand = Utils.interpolateFunctionOnElement(g_f, e);
+        //bf = -(v,f)_{\Omega}
+        integrand = FC.c(-1.0).M(integrand);
+        double val = FOIntegrate.intOnTriangleRefElement(
+                integrand.M(e.getJacobin()),4
+            );
+        blockVec.add(dofE.getGlobalIndex(), val);
+    }
+}
+\end{lstlisting}
+
+
+\subsubsection{Other Weak Forms}
+
+
+\textbf{Convection-diffusion equation}
+\begin{eqnarray}
+\frac{\partial{c}}{\partial{t}} = \nabla\cdot(k\nabla{c}) -
+\mathbf{v}\cdot\nabla{c} + f \label{Convection Diffusion}
+\end{eqnarray}
+where $c=c(x,y,z,t)$ represents particles or energy (e.g. salt
+density, heat...) are transferred inside a physical system due to
+two processes: diffusion and convection. $k=k(x,y,z)$ is the
+diffusion coefficient. $\mathbf{v}=(v_1,v_2,v_3)'$ is the convection
+velocity vector. $f=f(x,y,z)$ is the source term.
+
+The implicit Euler time discrete form of (\ref{Convection
+Diffusion}) reads: let
+$$\frac{\partial{c}}{\partial{t}} =
+\frac{c_{n+1} - c_n}{\delta{t}}$$ where $\delta{t}$ is time step
+size, then we have,
+\begin{eqnarray}
+-\delta{t}\nabla\cdot(k\nabla{c_{n+1}}) +
+\delta{t}\mathbf{v}\cdot\nabla{c_{n+1}} + c_{n+1} = \delta{t}f + c_n
+\end{eqnarray}
+The weak formulation of the time discrete form reads: seek $u\in
+H^1(\Omega)$, such that, for any $w\in H_0^1(\Omega)$
+\begin{eqnarray}
+\delta{t}(k\nabla{u},\nabla{w}) + \notag\\
+\delta{t}(\mathbf{v}\cdot\nabla{u},w) + \notag\\
+(bu,w) = (\delta{t}f + c_n,w)
+\end{eqnarray}
+where $u := c_{n+1}$. We can write explicitly
+\begin{eqnarray}
+\delta{t}( (ku_x,w_x)+(ku_y,w_y)+(ku_z,w_z) ) + \notag\\
+\delta{t}( (v_1u_x,w)+(v_2u_y,w)+(v_3u_z,w) ) + \notag\\
+(bu,w) = (\delta{t}f + c_n,w)
+\end{eqnarray}
+where $b=1$, or $b=b(x,y,z)$, when left hand side of equation
+(\ref{Convection Diffusion}) has the term $ac$, where
+$a(x,y,z)=b(x,y,z)-1$.
+
+Dirichlet and Neumann (or Robin) boundary conditions
+$$c = c_0, on \Gamma_D$$
+$$dc + k\frac{\partial c}{\partial n} = g, on \Gamma_N$$
+
+
+The following weak form class gives one step computation of $c$ from
+$c_n$ to $c_{n+1}$.
+
+\begin{lstlisting}
+public class WeakFormConvectionDiffusion extends
+AbstractScalarWeakForm {
+...
+public Function leftHandSide(Element e, ItemType itemType) {
+        if(itemType==ItemType.Domain)  {
+        //Interplate functions on element e
+        Function fk = Utils.interpolateFunctionOnElement(g_k,e);
+        Function fb = Utils.interpolateFunctionOnElement(g_b,e);
+        VectorFunction fv = new SpaceVectorFunction(g_v.getDim());
+        for(int dim=1;dim<=g_v.getDim();dim++)
+            fv.set(dim,
+                Utils.interpolateFunctionOnElement(g_v.get(dim),e));
+
+        //Dt*(k*\nabla{u},\nabla{w}) +
+        //Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) +
+        //b*(u,w)
+        Function integrand = null;
+        integrand = fk.M(
+                        FMath.grad(u,u.innerVarNames()).
+                            dot(
+                        FMath.grad(v,v.innerVarNames()))
+                    ).A(
+                        fv.dot(FMath.grad(u,u.innerVarNames()))
+                    ).M(FC.c(Dt)).A(
+                        fb.M(u).M(v)
+                    );
+        return integrand;
+    }
+    else if(itemType==ItemType.Border) {
+        if(g_d != null) {
+            Element be = e;
+            Function fd = Utils.interpolateFunctionOnElement(g_d, be);
+            Function borderIntegrand = fd.M(u.M(v));
+            return borderIntegrand;
+        }
+    }
+    return null;
+}
+
+public Function rightHandSide(Element e, ItemType itemType) {
+    if(itemType==ItemType.Domain)  {
+        //(Dt*f + c_n,w)
+        Function ff = Utils.interpolateFunctionOnElement(g_f, e);
+        Function fcn = Utils.interpolateFunctionOnElement(g_cn, e);
+        Function integrand = ff.M(FC.c(Dt)).A(fcn).M(v);
+        return integrand;
+    } else if(itemType==ItemType.Border) {
+        Element be = e;
+        Function fq = Utils.interpolateFunctionOnElement(g_g, be);
+        Function borderIntegrand = fq.M(v);
+        return borderIntegrand;
+    }
+    return null;
+}
+}
+\end{lstlisting}
+
+
+\textbf{Stokes equation} Let's consider Stokes equations which are
+basic components of more complicated fluent problems(e.g.
+Navier-Stokes equations). The unknown of this problem is a vector
+valued function. So, this example can be a good template for other
+vector valued problems. For simplicity, considering 2D case:
+\begin{eqnarray}
+-\nabla (k\nabla\cdot \mathbf{u})  + \nabla{p} = \mathbf{f}\\
+\nabla\cdot \mathbf{u} = 0
+\end{eqnarray}
+where $\mathbf{u}=(u_1,u_2)$ is velocity vector field,
+$\mathbf{f}=(f_1,f_2)$ is body force. The weak formulation reads:
+
+find $\mathbf{u} \in H_0^1(div,\Omega)$, $p \in L^2(\Omega)$ such
+that, for all $\mathbf{v} \in H_0^1(div,\Omega)$, $q \in
+L^2(\Omega)$
+\begin{eqnarray}
+(\nabla{\mathbf{v}},k\nabla{\mathbf{u}}) -
+(\nabla\cdot{\mathbf{v}},p) + (q,\nabla\cdot{\mathbf{u}}) =
+(\mathbf{v},\mathbf{f})
+\end{eqnarray}
+Write explicitly
+\begin{eqnarray}
+(v_{1x},ku_{1x}) + (v_{1y},ku_{1y}) + (v_{2x},ku_{2x}) + (v_{2y},ku_{2y}) - \notag\\
+(v_{1x}+v_{2y},p) + \notag\\
+(q,u_{1x}+u_{2y}) \notag\\
+= (v_1,f_1)+(v_2,f_2)
+\end{eqnarray}
+
+The definition of the corresponding weak form class
+\textbf{WeakFormStokes} is listed below
+
+\begin{lstlisting}
+public class WeakFormStokes extends AbstractVectorWeakform {
+protected VectorFunction g_f = null;
+protected Function g_k = null;
+protected Function g_c = null;
+//Robin:  k*u_n + d*u - p\mathbf{n} = 0
+protected VectorFunction g_d = null;
+
+public void setF(VectorFunction f) {
+    this.g_f = f;
+}
+
+public void setParam(Function k,Function c) {
+    this.g_k = k;
+    this.g_c = c;
+}
+
+//Robin:  k*u_n + d*u - p\mathbf{n} = 0
+public void setRobin(VectorFunction d) {
+    this.g_d = d;
+}
+
+public Function leftHandSide(Element e, ItemType itemType) {
+    if(itemType==ItemType.Domain)  {
+        //Integrand part of Weak Form on element e
+        Function integrand = null;
+        Function fk = Utils.interpolateFunctionOnElement(g_k,e);
+        Function fc = Utils.interpolateFunctionOnElement(g_c,e);
+        ScalarShapeFunction u1 = (ScalarShapeFunction)u.get(1);
+        ScalarShapeFunction u2 = (ScalarShapeFunction)u.get(2);
+        ScalarShapeFunction p  = (ScalarShapeFunction)u.get(3);
+        ScalarShapeFunction v1 = (ScalarShapeFunction)v.get(1);
+        ScalarShapeFunction v2 = (ScalarShapeFunction)v.get(2);
+        ScalarShapeFunction q  = (ScalarShapeFunction)v.get(3);
+        //(v1_x,k*u1_x) + (v1_y,k*u1_y) +
+        //(v2_x,k*u2_x) + (v2_y,k*u2_y) -
+        //(v1_x+v2_y,p) + (q,u1_x+u2_y)
+        Function uv1 = FMath.grad(u1,u1.innerVarNames()).
+                        dot(FMath.grad(v1,v1.innerVarNames()));
+        Function uv2 = FMath.grad(u2,u2.innerVarNames()).
+                        dot(FMath.grad(v2,v2.innerVarNames()));
+        Function div_v = v1._d("x").A(v2._d("y"));
+        Function div_u = u1._d("x").A(u2._d("y"));
+        integrand = fk.M( uv1.A(uv2) ).S( div_v.M(p) ).A( div_u.M(q) );
+        return integrand;
+    }
+    else if(itemType==ItemType.Border) {
+        if(g_d != null) {
+            Element be = e;
+            Function fd1 =
+                Utils.interpolateFunctionOnElement(g_d.get(1), be);
+            Function fd2 =
+                Utils.interpolateFunctionOnElement(g_d.get(2), be);
+            ScalarShapeFunction u1 = (ScalarShapeFunction)u.get(1);
+            ScalarShapeFunction u2 = (ScalarShapeFunction)u.get(2);
+            ScalarShapeFunction v1 = (ScalarShapeFunction)v.get(1);
+            ScalarShapeFunction v2 = (ScalarShapeFunction)v.get(2);
+            //Robin:  - k*u_n = d*u - p\mathbf{n}
+            //d1*u1 + d2*u2
+            Function borderIntegrand = fd1.M(u1.M(v1)).A(fd2.M(u2.M(v2)));
+            return borderIntegrand;
+        }
+    }
+    return null;
+}
+
+public Function rightHandSide(Element e, ItemType itemType) {
+    if(itemType==ItemType.Domain)  {
+        Function f1 =
+            Utils.interpolateFunctionOnElement(g_f.get(1), e);
+        Function f2 =
+            Utils.interpolateFunctionOnElement(g_f.get(2), e);
+        ScalarShapeFunction v1 = (ScalarShapeFunction)v.get(1);
+        ScalarShapeFunction v2 = (ScalarShapeFunction)v.get(2);
+        //(v1*f1+v2*f2)
+        Function integrand = v1.M(f1).A(v2.M(f2));
+        return integrand;
+    } else if(itemType==ItemType.Border) {
+        Element be = e;
+        ScalarShapeFunction v1 = (ScalarShapeFunction)v.get(1);
+        ScalarShapeFunction v2 = (ScalarShapeFunction)v.get(2);
+        ScalarShapeFunction p  = (ScalarShapeFunction)v.get(3);
+        //Robin:  - k*u_n = d*u - p\mathbf{n}
+        //- p\mathbf{n} = - p*n1*v1 - p*n2*v2
+        Edge edge = (Edge)be.getGeoEntity();
+        Vector n = edge.getNormVector();
+        FC n1 = FC.c(-1.0*n.get(1));
+        FC n2 = FC.c(-1.0*n.get(2));
+        Function borderIntegrand = p.M(v1.M(n1)).A(p.M(v2.M(n2)));
+        return borderIntegrand;
+    }
+    return null;
+}
+}
+\end{lstlisting}
+
+
+boundary conditions?
+
+\subsection{Assembly Process}\label{Section Assembly Process}
+
+The summation over elements is regarded as an assembly process where
+the element stiffness matrices are added into their proper places in
+the global stiffness matrix. It is not necessary to actually extend
+the dimensions of the element matrices to those of the global
+stiffness matrix.
+
+Interface \textbf{Assembler} provides several standard methods that
+every assembling class should implements those methods. Users just
+call the standard functions, the assembly process for the specified
+problem will be performed by the assembler class. The details will
+be hidden, so users doesn't need to care about them.
+
+For common problems, there are two assembler class defined in
+\textbf{FuturEye}: \textbf{AssemblerScalar} and
+\textbf{AssemblerVector}. For problems of single valued unknowns, we
+can use class \textbf{AssemblerScalar} to do the assembly process
+and for problems of vector valued unkonwns use class
+\textbf{AssemblerVector} to do the assembly process. For example,
+the following code shows a standard assembly process for a problem
+of single valued unknowns
+\begin{lstlisting}
+    Assembler assembler = new AssemblerScalar(mesh, weakForm);
+    assembler.assemble();
+    Matrix stiff = assembler.getStiffnessMatrix();
+    Vector load = assembler.getLoadVector();
+\end{lstlisting}
+For a problem of vector valued unknowns is similar.
+
+
+\textbf{AssemblerScalar} and \textbf{AssemblerVector} will call
+functions \textbf{leftHandSide} and \textbf{rightHandSide} define in
+weak form classes. So, they are not the fastest way of assembling.
+Class \textbf{AssemblerScalarFast} will call function
+\textbf{assembleElement} define in weak form classes, this function
+can be designed more faster than the first way just mentioned.
+
+
+Although, the assembler class above can handle most cases, but in
+some case, users should define their own assembler class to perform
+assembly process for their problems. We show a example class
+\textbf{AssemblerMixedLaplace} for assembly process of mixed laplace
+problems. The global stiffness matrix and global load vector of
+mixed laplace problem are actually block matrix and block vector.
+See (\ref{Mixed Laplace Block Matrix}), we write out the algebra
+system again:
+\begin{eqnarray}\label{Mixed Laplace Block Matrix}
+\left(
+  \begin{array}{cc}
+    B & C \\
+    C^T & 0 \\
+  \end{array}
+\right) \left(
+    \begin{array}{c}
+    \mathbf{p} \\
+    u \\
+    \end{array}
+\right)= \left(
+  \begin{array}{c}
+    0 \\
+    b_f \\
+  \end{array}
+\right)
+\end{eqnarray}
+Block matrix and block vector will benefit the solving of linear
+system and post processing process. For this reason, we need define
+a block matrix and a block vector as the parameters passed to the
+function \textbf{assembleElement} of the weak form class. In the
+following code of definition of class
+\textbf{AssemblerMixedLaplace}, the global block stiffness matrix
+and the global block load vector are defined first in the class
+constructor. Then the assembly process is define in function
+\textbf{assemble}.
+\begin{lstlisting}
+public class AssemblerMixedLaplace implements Assembler {
+    protected Mesh mesh;
+    protected WeakForm weakForm;
+    protected BlockMatrix globalStiff;
+    protected BlockVector globalLoad;
+
+    public AssemblerMixedLaplace(Mesh mesh, WeakForm weakForm) {
+        this.mesh = mesh;
+        this.weakForm = weakForm;
+
+        int edgeDOF = mesh.getEdgeList().size();
+        int elementDOF = mesh.getEdgeList().size();
+
+        globalStiff = new SparseBlockMatrix(2,2);
+        globalStiff.setBlock(1, 1,
+                new SparseMatrix(edgeDOF,edgeDOF));
+        globalStiff.setBlock(1, 2,
+                new SparseMatrix(edgeDOF,elementDOF));
+        globalStiff.setBlock(2, 1,
+                new SparseMatrix(elementDOF,edgeDOF));
+        globalStiff.setBlock(2, 2,
+                new SparseMatrix(elementDOF,elementDOF));
+
+        globalLoad = new SparseBlockVector(2);
+        globalLoad.setBlock(1, new SparseVector(edgeDOF));
+        globalLoad.setBlock(2, new SparseVector(elementDOF));
+
+    }
+
+    @Override
+    public void assemble() {
+        ElementList eList = mesh.getElementList();
+        int nEle = eList.size();
+        //Loop for every element
+        for(int i=1; i<=nEle; i++) {
+            //Adjust if it is not counter clockwise
+            eList.at(i).adjustVerticeToCounterClockwise();
+            weakForm.assembleElement(eList.at(i),
+                    globalStiff, globalLoad);
+            //Show assembling process for every 100 elements
+            if(i%100==0)
+                System.out.println("Assemble..."+
+                        String.format("%.0f%%", 100.0*i/nEle));
+        }
+        return;
+    }
+
+    public Vector getLoadVector() {
+        return globalLoad;
+    }
+
+    public Matrix getStiffnessMatrix() {
+        return globalStiff;
+    }
+}
+\end{lstlisting}
+
+
+\subsection{Solving Linear System}\label{Section Solving Linear System}
+
+The current version of \textbf{FuturEye} provides only limited
+methods for solving linear system that directly implemented. But
+there are several matrix and vector classes defined in package
+\textbf{edu.uta.futureye.algebra} which includes useful wrapper
+classes for using other linear solver libraries, for example Java
+BLAS Interface, Matrix-Toolkits-Java(MTJ) etc.
+
+
+\subsubsection{Matrix and Vector Classes} There are three kinds of
+matrix and vector interfaces
+\begin{itemize}
+  \item Matrix and Vector
+  \item BlockMatrix and BlockVector
+  \item AlgebraMatrix and AlgebraVector
+\end{itemize}
+
+It is easy to understand the key features of the three kinds
+interfaces from their names.
+
+Interfaces \textbf{Matrix} and \textbf{Vector} are basic interfaces
+for general purpose matrix and vector operations.
+
+
+\textbf{BlockMatrix} and \textbf{BlockVector} that extends from
+\textbf{Matrix} and \textbf{Vector} are designed to handle
+operations for block (or partitioned) matrix and vector. Block
+matrix is a matrix broken into sections called blocks. That is to
+say, the matrix is written in terms of smaller matrices. In block
+matrix, rows and columns must be formed consistently: the matrix is
+split into blocks by horizontal and vertical lines, which must cut
+the matrix completely in the given direction. Block vector is
+similar.
+
+\textbf{AlgebraMatrix} and \textbf{AlgebraVector} are designed to
+handle algebra operations. Most of the parameters of the methods in
+the interfaces are primitive data types in Java. Fast algebra
+operations can be implemented in this way.
+
+
+We list the implemented classes of the above interfaces in the
+tables below:
+
+\begin{table}[ht]
+\caption{Classes implement interfaces Matrix and Vector} \centering
+\begin{tabular}{|c|c|}
+  \hline
+  Classes & Comments \\
+  \hline
+  \textbf{SparseMatrix} & Sparse matrix, mainly used in assembly process \\
+  \hline
+  \textbf{SparseVector} & Sparse vector, mainly used in assembly process \\
+  \hline
+  \textbf{SpaceVector} &  Space vector \\
+  \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\caption{Classes implement interfaces BlockMatrix and BlockVector}
+\centering
+\begin{tabular}{|c|c|}
+  \hline
+  Classes & Comments \\
+  \hline
+  \textbf{SparseBlockMatrix} & Sparse block matrix, mainly used in assembly process \\
+  \hline
+  \textbf{SparseBlockVector} & Sparse block vector, mainly used in assembly process \\
+  \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\caption{Classes implement interfaces AlgebraMatrix and
+AlgebraVector} \centering
+\begin{tabular}{|c|c|}
+  \hline
+  Classes & Comments \\
+  \hline
+  \textbf{CompressedRowMatrix} & The compressed row storage (CRS) format of matrix\\
+  \hline
+  \textbf{CompressedColMatrix} & The compressed col storage (CCS) format of matrix\\
+  \hline
+  \textbf{FullVector} & Full storage of vector \\
+  \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Solvers}
+
+Class \textbf{Slover} provides several methods that directly
+implemented in \textbf{FuturEye}.
+
+\begin{lstlisting}
+public AlgebraVector solveCG(AlgebraMatrix A, AlgebraVector b,
+        AlgebraVector x)
+\end{lstlisting}
+Function \textbf{solveCG} is the Conjugate Gradients iterative
+method that solves symmetric positive definite linear system.
+
+\begin{lstlisting}
+public AlgebraVector solveCGS(AlgebraMatrix A, AlgebraVector b,
+        AlgebraVector x)
+\end{lstlisting}
+Function \textbf{solveCGS} is the Conjugate Gradients squared
+iterative method that solves unsymmetric linear system.
+
+
+After assembly process, we get the global stiffness matrix and
+global load vector. But usually, they are sparse matrix and vector.
+The interfaces they implemented are \textbf{Matrix} and
+\textbf{Vector}. In order to use the solvers above, users should
+convert the global matrix and vector to the right ones. However,
+it's an easy thing. The following code segment shows how to do this:
+\begin{lstlisting}
+    ...
+    Matrix stiff = assembler.getStiffnessMatrix();
+    Vector load = assembler.getLoadVector();
+    ...
+    Solver solver = new Solver();
+    AlgebraMatrix A =
+        new CompressedRowMatrix((SparseMatrix)stiff,true);
+    FullVector b = new FullVector((SparseVector)load);
+    //Initial value for iteration solvers
+    SparseVector x = new SparseVector(load.getDim(),1.0);
+    FullVector algX = new FullVector(x);
+    solver.solveCG(A, B, algX);
+
+    //Sometimes, the solution will be output to a file,
+    //we need object having interface Vector, so assign
+    //the values of algX to vector x
+    double[] data = algX.getData();
+    for(int i=0;i<data.length;i++) {
+        x.set(i+1, data[i]);
+    }
+\end{lstlisting}
+
+In the current version of \textbf{FuturEye}, we have implemented the
+following methods of class \textbf{Solver} that provide iterative
+methods with parameters of type \textbf{Matrix} and \textbf{Vector}
+for fast coding and testing. They convert the objects of type
+\textbf{Matrix} and \textbf{Vector} automatically to the objects of
+type \textbf{AlgebraMatrix} and \textbf{AlgebraVector}.
+
+\begin{table}[ht]
+\caption{Methods in Class Solver} \centering
+\begin{tabular}{|l|l|}
+  \hline
+  Methods in Solver & Comments \\
+  \hline
+  Vector solveCG(Matrix A, Vector b, Vector x)& CG iterative method\\
+  \hline
+  Vector solveCG(Matrix A, Vector b) & CG iterative method with initial x=1.0\\
+  \hline
+  Vector solveCGS(Matrix A, Vector b, Vector x) & CGS iterative method\\
+  \hline
+  Vector solveCGS(Matrix A, Vector b) & CGS iterative method with initial x=1.0\\
+  \hline
+\end{tabular}
+\end{table}
+
+
+
+Class \textbf{SloverJBLAS} is an wrapper of Java BLAS library. The
+following table shows the methods defined in it:
+
+\begin{table}[ht]
+\caption{Methods in Class SloverJBLAS} \centering
+\begin{tabular}{|l|l|}
+  \hline
+  Methods in SloverJBLAS & Comments \\
+  \hline
+  Vector solveDGESV(Matrix m, Vector v) & DGESV \\
+  \hline
+\end{tabular}
+\end{table}
+
+
+
+Class \textbf{SloverMTJ} is an wrapper of Matrix-Toolkits-Java
+library. The following table shows the methods defined in it:
+
+
+\begin{table}[ht]
+\caption{Methods in Class SloverMTJ} \centering
+\begin{tabular}{|l|l|}
+  \hline
+  Methods in SloverMTJ & Comments \\
+  \hline
+  \shortstack{Vector solveCG(SparseMatrix A, SparseVector b,\\
+            SparseVector x)} & CG iterative method\\
+  \hline
+\end{tabular}
+\end{table}
+
+
+
+
+\section{Whole Examples}
+
+In this section, we will give several whole examples about how to
+use the basic components in \textbf{FuturEye} to solve specific
+Partial Differential Equations(PDE) with Finite Element
+Methods(FEM).
+
+\subsection{Example 1}
+
+The first example is an elliptic problem with true solution known.
+The problem is find $u\in H^1(\Omega)$ such that
+\begin{eqnarray}
+-\Delta{u(x,y)}=f(x,y), \quad (x,y)\in\Omega \label{Ex1 Eq1}\\
+u(x,y)=0, \quad (x,y)\in\partial\Omega\label{Ex1 Eq2}\\
+f(x,y)=-2(x^2+y^2)+36\label{Ex1 Eq3}\\
+\Omega=[-3,3]\times[-3,3]
+\end{eqnarray}
+The true solution is
+\begin{eqnarray}
+u = (x^2-9)(y^2-9), \quad (x,y)\in\Omega
+\end{eqnarray}
+The complete code file for solving the elliptic problem is listed
+below and a description for each part of the code segment follows.
+\begin{lstlisting}
+package edu.uta.futureye.tutorial;
+import java.util.HashMap;
+import edu.uta.futureye.algebra.SolverJBLAS;
+import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.function.basic.FC;
+import edu.uta.futureye.function.basic.FX;
+import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.io.MeshReader;
+import edu.uta.futureye.io.MeshWriter;
+import edu.uta.futureye.lib.assembler.AssemblerScalar;
+import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
+import edu.uta.futureye.util.container.ElementList;
+
+public class Laplace {
+    public static void main(String[] args) {
+        //1.Read in a triangle mesh from an input file with
+        //  format ASCII UCD generated by Gridgen
+        MeshReader reader = new MeshReader("triangle.grd");
+        Mesh mesh = reader.read2DMesh();
+        //Compute geometry relationship of nodes and elements
+        mesh.computeNodeBelongsToElements();
+
+        //2.Mark border types
+        HashMap<NodeType, Function> mapNTF =
+                new HashMap<NodeType, Function>();
+        mapNTF.put(NodeType.Dirichlet, null);
+        mesh.markBorderNode(mapNTF);
+
+        //3.Use element library to assign degrees of
+        //  freedom (DOF) to element
+        ElementList eList = mesh.getElementList();
+        FELinearTriangle feLT = new FELinearTriangle();
+        for(int i=1;i<=eList.size();i++)
+            feLT.assignTo(eList.at(i));
+
+        //4.Weak form
+        WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
+        //Right hand side(RHS): f = -2*(x^2+y^2)+36
+        Function fx = FX.fx;
+        Function fy = FX.fy;
+        weakForm.setF(FC.c(-2.0).M( fx.M(fx).A(fy.M(fy)) )
+                .A(FC.c(36.0)));
+
+        //5.Assembly process
+        AssemblerScalar assembler =
+                new AssemblerScalar(mesh, weakForm);
+        System.out.println("Begin Assemble...");
+        assembler.assemble();
+        Matrix stiff = assembler.getStiffnessMatrix();
+        Vector load = assembler.getLoadVector();
+        //Boundary condition
+        assembler.imposeDirichletCondition(FC.c0);
+        System.out.println("Assemble done!");
+
+        //6.Solve linear system
+        SolverJBLAS solver = new SolverJBLAS();
+        Vector u = solver.solveDGESV(stiff, load);
+        System.out.println("u=");
+        for(int i=1;i<=u.getDim();i++)
+            System.out.println(String.format("%.3f", u.get(i)));
+
+        //7.Output results to an Techplot format file
+        MeshWriter writer = new MeshWriter(mesh);
+        writer.writeTechplot("tuitoral_Laplace.dat", u);
+    }
+}
+\end{lstlisting}
+The class \textbf{Laplace} defined in the package
+\textbf{edu.uta.futureye.tutorial}. We call it `Laplace' mainly
+because we want to emphasize the Laplace operator in the equation.
+There are many example classes defined in package
+\textbf{edu.uta.futureye.tutorial}. It's a good idea for new users
+to start learning \textbf{FuturEye} by reading the classes in it and
+also a good draft of coding for whom that want begin a real
+application by selecting similar classes in the package.
+
+
+For simplicity, we start our work directly in the function `main'.
+In code segment 1 (numbers in comment lines), an input file
+``triangle.grd'' with format ASCII UCD that generated by Gridgen is
+read in. The object \textbf{reader} is constructed by the file name,
+and an object \textbf{mesh} is created by calling
+\textbf{reader}.read2DMesh(). When you have an object of type
+\textbf{Mesh}, the node list and element list can be accessed
+through it's methods, see section \ref{Section Basic Grid
+Properties} for details. Before continuing the work, the necessary
+geometry information about nodes and elements must be known, see
+section \ref{Section Advanced Grid Properties} for details. Here we
+call \textbf{mesh}.computeNodeBelongsToElements() to get the
+relationship of nodes and elements. The mesh is shown in
+Fig.\ref{Ex1 Mesh}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{ex1_mesh}
+    \caption{Mesh \emph{triangle.grd} for example 1}
+    \label{Ex1 Mesh}
+\end{figure}
+
+In code segment 2, we mark the border node types of the grid. A map
+of \textbf{NodeType} and \textbf{Function} is needed to indicate
+what type of node should be marked to the border nodes. The nodes
+selected to be marked to a node type are determined by the return
+value of a function. If the return value $>0$ the node will be
+marked to the specified type, otherwise the node will be marked to
+the the type that have a function of null(default value, see details
+in section \ref{Section Mark Boundary Types}). About how to specify
+the boundary values will be described later.
+
+
+In code segment 3, we assign degrees of freedom to every element in
+object \textbf{mesh}. Element library class
+\textbf{FELinearTriangle} is used to do the work. It is possible to
+create DOF objects directly and select proper shape functions by
+users, see section \ref{Section Degrees of Freedom} for details.
+
+
+In code setment 4, an object of class \textbf{WeakFormLaplace2D} is
+defined. The weak formulation of (\ref{Ex1 Eq1}) reads: Given $f\in
+L^2(\Omega)$, seek $u\in H^1(\Omega)$ such that
+\begin{eqnarray}
+(\nabla u,\nabla v)_\Omega = (f,v)_\Omega
+\end{eqnarray}
+where $v\in H_0^1(\Omega)$ is arbitrary function. This is a
+simplified case of weak formulation that class
+\textbf{WeakFormLaplace2D} represented. Class
+\textbf{WeakFormLaplace2D} is designed to solve 2D general elliptic
+PDE equations (see section \ref{Section Elliptic Problem}), for
+example steady state thermal problems and electrostatic problems
+etc. For this example, we just specify the right hand side function
+$f(x,y)=-2(x^2+y^2)+36$ by function operations (see \ref{Section
+Combinations of Functions} for details)
+\begin{lstlisting}
+    weakForm.setF(FC.c(-2.0).M( fx.M(fx).A(fy.M(fy)) )
+                .A(FC.c(36.0)));
+\end{lstlisting}
+
+In code segment 5, assembly process is performed. In this example,
+we use class \textbf{AssemblerScalar} to assemble global stiffness
+matrix and global load vector. Details description of assembly
+process see section \ref{Section Assembly Process}. When we get the
+global stiffness matrix and global load vector, we need impose
+Dirichlet boundary condition to the nodes on the boundary of
+$\Omega$. This is done by
+\begin{lstlisting}
+    assembler.imposeDirichletCondition(FC.c0);
+\end{lstlisting}
+The parameter of the method is a \textbf{Function} object. This
+method will loop over every boundary node and pass the coordinates
+and global index of the node to the \textbf{Function} object. The
+object then evaluate the proper values for the node according to the
+parameters passed in. In our case, all the values on nodes of
+Dirichlet boundary is 0. In other case, users should define their
+own function object for imposing Dirichlet condition. For example,
+if we have global node index and value pairs for Dirichlet boundary
+condition, the function class DiscreteIndexFunction (see section
+\ref{Section User Defined Functions}) will be useful and easy to do
+the job.
+
+
+Now, we have finished the part of most important in the example.
+Next, in code segment 6, is the solver part. We use wrapper class
+\textbf{SolverJBLAS} if the Java BLAS library to solve the linear
+system. We print the solution vector to standard output.
+
+
+In the last code segment(segment 7), an object of
+\textbf{MeshWriter} is used to write the solution vector to the file
+``tuitoral\_Laplace.dat'' with format of Techplot.
+
+The output of this demo listed below, we omit the long values list
+of the solution vector. The solution is shown in Fig.\ref{Ex1
+Results}
+\begin{lstlisting}
+computeNodesBelongToElement...
+computeNodesBelongToElement done!
+markBorderNode...
+markBorderNode done!
+Begin Assemble...
+Assemble...35%
+Assemble...70%
+Assemble done!
+Begin Solver...
+Solver info = 0
+u=
+0.000
+0.000
+0.000
+...
+\end{lstlisting}
+
+
+\begin{figure}[ht]
+    \centering
+    \subfloat[]{\includegraphics[width=0.5\textwidth]{ex1_contour}}
+    \subfloat[]{\includegraphics[width=0.5\textwidth]{ex1_contour3}}
+    \caption{\emph{Results of example 1}}
+    \label{Ex1 Results}
+\end{figure}
+
+
+\section{Mesh Refinement}
+\begin{lstlisting}
+ Adaptive:
+
+mesh.computeNodesBelongToElement();
+mesh.computeNeiborNode();
+mesh.computeNeighborElement();
+
+
+public static void adaptiveTestRectangle() {
+//      MeshReader reader = new MeshReader("patch_rectangle.grd");
+    MeshReader reader = new MeshReader("patch_rectangle2.grd");
+//      MeshReader reader = new MeshReader("patch_rectangle_refine.grd");
+
+    Mesh mesh = reader.read2DMesh();
+    HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+    mapNTF.put(NodeType.Dirichlet, null);
+
+    mesh.computeNodeBelongsToElements();
+    mesh.computeNeighborNodes();
+    mesh.markBorderNode(mapNTF);
+    mesh.computeGlobalEdge();
+    mesh.computeNeighborElements();
+
+    ElementList eList = mesh.getElementList();
+    ElementList eToRefine = new ElementList();
+
+    //first refine
+    eToRefine.add(eList.at(6));
+    eToRefine.add(eList.at(7));
+    eToRefine.add(eList.at(10));
+    eToRefine.add(eList.at(11));
+    Refiner.refineOnce(mesh, eToRefine);
+    mesh.markBorderNode(mapNTF);
+
+    //refine again
+    eToRefine.clear();
+    eToRefine.add(eList.at(17));
+    eToRefine.add(eList.at(18));
+    Refiner.refineOnce(mesh, eToRefine);
+    mesh.markBorderNode(mapNTF);
+
+    SFBilinearLocal2D[] shapeFun = new SFBilinearLocal2D[4];
+    for(int i=0;i<4;i++)
+        shapeFun[i] = new SFBilinearLocal2D(i+1);
+    SFBilinearLocal2D[] shapeFun2 = new SFBilinearLocal2D[4];
+    for(int i=0;i<4;i++) {
+        shapeFun2[i] = new SFBilinearLocal2D(i+1,0.5);
+    }
+
+    //Asign degree of freedom to element
+    for(int i=1;i<=mesh.getElementList().size();i++) {
+        Element e = mesh.getElementList().at(i);
+        int nDofLocalIndexCounter = 0;
+        for(int j=1;j<=e.nodes.size();j++) {
+            //Asign shape function to DOF
+            if(e.nodes.at(j) instanceof NodeRefined) {
+                NodeRefined nRefined = (NodeRefined)e.nodes.at(j);
+                if(nRefined.isHangingNode()) {
+                    DOF dof  = new DOF(++nDofLocalIndexCounter,
+                            nRefined.constrainNodes.at(1).globalIndex,
+                            shapeFun2[j-1]);
+                    e.addNodeDOF(j, dof);
+                    DOF dof2 = new DOF(++nDofLocalIndexCounter,
+                            nRefined.constrainNodes.at(2).globalIndex,
+                            shapeFun2[j-1]);
+                    e.addNodeDOF(j, dof2);
+                } else {
+                    DOF dof = new DOF(++nDofLocalIndexCounter,
+                            e.nodes.at(j).globalIndex,shapeFun[j-1]);
+                    e.addNodeDOF(j, dof);
+                }
+            } else {
+                DOF dof = new DOF(++nDofLocalIndexCounter,
+                        e.nodes.at(j).globalIndex,shapeFun[j-1]);
+                e.addNodeDOF(j, dof);
+            }
+        }
+    }
+
+    //User defined weak form of PDE (including bounder conditions)
+    WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
+    //-\Delta{u} = f
+    //u(x,y)=0, (x,y)\in\partial{\Omega}
+    //\Omega = [0,10]*[0,10]
+    //u=[(x-5)^2-25]*[(y-5)^2-25]
+    //f=-2*( (x-5)^2 + (y-5)^2 ) + 100
+    Function fxm5 = new FAxpb("x",1.0,-5.0);
+    Function fym5 = new FAxpb("y",1.0,-5.0);
+    weakForm.setF(
+            FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
+                    FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )
+                    ).A(FC.c(100.0))
+            );
+
+    AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
+    System.out.println("Begin Assemble...");
+    assembler.assemble();
+    Matrix stiff = assembler.getStiffnessMatrix();
+    Vector load = assembler.getLoadVector();
+    assembler.imposeDirichletCondition(new FC(0.0));
+    System.out.println("Assemble done!");
+
+    SolverJBLAS solver = new SolverJBLAS();
+    Vector u = solver.solveDGESV(stiff, load);
+
+    //hanging node赋值
+    for(int i=1;i<=mesh.getElementList().size();i++) {
+        Element e = mesh.getElementList().at(i);
+        for(int j=1;j<=e.nodes.size();j++) {
+            if(e.nodes.at(j) instanceof NodeRefined) {
+                NodeRefined nRefined = (NodeRefined)e.nodes.at(j);
+                if(nRefined.isHangingNode()) {
+                    double hnValue =
+                        (u.get(nRefined.constrainNodes.at(1).globalIndex)+
+                        u.get(nRefined.constrainNodes.at(2).globalIndex))/2.0;
+
+                    u.set(nRefined.globalIndex, hnValue);
+                }
+            }
+        }
+    }
+
+    System.out.println("u=");
+    for(int i=1;i<=u.getDim();i++)
+        System.out.println(String.format("%.3f", u.get(i)));
+
+    MeshWriter writer = new MeshWriter(mesh);
+    writer.writeTechplot("patch_rectangle.dat", u);
+
+}
+\end{lstlisting}
+
+\section{Handling Exceptions}
+
+To be continue...
+
+JStack, JMap
+
+
+\section{Inverse Problems}
+
+In this section, we consider Coefficient Inverse Problem (CIP) for
+PDE.
+
+\subsection{Useful Tools}
+
+When you get the results from algebra solver, there may be some
+requires to plot the results, smooth result functions or compute the
+derivative of the result functions. This section we will describe
+how to manipulate vectors and functions.
+
+\subsubsection{Plot Vectors and Functions}
+
+In order to plot vectors and functions, we must output them as files
+and these files must have special formats that can be recognized by
+some post processing softwares, e.g. Techplot. The following class
+\textbf{MeshWriter} is implemented to output vectors with Techplot
+file format. Other file formats can be implemented similarly.
+
+
+A vector usually corresponds to a mesh that means the components of
+the vector correspond to the nodes of the mesh. The following code
+segment gives a demo about how to plot a vector \textbf{u} into the
+folder \textbf{results} that based on the current file system
+\textbf{}path.
+\begin{lstlisting}
+    ...
+    MeshWriter writer = new MeshWriter(mesh);
+    writer.writeTechplot("./results/"+fileName, u);
+\end{lstlisting}
+The important thing is that the vector object and the mesh object
+must keep consistency with each other.
+
+
+There is no direct methods defined in \textbf{MeshWriter} to plot
+functions. But we can convert a function to a vector, then it's easy
+to plot the vector instead of plotting the function directly. The
+following code segment shows how to convert a function to a vector.
+The idea is evaluating the function at each node of a corresponding
+mesh.
+
+\begin{lstlisting}
+    NodeList list = mesh.getNodeList();
+    int nNode = list.size();
+    Variable var = new Variable();
+    Vector v = new SparseVector(nNode);
+    for(int i=1;i<=nNode;i++) {
+        Node node = list.at(i);
+        var.setIndex(node.globalIndex);
+        for(int j=1;j<=node.dim();j++) {
+            if(fun.varNames().size()==node.dim())
+                var.set(fun.varNames().get(j-1), node.coord(j));
+        }
+        v.set(i, fun.value(var));
+    }
+\end{lstlisting}
+
+There is a tool class ``\textbf{Tools}'' defined in package
+\textbf{edu.uta.futureye.tutorial}. Two static methods can be used
+ directly to plot vectors and functions.
+
+\begin{lstlisting}
+public static void plotVector(Mesh mesh, String outputFolder,
+            String fileName, Vector v, Vector ...vs)
+public static void plotFunction(Mesh mesh, String outputFolder,
+            String fileName, Function fun, Function ...funs)
+\end{lstlisting}
+
+The last parameters of these two methods are optional. More than one
+vector or function can be output to a file with these parameters.
+For example, if you want to plot a vector field of velocity
+$\mathbf{u}=(u,v)$, you just can write
+\begin{lstlisting}
+    ...
+    MeshWriter writer = new MeshWriter(mesh);
+    writer.writeTechplot("./results/"+fileName, u, v);
+\end{lstlisting}
+The following code segment gives a concrete example. The mesh is in
+domain $[-3,3]\times[-3,3]$ and the function $f(x,y)=x^2+y^2$ is
+defined on this mesh.
+\begin{lstlisting}
+    MeshReader reader = new MeshReader("triangle.grd");
+    Mesh mesh = reader.read2DMesh();
+    //fun(x,y)=x^2+y^2
+    Function fun = FX.fx.M(FX.fx).A(FX.fy.M(FX.fy));
+    //Fig.(a)
+    plotFunction(mesh,".","testPlotFun.dat",fun);
+    VectorFunction gradFun = FMath.grad(fun);
+    //Fig.(b)
+    plotFunction(mesh,".","testPlotFunGrad.dat",
+                gradFun.get(1),gradFun.get(2));
+\end{lstlisting}
+Fug.\ref{plotTestFun} shows the results viewed in Techplot.
+\begin{figure}[ht]
+    \centering
+    \subfloat[]{\includegraphics[width=0.5\textwidth]{testPlotFun}}
+    \subfloat[]{\includegraphics[width=0.5\textwidth]{testPlotFunGrad}}
+    \caption{\emph{Plot of function $f(x,y)=x^2+y^2$ and $\nabla f(x,y)=(2x,2y)^T$ in $[-3,3]\times[-3,3]$}}
+    \label{plotTestFun}
+\end{figure}
+
+\subsubsection{Data Manipulation}
+
+In this section, we give some examples of data manipulation.
+
+Example 1. Gaussian Smoothing. The Gaussian smoothing operator is a
+2-D convolution operator that can be used to smooth functions. Noise
+in the measurement data can be removed by this method. Static method
+\textbf{gaussSmooth} is defined in class \textbf{Utils} in the
+package \textbf{edu.uta.futureye.util}.
+\begin{lstlisting}
+public static Vector gaussSmooth(Mesh mesh, Vector u, int
+                        neighborBand, double weight)
+\end{lstlisting}
+
+Example 2. Derivative of a vector. The vector object is the discrete
+from of a function that usually comes from the results of some
+algebra solvers. The derivative of a vector equals the derivative of
+a function that correspond to the vector. However, most times we
+don't know the expression of the function, we only have the discrete
+vector object. Fortunately, the derivative operation can be done by
+using the weak form class \textbf{WeakFormDerivative}. This is based
+on solving the equation
+$$(w, v) = (U_x, v)$$
+where $w$ is unknown and $U_x$ is the piecewise derivative of $U$ on
+the given mesh. We can say $w$ is an good approximation of $U_x$.
+
+It is easy to use class \textbf{WeakFormDerivative} to get the
+derivative of a vector object. There is a static method defined in
+class \textbf{edu.uta.futureye.tutorial.Tools}
+\begin{lstlisting}
+public static Vector computeDerivative(Mesh mesh, Vector U,
+                                        String varName)
+\end{lstlisting}
+can be called directly to do the derivative.
+
+
+Example 3. $\Delta U$, $U$ is a vector object. This operation can be
+achieved by using method \textbf{computeDerivative()} 4 times
+according to the formula
+$$\Delta U = U_{xx} + U_{yy}$$
+See static method
+\begin{lstlisting}
+    public static Vector computeLaplace2D(Mesh mesh, Vector U)
+\end{lstlisting}
+defined in class \textbf{edu.uta.futureye.tutorial.Tools} for
+details. The following code segment gives an example of data
+manipulation.
+
+\begin{lstlisting}
+    Laplace model = new Laplace();
+    model.run();
+    Vector u = model.u;
+    Vector ux = computeDerivative(model.mesh, u, "x");
+    Vector uy = computeDerivative(model.mesh, u, "y");
+    Vector uLaplace = computeLaplace2D(model.mesh, u);
+    plotVector(model.mesh,".","testPlotUx.dat", ux);
+    plotVector(model.mesh,".","testPlotUy.dat", uy);
+    plotVector(model.mesh,".","testPlotULaplace.dat", uLaplace);
+    //method gaussSmooth() need to know neighbor nodes
+    model.mesh.computeNeighborNodes();
+    uLaplace = Utils.gaussSmooth(model.mesh, uLaplace, 1, 0.5);
+    uLaplace = Utils.gaussSmooth(model.mesh, uLaplace, 1, 0.5);
+    uLaplace = Utils.gaussSmooth(model.mesh, uLaplace, 1, 0.5);
+    plotVector(model.mesh,".","testPlotULaplaceSmooth.dat", uLaplace);
+\end{lstlisting}
+We take the result vector $u$ of class \textbf{Laplace} to show data
+operations. Do derivative of $u$ with respect to $x$ and $y$, we get
+$ux$ and $uy$. Then call computeLaplace2D(), we get $\Delta u$.
+Because second derivative is not smooth, we call gaussSmooth() three
+times to get a good results.
+
+\begin{figure}[ht]
+    \centering
+    \subfloat[]{\includegraphics[width=0.5\textwidth]{testPlotUx}}
+    \subfloat[]{\includegraphics[width=0.5\textwidth]{testPlotUy}}
+    \caption{\emph{$ux$ and $uy$ in $[-3,3]\times[-3,3]$}}
+    \label{plotTestU}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \subfloat[]{\includegraphics[width=0.5\textwidth]{testPlotULaplace}}
+    \subfloat[]{\includegraphics[width=0.5\textwidth]{testPlotULaplaceSmooth}}
+    \caption{\emph{$\Delta u$ and after 3 times smooth in $[-3,3]\times[-3,3]$}}
+    \label{plotTestULaplace}
+\end{figure}
+
+
+\subsection{Optical Inverse Problems}
+
+\subsubsection{Globally Convergent Method}
+
+In this section, we consider the Globally Convergent Method (GCM)
+for Coefficient Inverse Problem (CIP) for an elliptic equation with
+an unknown potential. CIP is one of problems of Diffusion Optical
+Tomography. Let's consider the 2D case for the sake of simplicity.
+The following equation describes the propagation of light (
+Near-infrared) in tissue.
+\begin{eqnarray}\label{Forward Problem}
+&\Delta u-a\left( \mathbf{x}\right) u=-\delta \left(
+\mathbf{x}-\mathbf{x}_{0}\right) ,\mathbf{x},\mathbf{x}_{0}\in \mathbb{R}^{2},\\
+&\underset{\left| \mathbf{x}\right| \rightarrow \infty }{\lim
+}u\left( \mathbf{x},\mathbf{x}_{0}\right)=0. \notag
+\end{eqnarray}
+Here, $u$ is the light intensity. $\mathbf{x}_{0}$ is the light
+source position, and this position is running along a line to
+generate the data for the inverse problem. The light source is a
+continuous-wave (CW). In this case, the coefficient $a\left(
+\mathbf{x}\right)$ is
+\begin{equation}
+a\left( \mathbf{x}\right) =3\left( \mu _{s}^{\prime }\mu _{a}\right)
+\left( \mathbf{x}\right) ,
+\end{equation}
+where $\mu _{s}^{\prime }\left( \mathbf{x}\right) $ is the reduced
+scattering coefficient and $\mu _{a}\left( \mathbf{x}\right) $ is
+the absorption coefficient of the medium. The Inverse Problem is to
+determine the function $a\left( \mathbf{x}\right)$ inside of the
+domain $\Omega$ assuming that the following the constant $k$ and the
+function $\varphi \left( \mathbf{x},\mathbf{x}_{0}\right) $ is given
+\begin{equation}\label{Measured Boundary Function}
+u\left( \mathbf{x,x}_{0}\right) =\varphi \left(
+\mathbf{x,x}_{0}\right) ,\forall \left( \mathbf{x,x}_{0}\right) \in
+\partial \Omega \times \Gamma .
+\end{equation}
+where
+\begin{equation*}
+a\in C^{1}\left( \mathbb{R}^{2}\right) ,a\left( \mathbf{x}\right) \geq k^{2}%
+\text{ and }a\left( \mathbf{x}\right) =k^{2}\text{ for
+}\mathbf{x}\in \mathbb{R}^{2}\diagdown \Omega.
+\end{equation*}
+We assume that source $\left\{ \mathbf{x}_{0}\right\} $ is located
+outside of the domain of interest $\Omega $. That means the right
+hand side of equation (\ref{Forward Problem}) will be zero, if we
+consider the problem only in domain $\Omega$. In this case,
+Dirichlet boundary condition (\ref{Measured Boundary Function}) must
+be considered.
+
+We consider the function $$v=\frac{\ln u}{s^{2}}$$ for
+$\mathbf{x}\in \Omega $ and denote $s:=\left| \mathbf{x}_{0}\right|
+$ as the parameter. Then obtain from (\ref{Forward Problem})
+\begin{equation}\label{EQ GCM v}
+\Delta v+s^{2}\left| \nabla v\right| ^{2}=\frac{a\left( \mathbf{x}\right) }{%
+s^{2}}.
+\end{equation}
+
+Let $q\left( \mathbf{x},s\right)
+=\frac{\partial}{\partial{s}}v\left( \mathbf{x},s\right)$, We obtain
+an nonlinear integral differential equation
+\begin{equation}\label{EQ GCM q}
+\Delta q+2s^{2}\nabla q\nabla v+2s\left| \nabla v\right| ^{2}=-2\frac{%
+a\left( \mathbf{x}\right) }{s^{3}}.
+\end{equation}
+where
+\begin{equation}\label{EQ GCM q v}
+v\left(\mathbf{x},s\right) =-\int\limits_{s}^{\overline{s}}q\left(
+\mathbf{x},\tau \right) d\tau +T\left( \mathbf{x}\right)
+,\mathbf{x}\in \Omega ,s\in \left[
+\underline{s},\overline{s}\right],
+\end{equation}
+The Dirichlet boundary condition for $q$ reads
+\begin{eqnarray}\label{EQ GCM q boundary}
+q(\mathbf{x},s)=\psi(\textbf{x},s)=\frac{\partial }{\partial{s}}
+\left(\frac{ln\phi(\mathbf{x},s)}{s^2}\right), \forall
+(\mathbf{x},s)\in\partial\Omega\times[\underline{s},\overline{s}].
+\end{eqnarray}
+
+ $T\left(
+\mathbf{x}\right) $ is the so-called ``tail function''. The exact
+expression for this function is of course $T\left( \mathbf{x}\right)
+=v\left(\mathbf{x},\overline{s}\right)$. However, since the function
+$v\left( \mathbf{x},\overline{s}\right)$ is unknown, we will use an
+approximation for the tail function. If we approximate both $q$ and
+$T$ well (in a certain sense), then the target coefficient
+$a(\mathbf{x})$ would be easily reconstructed via backwards
+calculations.
+
+
+We use Layer Stripping for approximating the function
+$q\left(\mathbf{x},s\right) $ as a piecewise constant function with
+respect to the source position $s$. So, we assume that there
+exists a partition $\underline{s}=s_{N}<s_{N-1}<\ldots <s_{1}<s_{0}=\bar{s}%
+,s_{i-1}-s_{i}=h$ of the interval $\left[
+\underline{s},\bar{s}\right] $ with a sufficiently small grid step
+size $h$ such that
+\begin{eqnarray*}
+& &q\left( \mathbf{x},s\right) =q_{n}\left( \mathbf{x}\right) \text{ for }s\in %
+\left[ s_{n},s_{n-1}\right) ,n\geq 1\\
+& &q_{0}:=0.
+\end{eqnarray*}
+
+We obtain for $n\geq 1$
+\begin{equation}\label{EQ GCM qn}
+\begin{array}{c}
+\Delta q_{n}+A_{2,n}\left( h\sum\limits_{j=0}^{n-1}\nabla
+q_{j}-\nabla T\right) \nabla q_{n}= \\
+A_{1,n}\left( \nabla q_{n}\right)^{2}+A_{4,n}\left(
+h\sum\limits_{j=1}^{n-1}\nabla q_{j}-\nabla T\right)
+^{2}+A_{3,n}\Delta T,
+\end{array}
+\end{equation}
+where
+\begin{eqnarray*}
+& &A_{1,n}=\frac{1}{I_{0,n}}\int\limits_{s_n}^{s_{n-1}}(s_{n-1}-s)(2s^2-4s(s_{n-1}-s))ds, \\
+& &A_{2,n}=\frac{1}{I_{0,n}}\int\limits_{s_n}^{s_{n-1}}(8s(s_{n-1}-s)-2s^2)ds, \\
+& &A_{3,n}=\frac{2}{I_{0,n}}\int\limits_{s_n}^{s_{n-1}}\frac{ds}{s},\\
+& &A_{4,n}=-\frac{4}{I_{0,n}}\int\limits_{s_n}^{s_{n-1}}sds,\\
+&
+&I_{0,n}=\int\limits_{s_n}^{s_{n-1}}\left(1-\frac{2}{s}(s_{n-1}-s)\right)ds.
+\end{eqnarray*}
+We approximate the Dirichlet boundary condition (\ref{EQ GCM q
+boundary}) as a piecewise constant function
+\begin{eqnarray}
+q_n(\mathbf{x})=\psi_n(\mathbf{x})=\frac{1}{h}\int\limits_{s_n}^{s_{n-1}}\psi(\mathbf{x},s)ds,
+\mathbf{x}\in\partial\Omega.
+\end{eqnarray}
+
+Assume that
+\begin{equation*}
+\overline{s}\geq 1,h\in \left( 0,1\right) \text{ and }\frac{h}{\overline{s}}<%
+\frac{1}{2}.
+\end{equation*}
+What is important to us here about numbers $A_{k,n}$ is that, given
+the assumption above, the following estimates hold (see [1])
+\begin{eqnarray*}
+\left| A_{1,n}\right| &\leq &4\overline{s}^{2}h, \\
+\left| A_{2,n}\right| &\leq &8\overline{s}^{2},\left| A_{3,n}\right|
+\leq 4,\left| A_{4,n}\right| \leq 16\overline{s}.
+\end{eqnarray*}
+The estimate tells one that the nonlinearity $A_{1,n}\left(
+\triangledown q_{n}\right) ^{2}$  can be mitigated via decreasing
+the step size $h$. Thus, we can solve only linear elliptic Dirichlet
+boundary value problem for each $q_{n}$.
+
+
+As soon as all functions $q_{n},n=1,...,N$ are computed, we can get
+$v(\mathbf{x},s)$ from (\ref{EQ GCM q v}). In principle we
+reconstruct an approximation $a_{n}\left( \mathbf{x}\right) $ for
+the function $a\left( \mathbf{x}\right) $ as
+\begin{equation*}
+a\left( \mathbf{x}\right) =\Delta \widetilde{v}\left( \mathbf{x}%
+,s_{N}\right) +\left| \triangledown \widetilde{v}\left( \mathbf{x}%
+,s_{N}\right) \right| ^{2},
+\end{equation*}
+where $s_{N}=\underline{s}$ and
+\begin{equation*}
+\widetilde{v}\left( \mathbf{x},s_{N}\right) =s_{N}^2v\left(
+\mathbf{x},s_{N}\right)=-s_{N}^{2}h\sum\limits_{j=0}^{N}q_{j}\left(
+\mathbf{x}\right) +s_{N}^{2}T\left( \mathbf{x}\right).
+\end{equation*}
+However, it is numerically unstable to calculate second derivatives,
+since we use piecewise linear triangular finite elements to solve
+above equations for functions $q_n(\mathbf{x})$. Fortunately, we can
+get $u=e^{s^2v}$, then we use (\ref{Forward Problem}) in the weak
+form as
+\begin{equation}
+\int\limits_{\Omega}a(\mathbf{x})u\eta_{k}d\Omega=-\int\limits_{\Omega}\nabla{u}\nabla{\eta_{k}}d\Omega
+\end{equation}
+where $\eta_{k}$ is finite element test functions. This equation
+leads to a linear algebraic system. Solving this system we can get
+the target coefficient $a(\mathbf{x})$.
+
+
+The main part of implementation of GCM is to solve (\ref{EQ GCM q}).
+That is achieved by solving $q_n,n=1,\cdots,N$ in (\ref{EQ GCM qn}).
+Class \textbf{WeakFormGCM} is a weak form of (\ref{EQ GCM qn}) that
+can be used to solve equations like
+$$-k\Delta{u} + \mathbf{b}\cdot\nabla{u} + cu = f.$$
+Because there is a nonlinear term $A_{1,n}(\nabla q_{n})^{2}$ in
+(\ref{EQ GCM qn}), it should be linearized, e.g. $A_{1,n}(\nabla
+q_{n})^{2}\approx A_{1,n}\nabla q_{n-1}\cdot\nabla q_{n}$. Then the
+coefficient $A_{1,n}\nabla q_{n-1}$ of $\nabla q_n$ in this
+nonlinear term can be merged into the coefficient $\textbf{b}$ in
+the equation above. However, this term can be mitigated via
+decreasing the step size $h$.
+
+The definition of class \textbf{WeakFormGCM} shows below
+\begin{lstlisting}
+public class WeakFormGCM extends AbstractScalarWeakForm {
+    protected Function g_f = null;
+
+    protected Function g_k = null;
+    protected Function g_c = null;
+    protected Function g_b1 = null;
+    protected Function g_b2 = null;
+
+    protected Function g_q = null;
+    protected Function g_d = null;
+
+    public void setF(Function f) {
+        this.g_f = f;
+    }
+
+    public void setParam(Function k,Function c,Function b1,Function b2) {
+        this.g_k = k;
+        this.g_c = c;
+        this.g_b1 = b1;
+        this.g_b2 = b2;
+    }
+
+    //Robin: d*u + k*u_n= q
+    public void setRobin(Function q,Function d) {
+        this.g_q = q;
+        this.g_d = d;
+    }
+
+    @Override
+    public Function leftHandSide(Element e, ItemType itemType) {
+        if(itemType==ItemType.Domain)  {
+            //Integrand part of Weak Form on element e
+            Function integrand = null;
+
+    Function fk = Utils.interpolateFunctionOnElement(g_k,e);
+    Function fc = Utils.interpolateFunctionOnElement(g_c,e);
+    Function fb1 = Utils.interpolateFunctionOnElement(g_b1,e);
+    Function fb2 = Utils.interpolateFunctionOnElement(g_b2,e);
+
+            integrand = FMath.sum(
+                        fk.M(
+                                u._d("x").M(v._d("x")).A(
+                                u._d("y").M(v._d("y"))
+                        )),
+                        fb1.M(u._d("x").M(v)),
+                        fb2.M(u._d("y").M(v)),
+                        fc.M(u.M(v))
+                    );
+            return integrand;
+        }
+        else if(itemType==ItemType.Border) {
+            if(g_d != null) {
+                Element be = e;
+                Function fd = Utils.interpolateFunctionOnElement(g_d, be);
+                Function borderIntegrand = fd.M(u.M(v));
+                return borderIntegrand;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Function rightHandSide(Element e, ItemType itemType) {
+        if(itemType==ItemType.Domain)  {
+            Function ff = Utils.interpolateFunctionOnElement(g_f, e);
+            Function integrand = ff.M(v);
+            return integrand;
+        } else if(itemType==ItemType.Border) {
+            Element be = e;
+            Function fq = Utils.interpolateFunctionOnElement(g_q, be);
+            Function borderIntegrand = fq.M(v);
+            return borderIntegrand;
+        }
+        return null;
+    }
+}
+\end{lstlisting}
+
+The full implementation of GCM is defined in class
+\textbf{GCMModel}. Method
+\begin{lstlisting}
+public  void solveGCM(Mesh mesh, int N, double[]s, Vector[]phi,
+                    Vector tailT) {
+\end{lstlisting}
+can be called to get the reconstructed coefficient $a(\mathbf{x})$
+by providing parameters:
+\begin{itemize}
+  \item mesh: the domain $\Omega$ on which to solve
+  $q_n(\mathbf{x})$,
+  \item N: total number of partition of interval
+  $[\underline{s},\overline{s}]$,
+  \item s: positions of light sources,
+  \item phi: measurement data $\phi(\mathbf{x,x_0})$ on boundary $\partial\Omega$,
+  \item tailT: tail function $T(\mathbf{x})$.
+\end{itemize}
+
+
+We briefly describe the reconstruction of the target coefficient
+$a(\mathbf{x})$ by backwards calculations. This work is done in the
+following method \textbf{solveParamInverse()}, the key part is the
+using of weak form class \textbf{WeakFormL22D} which is the weak
+form of equation $$(Uu, v) = (f, v) - (k\nabla{U},\nabla{v})$$ where
+$u$ is unknown and $U,f$ are know parameters.
+\begin{lstlisting}
+public Vector solveParamInverse(Mesh mesh, Vector U) {
+    HashMap<NodeType, Function> mapNTF2 = new HashMap<NodeType, Function>();
+    mapNTF2.put(NodeType.Dirichlet, null);
+    mesh.clearBorderNodeMark();
+    mesh.markBorderNode(mapNTF2);
+
+    //Weak form
+    WeakFormL22D weakFormL2 = new WeakFormL22D();
+    //Right hand side
+    weakFormL2.setF(this.delta);
+    //Parameters
+    weakFormL2.setParam(
+            this.k, new Vector2Function(U)
+        );
+
+    Assembler assembler = new AssemblerScalar(mesh, weakFormL2);
+    System.out.println("Begin Assemble...solveParamInverse");
+    assembler.assemble();
+    Matrix stiff = assembler.getStiffnessMatrix();
+    Vector load = assembler.getLoadVector();
+    assembler.imposeDirichletCondition(new FC(0.1));
+    System.out.println("Assemble done!");
+
+    SolverJBLAS solver = new SolverJBLAS();
+    Vector u = solver.solveDGESV(stiff, load);
+    return u;
+}
+\end{lstlisting}
+
+
+\subsubsection{Gradient Method for CW Case}
+This method is based on the Lagrange of the target functional. The
+reconstructed coefficient $a(\mathbf{x})$ from GCM can be used as a
+good approximation of real coefficient of the equation (\ref{Forward
+Problem}), we state it below again
+
+\begin{eqnarray}
+& &\Delta{u} - a(\mathbf{x})u=-\delta(\mathbf{x}-\mathbf{x}_0),  in
+\Omega_0\\
+& &u(\mathbf{x},\mathbf{x}_0),  on \Omega_0
+\end{eqnarray}
+
+For actual numerical computation, we can not compute $u$ in
+$\mathbb{R}^{2}$. Alternatively, we choose a big enough domain
+$\Omega_0$, such that $\Omega\subset\Omega_0$ and $u\approx 0$ on $
+\partial\Omega_0$.
+
+Let $u$ and $u_0$ be the solution of the following two problems
+respectively:
+\begin{eqnarray}\label{eq u}
+\Delta{u} - a(\mathbf{x})u=0, in \Omega
+\end{eqnarray}
+
+\begin{eqnarray}\label{eq u0}
+\Delta{u_0} - k^2u_0=0, in \Omega.
+\end{eqnarray}
+
+Let $$v=\frac{u}{u_0}$$ substitute $u=vu_0$ in (\ref{eq u}), we have
+\begin{eqnarray}
+\Delta{(vu_0)} - a(\mathbf{x})vu_0=0, in \Omega
+\end{eqnarray}
+\begin{eqnarray}\label{eq v u0}
+u_0\Delta{v} + v\Delta{u_0} + 2\nabla{v}\cdot\nabla{u_0} -
+a(\mathbf{x})vu_0=0, in \Omega
+\end{eqnarray}
+from (\ref{eq u0}), we know $\Delta{u_0} = k^2u_0$, substitute
+$\Delta{u_0}$ in (\ref{eq v u0}) and eliminate $u_0$, we have
+\begin{eqnarray}\label{eq v}
+\Delta{v} + 2\nabla{v}\cdot\nabla{lnu_0} - (a(\mathbf{x})-k^2)v = 0,
+in \Omega
+\end{eqnarray}
+Considering boundary condition
+\begin{eqnarray}
+\frac{\partial(u-u_0)}{\partial n} - (u - u_0)=0, on \partial\Omega
+\end{eqnarray}
+we have
+\begin{eqnarray}
+\frac{\partial{v}}{\partial n} +
+(1+\frac{\partial{lnu_0}}{\partial{n}}) =
+1+\frac{\partial{lnu_0}}{\partial{n}}, on
+\partial\Omega
+\end{eqnarray}
+
+Let $v=v(\mathbf{x},s;a)$ be the solution of the following problem.
+\begin{equation}\label{Lagrangian v}
+\left\{
+\begin{aligned}
+&\Delta{v} + 2\nabla{v}\cdot\nabla{lnu_0} - (a(\mathbf{x})-k^2)v =
+0, in \Omega, \\
+&\frac{\partial{v}}{\partial{n}} +
+(1+\frac{\partial{lnu_0}}{\partial{n}}) =
+1+\frac{\partial{lnu_0}}{\partial{n}}, on
+\partial\Omega.
+\end{aligned}
+\right.
+\end{equation}
+We want to find such a coefficient $a(\mathbf{x})$ which would
+guarantee that $v$ also satisfy
+\begin{equation}
+v\approx\tilde{g}(\mathbf{x},s), on \Gamma
+\end{equation}
+where
+\begin{equation}
+\tilde{g}(\mathbf{x},s)=\frac{u(\mathbf{x},s)}{u_0(\mathbf{x},s)}\mid_{x\in\Gamma}=
+\frac{g(\mathbf{x},s)}{u_0(\mathbf{x},s)}\mid_{x\in\Gamma}
+\end{equation}
+$g(\mathbf{x},s)$ is measurement data on $\Gamma$.
+
+
+Let $[\underline{s},\overline{s}]$ be an interval for the light
+source distance $s\in[\b{s},\mbox{\={s}}]$. Consider the Lagrangian
+\begin{eqnarray}\label{Lagrangian}
+L(a,v,\lambda) =
+\frac{1}{2}\int\limits_{\underline{s}}^{\overline{s}}ds\int\limits_{\Gamma}(v-\tilde{g})^2d\sigma
++
+\frac{\theta}{2}\int\limits_{\Omega}(a(\mathbf{x})-a_{glob}(\mathbf{x}))^2d\Omega
++ \\
+\int\limits_{\underline{s}}^{\overline{s}}ds\int\limits_{\Omega}\lambda(\mathbf{x},s)[\Delta{v}
++ 2\nabla{v}\cdot\nabla{lnu_0} - (a(\mathbf{x})-k^2)v]d\Omega \notag
+\end{eqnarray}
+where $a_{glob}(\mathbf{x})$ is the solution obtained on the
+globally convergent stage and $\theta$ is the regularization
+parameter. The function $\lambda$ will be defined later.
+
+Let $\eps\in(0,1)$ be a parameter. Consider $F(\eps)=L(a+\eps
+\delta{a},v+\eps\delta{v},\lambda+\eps\delta\lambda)$, where
+$\delta{a},\delta{v},\delta\lambda$ are arbitrary ``good'' functions
+and assume that
+\begin{equation}
+\frac{\partial{\delta{v}}}{\partial{n}} +
+(1+\frac{\partial{lnu_0}}{\partial{n}}) = 0, on \partial\Omega
+\end{equation}
+We consider equation
+\begin{equation}\label{Lagrangian Minimize}
+\frac{dF}{d\eps}\mid_{\eps=0} = 0,
+\forall(\delta{a},\delta{v},\delta\lambda)
+\partial\Omega
+\end{equation}
+This equation provides us with the minimizer of the Lagrangian.
+Since functions $\delta{a},\delta{v},\delta\lambda$ are arbitrary,
+then (\ref{Lagrangian Minimize}) implies
+\begin{equation}\label{Lagrangian a(x)}
+a(\mathbf{x})=\frac{1}{\theta}\int\limits_{\underline{s}}^{\overline{s}}\lambda
+v ds+a_{glob}(\mathbf{x})
+\end{equation}
+and
+\begin{equation}\label{Lagrangian lambda}
+\left\{
+\begin{aligned}
+&\Delta{\lambda} - 2\nabla{\lambda}\cdot\nabla{lnu_0} -
+[2\Delta{lnu_0}+(a(\mathbf{x})-k^2)]\lambda =
+0, in \Omega, \\
+&\frac{\partial{\lambda}}{\partial{n}} +
+(1-\frac{\partial{lnu_0}}{\partial{n}})\lambda = v-\tilde{g}, on
+\partial\Omega.
+\end{aligned}
+\right.
+\end{equation}
+
+The following algorithm can be used to update $a(\mathbf{x})$
+
+\begin{itemize}
+  \item Step $0.1$. Choose an appropriate interval
+$s\in[\underline{s},\overline{s}]$ and an prropriate regularization
+parameter $\theta$. Basically we want the number
+$$\beta=\frac{\overline{s}-\underline{s}}{\theta}$$
+to be small. In this case, the operator in the right hand side of
+(\ref{Lagrangian a(x)}) is contraction mapping. Therefore, the
+algorithm will converge.
+  \item Step $0.2$. Set $a_0(\mathbf{x}):=a_{glob}(\mathbf{x})$. Divide the
+interval $[\underline{s},\overline{s}]$ into $k$ small subintervals
+$$\underline{s}=s_0<s_1<\cdots<s_k=\overline{s}, s_i-s_{i-1}=h$$
+  \item Step $n\geq1$. Suppose that the function $a_{n-1}(\mathbf{x})$ is
+found.
+
+First, solve the boundary values problem (\ref{Lagrangian v}) with
+$a(\mathbf{x}):=a_{n-1}(\mathbf{x})$ for all $s_0,s_1,\cdots,s_k$.
+This way we find functions $v_{n-1}(\mathbf{x},s_i),
+i=0,1,\cdots,k$.
+
+Next, solve the adjoint boundary value problem (\ref{Lagrangian
+lambda}) with $a(\mathbf{x}):=a_{n-1}(\mathbf{x})$ for all
+$s_0,s_1,\cdots,s_k$. In doing so, use in the boundary condition of
+(\ref{Lagrangian lambda}) the calculated function
+$v(\mathbf{x},s_i)|_{\Gamma}:=v_{n-1}(\mathbf{x},s_i)|_{\Gamma}$. We
+obtain functions $\lambda_{n-1}(\mathbf{x},s_i),i=0,1,\cdots,k$.
+
+Finally, find the function $a_{n}(\mathbf{x})$ from (\ref{Lagrangian
+a(x)}) as
+$$a(\mathbf{x})=\frac{1}{\theta}\int\limits_{\underline{s}}^{\overline{s}}\lambda_{n-1}(\mathbf{x},s)
+v_{n-1}(\mathbf{x},s) ds+a_{glob}(\mathbf{x})$$ where the integral
+is calculated via a standard rule. Continue this step until
+converges.
+\end{itemize}
+
+
+The implementation of the Gradient Method main focus on solving the
+equation (\ref{Lagrangian v}), (\ref{Lagrangian lambda}) and
+(\ref{Lagrangian a(x)}). Observing the expression of the equations
+of $v$ and $\lambda$, we can see that the weak form of them can be
+presented by class \textbf{WeakFormGCM}. What we should do is just
+prepare the parameters for the object of class \textbf{WeakFormGCM}.
+The following two method defined in class \textbf{LagrangianMethod}
+is designed to solve the two equations.
+
+\begin{lstlisting}
+public Vector solve_v(int s_i) {
+    Vector2Function fu0 = new Vector2Function(u0);
+    Vector2Function fu0_x = new Vector2Function(u0_x);
+    Vector2Function fu0_y = new Vector2Function(u0_y);
+
+    //-( a(x)-k^2 ) = k^2-a(x)
+    Vector v_c = FMath.axpy(-1.0, a, new SparseVector(a.getDim(),k*k));
+    plotVector(mesh, v_c, "param_c"+s_i+".dat");
+    Vector2Function param_c = new Vector2Function(v_c);
+
+    //\Nabla{lnu0}
+    //Function b1 = FOBasic.Divi(fu0_x,fu0);
+    //Function b2 = FOBasic.Divi(fu0_y,fu0);
+    Function b1 = new Vector2Function(lnu0_x);
+    Function b2 = new Vector2Function(lnu0_y);
+    plotFunction(mesh, b1, "b1_"+s_i+".dat");
+    plotFunction(mesh, b2, "b2_"+s_i+".dat");
+
+    WeakFormGCM weakForm = new WeakFormGCM();
+    weakForm.setF(FC.c(0.0));
+    weakForm.setParam(
+            FC.c(-1.0),
+            param_c,
+            FC.c(2.0).M(b1),
+            FC.c(2.0).M(b2));
+    //q = d = 1 + \partial_{n}{lnu_0}
+    Function param_qd = FC.c(1.0).A(new DuDn(b1, b2, null));
+    //Robin:  d*u + k*u_n = q
+    weakForm.setRobin(FC.c(-1.0).M(param_qd),
+            FC.c(-1.0).M(param_qd));
+
+    mesh.clearBorderNodeMark();
+    HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+    mapNTF.put(NodeType.Robin, null);
+    mesh.markBorderNode(mapNTF);
+
+    AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
+    System.out.println("Begin Assemble...solve_v");
+    assembler.assemble();
+    Matrix stiff = assembler.getStiffnessMatrix();
+    Vector load = assembler.getLoadVector();
+    System.out.println("Assemble done!");
+
+    SolverJBLAS solver = new SolverJBLAS();
+    Vector v = solver.solveDGESV(stiff, load);
+    plotVector(mesh, v, "Lagrangian_v"+s_i+".dat");
+    return v;
+}
+
+
+public Vector solve_lambda(int s_i, Vector v) {
+    Vector2Function fu0 = new Vector2Function(u0);
+    Vector2Function fu0_x = new Vector2Function(u0_x);
+    Vector2Function fu0_y = new Vector2Function(u0_y);
+
+    //-2*Laplace(lnu0) - ( a(x)-k^2 ) = -2*Laplace(lnu0) + ( k^2-a(x) )
+    Vector2Function param_c = new Vector2Function(
+            FMath.axpy(-2.0, laplace_ln_u0,
+            FMath.ax(1.0,FMath.axpy(-1, a,
+                    new SparseVector(a.getDim(),k*k)))));
+
+    //\Nabla{lnu0}
+    Function b1 = fu0_x.D(fu0);
+    Function b2 = fu0_y.D(fu0);
+    WeakFormGCM weakForm = new WeakFormGCM();
+
+    //(v - g)_\partial{\Omega}
+    Vector v_g = FMath.axpy(-1.0, FMath.axDivy(1.0,g[s_i],u0), v);
+    NodeList nodes = mesh.getNodeList();
+    Function fv_g = new Vector2Function(v_g);
+
+    weakForm.setF(FC.c(0.0));
+    weakForm.setParam(
+            FC.c(-1.0),
+            param_c,
+            FC.c(-2.0).M(b1),
+            FC.c(-2.0).M(b2)
+        );
+    Function param_d = FC.c(1.0).S(new DuDn(b1, b2, null));
+    weakForm.setRobin(FC.c(-1.0).M(fv_g),
+            FC.c(-1.0).M(param_d));
+
+    mesh.clearBorderNodeMark();
+    HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+    mapNTF.put(NodeType.Robin, null);
+    mesh.markBorderNode(mapNTF);
+
+    AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
+    System.out.println("Begin Assemble...solve_lambda");
+    assembler.assemble();
+    Matrix stiff = assembler.getStiffnessMatrix();
+    Vector load = assembler.getLoadVector();
+    System.out.println("Assemble done!");
+
+    SolverJBLAS solver = new SolverJBLAS();
+    Vector lambda = solver.solveDGESV(stiff, load);
+    plotVector(mesh, lambda, "Lagrangian_lambda"+s_i+".dat");
+    return lambda;
+}
+\end{lstlisting}
+
+
+
+
+
+% ------------------------------------------------------------------------
+%Included for Gather Purpose only:
+%input "Xbib.bib"
+\bibliographystyle{amsplain}
+\bibliography{xbib}
+\end{document}
+% ------------------------------------------------------------------------
