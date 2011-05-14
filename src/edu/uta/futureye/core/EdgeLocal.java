@@ -1,8 +1,8 @@
 package edu.uta.futureye.core;
 
-import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.geometry.GeoEntity1D;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ObjList;
@@ -109,7 +109,7 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
     		if(this.beginNode().globalIndex == this.globalEdge.beginNode().globalIndex)
     			localUnitNormVector = this.globalEdge.getNormVector().copy();
     		else
-    			localUnitNormVector = SpaceVector.ax(-1.0, this.globalEdge.getNormVector());
+    			localUnitNormVector = FMath.ax(-1.0, this.globalEdge.getNormVector());
     		} else {
     			localUnitNormVector = Utils.getNormVector(
     					this.beginNode(),

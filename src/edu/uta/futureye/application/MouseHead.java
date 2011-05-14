@@ -1412,9 +1412,9 @@ public class MouseHead {
 		gridName = "mouse4"; 
 		
 		//760nm波长数据 Rat6
-		//m.borderDataPath = "Omega11_Param_T37Groups_Rat6\\760nm_"+gridName;
+		//m.borderDataPath = "Omega11_Param_T31Groups_Rat6\\760nm_"+gridName;
 		//830nm波长数据 Rat6
-		m.borderDataPath = "Omega11_Param_T37Groups_Rat6\\830nm_"+gridName;
+		m.borderDataPath = "Omega11_Param_T31Groups_Rat6\\830nm_"+gridName;
 
 		m.factor = 10000;
 		
@@ -1424,21 +1424,56 @@ public class MouseHead {
 		
 		for(int timeId=1;timeId<=31;timeId++) {
 			//bottom tail
-//			m.setDelta(0.0, 0.9);  //S13 y(0.8->0.9)
-//			m.run(13,timeId,TailType.bottom);
-			m.setDelta(-0.4, 0.9);  //S12 y(0.8->0.9)
-			m.run(12,timeId,TailType.bottom);
+			m.setDelta(0.0, 0.9);  //S13 y(0.8->0.9)
+			m.run(13,timeId,TailType.bottom);
+//			m.setDelta(-0.4, 0.9);  //S12 y(0.8->0.9)
+//			m.run(12,timeId,TailType.bottom);
 
 			//left tail
-//			m.setDelta(1.2, 0.4);  //S9 x(1.1->1.2)
-//			m.run(9,timeId,TailType.left);
-			m.setDelta(1.4, 0.0);  //S9 x(1.3->1.4)
-			m.run(10,timeId,TailType.left);
+			m.setDelta(1.2, 0.4);  //S9 x(1.1->1.2)
+			m.run(9,timeId,TailType.left);
+//			m.setDelta(1.4, 0.0);  //S9 x(1.3->1.4)
+//			m.run(10,timeId,TailType.left);
 		}
 	}
 	
+	public static void runRat5() {
+		MouseHead m = new MouseHead();
+		MouseHead.outputMiddleData = true;
+		
+		//////////////////////Configure/////////////////////////
+		//mouse, mouse2 非结构网格 
+		//mouse3, mouse4, mouse5 结构网格
+		gridName = "mouse4"; 
+		
+		//760nm波长数据 Rat5
+		m.borderDataPath = "Omega11_Param_T21Groups_Rat5\\760nm_"+gridName;
+		//830nm波长数据 Rat5
+		//m.borderDataPath = "Omega11_Param_T21Groups_Rat5\\830nm_"+gridName;
+
+		m.factor = 10000;
+		
+		/////////////////////////////////////////////////////
+		//back ground
+		m.mu_a = FC.c(0.1);
+		
+		for(int timeId=1;timeId<=21;timeId++) {
+			//bottom tail
+			m.setDelta(0.0, 0.9);  //S13 y(0.8->0.9)
+			m.run(13,timeId,TailType.bottom);
+//			m.setDelta(-0.4, 0.9);  //S12 y(0.8->0.9)
+//			m.run(12,timeId,TailType.bottom);
+
+			//left tail
+			m.setDelta(1.2, 0.4);  //S9 x(1.1->1.2)
+			m.run(9,timeId,TailType.left);
+//			m.setDelta(1.4, 0.0);  //S9 x(1.3->1.4)
+//			m.run(10,timeId,TailType.left);
+		}
+	}
 	public static void main(String[] args) {
 		//runRat1();
-		runRat6();
+		//runRat6();
+		runRat5();
 	}
 }

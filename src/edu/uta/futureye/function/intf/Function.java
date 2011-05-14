@@ -27,8 +27,9 @@ public interface Function {
 	 * 关于复合函数的构造 @see compose()
 	 * 
 	 * @param varNames
+	 * @return TODO
 	 */
-	void setVarNames(List<String> varNames);
+	Function setVarNames(List<String> varNames);
 	
 	/**
 	 * Return all variable names of the function

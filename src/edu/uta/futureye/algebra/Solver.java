@@ -222,7 +222,7 @@ public class Solver {
 		// r = b - Ax
 		//A.multAdd(-1, x, r.set(b));
 		A.mult(x, r);
-		r = SparseVector.axpy(-1.0, r, b);
+		r.axpy(-1.0, b);
 		
 		double firstNorm2 = r.norm2();
 		double norm2 = 0;
@@ -247,7 +247,7 @@ public class Solver {
 		        beta = rho / rho_1;
 		        //p.scale(beta).add(z);
 		        //p=beta*p+z
-		        p = SparseVector.axpy(beta, p, z);
+		        p.axpy(beta, z);
 		    }
 		
 		    //q = A*p

@@ -20,7 +20,6 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 	private int funIndex;
 	private Function funCompose = null;
 	private Function funOuter = null;
-	private List<String> varNames = new LinkedList<String>();
 	private ObjList<String> innerVarNames = null;
 
 	private Element e = null;
@@ -98,16 +97,6 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 		return funCompose.value(v);
 	}
 
-	@Override
-	public void setVarNames(List<String> varNames) {
-		this.varNames = varNames;
-	}
-
-	@Override
-	public List<String> varNames() {
-		return varNames;
-	}
-	
 	public String toString() {
 		return "N"+(funIndex+1)+": "+funOuter.toString();
 	}

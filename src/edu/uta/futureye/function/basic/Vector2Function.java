@@ -22,12 +22,9 @@ public class Vector2Function extends AbstractFunction {
 	public double value(Variable v) {
 		int index = v.getIndex();
 		if(index <= 0) {
-			FutureyeException ex = new FutureyeException("Error: Vector2Function index="+index);
-			ex.printStackTrace();
-			System.exit(-1);
+			throw new FutureyeException("Error: Vector2Function index="+index);
 		} else {
 			return u.get(index);//注：下标错位会造成结果出现随机混乱
 		}
-		return 0.0;
 	}
 }

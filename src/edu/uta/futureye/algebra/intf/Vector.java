@@ -116,6 +116,22 @@ public interface Vector {
 	Vector axpy(double a, Vector y);
 	
 	/**
+	 * xi = a*xi*yi
+	 * @param a
+	 * @param y
+	 * @return
+	 */
+	Vector axMuly(double a, Vector y);
+	
+	/**
+	 * xi = a*xi/yi
+	 * @param a
+	 * @param y
+	 * @return
+	 */
+	Vector axDivy(double a, Vector y);
+	
+	/**
 	 * <code>x = x + dv</code>
 	 * 
 	 * @param dv

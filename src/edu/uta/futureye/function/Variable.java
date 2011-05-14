@@ -185,6 +185,14 @@ public class Variable {
 		Variable v3 = new Variable(new VarPair("x",1.0),
 				new VarPair("y",2.0));
 		System.out.println(v3);
+		
+		Variable v = new Variable("x",5.0).set("y",6.0);
+		System.out.println(v.get("x"));
+		System.out.println(v.get("y"));
+		v.setIndex(20);
+		System.out.println(v.getIndex());
+		v.setElement(new Element());
+		System.out.println(v.getElement());
 	}
 	
 }

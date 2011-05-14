@@ -11,6 +11,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.weakform.WeakFormDerivative;
@@ -38,7 +39,7 @@ public class Tools {
 		Vector uy = Tools.computeDerivative(mesh,U,"y");
 		Vector uxx = Tools.computeDerivative(mesh,ux,"x");
 		Vector uyy = Tools.computeDerivative(mesh,uy,"y");
-		Vector LpU = SparseVector.axpy(1.0, uxx, uyy);
+		Vector LpU = FMath.axpy(1.0, uxx, uyy);
 		return LpU;
 	}
 	

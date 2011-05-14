@@ -14,9 +14,9 @@ import edu.uta.futureye.util.container.DOFList;
 
 /**
  * 系数反问题
- * Solve: (U*u, v) = (f, v) - (k*grad(U),grad(v))
- * where u is unknown
- * U,f and k is known
+ * Solve: (Uu, v) = (f, v) - (k\nabla{U},\nabla{v})
+ *   where u is unknown
+ *   U,f and k is known
  * 
  * @author liuyueming
  */

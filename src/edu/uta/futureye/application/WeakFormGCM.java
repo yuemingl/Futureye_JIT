@@ -8,7 +8,7 @@ import edu.uta.futureye.util.Utils;
 
 /**
  * Solve
- *  -\Delta{u} + \mathbf{b}\dot\Nabla{u} + c*u = f
+ *  -k\Delta{u} + \mathbf{b}\cdot\nabla{u} + cu = f
  * 
  * Weak form
  *  (k*u_x, v_x) + (k*u_y, v_y) + (b1*u_x, v) + (b2*u_y, v) + (c*u, v)= (f, v)

@@ -60,9 +60,27 @@ public class SparseVector implements Vector {
 			for(Entry<Integer, Double> e : tmp.data.entrySet()) {
 				this.data.put(e.getKey(), e.getValue());
 			}
+			this.defaultValue = tmp.defaultValue;
 		} else {
 			for(int i=1;i<=v.getDim();i++) {
 				this.set(i,v.get(i));
+			}
+		}
+		return this;
+	}
+	
+	@Override
+	public Vector set(double a, Vector v) {
+		if(v instanceof SparseVector) {
+			SparseVector tmp = (SparseVector)v;
+			this.data.clear();
+			for(Entry<Integer, Double> e : tmp.data.entrySet()) {
+				this.data.put(e.getKey(), a*e.getValue());
+			}
+			this.defaultValue = a*tmp.defaultValue;
+		} else {
+			for(int i=1;i<=v.getDim();i++) {
+				this.set(i,a*v.get(i));
 			}
 		}
 		return this;
@@ -84,12 +102,31 @@ public class SparseVector implements Vector {
 	}
 	
 	@Override
+	public Vector add(Vector v) {
+		if(v instanceof SparseVector) {
+			SparseVector tmp = (SparseVector)v;
+			for(Entry<Integer, Double> e : tmp.data.entrySet()) {
+				this.add(e.getKey(), e.getValue());
+			}
+			this.defaultValue += tmp.defaultValue;
+
+		} else {
+			for(int i=1;i<=v.getDim();i++) {
+				this.add(i,v.get(i));
+			}
+		}
+		return this;
+	}
+	
+	@Override
 	public Vector add(double a, Vector v) {
 		if(v instanceof SparseVector) {
 			SparseVector tmp = (SparseVector)v;
 			for(Entry<Integer, Double> e : tmp.data.entrySet()) {
 				this.add(e.getKey(), a*e.getValue());
 			}
+			this.defaultValue += a*tmp.defaultValue;
+
 		} else {
 			for(int i=1;i<=v.getDim();i++) {
 				this.add(i,a*v.get(i));
@@ -99,14 +136,59 @@ public class SparseVector implements Vector {
 	}
 	
 	@Override
-	public Vector copy() {
-		Vector r = new SparseVector(this.dim,this.defaultValue);
+	public Vector ax(double a) {
 		for(Entry<Integer, Double> e : data.entrySet()) {
-			r.set(e.getKey(), e.getValue());
+			this.set(e.getKey(), a*e.getValue());
 		}
-		return r;
+		this.defaultValue *= a;
+		return this;
 	}
 	
+	@Override
+	public Vector axpy(double a, Vector y) {
+		this.scale(a).add(y);
+		return this;
+	}
+
+	@Override
+	public Vector axMuly(double a, Vector y) {
+		for(Entry<Integer, Double> e : data.entrySet()) {
+			this.set(e.getKey(), a*e.getValue()*y.get(e.getKey()));
+		}
+		return this;
+	}
+	
+	@Override
+	public Vector axDivy(double a, Vector y) {
+		for(Entry<Integer, Double> e : data.entrySet()) {
+			this.set(e.getKey(), a*e.getValue()/y.get(e.getKey()));
+		}
+		return this;
+	}
+	
+	@Override
+	public Vector scale(double a) {
+		for(Entry<Integer, Double> e : data.entrySet()) {
+			this.set(e.getKey(), a*e.getValue());
+		}
+		this.defaultValue *= a;
+		return this;
+	}
+
+	@Override
+	public Vector shift(double dv) {
+		for(Entry<Integer, Double> e : data.entrySet()) {
+			this.set(e.getKey(), e.getValue() + dv);
+		}
+		this.defaultValue += dv;
+		return this;
+	}
+
+	@Override
+	public double norm1() {
+		throw new UnsupportedOperationException();
+	}
+
 	@Override
 	public double norm2() {
 		return Math.sqrt(this.dot(this));
@@ -135,6 +217,15 @@ public class SparseVector implements Vector {
 		}
 		return rlt;
 	}
+
+	@Override
+	public Vector copy() {
+		Vector r = new SparseVector(this.dim,this.defaultValue);
+		for(Entry<Integer, Double> e : data.entrySet()) {
+			r.set(e.getKey(), e.getValue());
+		}
+		return r;
+	}	
 	
 	@Override
 	public void clear() {
@@ -162,98 +253,4 @@ public class SparseVector implements Vector {
 	public Map<Integer,Double> getAll() {
 		return this.data;
 	}
-	
-	/////////////////////////////////////////////////
-	//TODO 不要静态函数，紧改成系数矩阵优化的方法
-
-	public static Vector ax(double a, Vector x) {
-		int dim = x.getDim();
-		Vector rlt = new SparseVector(dim);
-		for(int i=1;i<=dim;i++) {
-			rlt.set(i, a*x.get(i));
-		}
-		return rlt;	
-	}
-	
-	public static Vector axpy(double a, Vector x, Vector y) {
-		int dim = x.getDim();
-		Vector rlt = new SparseVector(dim);
-		for(int i=1;i<=dim;i++) {
-			rlt.set(i, a*x.get(i)+y.get(i));
-		}
-		return rlt;
-	}
-	
-	public static Vector axMuly(double a, Vector x, Vector y) {
-		int dim = x.getDim();
-		Vector rlt = new SparseVector(dim);
-		for(int i=1;i<=dim;i++) {
-			rlt.set(i, a*x.get(i)*y.get(i));
-		}
-		return rlt;
-	}
-	
-	public static Vector axDivy(double a, Vector x, Vector y) {
-		int dim = x.getDim();
-		Vector rlt = new SparseVector(dim);
-		for(int i=1;i<=dim;i++) {
-			rlt.set(i, a*x.get(i)/y.get(i));
-		}
-		return rlt;
-	}
-
-	@Override
-	public Vector add(Vector v) {
-		if(v instanceof SparseVector) {
-			SparseVector tmp = (SparseVector)v;
-			for(Entry<Integer, Double> e : tmp.data.entrySet()) {
-				this.add(e.getKey(), e.getValue());
-			}
-		} else {
-			for(int i=1;i<=v.getDim();i++) {
-				this.add(i,v.get(i));
-			}
-		}
-		return this;
-	}
-
-	@Override
-	public Vector axpy(double a, Vector y) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Vector scale(double a) {
-		for(Entry<Integer, Double> e : data.entrySet()) {
-			this.set(e.getKey(), a*e.getValue());
-		}
-		return this;
-	}
-
-	@Override
-	public Vector ax(double a) {
-		for(Entry<Integer, Double> e : data.entrySet()) {
-			this.set(e.getKey(), a*e.getValue());
-		}
-		return this;
-	}
-	
-	@Override
-	public Vector shift(double dv) {
-		for(Entry<Integer, Double> e : data.entrySet()) {
-			this.set(e.getKey(), e.getValue() + dv);
-		}
-		return this;
-	}	
-
-	@Override
-	public double norm1() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Vector set(double a, Vector v) {
-		throw new UnsupportedOperationException();
-	}	
-
 }

@@ -96,7 +96,7 @@ public class PlaneElasticDam {
         	@Override
           	public double value(Variable v) {
           		double y = v.get("y");
-          		return -(10-y);
+          		return -(10.0-y);
           	}
           });
       weakForm.setF(b,t);

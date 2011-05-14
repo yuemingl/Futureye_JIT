@@ -40,15 +40,14 @@ public class DuDn extends AbstractFunction implements ElementDependentFunction {
 	@Override
 	public void setElement(Element e) {
 		this.e = e;
+		//Compute outer normal vector 
 		GeoEntity ge = e.getGeoEntity();
 		if(ge instanceof Edge) {
 			norm = ((Edge)ge).getNormVector();
 		} else if(ge instanceof Face) {
 			norm = ((Face)ge).getNormVector();
 		} else {
-			FutureyeException ex = new FutureyeException("Unsuported element type");
-			ex.printStackTrace();
-			System.exit(-1);
+			throw new FutureyeException("Unsuported element type");
 		}
 	}
 
@@ -57,13 +56,16 @@ public class DuDn extends AbstractFunction implements ElementDependentFunction {
 		Function rlt = null;
 		this.setElement(v.getElement());
 		if(u != null) {
+			//u is passed into constructor
 			rlt = FMath.grad(u).dot(norm);
 		} else if(this.norm.getDim() == 2) {
+			//2D case
 			rlt = u_x.M(new FC(norm.get(1)))
 					.A(
 				  u_y.M(new FC(norm.get(2)))
 					);
 		} else if(this.norm.getDim() == 3) {
+			//3D case
 			rlt = FMath.sum(
 					u_x.M(new FC(norm.get(1))),
 					u_y.M(new FC(norm.get(2))),

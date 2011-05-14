@@ -18,6 +18,7 @@ import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -91,7 +92,7 @@ public class LagrangianMethod {
 			Vector newa = solve_a(iter,vList,lambdaList);
 			plotVector(mesh, newa, String.format("Lagrangian_rlt_a%02d.dat",iter));
 			a = newa;
-			double err = SparseVector.axpy(-1.0, a, a_bak).norm2();
+			double err = FMath.axpy(-1.0, a, a_bak).norm2();
 			System.out.println("Iter"+iter+" Error:  Norm2(a(x)-a_glob(x)) =========> "+err);
 			br.println("Iter"+iter+" Error:  Norm2(a(x)-a_glob(x)) = "+err);
 		}
@@ -104,15 +105,15 @@ public class LagrangianMethod {
 		ObjList<Vector> vml = new ObjList<Vector>();
 		for(int i=0;i<s.length;i++) {
 			//vml_i = v_i*lambda_i
-			vml.add(SparseVector.axMuly(1.0, vList.at(i+1), lambdaList.at(i+1)));
+			vml.add(FMath.axMuly(1.0, vList.at(i+1), lambdaList.at(i+1)));
 			plotVector(mesh, vml.at(i+1), "Lagrangian_vml_"+i+".dat");
 		}
 		
 		for(int i=1;i<s.length;i++) {
 			//Trapezoid formula: (a+b)*h/2
-			int_a_b = SparseVector.axpy(1.0, int_a_b, 
-					SparseVector.ax(h/(2.0*theta),
-					SparseVector.axpy(1.0, vml.at(i), vml.at(i+1)))
+			int_a_b = FMath.axpy(1.0, int_a_b, 
+					FMath.ax(h/(2.0*theta),
+					FMath.axpy(1.0, vml.at(i), vml.at(i+1)))
 					);
 			plotVector(mesh, int_a_b, "int_a_b_"+i+".dat");
 		}
@@ -131,12 +132,12 @@ public class LagrangianMethod {
 				rlt.set(node.globalIndex, this.a.get(node.globalIndex));
 		}
 		return rlt;
-		//return SparseVector.axpy(1.0, int_a_b, this.a);
+		//return FMath.axpy(1.0, int_a_b, this.a);
 	}
 	
 	public void compute_u0(int s_i) {
 		double h = s[0] - s[1];
-		Model model = new Model();
+		GCMModel model = new GCMModel();
 		model.setDelta(1.5+s_i*h, 3.5);
 		//Solve background forward problem u0
 		model.setMu_a(0.0, 0.0, 0.0, 
@@ -153,13 +154,13 @@ public class LagrangianMethod {
 		//直接在小网格上求解，自然边界，两者在边界处应该一致，
 		//但是经测试不一致，原因是delta函数如果在区域外，结果相差很大
 		//Vector u0Samll = model.solveForwardNeumann(mesh);
-		Vector u0Samll = model.solveForwardDirichlet(mesh,new Vector2Function(u0));
+		Vector u0Samll = model.solveForwardDirichlet(mesh,new Vector2Function(u0),1);
 
 		plotVector(mesh, u0Samll, "u0_small"+s_i+".dat");
 		
 		u0=u0Samll;
 		
-		vReal = SparseVector.axDivy(1.0, g[s_i], u0);
+		vReal = FMath.axDivy(1.0, g[s_i], u0);
 		plotVector(mesh, 
 				vReal, "vReal"+s_i+".dat");
 	}
@@ -183,7 +184,7 @@ public class LagrangianMethod {
 		
 		Vector lnu0_xx = Tools.computeDerivative(mesh, lnu0_x, "x");
 		Vector lnu0_yy = Tools.computeDerivative(mesh, lnu0_y, "y");
-		laplace_ln_u0 = SparseVector.axpy(1.0, lnu0_xx, lnu0_yy);
+		laplace_ln_u0 = FMath.axpy(1.0, lnu0_xx, lnu0_yy);
 		
 		plotVector(mesh, laplace_ln_u0, "lnu0_laplace"+s_i+".dat");
 	}
@@ -206,7 +207,7 @@ public class LagrangianMethod {
 		Vector2Function fu0_y = new Vector2Function(u0_y);
 		
 		//-( a(x)-k^2 ) = k^2-a(x)
-		Vector v_c = SparseVector.axpy(-1.0, a, new SparseVector(a.getDim(),k*k));
+		Vector v_c = FMath.axpy(-1.0, a, new SparseVector(a.getDim(),k*k));
 		plotVector(mesh, v_c, "param_c"+s_i+".dat");
 		Vector2Function param_c = new Vector2Function(v_c);
 		
@@ -277,8 +278,8 @@ public class LagrangianMethod {
 		
 		//-2*Laplace(lnu0) - ( a(x)-k^2 ) = -2*Laplace(lnu0) + ( k^2-a(x) )
 		Vector2Function param_c = new Vector2Function(
-				SparseVector.axpy(-2.0, laplace_ln_u0,
-				SparseVector.ax(1.0,SparseVector.axpy(-1, a, 
+				FMath.axpy(-2.0, laplace_ln_u0,
+				FMath.ax(1.0,FMath.axpy(-1, a, 
 						new SparseVector(a.getDim(),k*k)))));
 		
 		//\Nabla{lnu0}
@@ -287,7 +288,7 @@ public class LagrangianMethod {
 		WeakFormGCM weakForm = new WeakFormGCM();
 
 		//(v - g)_\partial{\Omega} 
-		Vector v_g = SparseVector.axpy(-1.0, SparseVector.axDivy(1.0,g[s_i],u0), v);
+		Vector v_g = FMath.axpy(-1.0, FMath.axDivy(1.0,g[s_i],u0), v);
 		NodeList nodes = mesh.getNodeList();
 		//Test: v_g在整个区域上都已知
 //		for(int i=1;i<=nodes.size();i++) {
@@ -298,7 +299,7 @@ public class LagrangianMethod {
 //				v_g.set(node.globalIndex,0.0);
 //		}
 		
-		Vector v_g2 = SparseVector.axpy(-1.0, SparseVector.axDivy(1.0,g[s_i],u0), v);
+		Vector v_g2 = FMath.axpy(-1.0, FMath.axDivy(1.0,g[s_i],u0), v);
 		//只保留上边界数据，计算范数
 		for(int i=1;i<=nodes.size();i++) {
 			Node node = nodes.at(i);
@@ -397,7 +398,7 @@ public class LagrangianMethod {
 		meshSmall.computeNeighborNodes();
 
 
-		Model model = new Model();
+		GCMModel model = new GCMModel();
 		//Simulated 'a_glob(x)'
 		model.setMu_a(2.0, 2.6, 0.3, 
 				0.2, //init 'a_glob(x)'
@@ -440,7 +441,7 @@ public class LagrangianMethod {
 			//直接在小网格上求解，自然边界，两者在边界处应该一致
 			//但是经测试不一致，原因是delta函数如果在区域外，结果相差很大
 			//uiSmall[i] = model.solveForwardNeumann(meshSmall);
-			uiSmall[i] = model.solveForwardDirichlet(meshSmall,new Vector2Function(ui[i]));
+			uiSmall[i] = model.solveForwardDirichlet(meshSmall,new Vector2Function(ui[i]),1);
 			
 			plotVector(meshSmall, uiSmall[i], "ui_small"+i+".dat");
 		}

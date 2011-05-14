@@ -64,7 +64,7 @@ public class AssemblerScalar implements Assembler {
 		for(int i=1; i<=nEle; i++) {
 			eList.at(i).adjustVerticeToCounterClockwise();
 			assembleGlobal(eList.at(i),	globalStiff,globalLoad);
-			if(i%100==0)
+			if(i%1000==0)
 				System.out.println("Assemble..."+
 						String.format("%.0f%%", 100.0*i/nEle));
 		}

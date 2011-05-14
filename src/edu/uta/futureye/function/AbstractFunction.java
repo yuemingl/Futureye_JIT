@@ -47,8 +47,9 @@ public abstract class AbstractFunction implements Function {
 	}
 
 	@Override
-	public void setVarNames(List<String> varNames) {
+	public Function setVarNames(List<String> varNames) {
 		this.varNames = varNames;
+		return this;
 	}
 	
 	/**
@@ -167,7 +168,7 @@ public abstract class AbstractFunction implements Function {
 				}
 				@Override
 				public Function _d(String varName) {
-					return f1._d(varName).A(f2._d(varName));
+					return f1._d(varName).A(f2._d(varName)).setVarNames(this.varNames);
 				}
 				@Override
 				public int getOpOrder() {
@@ -205,7 +206,7 @@ public abstract class AbstractFunction implements Function {
 				}
 				@Override
 				public Function _d(String varName) {
-					return f1._d(varName).S(f2._d(varName));
+					return f1._d(varName).S(f2._d(varName)).setVarNames(this.varNames);
 				}
 				@Override
 				public int getOpOrder() {
@@ -255,7 +256,7 @@ public abstract class AbstractFunction implements Function {
 				public Function _d(String varName) {
 					return 	f1._d(varName).M(f2).A(
 							f1.M(f2._d(varName))
-							);
+							).setVarNames(this.varNames);
 				}
 				@Override
 				public int getOpOrder() {
@@ -304,7 +305,7 @@ public abstract class AbstractFunction implements Function {
 				@Override
 				public Function _d(String varName) {
 					return f1._d(varName).M(f2).S(f1.M(f2._d(varName)))
-							.D(f2.M(f2));
+							.D(f2.M(f2)).setVarNames(this.varNames);
 				}
 				@Override
 				public int getOpOrder() {

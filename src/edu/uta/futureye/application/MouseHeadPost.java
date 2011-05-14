@@ -82,7 +82,8 @@ public class MouseHeadPost {
 				370.875614945573, -237.500207785087
 		   };
 		
-		String folderPostfix = "_factor=10000_rat6";
+//		String folderPostfix = "_factor=10000_rat6";
+		String folderPostfix = "_factor=10000_rat5";
 		String format760 = ".\\MouseHead\\Results\\760nm_"+gridName+folderPostfix+
 						"\\final_alpha_omega_BL%02d.dat";
 		String format830 = ".\\MouseHead\\Results\\830nm_"+gridName+folderPostfix+
@@ -93,7 +94,8 @@ public class MouseHeadPost {
 		//int [] set = {20,30};
 		//for(int i:set) {
 		//for(int i=1;i<=37;i++) {
-		for(int i=1;i<=31;i++) {
+		//for(int i=1;i<=31;i++) {
+		for(int i=1;i<=21;i++) {
 			file760 = String.format(format760,i);
 			file830 = String.format(format830,i);
 			v1 = DataReader.readVector(file760);

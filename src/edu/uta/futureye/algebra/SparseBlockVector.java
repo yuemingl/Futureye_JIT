@@ -226,4 +226,14 @@ public class SparseBlockVector implements BlockVector {
 	public Vector shift(double dv) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public Vector axDivy(double a, Vector y) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Vector axMuly(double a, Vector y) {
+		throw new UnsupportedOperationException();
+	}
 }

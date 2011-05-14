@@ -227,4 +227,52 @@ public class FMath {
 		}
 		return min;
 	}
+	
+	/**
+	 * y=a*x
+	 * @param a
+	 * @param x
+	 * @return
+	 */
+	public static Vector ax(double a, Vector x) {
+		Vector rlt = x.copy();
+		return rlt.ax(a);
+	}
+	
+	/**
+	 * z = a*x+y
+	 * @param a
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static Vector axpy(double a, Vector x, Vector y) {
+		Vector rlt = x.copy();
+		return rlt.axpy(a, y);
+	}
+	
+	/**
+	 * zi = a*xi*yi 
+	 * @param a
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static Vector axMuly(double a, Vector x, Vector y) {
+		Vector rlt = x.copy();
+		return rlt.axMuly(a, y);
+	}
+	
+	/**
+	 * zi = a*xi/yi
+	 * @param a
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static Vector axDivy(double a, Vector x, Vector y) {
+		Vector rlt = x.copy();
+		return rlt.axDivy(a, y);
+
+	}
 }

@@ -4,6 +4,7 @@ import edu.uta.futureye.algebra.intf.BlockMatrix;
 import edu.uta.futureye.algebra.intf.BlockVector;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.function.operator.FMath;
 
 /**
  * A = (M B')
@@ -48,7 +49,7 @@ public class SchurComplementSolver {
 		//Schur complement right hand side: B*inv(M)*F - G
 		tmp = this.invM_v(F);
 		B.mult(tmp, rhs);
-		rhs = SparseVector.axpy(-1.0, G, rhs);
+		rhs.add(-1.0, G);
 		
 		// S*P = B*inv(M)*F - G
 		// where S = B*inv(M)*B')*P
@@ -59,7 +60,7 @@ public class SchurComplementSolver {
 		//M*U = F - B'*P
 		Vector U = new SparseVector(BT.getRowDim());
 		BT.mult(P, U);
-		U = SparseVector.axpy(-1.0, U, F);
+		U.axpy(-1.0, F);
 		U = this.invM_v(U);
 		
 		SparseBlockVector rlt = new SparseBlockVector(2);
@@ -120,7 +121,7 @@ public class SchurComplementSolver {
 		
 		// r = b - Ax
 		//A.multAdd(-1, x, r.set(b));
-		r = SparseVector.axpy(-1.0, this.S_v(x), b);
+		r = FMath.axpy(-1.0, this.S_v(x), b);
 		
 		//for (iter.setFirst(); !iter.converged(r, x); iter.next()) {
 		for(int i=0;i<maxIter;i++) {
@@ -142,7 +143,7 @@ public class SchurComplementSolver {
 		        beta = rho / rho_1;
 		        //p.scale(beta).add(z);
 		        //p=beta*p+z
-		        p = SparseVector.axpy(beta, p, z);
+		        p.axpy(beta, z);
 		    }
 		
 		    //q = A*p

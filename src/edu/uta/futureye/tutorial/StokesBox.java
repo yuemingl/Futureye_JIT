@@ -56,17 +56,13 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class Stokes {
+public class StokesBox {
 	public static String outputFolder = "tutorial\\Stokes";
 	
-	public static void cylinder() {
+	public static void box() {
 		//Read a triangle mesh from an input file
-//		String file = "cylinder1";
-//		String file = "cylinder2";
-//		String file = "cylinder2_test";
-//		String file = "cylinder4";
-//		String file = "cylinder_patch";
-		String file = "u_shape";
+		//[-3,3]*[-3,3]
+		String file = "stokes_box";
 		
 		MeshReader reader = new MeshReader(file+".grd");
 		MeshReader reader2 = new MeshReader(file+".grd");
@@ -110,74 +106,9 @@ public class Stokes {
 		
 		//Mark border type
 		HashMap<NodeType, Function> mapNTF_uv = new HashMap<NodeType, Function>();
-		//指定边界
-		//mapNTF.put(NodeType.Dirichlet,null);
-		mapNTF_uv.put(NodeType.Dirichlet, new AbstractFunction("x","y") {
-			@Override
-			public double value(Variable v) {
-				double x = v.get("x");
-				double y = v.get("y");
-				//all
-				if(Math.abs(y-2.5)<Constant.eps|| Math.abs(y+2.5)<Constant.eps)
-					return 1;
-				
-				//cylinder1 and cylinder2 and cylinder4
-//				else if(Math.abs(x+5.0)<0.01)
-//						return 1;
-				
-				//u_shape
-				else if(Math.abs(x+5.0)<0.01 && y>0)
-						return 1;
-				else if(Math.abs(x-5.0)<0.01)
-					return 1;
-				else if(Math.abs(x-4.0)<0.01)
-					return 1;
-				else if(Math.abs(y-0.5)<Constant.eps|| Math.abs(y+0.5)<Constant.eps)
-					return 1;
-				
-				//cylinder1
-//				else if(Math.sqrt(x*x+y*y)<(0.5+0.1))
-//					return 1;
-				
-				//cylinder2 and cylinder4
-//				else if(Math.sqrt(x*x+(y-1)*(y-1))<(0.5+0.15) || 
-//						Math.sqrt(x*x+(y+1)*(y+1))<(0.5+0.15) )
-//					return 1;
-				
-				//cylinder4
-//				else if(Math.sqrt((x-2.5)*(x-2.5)+(y-0.3)*(y-0.3))<(0.5+0.15) || 
-//						Math.sqrt((x+2.5)*(x+2.5)+(y+0.3)*(y+0.3))<(0.5+0.15) )
-//					return 1;
-				
-				//all
-				else
-					return 0;
-			}
-		});
-		//uv其他边界
-		mapNTF_uv.put(NodeType.Neumann, null);
-		
+		mapNTF_uv.put(NodeType.Dirichlet, null);
 		
 		HashMap<NodeType, Function> mapNTF_p = new HashMap<NodeType, Function>();
-		mapNTF_p.put(NodeType.Dirichlet, new AbstractFunction("x","y") {
-			@Override
-			public double value(Variable v) {
-				double x = v.get("x");
-				double y = v.get("y");
-				//cylinder1 cylinder2 cylinder4
-//				if(Math.abs(x-5.0)<0.01)
-//					return 1;
-//				else
-//					return 0;
-
-				//u_shape
-				if(Math.abs(x+5.0)<0.01 && y<0)
-						return 1;
-				else
-					return 0;
-			}
-		});
-		//p其他边界
 		mapNTF_p.put(NodeType.Neumann, null);
 		
 		mesh.markBorderNode(new ObjIndex(1,2),mapNTF_uv);
@@ -213,24 +144,13 @@ public class Stokes {
 		assembler.assemble();
 		BlockMatrix stiff = (BlockMatrix)assembler.getStiffnessMatrix();
 		BlockVector load = (BlockVector)assembler.getLoadVector();
-		//stiff.print();
-		//load.print();
-		//System.out.println(load.norm2());
-		//Boundary condition
 		VectorFunction diri = new SpaceVectorFunction(3);
 		diri.set(1, new AbstractFunction("x","y") {
 					@Override
 					public double value(Variable v) {
-						double x = v.get("x");
 						double y = v.get("y");
-						
-						//cylinder1 cylinder2 cylinder4 
-//						if(Math.abs(x+5.0)<0.01)
-//							return Math.cos(Math.PI/2*(y/2.5));
-						//u_shape
-						if(Math.abs(x+5.0)<0.01 && y>0)
-							return Math.cos(Math.PI/2*(y-1.5));
-						//all
+						if(Math.abs(y-3.0)<Constant.meshEps)
+							return 1.0;
 						else
 							return 0.0;
 					}
@@ -260,6 +180,6 @@ public class Stokes {
 	}
 	
 	public static void main(String[] args) {
-		cylinder();
+		box();
 	}
 }

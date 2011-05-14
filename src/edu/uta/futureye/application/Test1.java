@@ -350,7 +350,7 @@ public class Test1 {
 			}
 		}
 
-		Model model = new Model();
+		GCMModel model = new GCMModel();
 		model.outputFolder = "prostate_least_square";
 	
 		NodeList list =mesh.getNodeList();
@@ -455,7 +455,7 @@ public class Test1 {
 			}
 		}
 
-		Model model = new Model();
+		GCMModel model = new GCMModel();
 		model.outputFolder = "prostate_least_square";
 	
 		NodeList list =mesh.getNodeList();
@@ -520,42 +520,47 @@ public class Test1 {
 		}
 	}
 	
+	
 	public static void main(String[] args) {
-		
+		/**
+		 * Area: [0,5]*[0,3]
+		 */
 		//testWeakFormGCM();
 		
-		Model model = new Model();
-				
-		//3*5 => 30*50
+		GCMModel model = new GCMModel();
+		
+		////////////////////////////Tail + GCM////////////////////////////
+		//Triangle mesh: 50*30
 		//model.run(1,1,"prostate_test1");
-		//3*5 => 10*15
+		//Triangle mesh: 15*10
 		//model.run(1,2,"prostate_test2");
-		//3*5 => 15*25
-		//model.run(1,3,"prostate_test3");
-		//3*5 => manual adaptive
+		//Triangle mesh: 25*15
+		//model.run(1,"prostate_test3_ex2.grd","prostate_test3.grd","prostate_test3");
+		//Triangle mesh: manual adaptive the area [1.5,3.5]*[1.5,3] based on 15*10
 		//model.run(1,4,"prostate_test4_linear");
 		//model.run(2,4,"prostate_test4_quadratic");
-		//3*5 => mixed
+		//Mixed mesh
 		//model.run(1,5,"prostate_test5_mixed");
-		//3*5 => rectangle
+		//Rectangle mesh
 		//model.run(1,6,"prostate_test6_rectangle");
 		
-		
+		///////////////////////////Adaptive///////////////////////////////
 		//model.runAdaptive(1,1,"prostate_test1");
 		//model.runAdaptive(1,2,"prostate_test2");
 		//model.runAdaptive(1,3,"prostate_test3");
 		//model.runAdaptive(1,2,"prostate_test2");
 		//model.runAdaptive(1,6,"prostate_test6_rectangle");
 		//model.runAdaptive(1,7,"prostate_test7_rectangle");
-		
 		//model.runAdaptive(1,5,"prostate_test5_mixed");
 	
+		///////////////////////////GCM Test Only/////////////////////////
 		model.runGCMTest(1,
-				"prostate_test3_ex.grd",
-				"prostate_test3.grd",
-				"prostate_test3_gcm");
+				"prostate_test3_ex.grd", //Forward problem mesh
+				"prostate_test3.grd", //GCM mesh
+				"prostate_test3_gcm"); //output folder
 		
 		
+		///////////////////////////LeastSquare////////////////////////////
 		//testLeastSquare();
 		//testLeastSquare2();
 	}

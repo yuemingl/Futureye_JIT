@@ -105,7 +105,23 @@ public class SpaceVector implements Vector {
 	@Override
 	public Vector axpy(double a, Vector y) {
 		for(int i=0;i<dim;i++)
-			this.data[i] += a*this.data[i] + y.get(i+1);
+			this.data[i] = a*this.data[i] + y.get(i+1);
+		return this;
+	}
+	
+	@Override
+	public Vector axMuly(double a, Vector y) {
+		for(int i=0;i<dim;i++) {
+			this.data[i] = a*this.data[i]*y.get(i+1);
+		}
+		return this;
+	}
+	
+	@Override
+	public Vector axDivy(double a, Vector y) {
+		for(int i=0;i<dim;i++) {
+			this.data[i] = a*this.data[i]/y.get(i+1);
+		}
 		return this;
 	}
 	
@@ -175,10 +191,9 @@ public class SpaceVector implements Vector {
 	}
 
 	/////////////////////////////////////////////////
-
 	/**
-	 * 叉乘（仅3维向量）
 	 * cross product for 3D vectors a=(a1 a2 a3)' and b=(b1 b2 b3)'
+	 * 叉乘（仅3维向量）
 	 * 
 	 *     |i   j  k|
 	 * 3D  |a1 a2 a3|
@@ -204,43 +219,12 @@ public class SpaceVector implements Vector {
 		}
 		return r;
 	}
+	///////////////////////////////////////////////////
 	
-	////////////////////////////////////////////////////
-	
-
 	public String toString() {
 		String rlt = "(";
 		for(int i=0;i<dim;i++)
 			rlt += data[i]+"  ";
 		return rlt+")";
 	}
-	
-	//////////////////////////////////////////////////////
-	public static Vector ax(double a, Vector x) {
-		int dim = x.getDim();
-		Vector rlt = new SpaceVector(dim);
-		for(int i=1;i<=dim;i++) {
-			rlt.set(i, a*x.get(i));
-		}
-		return rlt;	
-	}
-	
-	public static Vector axpy(double a, Vector x, Vector y) {
-		int dim = x.getDim();
-		Vector rlt = new SpaceVector(dim);
-		for(int i=1;i<=dim;i++) {
-			rlt.set(i, a*x.get(i)+y.get(i));
-		}
-		return rlt;
-	}
-	
-	public static Vector axmy(double a, Vector x, Vector y) {
-		int dim = x.getDim();
-		Vector rlt = new SpaceVector(dim);
-		for(int i=1;i<=dim;i++) {
-			rlt.set(i, a*x.get(i)*y.get(i));
-		}
-		return rlt;
-	}
-
 }

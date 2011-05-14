@@ -25,6 +25,7 @@ import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.NodeList;
 import edu.uta.futureye.util.container.ObjIndex;
@@ -507,9 +508,9 @@ public class Utils {
 	public static Vector getNormVector(Point a,Point b) {
 		SpaceVector v1 = new SpaceVector(a.coords());
 		SpaceVector v2 = new SpaceVector(b.coords());
-		Vector v2mv1 = SpaceVector.axpy(-1.0, v1, v2);//v2 - v1
+		Vector v2mv1 = FMath.axpy(-1.0, v1, v2);//v2 - v1
 		double len = v2mv1.norm2();
-		Vector rlt =  SpaceVector.ax(1.0/len, v2mv1);
+		Vector rlt =  FMath.ax(1.0/len, v2mv1);
 		return new SpaceVector(rlt.get(2),-rlt.get(1));//外法向
 	}
 	

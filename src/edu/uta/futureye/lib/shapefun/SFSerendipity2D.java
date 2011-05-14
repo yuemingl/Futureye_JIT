@@ -1,7 +1,6 @@
 package edu.uta.futureye.lib.shapefun;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,6 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 	private int funIndex;
 	private Function funCompose = null;
 	private Function funOuter = null;
-	private List<String> varNames = new LinkedList<String>();
 	private ObjList<String> innerVarNames = null;
 	
 	private Element e = null;
@@ -174,18 +172,8 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 	}
 
 	@Override
-	public void setVarNames(List<String> varNames) {
-		this.varNames = varNames;
-	}
-
-	@Override
 	public double value(Variable v) {
 		return funCompose.value(v);
-	}
-
-	@Override
-	public List<String> varNames() {
-		return varNames;
 	}
 
 	public String toString() {

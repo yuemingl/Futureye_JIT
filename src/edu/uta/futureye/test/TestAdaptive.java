@@ -292,18 +292,22 @@ public class TestAdaptive {
 				if(e.nodes.at(j) instanceof NodeRefined) {
 					NodeRefined nRefined = (NodeRefined)e.nodes.at(j);
 					if(nRefined.isHangingNode()) {
-						DOF dof  = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(1).globalIndex,
+						DOF dof  = new DOF(++nDofLocalIndexCounter,
+								nRefined.constrainNodes.at(1).globalIndex,
 								shapeFun2[j-1]);
 						e.addNodeDOF(j, dof);
-						DOF dof2 = new DOF(++nDofLocalIndexCounter,nRefined.constrainNodes.at(2).globalIndex,
+						DOF dof2 = new DOF(++nDofLocalIndexCounter,
+								nRefined.constrainNodes.at(2).globalIndex,
 								shapeFun2[j-1]);
 						e.addNodeDOF(j, dof2);
 					} else {
-						DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFun[j-1]);
+						DOF dof = new DOF(++nDofLocalIndexCounter,
+								e.nodes.at(j).globalIndex,shapeFun[j-1]);
 						e.addNodeDOF(j, dof);				
 					}
 				} else {
-					DOF dof = new DOF(++nDofLocalIndexCounter,e.nodes.at(j).globalIndex,shapeFun[j-1]);
+					DOF dof = new DOF(++nDofLocalIndexCounter,
+							e.nodes.at(j).globalIndex,shapeFun[j-1]);
 					e.addNodeDOF(j, dof);
 				}
 			}
@@ -342,8 +346,9 @@ public class TestAdaptive {
 				if(e.nodes.at(j) instanceof NodeRefined) {
 					NodeRefined nRefined = (NodeRefined)e.nodes.at(j);
 					if(nRefined.isHangingNode()) {
-						double hnValue = (u.get(nRefined.constrainNodes.at(1).globalIndex)+
-						u.get(nRefined.constrainNodes.at(2).globalIndex))/2.0;
+						double hnValue = 
+							(u.get(nRefined.constrainNodes.at(1).globalIndex)+
+							u.get(nRefined.constrainNodes.at(2).globalIndex))/2.0;
 						
 						u.set(nRefined.globalIndex, hnValue);
 					}
