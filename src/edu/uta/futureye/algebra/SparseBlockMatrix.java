@@ -14,7 +14,8 @@ public class SparseBlockMatrix implements BlockMatrix {
 	protected int colBlockDim;
 	protected double defaultValue = 0.0;
 	protected Map<Integer,Map<Integer,Matrix>> m = 
-		new LinkedHashMap<Integer,Map<Integer,Matrix>>();;
+		new LinkedHashMap<Integer,Map<Integer,Matrix>>();
+	protected String name="";
 
 	/**
 	 * Construct a rowBlockDim*colBlockDim block matrix
@@ -248,7 +249,7 @@ public class SparseBlockMatrix implements BlockMatrix {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("SparseBlockMatrix(").
+		sb.append("SparseBlockMatrix:"+name+"(").
 			append(this.rowBlockDim).
 			append(",").
 			append(this.colBlockDim).
@@ -269,9 +270,31 @@ public class SparseBlockMatrix implements BlockMatrix {
 	public void mult(Vector x, Vector y) {
 		throw new UnsupportedOperationException();
 	}
-
+	
+	@Override
+	public Matrix trans() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Matrix copy() {
+		throw new UnsupportedOperationException();
+	}
+	
 	@Override
 	public void clear() {
 		throw new UnsupportedOperationException();
-	}	
+	}
+	
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public Matrix setName(String name) {
+		this.name = name;
+		return this;
+	}
+
 }

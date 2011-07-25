@@ -192,6 +192,17 @@ public class FMath {
 	
 	/////////////////////Vectors///////////////////////
 	
+	public static Vector sum(Vector ...vi) {
+		if(vi==null || vi.length==0) {
+			throw new FutureyeException("Check parameter vi="+vi);
+		}
+		Vector rlt = vi[0].copy();
+		for(int i=1;i<vi.length;i++) {
+			rlt = rlt.add(vi[i]);
+		}
+		return rlt;
+	}
+	
 	public static Vector log(Vector v) {
 		Vector v2 = v.copy();
 		for(int i=1;i<=v.getDim();i++) {

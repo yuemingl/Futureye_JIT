@@ -8,15 +8,14 @@ import edu.uta.futureye.util.Utils;
 
 /**
  * Solve
- *  -k\Delta{u} + \mathbf{b}\cdot\nabla{u} + c*u = f
  * 
  * Weak form
- *  (k*u_x, v_x) + (k*u_y, v_y) + (b1*u_x, v) + (b2*u_y, v) + (c*u, v)= (f, v)
+ *  (k*u_x, v_x) + (k*u_y, v_y) + (b1*v_x, u) + (b2*v_y, u) + (c*u, v)= (f, v)
  * 
  * @author liuyueming
  *
  */
-public class WeakFormGCM extends AbstractScalarWeakForm {
+public class WeakFormGCMDual extends AbstractScalarWeakForm {
 	protected Function g_f = null;
 	
 	protected Function g_k = null;
@@ -60,8 +59,8 @@ public class WeakFormGCM extends AbstractScalarWeakForm {
 								u._d("x").M(v._d("x")).A(
 								u._d("y").M(v._d("y"))
 						)),
-						fb1.M(u._d("x").M(v)),
-						fb2.M(u._d("y").M(v)),
+						fb1.M(v._d("x").M(u)),
+						fb2.M(v._d("y").M(u)),
 						fc.M(u.M(v))
 					);
 			return integrand;

@@ -12,6 +12,7 @@ import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
+import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
@@ -23,9 +24,7 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 	private double coef = 1.0;
 
 	private Element e;
-	private double jac = 0.0;
-	private double[] x = new double[4];
-	private double[] y = new double[4];
+	private double jacFast = 0.0;
 	
 	
 	/**
@@ -81,7 +80,10 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 					Function x_s = fx._d("s");
 					Function y_r = fy._d("r");
 					Function y_s = fy._d("s");
-					Function jac = trans.getJacobian2D();
+					
+					//Function jac = trans.getJacobian2D();
+					//Faster 快一倍
+					Function jac = FC.c(jacFast);
 					
 					if(varName.equals("r")) {
 						if(var.equals("x"))
@@ -138,18 +140,9 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 	@Override
 	public void asignElement(Element e) {
 		this.e = e;
-		
 		VertexList vList = e.vertices();
-		x[0] = vList.at(1).coord(1);
-		x[1] = vList.at(2).coord(1);
-		x[2] = vList.at(3).coord(1);
-		x[3] = vList.at(4).coord(1);
-		y[0] = vList.at(1).coord(2);
-		y[1] = vList.at(2).coord(2);
-		y[2] = vList.at(3).coord(2);
-		y[3] = vList.at(4).coord(2);
-		
-		jac = Math.abs((x[0]-x[1])*(y[0]-y[3]))/4.0;
+		//用面积计算Jacobin
+		jacFast = Utils.getRectangleArea(vList)/4.0;
 		
 	}
 

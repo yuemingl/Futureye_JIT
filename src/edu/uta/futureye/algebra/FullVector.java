@@ -28,9 +28,15 @@ public class FullVector implements AlgebraVector {
 			data[i] = v.get(i+1);
 	}
 	
-	public void setRandom(double factor) {
+	/**
+	 * set every element to scale*Math.random()+shift
+	 * 
+	 * @param scale
+	 * @param shift
+	 */
+	public void setRandom(double scale,double shift) {
 		for(int i=0;i<dim;i++)
-			data[i] = factor*Math.random();
+			data[i] = scale*Math.random()+shift;
 	}
 	
 	@Override

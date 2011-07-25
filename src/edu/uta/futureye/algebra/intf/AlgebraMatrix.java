@@ -19,11 +19,14 @@ public interface AlgebraMatrix {
 
 	/**
 	 * C = A*B
+	 * 
+	 * (A=this)
+	 * 
 	 * @param x
 	 * @param y
 	 */
 	public void mult(AlgebraMatrix B, AlgebraMatrix C);
-
+	
 	/**
 	 * Get A'
 	 * @return A'

@@ -13,6 +13,7 @@ public class SparseMatrix implements Matrix {
 	protected double defaultValue = 0.0;
 	protected Map<Integer,Map<Integer,Double>> m = 
 		new HashMap<Integer,Map<Integer,Double>>();
+	protected String name = "";
 	
 	public SparseMatrix() {
 	}
@@ -23,6 +24,23 @@ public class SparseMatrix implements Matrix {
 	}
 	
 	public SparseMatrix(int rowDim, int colDim,double defaultValue) {
+		this.rowDim = rowDim;
+		this.colDim = colDim;
+		this.defaultValue = defaultValue;
+	}
+	
+	public SparseMatrix(String name) {
+		this.name = name;
+	}
+	
+	public SparseMatrix(String name, int rowDim, int colDim) {
+		this.name = name;
+		this.rowDim = rowDim;
+		this.colDim = colDim;
+	}
+	
+	public SparseMatrix(String name,int rowDim, int colDim,double defaultValue) {
+		this.name = name;
 		this.rowDim = rowDim;
 		this.colDim = colDim;
 		this.defaultValue = defaultValue;
@@ -91,7 +109,7 @@ public class SparseMatrix implements Matrix {
 	}
 
 	@Override
-	public void setAll(int nRowBase,int nColBase,
+	public void setAll(int nRowBase, int nColBase,
 			Map<Integer, Map<Integer, Double>> map) {
 		for(Entry<Integer, Map<Integer, Double>> rowEentry : map.entrySet()) {
 			int nRow = rowEentry.getKey();
@@ -126,6 +144,30 @@ public class SparseMatrix implements Matrix {
 	}
 	
 	@Override
+	public Matrix trans() {
+		Map<Integer,Map<Integer,Double>> m2 = m;
+		m = new HashMap<Integer,Map<Integer,Double>>();
+		int dim = this.colDim;
+		this.colDim = this.rowDim;
+		this.rowDim = dim;
+		for(Entry<Integer,Map<Integer,Double>> row : m2.entrySet()) {
+			int nRow = row.getKey();
+			for(Entry<Integer,Double> col : row.getValue().entrySet()) {
+				int nCol = col.getKey();
+				set(nCol, nRow, col.getValue());
+			}
+		}
+		return this;
+	}
+	
+	@Override
+	public Matrix copy() {
+		SparseMatrix newM = new SparseMatrix(this.rowDim,this.colDim);
+		newM.setAll(0, 0, this.m);
+		return newM;
+	}
+	
+	@Override
 	public void print() {
 		for(int i=1;i<=rowDim;i++) {
 			for(int j=1;j<=colDim;j++) {
@@ -137,7 +179,7 @@ public class SparseMatrix implements Matrix {
 	}
 	
 	public String toString() {
-		return "SparseMatrix("+
+		return "SparseMatrix:"+name+"("+
 			this.rowDim+","+this.colDim+
 			"):N0R="+m.size();
 	}
@@ -161,4 +203,16 @@ public class SparseMatrix implements Matrix {
 		}
 		return colIndex;
 	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public Matrix setName(String name) {
+		this.name = name;
+		return this; 
+	}
+
 }

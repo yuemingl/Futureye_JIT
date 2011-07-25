@@ -151,7 +151,17 @@ public class Test1 {
 		
 	}
 
-	
+	/**
+	 * 测试正问题与反问题的直接求解
+	 * 区域：[0,5]x[0,3]
+	 * 光源：(1.0,2.8)
+	 * 参数mu_s'：1/(3*mu_s') = 0.02
+	 * 参数mu_a ：circle(2.0,2.5;0.5)=1, 其他=0.1
+	 * 
+	 * 输出：
+	 *   prostate_test1_u.dat
+	 *   prostate_test1_alpha.dat
+	 */
 	public static void paramInverseTest() {
 		MeshReader reader = new MeshReader("prostate_test1.grd");
 		Mesh mesh = reader.read2DMesh();
@@ -208,6 +218,7 @@ public class Test1 {
 		
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
+		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		assembler.imposeDirichletCondition(new FC(0.0));
@@ -238,13 +249,14 @@ public class Test1 {
 		
 		AssemblerScalar assembler2 = new AssemblerScalar(mesh, weakFormL2);
 		System.out.println("Begin Assemble...");
+		assembler2.assemble();
 		Matrix stiff2 = assembler2.getStiffnessMatrix();
 		Vector load2 = assembler2.getLoadVector();
 		assembler2.imposeDirichletCondition(new FC(0.1));
 		System.out.println("Assemble done!");
 		
 		SolverJBLAS solver2 = new SolverJBLAS();
-		Vector u2 = solver.solveDGESV(stiff, load);
+		Vector u2 = solver2.solveDGESV(stiff2, load2);
 		System.out.println("alpha=");
 	    for(int i=1;i<=u2.getDim();i++)
 	        System.out.println(String.format("%.3f", u2.get(i)));	
@@ -522,6 +534,9 @@ public class Test1 {
 	
 	
 	public static void main(String[] args) {
+		paramInverseTest();
+		
+		
 		/**
 		 * Area: [0,5]*[0,3]
 		 */

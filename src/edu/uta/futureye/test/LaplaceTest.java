@@ -183,12 +183,15 @@ public class LaplaceTest {
 				); 	
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		long beg = System.currentTimeMillis();
 		System.out.println("Begin Assemble...");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
+		long end = System.currentTimeMillis() - beg;
+		System.out.println("Assemble time: "+end);
 		
 		SolverJBLAS solver = new SolverJBLAS();
 		Vector u = solver.solveDGESV(stiff, load);
@@ -569,15 +572,15 @@ public class LaplaceTest {
 		
 	}
 	public static void main(String[] args) {
-		triangleTest();
+//		triangleTest();
 		rectangleTest();
 	
 //TODO
-		mixedTest(); //OK 数值积分的问题fixed
+//		mixedTest(); //OK 数值积分的问题fixed
 		
 //		serendipityTest(); // java.lang.ArithmeticException: / by zero
-		quadraticLocal2DTest();
-		triangleBDCTest();
+//		quadraticLocal2DTest();
+//		triangleBDCTest();
 	}
 		
 }

@@ -12,7 +12,7 @@ public class Solver {
 	//迭代绝对误差
 	public double epsAbsIter = 1e-15;
 	//迭代最大次数
-	public double maxIter = 1000;
+	public double maxIter = 10000;
 	
 	/**
 	 * Conjugate Gradients iterative method, solves 
@@ -45,9 +45,10 @@ public class Solver {
 		//for (iter.setFirst(); !iter.converged(r, x); iter.next()) {
 		for(int i=0;i<maxIter;i++) {
 			norm2 = r.norm2();
-			if(norm2<epsIter*firstNorm2) {
-				System.out.println("Iter----->i="+i+"  RError="+
-						String.format("%8.3e", norm2/firstNorm2));
+			if(norm2<=this.epsIter*firstNorm2 || norm2<=this.epsAbsIter) {
+				System.out.println(
+						String.format("Iter----->i=%05d, RError=%8.3e, AError=%8.3e", 
+								i,norm2/firstNorm2,norm2));
 				return x;
 			}
 			
@@ -116,15 +117,19 @@ public class Solver {
 		//for (iter.setFirst(); !iter.converged(r, x); iter.next()) {
 		for(int i=0;i<maxIter;i++) {
 			norm2 = r.norm2();
-			if(norm2<epsIter*firstNorm2) {
-				System.out.println("Iter----->i="+i+"  RError="+
-						String.format("%8.3e", norm2/firstNorm2));
+			if(norm2<=this.epsIter*firstNorm2 || norm2<=this.epsAbsIter) {
+				System.out.println(
+						String.format("Iter----->i=%05d, RError=%8.3e, AError=%8.3e", 
+								i,norm2/firstNorm2,norm2));
 				return x;
 			}
 			
             rho_1 = rtilde.dot(r);
-            if (rho_1 == 0)
-                throw new FutureyeException("NotConverge, rho_1==0, iter="+i);
+            if (rho_1 == 0) {
+        		//System.out.println("Iter NotConverge maxIter="+i+"  norm2="+norm2);
+            	//return x;
+        		throw new FutureyeException("NotConverge, rho_1==0, iter="+i);
+            }
 
             if (i==0) {
                 u.set(r);
@@ -163,7 +168,7 @@ public class Solver {
 			throw new FutureyeException(
 					"ERROR: Solver.solver() m.dim!=v.dim ");
 		}
-		AlgebraMatrix algStiff = new CompressedRowMatrix((SparseMatrix)A,true);
+		AlgebraMatrix algStiff = new CompressedRowMatrix((SparseMatrix)A,false);
 		FullVector algLoad = new FullVector(b);
 		FullVector algU = new FullVector(x);
 		solveCG(algStiff, algLoad, algU);
@@ -175,7 +180,7 @@ public class Solver {
 	}
 	
 	public Vector solveCG(Matrix A, Vector b) {
-		SparseVector x = new SparseVector(b.getDim(),1.0);
+		SparseVector x = new SparseVector(b.getDim(),0.1);
 		return solveCG(A,b,x);
 	}
 	
@@ -186,7 +191,7 @@ public class Solver {
 					"ERROR: Solver.solver() m.dim!=v.dim ");
 		}
 		//CGS
-		AlgebraMatrix algStiff = new CompressedRowMatrix((SparseMatrix)A,true);
+		AlgebraMatrix algStiff = new CompressedRowMatrix((SparseMatrix)A,false);
 		FullVector algLoad = new FullVector(b);
 		FullVector algU = new FullVector(x);
 		solveCGS(algStiff, algLoad, algU);

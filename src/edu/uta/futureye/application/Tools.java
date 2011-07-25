@@ -2,6 +2,7 @@ package edu.uta.futureye.application;
 
 import java.io.File;
 
+import edu.uta.futureye.algebra.Solver;
 import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.Matrix;
@@ -19,7 +20,9 @@ import edu.uta.futureye.util.container.NodeList;
 
 public class Tools {
 	public static Vector computeDerivative(Mesh mesh, Vector U, String varName) {
-		mesh.clearBorderNodeMark();
+		//2011-06-29
+		//没必要清楚边界标记
+		//mesh.clearBorderNodeMark();
 		
 		WeakFormDerivative weakForm = new WeakFormDerivative(varName);
 		weakForm.setParam(new Vector2Function(U));
@@ -29,8 +32,12 @@ public class Tools {
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		
+		//Solver solver = new Solver();
+		//Vector w = solver.solveCGS(stiff, load);
+		
 		SolverJBLAS solver = new SolverJBLAS();
 		Vector w = solver.solveDGESV(stiff, load);
+		
 		return w;
 	}
 	
@@ -71,4 +78,38 @@ public class Tools {
 	    //TODO funs
 	    plotVector(mesh,outputFolder,fileName,v);
 	}
+	
+	public static Vector extendData(Mesh meshFrom, Mesh meshTo, Vector u, double deaultValue) {
+		NodeList nodeTo = meshTo.getNodeList();
+		int dimTo = nodeTo.size();
+		Vector rlt = new SparseVector(dimTo);
+		for(int i=1;i<=nodeTo.size();i++) {
+			Node node = meshFrom.containNode(nodeTo.at(i));
+			if(node != null) {
+				rlt.set(i, u.get(node.globalIndex));
+			} else {
+				rlt.set(i, deaultValue);
+			}
+		}
+		return rlt;
+	}	
+	/**
+	 * 
+	 * @param mesh1
+	 * @param mesh2
+	 * @param u
+	 * @return
+	 */
+	public static Vector extractData(Mesh meshFrom, Mesh meshTo, Vector u) {
+		NodeList nodeTo = meshTo.getNodeList();
+		int dimTo = nodeTo.size();
+		Vector rlt = new SparseVector(dimTo);
+		for(int i=1;i<=nodeTo.size();i++) {
+			Node node = meshFrom.containNode(nodeTo.at(i));
+			if(node != null) {
+				rlt.set(i, u.get(node.globalIndex));
+			}
+		}
+		return rlt;
+	}	
 }

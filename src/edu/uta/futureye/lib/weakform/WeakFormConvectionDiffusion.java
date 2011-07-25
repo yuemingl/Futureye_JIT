@@ -15,13 +15,13 @@ import edu.uta.futureye.util.Utils;
  * 
  * Time discrete form:
  *   Let:
- *   \frac{\partial{c}}{\partial{t}} = (c_n+1 - c_n)/Dt
+ *   \frac{\partial{c}}{\partial{t}} = (c^{n+1} - c^n)/Dt
  *   We have,
- *   -Dt*\nabla\cdot(k\nabla{c_n+1}) + Dt*\mathbf{v}\dot\nabla{c_n+1} + c_n+1 = Dt*f + c_n
+ *   -Dt*\nabla\cdot(k\nabla{c^{n+1}}) + Dt*\mathbf{v}\dot\nabla{c^{n+1}} + c^{n+1} = Dt*f + c^n
  * 
  * Weak form:
- *   Let c_n+1 := u
- *   Dt*(k*\nabla{u},\nabla{w}) + Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) + b*(u,w) = (Dt*f + c_n,w)
+ *   Let c^{n+1} := u
+ *   Dt*(k*\nabla{u},\nabla{w}) + Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) + b*(u,w) = (Dt*f + c^n,w)
  *   
  * where
  *   c=c(x,y,z,t): particles or energy(e.g. salt density, Heat...) are transferred inside 

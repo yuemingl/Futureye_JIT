@@ -3,6 +3,7 @@ package edu.uta.futureye.tutorial;
 import java.util.HashMap;
 
 import edu.uta.futureye.algebra.SchurComplementStokesSolver;
+import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.BlockMatrix;
 import edu.uta.futureye.algebra.intf.BlockVector;
 import edu.uta.futureye.core.EdgeLocal;
@@ -16,12 +17,13 @@ import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
+import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
 import edu.uta.futureye.lib.element.FEQuadraticV_LinearP;
-import edu.uta.futureye.lib.weakform.WeakFormStokes;
+import edu.uta.futureye.lib.weakform.WeakFormNavierStokes;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
@@ -30,48 +32,33 @@ import edu.uta.futureye.util.container.ObjList;
 
 
 /**
- * Problem:
- *   -\Nabla{k*\Nabla{\mathbf{u}} + \Nabla{p} = \mathbf{f}
- *   div{\mathbf{u}} = 0
+ * Problem: Navier-Stokes
  * 
- * Each dim:
- *   -k*(u1_xx+u1_yy) + p_x = f1
- *   -k*(u2_xx+u2_yy) + p_y = f2
- *   u1_x+u2_y              = 0
-
- * Weak form:
- *   find \mathbf{u} \in H_0^1(div;\Omega), p \in L_2(\Omega)
- *   such that, for all \mathbf{v} \in H_0^1(div;\Omega), q \in L_2(\Omega)
- *   
- *   (\Nabla{\mathbf{v}},k*\Nabla{\mathbf{u}}) - (div{\mathbf{v}},p) 
- *                   + (q,div{\mathbf{u}}) = (\mathbf{v},\mathbf{f})
- *
- *   (v1_x,k*u1_x) + (v1_y,k*u1_y) + (v2_x,k*u2_x) + (v2_y,k*u2_y) 
- *                   - (v1_x+v2_y,p) + (q,u1_x+u2_y) = (v1*f1+v2*f2)      
- *
- * where
- *   \mathbf{u}=(u1,u2): velocity vector field    
- *   \mathbf{f}=(f1,f2): body force
- *   
  * @author liuyueming
  *
  */
-public class Stokes {
-	public static String outputFolder = "tutorial\\Stokes";
+public class NavierStokes {
+	protected String file = "benchmark_cylinder1";
+	protected static String outputFolder = "tutorial\\NavierStokes";
+	protected Mesh mesh = null;
+	protected Mesh meshOld = null;
+	//Quadratic Velocity - Linear Pressure Element
+	protected FEQuadraticV_LinearP fe = new FEQuadraticV_LinearP();
+	//Stokes weak form
+	protected WeakFormNavierStokes weakForm = new WeakFormNavierStokes();
+	//Assembler
+	protected AssemblerVector assembler = null;
+	//Dirichlet boundary condition
+	protected VectorFunction diri = null;
+	//Previous velocity
+	protected VectorFunction U = new SpaceVectorFunction(2);
 	
-	public static void cylinder() {
+	public void init() {
 		//Read a triangle mesh from an input file
-//		String file = "cylinder1";
-//		String file = "cylinder2";
-//		String file = "cylinder2_test";
-//		String file = "cylinder4";
-//		String file = "cylinder_patch";
-		String file = "u_shape";
-		
 		MeshReader reader = new MeshReader(file+".grd");
 		MeshReader reader2 = new MeshReader(file+".grd");
-		Mesh mesh = reader.read2DMesh();
-		Mesh meshOld = reader2.read2DMesh();
+		mesh = reader.read2DMesh();
+		meshOld = reader2.read2DMesh();
 		mesh.nVertex = mesh.getNodeList().size();
 		
 		//Add nodes for quadratic element
@@ -103,75 +90,42 @@ public class Stokes {
 		
 		ElementList eList = mesh.getElementList();
 		NodeList nodes = mesh.getNodeList();
-		
-		for(int i=1;i<=eList.size();i++) {
-			System.out.println(i+"  " + eList.at(i));
-		}
+//		for(int i=1;i<=eList.size();i++) {
+//			System.out.println(i+"  " + eList.at(i));
+//		}
 		
 		//Mark border type
+		//指定u,v边界
 		HashMap<NodeType, Function> mapNTF_uv = new HashMap<NodeType, Function>();
-		//指定边界
-		//mapNTF.put(NodeType.Dirichlet,null);
 		mapNTF_uv.put(NodeType.Dirichlet, new AbstractFunction("x","y") {
 			@Override
 			public double value(Variable v) {
 				double x = v.get("x");
 				double y = v.get("y");
-				//all
-				if(Math.abs(y-2.5)<Constant.eps|| Math.abs(y+2.5)<Constant.eps)
+				//upside and down side
+				if(y < Constant.meshEps || Math.abs(y-0.41) < Constant.meshEps)
+					return 1;
+				//left side
+				else if(x < Constant.meshEps)
 					return 1;
 				
-				//cylinder1 and cylinder2 and cylinder4
-//				else if(Math.abs(x+5.0)<0.01)
-//						return 1;
-				
-				//u_shape
-				else if(Math.abs(x+5.0)<0.01 && y>0)
-						return 1;
-				else if(Math.abs(x-5.0)<0.01)
-					return 1;
-				else if(Math.abs(x-4.0)<0.01)
-					return 1;
-				else if(Math.abs(y-0.5)<Constant.eps|| Math.abs(y+0.5)<Constant.eps)
+				//cylinder
+				if(Math.sqrt((x-0.2)*(x-0.2)+(y-0.2)*(y-0.2)) <= 0.05+Constant.meshEps)
 					return 1;
 				
-				//cylinder1
-//				else if(Math.sqrt(x*x+y*y)<(0.5+0.1))
-//					return 1;
-				
-				//cylinder2 and cylinder4
-//				else if(Math.sqrt(x*x+(y-1)*(y-1))<(0.5+0.15) || 
-//						Math.sqrt(x*x+(y+1)*(y+1))<(0.5+0.15) )
-//					return 1;
-				
-				//cylinder4
-//				else if(Math.sqrt((x-2.5)*(x-2.5)+(y-0.3)*(y-0.3))<(0.5+0.15) || 
-//						Math.sqrt((x+2.5)*(x+2.5)+(y+0.3)*(y+0.3))<(0.5+0.15) )
-//					return 1;
-				
-				//all
-				else
-					return 0;
+				return 0;
 			}
 		});
-		//uv其他边界
+		//u,v其他边界
 		mapNTF_uv.put(NodeType.Neumann, null);
 		
-		
+		//指定p边界
 		HashMap<NodeType, Function> mapNTF_p = new HashMap<NodeType, Function>();
 		mapNTF_p.put(NodeType.Dirichlet, new AbstractFunction("x","y") {
 			@Override
 			public double value(Variable v) {
 				double x = v.get("x");
-				double y = v.get("y");
-				//cylinder1 cylinder2 cylinder4
-//				if(Math.abs(x-5.0)<0.01)
-//					return 1;
-//				else
-//					return 0;
-
-				//u_shape
-				if(Math.abs(x+5.0)<0.01 && y<0)
+				if(Math.abs(x-2.2) < Constant.meshEps)
 					return 1;
 				else
 					return 0;
@@ -187,28 +141,46 @@ public class Stokes {
 		for(int i=1;i<=eList.size();i++) {
 			System.out.println(i+"  " + eList.at(i));
 		}
-		
-		FEQuadraticV_LinearP fe = new FEQuadraticV_LinearP();
+
 		fe.initDOFIndexGenerator(nodes.size());
 		for(int i=1;i<=eList.size();i++) {
 			fe.assignTo(eList.at(i));
 			//eList.at(i).printDOFInfo();
 		}
 
-		//Stokes weak form
-		WeakFormStokes weakForm = new WeakFormStokes();
-		
+		//Boundary condition
+		diri = new SpaceVectorFunction(3);
+		diri.set(1, new AbstractFunction("x","y") {
+					@Override
+					public double value(Variable v) {
+						double x = v.get("x");
+						double y = v.get("y");
+						
+						double H  = 0.41;
+						double Um = 0.3;
+						if(x < Constant.meshEps)
+							return 4*Um*y*(H-y)/(H*H);
+						else
+							return 0.0;
+					}
+				});
+		diri.set(2, FC.c0);
+		diri.set(3, FC.c0);
+	}
+	
+	public BlockVector nonlinearIter(int nIter) {
 		//Right hand side(RHS): f = (0,0)'
 		weakForm.setF(new SpaceVectorFunction(FC.c0,FC.c0));
-		weakForm.setParam(FC.c(1.0),FC.c0);
+		
+		weakForm.setParam(FC.c(0.1),U,FC.c0);
+		
 		//Robin:  k*u_n + d*u - p\mathbf{n} = 0
 		VectorFunction d = new SpaceVectorFunction(2);
 		d.set(1, FC.c0);
 		d.set(2, FC.c0);
 		weakForm.setRobin(d);
 		
-		//Assemble
-		AssemblerVector assembler = new AssemblerVector(mesh, weakForm,fe);
+		assembler = new AssemblerVector(mesh, weakForm,fe);
 		System.out.println("Begin Assemble...");
 		assembler.assemble();
 		BlockMatrix stiff = (BlockMatrix)assembler.getStiffnessMatrix();
@@ -216,50 +188,54 @@ public class Stokes {
 		//stiff.print();
 		//load.print();
 		//System.out.println(load.norm2());
-		//Boundary condition
-		VectorFunction diri = new SpaceVectorFunction(3);
-		diri.set(1, new AbstractFunction("x","y") {
-					@Override
-					public double value(Variable v) {
-						double x = v.get("x");
-						double y = v.get("y");
-						
-						//cylinder1 cylinder2 cylinder4 
-//						if(Math.abs(x+5.0)<0.01)
-//							return Math.cos(Math.PI/2*(y/2.5));
-						//u_shape
-						if(Math.abs(x+5.0)<0.01 && y>0)
-							return Math.cos(Math.PI/2*(y-1.5));
-						//all
-						else
-							return 0.0;
-					}
-				});
-		diri.set(2, FC.c0);
-		diri.set(3, FC.c0);
+
 		assembler.imposeDirichletCondition(diri);
-		load.getBlock(1).print();
-		load.getBlock(2).print();
-		load.getBlock(3).print();
+		//load.getBlock(1).print();
+		//load.getBlock(2).print();
+		//load.getBlock(3).print();
 		System.out.println("Assemble done!");
 		
 		SchurComplementStokesSolver solver = 
 			new SchurComplementStokesSolver(stiff,load);
 		
-		BlockVector u = solver.solve();
-		
-		System.out.println("u=");
-		for(int i=1;i<=u.getDim();i++)
-			System.out.println(String.format("%.3f", u.get(i)));	
-	    
-		Tools.plotVector(mesh, outputFolder, String.format("%s_uv.dat",file), 
-				u.getBlock(1), u.getBlock(2));
-		Tools.plotVector(meshOld, outputFolder, String.format("%s_p.dat",file), 
-				u.getBlock(3));
+		return solver.solve();
 		
 	}
 	
+	public void run() {
+		init();
+		
+		U.set(1, FC.c0);
+		U.set(2, FC.c0);
+		BlockVector u = null;
+		for(int iter=0;iter<15;iter++) {
+			u = nonlinearIter(iter);
+			
+			int dim = u.getBlock(1).getDim();
+			SparseVector tmp = new SparseVector(dim);
+			for(int i=1;i<=dim;i++)
+				tmp.set(i, 
+						u.getBlock(1).get(i)-
+						U.get(1).value(new Variable().setIndex(i)));
+			
+			U.set(1, new Vector2Function(u.getBlock(1)));
+			U.set(2, new Vector2Function(u.getBlock(2)));
+
+			System.out.println("u=");
+			for(int i=1;i<=u.getDim();i++)
+				System.out.println(String.format("%.3f", u.get(i)));	
+			Tools.plotVector(mesh, outputFolder, String.format("%s_uv%02d.dat",file,iter), 
+					u.getBlock(1), u.getBlock(2));
+			Tools.plotVector(meshOld, outputFolder, String.format("%s_p%02d.dat",file,iter), 
+					u.getBlock(3));
+			
+			System.out.println("Error Norm = "+tmp.norm2());
+		
+		}
+	}
+	
 	public static void main(String[] args) {
-		cylinder();
+		NavierStokes NS = new NavierStokes();
+		NS.run();
 	}
 }

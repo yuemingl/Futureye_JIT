@@ -234,6 +234,24 @@ public class Mesh {
 		return null;
 	}
 	
+	public Element getElementByNodes(NodeList nodes) {
+		for(int i=1;i<=this.eleList.size();i++) {
+			Element e = this.eleList.at(i);
+			boolean find = true;
+			if(e.nodes.size()!=nodes.size())
+				continue;
+			for(int j=1;j<=nodes.size();j++) {
+				if(!e.nodes.at(j).coordEquals(nodes.at(j))) {
+					find = false;
+					break;
+				}
+			}
+			if(find)
+				return e;
+		}
+		return null;
+	}
+	
 	/**
 	 * 获取包含该坐标点的单元（二维）
 	 * @param coord

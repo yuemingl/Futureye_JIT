@@ -140,7 +140,7 @@ public class SchurComplementStokesSolver {
 	 */
 	public FullVector invB_v(CompressedRowMatrix B, FullVector v) {
 		FullVector x = new FullVector(v.getDim(),0.1);
-		x.setRandom(1.0);
+		x.setRandom(10,0.0);
 		Solver sov = new Solver();
 		sov.solveCGS(B, v, x);
 		return x;
@@ -155,7 +155,7 @@ public class SchurComplementStokesSolver {
 	public CompressedColMatrix invB_C(CompressedRowMatrix B, CompressedColMatrix C) {
 		CompressedColMatrix BC = new CompressedColMatrix(B.rowDim,C.colDim);
 		FullVector v = new FullVector(C.getRowDim());
-		FullVector x = new FullVector(C.getRowDim(),1.0);
+		FullVector x = new FullVector(C.getRowDim(),10);
 		
 		Solver sov = new Solver();
 		int colDim = C.getColDim();

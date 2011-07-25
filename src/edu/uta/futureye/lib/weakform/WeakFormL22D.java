@@ -6,7 +6,6 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.Utils;
@@ -21,7 +20,7 @@ import edu.uta.futureye.util.container.DOFList;
  * @author liuyueming
  */
 public class WeakFormL22D extends AbstractScalarWeakForm {
-	protected Vector2Function g_U = null;
+	protected Function g_U = null;
 	protected Function g_f = null;
 	protected Function g_k = null;
 
@@ -76,7 +75,7 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 		this.g_f = f;
 	}
 	
-	public void setParam(Function k,Vector2Function U) {
+	public void setParam(Function k,Function U) {
 		this.g_k = k;
 		this.g_U = U;
 	}

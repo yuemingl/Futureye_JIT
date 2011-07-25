@@ -92,6 +92,19 @@ public interface Matrix {
 	void mult(Vector x, Vector y);
 	
 	/**
+	 * A=A'
+	 */
+	Matrix trans();
+	
+	/**
+	 * Deep copy
+	 * 深拷贝
+	 * 
+	 * @return
+	 */
+	Matrix copy();
+	
+	/**
 	 * 清空矩阵中的所有元素
 	 */
 	void clear();
@@ -100,4 +113,7 @@ public interface Matrix {
 	 * 打印矩阵元素
 	 */
 	void print();
+	
+	Matrix setName(String name);
+	String getName();
 }

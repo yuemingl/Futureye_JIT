@@ -836,7 +836,8 @@ public class Element {
 	}
 	
 	public void clearAllDOF() {
-		nodeDOFList.clear();
+		if(nodeDOFList != null)
+			nodeDOFList.clear();
 	}
 	
 	////////////////////////////////////////////////////////////////////

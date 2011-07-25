@@ -15,12 +15,6 @@ public abstract class AbstractFunction implements Function {
 	protected List<String> varNames = new LinkedList<String>();
 
 	/**
-	 * Construct 1 Dim function
-	 */
-	public AbstractFunction() {
-	}
-	
-	/**
 	 * Construct n Dim function
 	 * 
 	 * @param varName
@@ -41,6 +35,12 @@ public abstract class AbstractFunction implements Function {
 		this.varNames = varNames;
 	}
 	
+	/**
+	 * Construct 1 Dim function
+	 */
+	public AbstractFunction() {
+	}
+	
 	@Override
 	public List<String> varNames() {
 		return varNames;
@@ -53,7 +53,7 @@ public abstract class AbstractFunction implements Function {
 	}
 	
 	/**
-	 * Implement yourself
+	 * Implement this function yourself
 	 */
 	@Override
 	public double value(Variable v) {
@@ -66,7 +66,7 @@ public abstract class AbstractFunction implements Function {
 	}
 	
 	/**
-	 * Implement yourself if necessary
+	 * Implement this function yourself if necessary
 	 */
 	@Override
 	public Function _d(String varName) {

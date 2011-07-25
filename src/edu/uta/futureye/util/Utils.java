@@ -540,6 +540,8 @@ public class Utils {
 		if(vertices.size() == 4) {
 			area += getTriangleArea(vertices.subList(1, 3));
 			area += getTriangleArea(vertices.subList(new ObjIndex(1,3,4)));
+		} else {
+			throw new FutureyeException("Number of vertices != 4");
 		}
 		return area;
 	}

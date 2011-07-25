@@ -165,6 +165,10 @@ public class LagrangianMethod {
 				vReal, "vReal"+s_i+".dat");
 	}
 	
+	/**
+	 * 
+	 * @param s_i
+	 */
 	public void compute_u0_xy(int s_i) {
 		u0_x = Tools.computeDerivative(mesh, u0, "x");
 		u0_y = Tools.computeDerivative(mesh, u0, "y");
@@ -190,14 +194,16 @@ public class LagrangianMethod {
 	}
 
 	/**
-	 * v=w/w0
-	 * 
 	 * Solve for
-	 * \Delta{v} + 2\Nabla{lnu_0}\dot\Nabla{v} - (a-k^2)*v = 0, on \Omega
+	 *   \Delta{v} + 2\nabla{lnu_0}\dot\nabla{v} - (a-k^2)*v = 0, on \Omega
 	 * =>
-	 * -\Delta{v} - 2\Nabla{lnu_0}\dot\Nabla{v} + (a-k^2)*v = 0, on \Omega
+	 *  -\Delta{v} - 2\nabla{lnu_0}\dot\nabla{v} + (a-k^2)*v = 0, on \Omega
 	 * Robin:
-	 * \partial_{n}{v} + (1+\partial_{n}{lnu_0})*v = 1+\partial_{n}{lnu_0}, on \partial\Omega
+	 *   \partial_{n}{v} + (1+\partial_{n}{lnu_0})*v = 1+\partial_{n}{lnu_0}, on \partial\Omega
+	 * where 
+	 *   v=w/w0
+	 * 
+	 * @param s_i: light source No.
 	 * 
 	 * @return
 	 */
@@ -211,7 +217,7 @@ public class LagrangianMethod {
 		plotVector(mesh, v_c, "param_c"+s_i+".dat");
 		Vector2Function param_c = new Vector2Function(v_c);
 		
-		//\Nabla{lnu0}
+		//\nabla{lnu0}
 		//Function b1 = FOBasic.Divi(fu0_x,fu0);
 		//Function b2 = FOBasic.Divi(fu0_y,fu0);
 		Function b1 = new Vector2Function(lnu0_x);
@@ -226,9 +232,9 @@ public class LagrangianMethod {
 				param_c, 
 				FC.c(2.0).M(b1),
 				FC.c(2.0).M(b2));
+		
 		//q = d = 1 + \partial_{n}{lnu_0}
 		Function param_qd = FC.c(1.0).A(new DuDn(b1, b2, null));
-		//Robin:  d*u + k*u_n = q (自然边界：d==k, q=0)
 		weakForm.setRobin(FC.c(-1.0).M(param_qd),
 				FC.c(-1.0).M(param_qd));
 
@@ -247,17 +253,22 @@ public class LagrangianMethod {
 		SolverJBLAS solver = new SolverJBLAS();
 		Vector v = solver.solveDGESV(stiff, load);
 		plotVector(mesh, v, "Lagrangian_v"+s_i+".dat");
+		
+		//余量
+		Vector res = new SparseVector(v.getDim());
+		stiff.mult(v, res);
+		plotVector(mesh, res.axpy(-1.0, load), "Lagrangian_v_res"+s_i+".dat");
 		return v;
 	}
 	
 
 	/**
-	 * Solve for la=lambda
-	 *   \Delta{la} - 2\Nabla{lnu_0}\dot\Nabla{la} - ( 2*Laplace(lnu0)+(a-k^2) )*la = 0, on \Omega
+	 * Solve for lmd=lambda
+	 *   \Delta{lmd} - 2\nabla{lnu_0}\dot\nabla{lmd} - ( 2*Laplace(lnu0)+(a-k^2) )*lmd = 0, on \Omega
 	 * =>
-	 *   -\Delta{la} + 2\Nabla{lnu_0}\dot\Nabla{la} + ( 2*Laplace(lnu0)+(a-k^2) )*la = 0, on \Omega
+	 *   -\Delta{lmd} + 2\nabla{lnu_0}\dot\nabla{lmd} + ( 2*Laplace(lnu0)+(a-k^2) )*lmd = 0, on \Omega
 	 * Robin:
-	 *   \partial_{n}{la} + (1-\partial_{n}{lnu_0})*la = v - g_tidle, on \partial\Omega
+	 *   \partial_{n}{lmd} + (1-\partial_{n}{lnu_0})*lmd = v - g_tidle, on \partial\Omega
 	 * 
 	 * where g_tidle = g/u0 = ui/u0|_\Gamma
 	 * 
@@ -282,7 +293,7 @@ public class LagrangianMethod {
 				FMath.ax(1.0,FMath.axpy(-1, a, 
 						new SparseVector(a.getDim(),k*k)))));
 		
-		//\Nabla{lnu0}
+		//\nabla{lnu0}
 		Function b1 = fu0_x.D(fu0);
 		Function b2 = fu0_y.D(fu0);
 		WeakFormGCM weakForm = new WeakFormGCM();

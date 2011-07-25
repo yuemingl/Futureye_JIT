@@ -49,6 +49,9 @@ public class SparseVector implements Vector {
 
 	@Override
 	public void set(int index, double value) {
+		if(index>dim) {
+			throw new FutureyeException("index("+index+") > dim("+dim+")");
+		}
 		data.put(index, value);
 	}
 	
@@ -88,6 +91,9 @@ public class SparseVector implements Vector {
 	
 	@Override
 	public double get(int index) {
+		if(index>dim) {
+			throw new FutureyeException("index("+index+") > dim("+dim+")");
+		}
 		Double val = data.get(index);
 		if(val == null) {
 			return this.defaultValue;

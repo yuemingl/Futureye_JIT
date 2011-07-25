@@ -23,6 +23,10 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 		this.rowDim = nRow;
 		this.colIndex = new int[nRow][];
 		this.data = new double[nRow][];
+		for(int r=0;r<this.rowDim;r++) {
+			this.colIndex[r] = new int[0];
+			this.data[r] = new double[0];
+		}
 	}
 	
 	public void setRow(int row,int[] colIndex, double []data) {
@@ -306,5 +310,6 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 			}
 		}
 		return rlt;
-	}	
+	}
+
 }

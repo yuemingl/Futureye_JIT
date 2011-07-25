@@ -276,7 +276,8 @@ public class TestMatrix {
 		//testTrans2();
 		//testStorage1();
 		//testStorage2();
-		testAxpy();
+		//testAxpy();
+		testTrans();
 	}
 	
 	public static void testMatrixVector() {
@@ -323,4 +324,16 @@ public class TestMatrix {
 		solver.solveCG(aMat, ay, au);
 		au.print();
 	}
+	
+	public static void testTrans() {
+		SparseMatrix SA = new SparseMatrix(3,3);
+		for(int i=1;i<=3;i++) {
+			for(int j=1;j<=3;j++) {
+				SA.set( j,i, i+3*(j-1));
+			}
+		}
+		SA.print();
+		SA.trans();
+		SA.print();
+	}	
 }
