@@ -40,7 +40,7 @@ public class Vertex implements Point {
 		this.coords[0] = x;
 		if(coords!=null && coords.length > 0) {
 			this.dim = 1+coords.length;
-			for(int i=0;i<dim;i++)
+			for(int i=0;i<coords.length;i++)
 				this.coords[1+i] = coords[i];
 		} else {
 			this.dim = 1;

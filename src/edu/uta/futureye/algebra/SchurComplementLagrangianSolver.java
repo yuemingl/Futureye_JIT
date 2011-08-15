@@ -254,10 +254,10 @@ public class SchurComplementLagrangianSolver {
 		sov.solveCGS(S, rhs, p);
 		
 		////////////////////////////////////////
-		//\Delta(\Delta(sum))
-		Vector pp = Tools.computeLaplace2D(mesh, new SparseVector(p.getData()));
-		pp = Tools.computeLaplace2D(mesh, pp);
-		p = new FullVector(pp);
+		//\Delta(\Delta(sum)) 数值不稳定
+		//Vector pp = Tools.computeLaplace2D(mesh, new SparseVector(p.getData()));
+		//pp = Tools.computeLaplace2D(mesh, pp);
+		//p = new FullVector(pp);
 		////////////////////////////////////////
 		
 		
@@ -299,7 +299,7 @@ public class SchurComplementLagrangianSolver {
 		//SolverJBLAS sov = new SolverJBLAS();
 		//x = new FullVector(sov.solveDGESV(B.getSparseMatrix(), v.getSparseVector()));
 		Solver sov = new Solver();
-		sov.epsIter = 1e-5;
+		sov.epsRelIter = 1e-5;
 		sov.solveCGS(B, v, x);
 		return x;
 	}
@@ -326,7 +326,7 @@ public class SchurComplementLagrangianSolver {
 //		}
 		
 		Solver sov = new Solver();
-		sov.epsIter = 1e-5;
+		sov.epsRelIter = 1e-5;
 		int colDim = C.getColDim();
 		for(int c=1; c<=colDim; c++) {
 			C.getColVector(c, v);

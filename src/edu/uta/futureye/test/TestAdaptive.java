@@ -3,11 +3,13 @@ package edu.uta.futureye.test;
 import java.util.HashMap;
 
 import edu.uta.futureye.algebra.SolverJBLAS;
+import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Refiner;
@@ -21,7 +23,9 @@ import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
+import edu.uta.futureye.tutorial.Tools;
 import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class TestAdaptive {
 	
@@ -79,6 +83,8 @@ public class TestAdaptive {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
+		stiff.print();
+		
 		SolverJBLAS solver = new SolverJBLAS();
 		Vector u = solver.solveDGESV(stiff, load);
 		
@@ -87,7 +93,10 @@ public class TestAdaptive {
 	        System.out.println(String.format("%.3f", u.get(i)));
 	   
 	    MeshWriter writer = new MeshWriter(mesh);
-	    writer.writeTechplot("patch_rectangle_before_refine.dat", u);			
+	    writer.writeTechplot("patch_rectangle_before_refine.dat", u);	
+	    
+	    writer.writeTechplot("patch_rectangle_before_refine_load.dat", load);	
+
 	}
 	
 //	public static void patchTest() {
@@ -266,6 +275,9 @@ public class TestAdaptive {
 		Refiner.refineOnce(mesh, eToRefine);
 		mesh.markBorderNode(mapNTF);
 		
+		mesh.printMeshInfo();
+		Tools.plotFunction(mesh, "", "patch_rectangle_test1.dat", FC.c0);
+		
 		//二次加密
 		eToRefine.clear();
 		//单元编号的问题该如何处理？
@@ -274,6 +286,9 @@ public class TestAdaptive {
 		//第一步：新增加的结点赋予全局编号，加入mesh对象
 		Refiner.refineOnce(mesh, eToRefine);
 		mesh.markBorderNode(mapNTF);
+		
+		mesh.printMeshInfo();
+		Tools.plotFunction(mesh, "", "patch_rectangle_test2.dat", FC.c0);
 
 		SFBilinearLocal2D[] shapeFun = new SFBilinearLocal2D[4];
 		for(int i=0;i<4;i++)
@@ -336,25 +351,28 @@ public class TestAdaptive {
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 		
+		stiff.print();
+		load.print();
+		
 		SolverJBLAS solver = new SolverJBLAS();
 		Vector u = solver.solveDGESV(stiff, load);
 		
-		//hanging node赋值
-		for(int i=1;i<=mesh.getElementList().size();i++) {
-			Element e = mesh.getElementList().at(i);
-			for(int j=1;j<=e.nodes.size();j++) {
-				if(e.nodes.at(j) instanceof NodeRefined) {
-					NodeRefined nRefined = (NodeRefined)e.nodes.at(j);
-					if(nRefined.isHangingNode()) {
-						double hnValue = 
-							(u.get(nRefined.constrainNodes.at(1).globalIndex)+
-							u.get(nRefined.constrainNodes.at(2).globalIndex))/2.0;
-						
-						u.set(nRefined.globalIndex, hnValue);
-					}
-				}
-			}
-		}
+//		//hanging node赋值
+//		for(int i=1;i<=mesh.getElementList().size();i++) {
+//			Element e = mesh.getElementList().at(i);
+//			for(int j=1;j<=e.nodes.size();j++) {
+//				if(e.nodes.at(j) instanceof NodeRefined) {
+//					NodeRefined nRefined = (NodeRefined)e.nodes.at(j);
+//					if(nRefined.isHangingNode()) {
+//						double hnValue = 
+//							(u.get(nRefined.constrainNodes.at(1).globalIndex)+
+//							u.get(nRefined.constrainNodes.at(2).globalIndex))/2.0;
+//						
+//						u.set(nRefined.globalIndex, hnValue);
+//					}
+//				}
+//			}
+//		}
 		
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
@@ -362,6 +380,17 @@ public class TestAdaptive {
 	   
 	    MeshWriter writer = new MeshWriter(mesh);
 	    writer.writeTechplot("patch_rectangle.dat", u);	
+	    
+	    Vector res = new SparseVector(u.getDim());
+	    stiff.mult(u, res);
+	    res.add(-1.0, load);
+	    writer.writeTechplot("patch_rectangle_res.dat", res);	
+	    
+	    
+	    writer.writeTechplot("patch_rectangle_load.dat", load);	
+	    connectSells(mesh,load);
+	    writer.writeTechplot("patch_rectangle_load_connectSells.dat", load);	
+	    
 		
 	}
 
@@ -483,9 +512,24 @@ public class TestAdaptive {
 		
 	}
 	
+	public static void connectSells(Mesh mesh, Vector v) {
+		NodeList nodes = mesh.getNodeList();
+		for(int i=1;i<=nodes.size();i++) {
+			Node node = nodes.at(i);
+			if(node instanceof NodeRefined) {
+				NodeRefined nRefined = (NodeRefined)node;
+				if(nRefined.isHangingNode()) {
+					v.set(node.globalIndex,
+							v.get(nRefined.constrainNodes.at(1).globalIndex)*0.5+
+							v.get(nRefined.constrainNodes.at(2).globalIndex)*0.5);
+				}
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
-		beforeRefinement();
+		//beforeRefinement();
 		adaptiveTestRectangle();
-		adaptiveTestTriangle();
+		//adaptiveTestTriangle();
 	}
 }

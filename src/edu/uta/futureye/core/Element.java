@@ -465,11 +465,32 @@ public class Element {
 	 * 
 	 */
 	public void applyChange() {
+		NodeList oldNodes = new NodeList();
+		for(int i=1;i<=this.nodes.size();i++) {
+			oldNodes.add(this.nodes.at(i));
+		}
 		this.nodes.clear();
+		
 		//有问题，边界没办法调整
 		//this.nodes.addAll(getNodeList(this.geoEntity));
-		
 		this.buildElement(getNodeList(this.geoEntity));
+		
+		//关联的自由度怎么办？
+		if(this.nodeDOFList!=null) {
+			Map<Integer,DOFList> newNodeDOFList = new LinkedHashMap<Integer,DOFList>();
+			for(int i=1;i<=oldNodes.size();i++) {
+				Node node = oldNodes.at(i);
+				DOFList DOFs = this.nodeDOFList.get(i);
+				//新结点中查找
+				for(int j=1;j<=this.nodes.size();j++) {
+					if(node.globalIndex == this.nodes.at(j).globalIndex) {
+						newNodeDOFList.put(j, DOFs);
+						break;
+					}
+				}
+			}
+			this.nodeDOFList = newNodeDOFList;
+		}		
 	}
 	
 	/**
@@ -1254,7 +1275,7 @@ public class Element {
 //			//TODO
 //		}
 //	}
-	public void adjustVerticeToCounterClockwise() {
+	public boolean adjustVerticeToCounterClockwise() {
 		VertexList vertices = this.vertices();
 		int dim = vertices.at(1).dim();
 		if(dim == 2) {
@@ -1268,6 +1289,7 @@ public class Element {
 				}
 				this.geoEntity.addAllVertices(tmp);
 				this.applyChange();
+				return true;
 			}
 		} else if(dim == 3) {
 			double volume = this.getElementVolume();
@@ -1280,8 +1302,10 @@ public class Element {
 				}
 				this.geoEntity.addAllVertices(tmp);
 				this.applyChange();
+				return true;
 			}
 		}
+		return false;
 	}	
 	
 	public void addNeighborElement(Element nb) {
@@ -1317,6 +1341,19 @@ public class Element {
 	
 	public void setLevel(int level) {
 		this.level = level;
+	}
+	
+	public NodeList getHangingNode() {
+		NodeList rlt = new NodeList();
+		for(int i=1;i<=nodes.size();i++) {
+			Node node = nodes.at(i);
+			if(node instanceof NodeRefined) { 
+				NodeRefined nf = (NodeRefined)node;
+				if(nf.isHangingNode())
+					rlt.add(nf);
+			}
+		}
+		return rlt;
 	}
 	////////////////////////////////////////////////////////////////////
 	

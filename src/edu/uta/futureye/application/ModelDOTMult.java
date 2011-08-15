@@ -3,14 +3,16 @@ package edu.uta.futureye.application;
 import java.util.HashMap;
 
 import edu.uta.futureye.algebra.Solver;
+import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.Refiner;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.AbstractFunction;
 import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.function.basic.DuDn;
+import edu.uta.futureye.function.basic.DuDx;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
@@ -18,13 +20,28 @@ import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
+import edu.uta.futureye.lib.element.FEBilinearRectangle;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 
-public class ModelDOT {
+/**
+ * Solver the following model problem:
+ * 
+ *   -\nabla{(1/(a*k))*\nabla{u}} + u = \delta/a,  in \Omega_0
+ *   
+ *   -\nabla{(1/(a*k))*\nabla{u}} + u = 0          in \Omega
+ * 
+ * where 
+ *   k = 3*mu_s'
+ *   a = a(x) = mu_a(x)
+ *   
+ * @author liuyueming
+ *
+ */
+public class ModelDOTMult {
 	//Light source
 	public Function delta = null;
 	public Variable lightPosition = null; //light source position
@@ -33,8 +50,8 @@ public class ModelDOT {
 	//Inclusion mu_a
 	public Function mu_a = null;
 	
-	//Inclusion 1/(3*mu_s') = 1.0/30.0 ?
-	public Function k = new FC(0.02);
+	//mu_s'
+	public Function mu_s = new FC(50.0/3.0);
 	
 	/**
 	 * type=1: one inclusion
@@ -96,8 +113,7 @@ public class ModelDOT {
 		this.lightPosition.set("x", x);
 		this.lightPosition.set("y", y);
 		delta = new FDelta(this.lightPosition,0.01,2e5);
-		//测试将dleta函数变得平缓
-		//delta = new FDelta(this.lightSource,0.05,2e5);
+		delta = delta.D(this.mu_a);
 	}
 
 	/**
@@ -118,7 +134,9 @@ public class ModelDOT {
 	 * @param diri: the values of Dirichlet condition
 	 * @return
 	 */
-	public Vector solveMixedBorder(Mesh mesh, Function diriBoundaryMark, Function diri) {
+	public Vector solveMixedBorder(Mesh mesh, 
+			Function diriBoundaryMark, Function diri,
+			Function robinQ, Function robinD) {
 		//Mark border type
 		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
 		if(diriBoundaryMark == null && diri == null) {
@@ -135,19 +153,15 @@ public class ModelDOT {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side
-		weakForm.setF(this.k.M(this.delta));
-		//如果光源在区域外，rhs=0 与非零没有差别
-		//weakForm.setF(FC.c0);
+		weakForm.setF(this.delta);
 
-		// *** u + u_n = 0, on \Gamma2 ***
-		//   A(u, v) = ((k*u_x, v_x) + (k*u_y, v_y) ) - (k*u_n,v)_\Gamma2 + (c*u, v)
-		//( u_n=-u ) =>
-		//   A(u, v) = ((k*u_x, v_x) + (k*u_y, v_y) ) + (k*u,v)_\Gamma2 + (c*u, v)
+
+		//Model: \nabla{1/(3*mu_s'*mu_a)*\nabla{u}} + u = \delta/mu_a
 		weakForm.setParam(
-				this.k, 
-				this.mu_a, 
-				null, 
-				this.k //d==k,q=0 (即：u_n + u =0)
+				FC.c1.D(mu_s.M(mu_a).M(3.0)), 
+				FC.c1, 
+				robinQ, 
+				robinD //FC.c1.D(mu_s.M(mu_a).M(3.0) : d==k,q=0 (即：u_n + u =0)
 			);
 		
 		//bugfix 2011-5-7两种方式结果不一样？
@@ -157,56 +171,27 @@ public class ModelDOT {
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		System.out.println(load.get(55));
 		//Dirichlet condition
 		if(diri != null)
 			assembler.imposeDirichletCondition(diri);
 		System.out.println("Assemble done!");
 
-		Solver solver = new Solver();
-		Vector u = solver.solveAuto(stiff, load);
-		return u;
-	}
-	
-	public Vector solveNitsches(Mesh mesh, Function diri, double eps) {
-		//Mark border type
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
-		mapNTF.put(NodeType.Robin, null);
-		mesh.clearBorderNodeMark();
-		mesh.markBorderNode(mapNTF);
+		//Solver solver = new Solver();
+		//Vector u = solver.solveCGS(stiff, load);
 		
-		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
+        SolverJBLAS sol = new SolverJBLAS();
+		Vector u = sol.solveDGESV(stiff, load);
+		//Tools.plotVector(mesh,"",String.format("x.dat"),x);
 		
-		//Right hand side
-		weakForm.setF(this.k.M(this.delta));
-
-		//Nitsches:  
-		//    k*u_n = (k/\eps)*(u0-u)
-		//=>
-		//   (k/\eps)*u + k*u_n = (k/\eps)*u0
-		//Robin:  d*u + k*u_n= q
-		weakForm.setParam(
-				this.k, this.mu_a, this.k.D(eps).M(diri), this.k.D(eps)
-			);
-		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
-		System.out.println("Begin Assemble...solveMixedBorder");
-		assembler.assemble();
-		Matrix stiff = assembler.getStiffnessMatrix();
-		Vector load = assembler.getLoadVector();
-		System.out.println("Assemble done!");
-
-		Solver solver = new Solver();
-		Vector u = solver.solveAuto(stiff, load);
 		return u;
 	}
 	
 	public Vector solveNeumann(Mesh mesh) {
-		return solveMixedBorder(mesh,null,null);
+		return solveMixedBorder(mesh,null,null,null,FC.c1.D(mu_s.M(mu_a).M(3.0)));
 	}
 
 	public Vector solveDirichlet(Mesh mesh, Function diri) {
-		return solveMixedBorder(mesh,null,diri);
+		return solveMixedBorder(mesh,null,diri,null,null);
 	}	
 	
 	
@@ -214,82 +199,107 @@ public class ModelDOT {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String outputFolder = "ModelDOT";
+		String outputFolder = "ModelDOTMult";
 //		String gridFileBig = "prostate_test3_ex.grd";
 //		String gridFileSmall = "prostate_test3.grd";
 		String gridFileBig = "prostate_test7_ex.grd";
 		String gridFileSmall = "prostate_test7.grd";
 //		String gridFileBig = "prostate_test8_ex.grd";
-		//String gridFileBig = "prostate_test8_all.grd";//整个是一个区域，不是两个拼接而成
 //		String gridFileSmall = "prostate_test8.grd";
 
-		ModelDOT model = new ModelDOT();
-		model.setMu_a(2.0, 2.6, 0.5, //(x,y;r)
-				0.2, //maxMu_a
-				1); //type
-		model.setDelta(1.5, 3.5);
+
+		ModelDOTMult model = new ModelDOTMult();
+//		model.setMu_a(2.0, 2.5, 0.5, //(x,y;r)
+//				0.4, //maxMu_a
+//				1); //type
+		model.setMu_a(3.0, 2.30, 0.6,
+				0.8, //peak value of mu_a
+				1); //Number of inclusions
+		model.setDelta(2.5, 3.5);
 	
 		MeshReader readerForward = new MeshReader(gridFileBig);
 		Mesh meshBig = readerForward.read2DMesh();
 		MeshReader readerGCM = new MeshReader(gridFileSmall);
 		Mesh meshSmall = readerGCM.read2DMesh();
 		
+		Tools.plotFunction(meshBig, outputFolder, "aReal.dat", model.mu_a);
 		//Use element library to assign degree of freedom (DOF) to element
-		Tools.assignLinearShapFunction(meshBig);
-		Tools.assignLinearShapFunction(meshSmall);
+		ElementList eList = meshBig.getElementList();
+		//FELinearTriangle fe = new FELinearTriangle();
+		FEBilinearRectangle fe = new FEBilinearRectangle();
+		for(int i=1;i<=eList.size();i++)
+			fe.assignTo(eList.at(i));
 		meshBig.computeNodeBelongsToElements();
 		meshBig.computeNeighborNodes();
+		
+		eList = meshSmall.getElementList();
+		for(int i=1;i<=eList.size();i++)
+			fe.assignTo(eList.at(i));
 		meshSmall.computeNodeBelongsToElements();
 		meshSmall.computeNeighborNodes();		
+		
+		
 		
 		//TEST 1.
 		Vector uBig = model.solveNeumann(meshBig);
 		Tools.plotVector(meshBig, outputFolder, "u_big.dat", uBig);
-		
+
 		//TEST 2.
 		Vector uSmallExtract = Tools.extractData(meshBig, meshSmall, uBig);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_extract.dat", uSmallExtract);
-		//NodeList nodes = meshSmall.getNodeList();
-		//NOT necessary:
-		//for(int i=1;i<=nodes.size();i++) {
-		//	if(nodes.at(i).isInnerNode())
-		//		uSmallForBoundary.set(i,0.0);
-		//}
 		Vector uSmallDiri = model.solveDirichlet(meshSmall, new Vector2Function(uSmallExtract));
 		Tools.plotVector(meshSmall, outputFolder, "u_small_diri.dat", uSmallDiri);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_extract_diri_diff.dat", 
 				FMath.axpy(-1.0, uSmallDiri, uSmallExtract));
 		
-		Vector a = Tools.solveParamInverse(meshSmall, uSmallDiri, 
-				model.k.M(model.delta), model.k,FC.c(0.1));
-		Tools.plotVector(meshSmall, outputFolder, "a_sovle.dat", a);
 		
-		//stableFactor=0.0求出的导数与Tecplot计算的一致
-		long begin,end;
-		begin = System.currentTimeMillis();
-		Vector uBig_x = Tools.computeDerivative(meshBig, uBig, "x", 0.0);
-		Vector uBig_y = Tools.computeDerivative(meshBig, uBig, "y", 0.0);
-		end = System.currentTimeMillis();
-		System.out.println("computeDerivative: Time="+(end-begin));
-		Tools.plotVector(meshBig, outputFolder, "u_big_x.dat", uBig_x);
-		Tools.plotVector(meshBig, outputFolder, "u_big_y.dat", uBig_y);
+		Vector uSmallDiriBoundary = uSmallDiri.copy();
+		NodeList nodes = meshSmall.getNodeList();
+		for(int i=1;i<=nodes.size();i++) {
+			if(nodes.at(i).isInnerNode())
+				uSmallDiriBoundary.set(i,0.0);
+		}
 		
-		begin = System.currentTimeMillis();
-		Vector uBig_x2 = Tools.computeDerivativeFast(meshBig, uBig, "x");
-		Vector uBig_y2 = Tools.computeDerivativeFast(meshBig, uBig, "y");
-		end = System.currentTimeMillis();
-		System.out.println("computeDerivativeFast: Time="+(end-begin));
-		Tools.plotVector(meshBig, outputFolder, "u_big_x2.dat", uBig_x2);
-		Tools.plotVector(meshBig, outputFolder, "u_big_y2.dat", uBig_y2);
+		//不是很准确
+//		Vector uSmall_x = Tools.computeDerivativeFast(meshSmall, uSmallExtract, "x");
+//		Vector uSmall_y = Tools.computeDerivativeFast(meshSmall, uSmallExtract, "y");
+		//整个区域要准确很多
+		Vector uBig_x = Tools.computeDerivativeFast(meshBig, uBig, "x");
+		Vector uBig_y = Tools.computeDerivativeFast(meshBig, uBig, "y");
+		Vector uSmall_x = Tools.extractData(meshBig, meshSmall, uBig_x);
+		Vector uSmall_y = Tools.extractData(meshBig, meshSmall, uBig_y);
+		DuDn dudn = new DuDn(
+				new Vector2Function(uSmall_x),
+				new Vector2Function(uSmall_y),
+				null);		
+		//单元上分片常数=小区域直接求导数
+//		Vector2Function fuSmall = new Vector2Function(uSmallExtract,meshSmall,"x","y");
+//		DuDx uSmall_x = new DuDx(meshSmall,fuSmall,"x");
+//		DuDx uSmall_y = new DuDx(meshSmall,fuSmall,"y");
+//		DuDn dudn = new DuDn(
+//				uSmall_x,
+//				uSmall_y,
+//				null);	
 		
-		Vector aBig = Tools.solveParamInverse(meshBig, uBig, 
-				model.k.M(model.delta), model.k,FC.c(0.1));
-		Tools.plotVector(meshBig, outputFolder, "a_sovle_big.dat", aBig);
+		Vector uSmallRobin = model.solveMixedBorder(meshSmall, 
+				null, null, 
+				//new Vector2Function(uSmallDiriBoundary).M(0.5), null);
+				dudn.M(FC.c1.D(model.mu_s.M(model.mu_a).M(3.0))), 
+				null);//FC.c1.D(model.mu_s.M(model.mu_a).M(3.0)));
+		Tools.plotVector(meshSmall, outputFolder, "u_small_robin.dat", uSmallRobin);
+		Tools.plotVector(meshSmall, outputFolder, "u_small_extract_robin_diff.dat", 
+				FMath.axpy(-1.0, uSmallRobin, uSmallExtract));
+		
 		
 		//First Guess a(x)
-		model.setMu_a(2.0, 2.6, 0.5, //(x,y;r)
-				0.2, //maxMu_a
-				1); //type
+//		model.setMu_a(2.2, 2.5, 0.5, //(x,y;r)
+//				0.4, //maxMu_a
+//				1); //type
+		model.setMu_a(3.2, 2.10, 0.6,
+				0.8, //peak value of mu_a
+				1); //Number of inclusions
+		
+		Tools.plotFunction(meshBig, outputFolder, "aRealGuess.dat", model.mu_a);
 		Vector uBigGuess = model.solveNeumann(meshBig);
 		Tools.plotVector(meshBig, outputFolder, "u_big_guess.dat", uBigGuess);
 		
@@ -299,27 +309,7 @@ public class ModelDOT {
 		Vector uSmallApproximate = model.solveDirichlet(meshSmall, new Vector2Function(uSmallExtract));
 		Tools.plotVector(meshSmall, outputFolder, "u_small_approximate.dat", uSmallApproximate);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_guess_approximate_diff.dat", 
-				FMath.axpy(-1.0, uSmallGuess, uSmallApproximate));
-		
-		Vector aApproximate = Tools.solveParamInverse(meshSmall, uSmallApproximate, 
-				model.k.M(model.delta), model.k,FC.c(0.1));
-		Tools.plotVector(meshSmall, outputFolder, "a_sovle_approximate.dat", aApproximate);
-		
-		//Adaptive
-		ElementList eToRefine = Tools.computeRefineElement(meshBig, aBig, 0.03);
-		Refiner.refineOnce(meshBig, eToRefine);
-		Tools.assignLinearShapFunction(meshBig);
-		Vector uBigRefine = model.solveNeumann(meshBig);
-		Tools.plotVector(meshBig, outputFolder, "u_big_refine.dat", uBigRefine);
-		
-		Vector uBigRefine_x = Tools.computeDerivativeFast(meshBig, uBigRefine, "x");
-		Vector uBigRefine_y = Tools.computeDerivativeFast(meshBig, uBigRefine, "y");
-		Tools.plotVector(meshBig, outputFolder, "u_big_refine_x.dat", uBigRefine_x);
-		Tools.plotVector(meshBig, outputFolder, "u_big_refine_y.dat", uBigRefine_y);
-
-		Vector aBigRefine = Tools.solveParamInverse(meshBig, uBigRefine, 
-				model.k.M(model.delta), model.k,FC.c(0.1));
-		Tools.plotVector(meshBig, outputFolder, "a_sovle_big_refine.dat", aBigRefine);
+				FMath.axpy(-1.0, uSmallApproximate, uSmallGuess));
 		
 		//TEST 3. Only up side of the domain is Dirichlet boundary
 		Function diriBoundaryMark = new AbstractFunction("x","y"){
@@ -333,7 +323,9 @@ public class ModelDOT {
 					return -1.0;
 			}
 		};
-		Vector uMix = model.solveMixedBorder(meshSmall, diriBoundaryMark, new Vector2Function(uSmallExtract));
+		Vector uMix = model.solveMixedBorder(meshSmall, 
+				diriBoundaryMark, new Vector2Function(uSmallExtract),
+				null,FC.c1.D(model.mu_s.M(model.mu_a).M(3.0)));
 		Tools.plotVector(meshSmall, outputFolder, "u_mix.dat", uMix);
 	}
 

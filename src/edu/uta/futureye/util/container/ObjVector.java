@@ -123,6 +123,9 @@ public class ObjVector<T> {
 	public Object[] toArray() {
 		return objs.toArray();
 	}
+	public <T2> T2[] toArray(T2[] a) {
+		return objs.toArray(a);
+	}
 	
 	/**
 	 * 从一个下标为0,1,2,...的list<T>构建

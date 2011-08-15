@@ -72,7 +72,7 @@ public class FOIntegrate{
 		        0.47014206,
 		        0.10128651,
 		        0.05971587,
-		        1.0 / 3.0        
+		        1.0 / 3.0
 	        };
 		    double[]y = {
 				0.10128651,
@@ -81,7 +81,7 @@ public class FOIntegrate{
 				0.47014206,
 				0.79742699,
 				0.47014206,
-				1.0 / 3.0	
+				1.0 / 3.0
 		    };
 		    
 			Variable v = new Variable();
@@ -95,6 +95,24 @@ public class FOIntegrate{
 		//???  0.5 ???
 		return 0.5*rlt;
 	}
+	
+	
+	//Dean Joseph E. Flaherty (fea6.pdf)
+	//Christoffel weights(h5) and roots(a5)
+	static double[] a5 = {
+			0,
+			0.538469310105683,
+			-0.538469310105683,
+			0.906179845938664,
+			-0.906179845938664
+	};
+	static double[] h5 = {
+			0.568888888888889,
+			0.478628670499366,
+			0.478628670499366,
+			0.236926885056189,
+			0.236926885056189
+		};
 	
 	/**
 	 * 一维参考单元[-1,1]上的数值积分
@@ -126,22 +144,6 @@ public class FOIntegrate{
 		double h4_2 = 0.652145154862546;
 		double h4_3 = h4_2;
 		double h4_4 = h4_1;
-		
-		double[] a5 = {
-				0,
-				0.538469310105683,
-				-0.538469310105683,
-				0.906179845938664,
-				-0.906179845938664
-		};
-		double[] h5 = {
-				0.568888888888889,
-				0.478628670499366,
-				0.478628670499366,
-				0.236926885056189,
-				0.236926885056189
-			};
-		
 		
 		Variable v = new Variable();
 		double rlt = 0.0;
@@ -192,7 +194,7 @@ public class FOIntegrate{
 			v.set("r", a1_1);
 			v.set("s", a1_1);
 			rlt += h1_1*integrand.value(v);
-		} else if(degree ==2) {
+		} else if(degree == 2) {
 			v.set("r", a2);
 			v.set("s", a2);
 			rlt += h2*integrand.value(v);			
@@ -205,6 +207,14 @@ public class FOIntegrate{
 			v.set("r", -a2);
 			v.set("s", -a2);
 			rlt += h2*integrand.value(v);			
+		} else if(degree == 5) {
+			for(int i=0;i<degree;i++) {
+				for(int j=0;j<degree;j++) {
+					v.set("r", a5[i]);
+					v.set("s", a5[j]);
+					rlt += h5[i]*h5[j]*integrand.value(v);
+				}
+			}
 		} else {
 			System.out.println("ERROR: intOnLinearRefElement() Not supported degree = "+degree);
 		}

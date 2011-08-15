@@ -99,4 +99,11 @@ public class DOF {
 	public void setOwner(GeoEntity enty) {
 		owner = enty;
 	}
+	
+	public String toString() {
+		return String.format("{L%d G%d %s %s}", localIndex,
+				globalIndex,
+				shapeFun,
+				owner);
+	}
 }

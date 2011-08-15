@@ -8,9 +8,11 @@ import edu.uta.futureye.util.FutureyeException;
 
 public class Solver {
 	//迭代相对误差
-	public double epsIter = 1e-5;
+	public double epsRelIter = 1e-9;
 	//迭代绝对误差
-	public double epsAbsIter = 1e-15;
+	public double epsAbsIterMin = 1e-15;
+	public double epsAbsIterMax = 1e-6;
+	
 	//迭代最大次数
 	public double maxIter = 10000;
 	
@@ -45,7 +47,8 @@ public class Solver {
 		//for (iter.setFirst(); !iter.converged(r, x); iter.next()) {
 		for(int i=0;i<maxIter;i++) {
 			norm2 = r.norm2();
-			if(norm2<=this.epsIter*firstNorm2 || norm2<=this.epsAbsIter) {
+			if((norm2<=this.epsRelIter*firstNorm2 && norm2<=this.epsAbsIterMax) || 
+					norm2<=this.epsAbsIterMin) {
 				System.out.println(
 						String.format("Iter----->i=%05d, RError=%8.3e, AError=%8.3e", 
 								i,norm2/firstNorm2,norm2));
@@ -117,7 +120,8 @@ public class Solver {
 		//for (iter.setFirst(); !iter.converged(r, x); iter.next()) {
 		for(int i=0;i<maxIter;i++) {
 			norm2 = r.norm2();
-			if(norm2<=this.epsIter*firstNorm2 || norm2<=this.epsAbsIter) {
+			if((norm2<=this.epsRelIter*firstNorm2 && norm2<=this.epsAbsIterMax) || 
+					norm2<=this.epsAbsIterMin) {
 				System.out.println(
 						String.format("Iter----->i=%05d, RError=%8.3e, AError=%8.3e", 
 								i,norm2/firstNorm2,norm2));
@@ -184,6 +188,12 @@ public class Solver {
 		return solveCG(A,b,x);
 	}
 	
+	public Vector solveAuto(Matrix A, Vector b) {
+        SolverJBLAS sol = new SolverJBLAS();
+		Vector x = sol.solveDGESV(A, b);		
+		return x;
+	}
+	
 	public Vector solveCGS(Matrix A, Vector b, Vector x) {
 		if( !( A.getRowDim() == A.getColDim() &&
 				A.getRowDim() == b.getDim()) ) {
@@ -234,7 +244,7 @@ public class Solver {
 		//for (iter.setFirst(); !iter.converged(r, x); iter.next()) {
 		for(int i=0;i<maxIter;i++) {
 			norm2 = r.norm2();
-			if(norm2<epsIter*firstNorm2) {
+			if(norm2<epsRelIter*firstNorm2) {
 				System.out.println("----->i="+i+"  norm2="+norm2);
 				return x;
 			}

@@ -455,4 +455,27 @@ public class Mesh {
 		return null;
 	}
 	
+	public void printMeshInfo() {
+		for(int i=1;i<=this.eleList.size();i++) {
+			Element e = this.eleList.at(i);
+			System.out.println("GEI"+i+" "+e);
+			for(int j=1;j<=e.nodes.size();j++) {
+				Node node = e.nodes.at(j);
+				if(node instanceof NodeRefined) {
+					NodeRefined nf = (NodeRefined)node;
+					if(nf.isHangingNode())
+						System.out.println("\t"+nf+" level:"+nf.level+" HangingNode");
+					else
+						System.out.println("\t"+nf+" level:"+nf.level);
+						
+				} else {
+					System.out.println("\t"+node+" level:"+node.level);
+				}
+			}
+		}
+		for(int i=1;i<=this.nodeList.size();i++) {
+			System.out.println("GNI"+i+" "+this.nodeList.at(i).globalIndex);
+		}
+	}
+	
 }

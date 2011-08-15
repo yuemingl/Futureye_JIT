@@ -53,7 +53,7 @@ public abstract class AbstractScalarWeakForm implements WeakForm {
 			} else if (e.vertices().size() == 4) {
 				//四边形单元
 				return FOIntegrate.intOnRectangleRefElement(
-						fun.M(e.getJacobin()),2 //TODO
+						fun.M(e.getJacobin()),5 //TODO
 						);
 			}
 		} else if(e.eleDim() == 3) {

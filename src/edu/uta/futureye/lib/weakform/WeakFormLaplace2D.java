@@ -52,7 +52,10 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 		this.g_f = f;
 	}
 	
-	//Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
+	//Robin:  d*u + k*u_n = q 
+	//2011-08-02
+	//E.g.1 Nature boundary condition: u_n + u = 0  =>  d=k, q=0
+	//E.g.2 u_n = g                                 =>  d=0, q=k*g  
 	public void setParam(Function k,Function c,Function q,Function d) {
 		this.g_k = k;
 		this.g_c = c;

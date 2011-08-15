@@ -169,7 +169,7 @@ public class ProjectBasesMethod {
 		
 		FullVector x  = new FullVector(x0);
 		Solver sol = new Solver();
-		sol.epsIter = 1e-10;
+		sol.epsRelIter = 1e-10;
 		sol.solveCGS(C, g, x);
 		//C.print();
 		//g.print();
@@ -250,7 +250,7 @@ public class ProjectBasesMethod {
 		
 		FullVector x  = new FullVector(x0);
 		Solver sol = new Solver();
-		sol.epsIter = 1e-10;
+		sol.epsRelIter = 1e-10;
 		sol.solveCGS(C, g, x);
 		//C.print();
 		//g.print();

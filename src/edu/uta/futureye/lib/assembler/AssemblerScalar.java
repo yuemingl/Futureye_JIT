@@ -68,7 +68,25 @@ public class AssemblerScalar implements Assembler {
 				System.out.println("Assemble..."+
 						String.format("%.0f%%", 100.0*i/nEle));
 		}
+		
 		procHangingNode(mesh);
+	}
+	
+	public void assemble(boolean procHangingNode) {
+		status = 1;
+		ElementList eList = mesh.getElementList();
+		int nEle = eList.size();
+		for(int i=1; i<=nEle; i++) {
+			if(eList.at(i).adjustVerticeToCounterClockwise()) {
+				throw new FutureyeException("adjustVerticeToCounterClockwise");
+			}
+			assembleGlobal(eList.at(i),	globalStiff,globalLoad);
+			if(i%1000==0)
+				System.out.println("Assemble..."+
+						String.format("%.0f%%", 100.0*i/nEle));
+		}
+		if(procHangingNode)
+			procHangingNode(mesh);
 	}
 	
 	@Override
@@ -107,6 +125,7 @@ public class AssemblerScalar implements Assembler {
 		
 		//Update Jacobin on e
 		e.updateJacobin();
+		//System.out.println(e.getJacobin().value(new Variable("r",0).set("s", 0)));
 		
 		//形函数计算需要和单元关联
 		for(int i=1;i<=nDOFs;i++) {
@@ -119,13 +138,16 @@ public class AssemblerScalar implements Assembler {
 			ScalarShapeFunction sfI = dofI.getSSF();
 			int nLocalRow = dofI.getLocalIndex();
 			int nGlobalRow = dofI.getGlobalIndex();
+			//int nGlobalRow2 = ((Node)dofI.getOwner()).getIndex();
+			
 			for(int j=1;j<=nDOFs;j++) {
 				DOF dofJ = DOFs.at(j);
 				ScalarShapeFunction sfJ = dofJ.getSSF();
 				int nLocalCol = dofJ.getLocalIndex();
 				int nGlobalCol = dofJ.getGlobalIndex();
+				//int nGlobalCol = ((Node)dofJ.getOwner()).getIndex();
 				//Local stiff matrix
-				//注意顺序，内循环test函数不变，trial函数循环
+				//注意顺序，内循环test基函数不变，trial基函数循环
 				weakForm.setShapeFunction(sfJ,nLocalCol, sfI,nLocalRow); 
 				Function lhs = weakForm.leftHandSide(e, WeakForm.ItemType.Domain);
 				double lhsVal = weakForm.integrate(e, lhs);
@@ -160,11 +182,13 @@ public class AssemblerScalar implements Assembler {
 						ScalarShapeFunction sfI = dofI.getSSF();
 						int nLocalRow = dofI.getLocalIndex();
 						int nGlobalRow = dofI.getGlobalIndex();
+						//int nGlobalRow2 = ((Node)dofI.getOwner()).getIndex();
 						for(int j=1;j<=nBeDOF;j++) {
 							DOF dofJ = beDOFs.at(j);
 							ScalarShapeFunction sfJ = dofJ.getSSF();
 							int nLocalCol = dofJ.getLocalIndex();
 							int nGlobalCol = dofJ.getGlobalIndex();
+							//int nGlobalCol = ((Node)dofJ.getOwner()).getIndex();
 							//Local stiff matrix for border
 							//注意顺序，内循环test函数不变，trial函数循环
 							weakForm.setShapeFunction(sfJ,nLocalCol, sfI,nLocalRow);
@@ -290,6 +314,7 @@ public class AssemblerScalar implements Assembler {
 	
 	//二维：刚度矩阵增加hanging node约束系数
 	// nh - 0.5*n1 - 0.5*n2 = 0
+	//不能去掉， hanging node 自己在刚度矩阵合成的时候没有系数，因此需要为自己设置系数
 	public void procHangingNode(Mesh mesh) {
 		status = 5;
 		for(int i=1;i<=mesh.getNodeList().size();i++) {

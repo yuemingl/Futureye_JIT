@@ -14,6 +14,13 @@ import edu.uta.futureye.util.container.DOFList;
 /**
  * 用有限元方法求导数
  * Solve: (w, v) = (U_x, v)
+ * 
+ * 
+ * Test for:
+ *   \eps*(\nabla{w},\nabla{v}) + (w,v) = (U_x, v)
+ * where
+ *   \eps -> 0
+ * 
  * where w is unknown
  *   U_x is the piecewise derivative on the mesh
  *   w is an approximation of U_x
@@ -23,6 +30,7 @@ import edu.uta.futureye.util.container.DOFList;
 public class WeakFormDerivative extends AbstractScalarWeakForm {
 	protected Vector2Function g_U = null;
 	protected String varName; // "x" or "y"
+	protected double eps = -1.0;
 
 	public WeakFormDerivative(String varName) {
 		this.varName = varName;
@@ -32,7 +40,14 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 	public Function leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
-			Function integrand = u.M(v);
+			Function integrand = null;
+			if(eps > 0.0) {
+				integrand = u._d("x").M(v._d("x")).A(
+						    u._d("y").M(v._d("y"))).M(eps).A(
+						    u.M(v));
+			} else {
+				integrand = u.M(v);
+			}
 			return integrand;
 		}
 		return null;
@@ -63,5 +78,10 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 
 	public void setParam(Vector2Function U) {
 		this.g_U = U;
+	}
+	
+	public void setParam(Vector2Function U, double eps) {
+		this.g_U = U;
+		this.eps = eps;
 	}
 }

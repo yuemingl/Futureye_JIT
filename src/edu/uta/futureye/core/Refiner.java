@@ -30,6 +30,21 @@ public class Refiner {
 					map.put(findNeighbor.globalIndex, findNeighbor);
 				}
 			}
+//有问题，还没标记level，无法判断
+//			//如果一个单元相邻单元都细化了，该单元自动细化
+//			for(int j=1;j<=eNeighbors.size();j++) {
+//				Element findNeighbor = eNeighbors.at(j);
+//				ElementList findNbrNbr = findNeighbor.neighbors;
+//				for(int k=1;k<=findNbrNbr.size();k++) {
+//					boolean all = true;
+//					if(findNeighbor.getLevel() >= findNbrNbr.at(k).getLevel()) {
+//						all = false;
+//						break;
+//					}
+//					if(all)
+//						map.put(findNeighbor.globalIndex, findNeighbor);
+//				}
+//			}
 		}
 		for(Element e : map.values())
 			findNeighbors.add(e);

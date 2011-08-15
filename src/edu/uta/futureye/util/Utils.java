@@ -652,4 +652,91 @@ public class Utils {
 		return 0.0;
 		
 	}
+	
+	/**
+	 * f(x,y) = a1 + a2*x + a3*y + a4*x*y
+	 * 
+	 * @param p: [(x1,y1) (x2,y2) (x3,y3) (x4,y4)]
+	 * @param f: [f1 f2 f3 f4]
+	 * @return [a1 a2 a3 a4]
+	 */
+	public static double[] computeBilinearFunctionCoef(
+				Point[] p, double[] ff) {
+		int len = p.length;
+		if(len != 4) {
+			throw new FutureyeException("p.size()="+len+", should be 4.");
+		}
+		
+		
+		double[] x = new double[5];//x [1...4]
+		double[] y = new double[5];//y [1...4]
+		double[] xx= new double[5];//xx[1...4]
+		double[] yy= new double[5];//yy[1...4]
+		double[] f = new double[5];//f [1...4]
+		double[] a = new double[4];//a [0...3]
+		for(int i=1;i<=4;i++) {
+			x[i] = p[i-1].coord(1);
+			y[i] = p[i-1].coord(2);
+			xx[i] = p[i-1].coord(1);
+			yy[i] = p[i-1].coord(2);
+			f[i] = ff[i-1];
+		}
+
+		int r = -1;
+		for(int i=2;i<=len;i++) {
+			if(x[1] != x[i]) {
+				r = i;
+				break;
+			}
+		}
+		if(r < 0) {
+			throw new FutureyeException("r<0");
+		}
+		if(r != 2) {
+			x[2] = xx[r];
+			x[r] = xx[2];
+			y[2] = yy[r];
+			y[r] = yy[2];
+			f[2] = ff[r-1];
+			f[r] = ff[1];
+		}
+		
+		
+		double x21 = x[2]-x[1];
+		double x31 = x[3]-x[1];
+		double x41 = x[4]-x[1];
+		double y21 = y[2]-y[1];
+		double y31 = y[3]-y[1];
+		double y41 = y[4]-y[1];
+		double x1y1 = x[1]*y[1];
+		double x2y2 = x[2]*y[2];
+		double x3y3 = x[3]*y[3];
+		double x4y4 = x[4]*y[4];
+		
+		/**
+		 *  (b11 b12)(a3) = (g1)
+		 *  (b21 b22)(a4)   (g2)
+		 */
+		double b11 = x21*y31 - y21*x31;
+		double b12 = x21*(x3y3-x1y1) - (x2y2-x1y1)*x31;
+		double b21 = x21*y41 - y21*x41;
+		double b22 = x21*(x4y4-x1y1) - (x2y2-x1y1)*x41;
+		double g1  = x21*(f[3]-f[1]) - (f[2]-f[1])*x31;
+		double g2  = x21*(f[4]-f[1]) - (f[2]-f[1])*x41;
+		
+		double bbbb = b11*b22-b21*b12;
+		a[2] = (b22*g1-b12*g2)/bbbb;
+		a[3] = (b11*g2-b21*g1)/bbbb;
+		
+		a[1] = ((f[2]-f[1]) - (y[2]-y[1])*a[2] - (x2y2-x1y1)*a[3])/(x21);
+		a[0] = f[1] - x[1]*a[1] - y[1]*a[2] - x1y1*a[3];
+		
+//		if(r != 2) {
+//			double tmp = a[r-1];
+//			a[r-1] = a[1];
+//			a[1] = tmp;
+//		}
+		return a;
+	}
+	
 }

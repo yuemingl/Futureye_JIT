@@ -72,6 +72,12 @@ public class MeshReader {
 			br.close();
 			in.close();
 
+			ElementList nEList = mesh.getElementList();
+			int nE = nEList.size();
+			for(int i=1;i<=nE;i++) {
+				Element e = nEList.at(i);
+				e.adjustVerticeToCounterClockwise();
+			}
 			return mesh;
 		
 		} catch (Exception e) {

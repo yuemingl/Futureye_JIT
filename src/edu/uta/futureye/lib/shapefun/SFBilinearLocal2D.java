@@ -147,7 +147,11 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 	}
 
 	public String toString() {
-		return "N"+(funIndex+1)+": "+funOuter.toString();
+		if(this.coef < 1.0)
+			return "N"+(funIndex+1)+": "+this.coef+"*"+funOuter.toString();
+		else
+			return "N"+(funIndex+1)+": "+funOuter.toString();
+			
 	}
 
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);

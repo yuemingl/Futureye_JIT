@@ -3,15 +3,26 @@ package edu.uta.futureye.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.uta.futureye.algebra.SparseVector;
+import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.application.Tools;
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.function.basic.DuDx;
 import edu.uta.futureye.function.basic.FAx;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FLinear1D;
 import edu.uta.futureye.function.basic.FPolynomial1D;
 import edu.uta.futureye.function.basic.FX;
+import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.Function;
 import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.io.MeshReader;
+import edu.uta.futureye.util.container.ElementList;
+import edu.uta.futureye.util.container.NodeList;
 
 public class FunctionTest {
 	
@@ -157,12 +168,54 @@ public class FunctionTest {
 	}
 	
 	
+	public static void testDuDx() {
+	    MeshReader reader = new MeshReader("rectangle.grd");
+	    Mesh mesh = reader.read2DMesh();
+	    mesh.computeNodeBelongsToElements();
+	    
+	    Vector v = Tools.function2vector(mesh, FX.fx.M(FX.fy));
+	    
+	    Tools.plotVector(mesh, "testCase", "v.dat", v);
+	    DuDx vx = new DuDx(mesh,new Vector2Function(v, mesh, "x","y"),"y");
+	    Tools.plotFunction(mesh, "testCase", "v_x.dat", vx);
+	    
+	    Vector[] a = new Vector[4];
+	    for(int i=0;i<4;i++)
+	    	a[i] = new SparseVector(mesh.getNodeList().size());
+	    ElementList eList = mesh.getElementList();
+	    for(int i=1;i<=eList.size();i++) {
+	    	Element e  = eList.at(i);
+	    	NodeList nList = e.nodes;
+	    	System.out.print(e);
+	    	for(int j=1;j<=nList.size();j++) {
+	    		Node node = nList.at(j);
+		    	Variable vv = new Variable();
+		    	vv.setIndex(node.globalIndex);
+		    	vv.setElement(e);
+		    	double dvx = vx.value(vv);
+		    	System.out.print(" "+dvx+" ");
+	    	}
+	    	System.out.println();
+	    }
+	    
+	    //D(x*y)/Dy=x 
+	    //On element 1: [-3,-2.3]*[2.3,3]
+	    double d = vx.value(new Variable("x",-2.8).set("y",2.9).setElement(eList.at(1)));
+	    System.out.println(d);//-2.8
+	    
+	    
+	    
+	    
+	    
+	}
+	
 	public static void main(String[] args) {
-		test();
-		constantTest();
-		testOperation();
-		
-		severalVariableFunctions();
+//		test();
+//		constantTest();
+//		testOperation();
+//		
+//		severalVariableFunctions();
+		testDuDx();
 	}
 
 		
