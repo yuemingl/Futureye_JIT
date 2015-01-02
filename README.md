@@ -9,5 +9,7 @@ FuturEye is designed to solve 1D,2D and 3D partial differential equations(PDE) o
 This toolkit can be used for various purposes:
 
 *Teaching: The feature of close relation to mathematical theory of FEM will help a student to understand basic FEM concepts, e.g. shape functions, the Jacobian and assembly process.
+
 *Research: FuturEye helps researchers quickly develop and test their models, experiment with data and algorithms. e.g. new equations, finite elements and solution methods without concerning too much about basic components in FEM programming.
+
 *Engineering: The performance and efficiency may be unsatisfactory for real applications,if a finite element class defined in a mathematical manner is without optimization.Thanks to the interface conception in Java, we can implement the same interface in many different ways, thus a carefully optimized finite element class can be used in applications with a huge number of elements. 
