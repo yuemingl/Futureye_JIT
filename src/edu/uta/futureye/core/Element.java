@@ -1654,4 +1654,18 @@ public class Element {
 		}
 	}
 
+	/**
+	 * Return the coordinates of all nodes
+	 * @return
+	 */
+	public double[] getNodeCoords() {
+		double[] rlt = new double[nodes.size()*eleDim];
+		int index = 0;
+		for(int j=0; j<eleDim; j++) {
+			for(Node n : nodes) {
+				rlt[index++] = n.coords[j];
+			}
+		}
+		return rlt;
+	}
 }

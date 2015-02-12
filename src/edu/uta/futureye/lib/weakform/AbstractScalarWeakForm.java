@@ -5,6 +5,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.intf.WeakForm;
+import edu.uta.futureye.function.FEMFunc;
 import edu.uta.futureye.function.intf.MathFun;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOIntegrate;
@@ -25,12 +26,12 @@ public abstract class AbstractScalarWeakForm implements WeakForm {
 	}
 
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public FEMFunc leftHandSide(Element e, ItemType itemType) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public FEMFunc rightHandSide(Element e, ItemType itemType) {
 		throw new UnsupportedOperationException();
 	}
 

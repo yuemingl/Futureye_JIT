@@ -5,6 +5,7 @@ import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.function.FEMFunc;
 import edu.uta.futureye.function.intf.MathFun;
 
 public interface WeakForm {
@@ -48,7 +49,7 @@ public interface WeakForm {
 	 * @param itemType
 	 * @return
 	 */
-	MathFun leftHandSide(Element e, ItemType itemType);
+	FEMFunc leftHandSide(Element e, ItemType itemType);
 	
 	/**
 	 * Right hand side of the weak form
@@ -56,7 +57,7 @@ public interface WeakForm {
 	 * @param itemType
 	 * @return
 	 */
-	MathFun rightHandSide(Element e, ItemType itemType);
+	FEMFunc rightHandSide(Element e, ItemType itemType);
 	
 	/**
 	 * Provide a pre-process function before calling leftHandSide(...) and rightHandSide(...) if necessary
