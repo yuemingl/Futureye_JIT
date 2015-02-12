@@ -62,17 +62,17 @@ import edu.uta.futureye.util.container.ElementList;
  *
  */
 public class SymWeakFormLaplace2D extends AbstractScalarWeakForm {
-	protected Expr g_f = null;
-	protected Expr g_k = null;
-	protected Expr g_c = null;
-	protected Expr g_g = null; 
-	protected Expr g_d = null;
+//	protected Expr g_f = null;
+//	protected Expr g_k = null;
+//	protected Expr g_c = null;
+//	protected Expr g_g = null; 
+//	protected Expr g_d = null;
 	
-	protected FEMFunc ff = null;
-	protected FEMFunc fk = null;
-	protected FEMFunc fc = null;
-	protected FEMFunc fg = null;
-	protected FEMFunc fd = null;
+	protected Expr ff = null;
+	protected Expr fk = null;
+	protected Expr fc = null;
+	protected Expr fg = null;
+	protected Expr fd = null;
 	
 	protected FEMFunc lhs = null;
 	protected FEMFunc rhs = null;
@@ -84,8 +84,8 @@ public class SymWeakFormLaplace2D extends AbstractScalarWeakForm {
 	FEMFunc lhsNInt[][] = new FEMFunc[3][3];
 	FEMFunc rhsNInt[] = new FEMFunc[3];	
 	
-	public void setF(FEMFunc f) {
-		this.g_f = f;
+	public void setF(Expr f) {
+		this.ff = f;
 	}
 	
 	//Robin:  d*u + k*u_n = g 
@@ -93,10 +93,10 @@ public class SymWeakFormLaplace2D extends AbstractScalarWeakForm {
 	//E.g.1 Nature boundary condition: u_n + u = 0  =>  d=k, q=0
 	//E.g.2 u_n = g                                 =>  d=0, g=k*g  
 	public void setParam(Expr k,Expr c,Expr g,Expr d) {
-		this.g_k = k;
-		this.g_c = c;
-		this.g_g = g;
-		this.g_d = d;
+		this.fk = k;
+		this.fc = c;
+		this.fg = g;
+		this.fd = d;
 	}
 	
 	@Override 
@@ -111,7 +111,7 @@ public class SymWeakFormLaplace2D extends AbstractScalarWeakForm {
 //		}
 	}
 
-	void generateOrLoadBytecode() {
+	public void generateOrLoadBytecode() {
 		Func u = new Func("u", x, y);
 		Func v = new Func("v", x, y);
 		Expr integrandLHS = fk*dot(grad(u), grad(v))+fc*u*v;
@@ -218,7 +218,7 @@ public class SymWeakFormLaplace2D extends AbstractScalarWeakForm {
 			//Integrand part of Weak Form on element e
 			int idxI = this.trialDOF.getLocalIndex();
 			int idxJ = this.testDOF.getLocalIndex();
-			return this.lhsNInt[idxJ][idxI];
+			return this.lhsNInt[idxJ-1][idxI-1];
 //Old code			
 //			if(g_k == null) {
 //				integrand = u._d("x").M(v._d("x")) .A (u._d("y").M(v._d("y")));
@@ -244,7 +244,7 @@ public class SymWeakFormLaplace2D extends AbstractScalarWeakForm {
 	public FEMFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			int idxJ = this.testDOF.getLocalIndex();
-			return rhsNInt[idxJ];
+			return rhsNInt[idxJ-1];
 			
 //			FEMFunc integrand = ff.M(v);
 //			return integrand;

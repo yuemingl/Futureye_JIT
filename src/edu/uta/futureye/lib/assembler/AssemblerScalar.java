@@ -3,6 +3,9 @@ package edu.uta.futureye.lib.assembler;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import symjava.bytecode.BytecodeFunc;
+import symjava.symbolic.Expr;
+import symjava.symbolic.Func;
 import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
@@ -160,7 +163,9 @@ public class AssemblerScalar implements Assembler {
 	
 	//2011/11/28 modified according to vector valued case
 	@Override
-	public void imposeDirichletCondition(MathFun diri) {
+	public void imposeDirichletCondition(Expr diri) {
+		Func fdiri = new Func("diri", diri);
+		BytecodeFunc bDiri = fdiri.toBytecodeFunc();
 		ElementList eList = mesh.getElementList();
 		for(int i=1;i<=eList.size();i++) {
 			Element e = eList.at(i);
@@ -171,8 +176,8 @@ public class AssemblerScalar implements Assembler {
 				if(ge instanceof Node) {
 					Node n = (Node)ge;
 					if(n.getNodeType() == NodeType.Dirichlet) {
-						Variable v = Variable.createFrom(diri, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
-						setDirichlet(dof.getGlobalIndex(),diri.apply(v));
+						//Variable v = Variable.createFrom(diri, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
+						setDirichlet(dof.getGlobalIndex(), bDiri.apply(n.coords()));
 					}
 				} else if(ge instanceof EdgeLocal) {
 					//2D单元（面）其中的局部边上的自由度
@@ -194,8 +199,9 @@ public class AssemblerScalar implements Assembler {
 					for(int k=1;k<=vs.size();k++) {
 						Node n = vs.at(k).globalNode();
 						if(NodeType.Dirichlet == n.getNodeType()) {
-							Variable v = Variable.createFrom(diri, n, 0);
-							setDirichlet(dof.getGlobalIndex(),diri.apply(v));
+							//Variable v = Variable.createFrom(diri, n, 0);
+							//setDirichlet(dof.getGlobalIndex(),diri.apply(v));
+							setDirichlet(dof.getGlobalIndex(), bDiri.apply(n.coords()));
 						}
 					}
 				} else if(ge instanceof Face) {
@@ -205,8 +211,9 @@ public class AssemblerScalar implements Assembler {
 					for(int k=1;k<=vs.size();k++) {
 						Node n = vs.at(k).globalNode();
 						if(NodeType.Dirichlet == n.getNodeType()) {
-							Variable v = Variable.createFrom(diri, n, 0);
-							setDirichlet(dof.getGlobalIndex(),diri.apply(v));
+							//Variable v = Variable.createFrom(diri, n, 0);
+							//setDirichlet(dof.getGlobalIndex(),diri.apply(v));
+							setDirichlet(dof.getGlobalIndex(), bDiri.apply(n.coords()));
 						}
 					}
 				} else if(ge instanceof Volume) {
@@ -215,8 +222,9 @@ public class AssemblerScalar implements Assembler {
 					for(int k=1;k<=vs.size();k++) {
 						Node n = vs.at(k).globalNode();
 						if(NodeType.Dirichlet == n.getNodeType()) {
-							Variable v = Variable.createFrom(diri, n, 0);
-							setDirichlet(dof.getGlobalIndex(),diri.apply(v));
+							//Variable v = Variable.createFrom(diri, n, 0);
+							//setDirichlet(dof.getGlobalIndex(),diri.apply(v));
+							setDirichlet(dof.getGlobalIndex(), bDiri.apply(n.coords()));
 						}
 					}
 				}
