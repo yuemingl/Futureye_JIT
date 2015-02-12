@@ -90,7 +90,7 @@ public interface WeakForm {
 	double integrate(Element e, MathFun fun);
 	
 	/**
-	 * This interface is NO meaning for scalar valued problems.
+	 * This interface has NO meaning for scalar valued problems.
 	 * For vector valued problems, it is used to indicate if two components of
 	 * vector function are coupled or independent variables. This information
 	 * can be used to simplify the assembling process. For example, for 2D Stokes 
