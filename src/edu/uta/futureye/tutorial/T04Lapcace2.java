@@ -16,9 +16,14 @@ import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.weakform.SymWeakFormLaplace2D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.container.ElementList;
 import static edu.uta.futureye.function.operator.FMath.*;
+import static symjava.symbolic.Symbol.C0;
+import static symjava.symbolic.Symbol.C1;
+import static symjava.symbolic.Symbol.x;
+import static symjava.symbolic.Symbol.y;
 
 
 /**
@@ -77,13 +82,20 @@ public class T04Lapcace2 {
 		 *  f=-2*(x^2+y^2)+36
 		 *
 		 */
-		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		weakForm.setF(FC.c(-2.0).M(
-						X.M(X).A(Y.M(Y))
-					).A(FC.c(36.0))
-				);
-		//d*u + k*u_n= q
-		weakForm.setParam(C1, sqrt(X.M(X).A(Y.M(Y))), C1, C1);
+//		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
+//		weakForm.setF(FC.c(-2.0).M(
+//						X.M(X).A(Y.M(Y))
+//					).A(FC.c(36.0))
+//				);
+//		//d*u + k*u_n= q
+//		weakForm.setParam(C1, sqrt(X.M(X).A(Y.M(Y))), C1, C1);
+		
+        //4.Weak form
+        SymWeakFormLaplace2D weakForm = new SymWeakFormLaplace2D();
+        //Right hand side(RHS): f = -2*(x^2+y^2)+36
+        weakForm.setF(-2*(x*x+y*y)+36);
+        weakForm.setParam(C1, C0, C0, C0);
+        weakForm.generateOrLoadBytecode();
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
@@ -93,7 +105,7 @@ public class T04Lapcace2 {
 		//stiff.print();
 		Vector load = assembler.getLoadVector();
 		//load.print();
-		assembler.imposeDirichletCondition(new FC(0.0));
+		assembler.imposeDirichletCondition(C0);
 		long end = System.currentTimeMillis();
 		System.out.println("Assemble done!");
 		System.out.println("Time used:"+(end-begin));
