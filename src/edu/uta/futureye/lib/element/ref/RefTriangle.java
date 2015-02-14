@@ -2,7 +2,7 @@ package edu.uta.futureye.lib.element.ref;
 
 import java.util.List;
 
-import symjava.symbolic.Domain2D;
+import symjava.domains.Domain2D;
 import symjava.symbolic.Expr;
 
 /**

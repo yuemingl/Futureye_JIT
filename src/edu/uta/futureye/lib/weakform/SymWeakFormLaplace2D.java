@@ -12,7 +12,7 @@ import static symjava.symbolic.Symbol.y;
 import java.util.HashMap;
 import java.util.Map;
 
-import symjava.examples.fem.UnitRightTriangle;
+import symjava.examples.fem.RefTriangle;
 import symjava.math.Transformation;
 import symjava.matrix.SymMatrix;
 import symjava.numeric.NumInt;
@@ -162,7 +162,7 @@ public class SymWeakFormLaplace2D extends AbstractScalarWeakForm {
 //		System.out.println(sy);
 
 		//This is the reference element: a unit right triangle
-		UnitRightTriangle tri = new UnitRightTriangle("Tri", r, s);
+		RefTriangle tri = new RefTriangle("Tri", r, s);
 		
 		Int lhsInt[][] = new Int[shapeFuns.length][shapeFuns.length];
 		Int rhsInt[] = new Int[shapeFuns.length];

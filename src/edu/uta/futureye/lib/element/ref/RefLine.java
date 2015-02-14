@@ -1,6 +1,6 @@
 package edu.uta.futureye.lib.element.ref;
 
-import symjava.symbolic.Domain1D;
+import symjava.domains.Domain1D;
 import symjava.symbolic.Expr;
 
 /**
