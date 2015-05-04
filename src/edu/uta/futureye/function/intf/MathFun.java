@@ -8,6 +8,12 @@ package edu.uta.futureye.function.intf;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
@@ -263,4 +269,15 @@ public interface MathFun {
 	 * @param order
 	 */
 	void setOpOrder(int order);
+	
+	/**
+	 * 
+	 * @param mg
+	 * @param cp
+	 * @param factory
+	 * @param il
+	 */
+	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp, 
+			InstructionFactory factory, InstructionList il, 
+			Map<String, Integer> argsMap, int argsStartPos);
 }

@@ -3,14 +3,15 @@ package edu.uta.futureye.function;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
 
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFun;
-import edu.uta.futureye.function.intf.SimpleFun;
 import edu.uta.futureye.util.Constant;
-import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.Utils;
 
 public abstract class AbstractMathFun implements MathFun {
 	protected List<String> varNames = new LinkedList<String>();
@@ -87,7 +88,6 @@ public abstract class AbstractMathFun implements MathFun {
 
 	@Override
 	public MathFun compose(final Map<String,MathFun> fInners) {
-		final MathFun fOuter = this;
 		boolean find = false;
 		for(String key : fInners.keySet()) {
 			if(getVarNames().contains(key)) find = true;
@@ -95,113 +95,8 @@ public abstract class AbstractMathFun implements MathFun {
 		if(!find) 
 			return this; //No compose
 		else
-			return new AbstractMathFun(fOuter.getVarNames()) {
-			@Override
-			public double apply(Variable v) {
-				return apply(v,null);
-			}
-			
-			@Override
-			public double apply(Variable v, Map<Object,Object> cache) {
-				
-				//if(fOuter.varNames().size() == 0) {
-				//	throw new FutureyeException("\nERROR:\n fOuter varNames list is empty!");
-				//}
-				
-				//bugfix 增加或条件 
-				//bugfix 3/19/12
-				//bug?3/20/12  v=[r], fOuter.varNames()=[s,t], 但fOuter的表达式只有r, 这种情况下会进入else分支，
-				//一般来说是不会有这种情况的，如果确实有这种情况，需要在函数类增加activeVarNames
-				//if(fOuter.varNames().containsAll(v.getValues().keySet()) ||
-				//		v.getValues().keySet().containsAll(fOuter.varNames())) {
-				if(v.getNameValuePairs().keySet().containsAll(fOuter.getVarNames())) {
-					return fOuter.apply(v,cache);
-				//} else if(fOuter.varNames().size() == fInners.size()){
-				} else {
-					Variable newVar = new Variable();
-					for(String varName : fOuter.getVarNames()) {
-						MathFun fInner = fInners.get(varName);
-						if(fInner != null ) 
-							newVar.set(varName, fInner.apply(v,cache));
-						else //for mixed case: fOuter( x(r,s,t), y(r,s,t), r, s) bugfix 3/19/12
-							newVar.set(varName, v.get(varName));
-						//	throw new FutureyeException("\nERROR:\n Can not find "+varName+" in fInners.");
-					}
-					return fOuter.apply(newVar,cache);
-				}
-//				else {
-//					throw new FutureyeException(
-//							"\nERROR:\n Variable number mismatch of fOuter("+
-//							fOuter.varNames()+") and fInner("+fInners+").");
-//				}
-			} 
-
-			
-			@Override
-			public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
-				//bugfix 增加或条件
-				if(v.getValues().keySet().containsAll(fOuter.getVarNames())) {
-					return fOuter.applyAll(v,cache);
-				} else {
-					VariableArray newVar = new VariableArray();
-					for(String varName : fOuter.getVarNames()) {
-						MathFun fInner = fInners.get(varName);
-						if(fInner != null )
-							newVar.set(varName, fInner.applyAll(v,cache));
-						else //for mixed case: fOuter( x(r,s,t), y(r,s,t), r, s)
-							newVar.set(varName, v.get(varName));
-					}
-					return fOuter.applyAll(newVar,cache);
-				}
-			}
-			
-			/**
-			 * 链式求导
-			 * f( x(r,s),y(r,s) )_r = f_x * x_r + f_y * y_r
-			 */
-			@Override
-			public MathFun _d(String varName) {
-				MathFun rlt = null;
-				if(fOuter.getVarNames().contains(varName)) {
-					//f(x,y)关于x或y求导
-					rlt = fOuter._d(varName);
-					return rlt;
-				} else {
-					//f(x,y)关于r或s求导
-					rlt = new FC(0.0);
-					for(String innerVarName : fOuter.getVarNames()) {
-						MathFun fInner = fInners.get(innerVarName);
-						if(fInner != null) {
-							MathFun rltOuter = fOuter._d(innerVarName);
-							if(!(rltOuter.isConstant()))
-								rltOuter = rltOuter.compose(fInners);
-							MathFun rltInner = fInner._d(varName);
-							//f_x * x_r + f_y * y_r
-							rlt = rlt.A(
-									rltOuter.M(rltInner)
-									);
-						}
-					}
-					return rlt;
-				}
-			}
-			@Override
-			public int getOpOrder() {
-				return fOuter.getOpOrder();
-			}
-			@Override
-			public String toString() {
-				String rlt = fOuter.toString();
-				for(Entry<String,MathFun> map : fInners.entrySet()) {
-					String names = map.getValue().getVarNames().toString();
-					rlt = rlt.replace(map.getKey(), 
-							map.getKey()+"("+names.substring(1,names.length()-1)+")");
-				}
-				return rlt;
-			}
-		};
+			return new FCompose(this, fInners);
 	}
-
 	
 	////////////////////////Operations////////////////////////////////////
 	
@@ -216,63 +111,7 @@ public abstract class AbstractMathFun implements MathFun {
 		} else if(f2.isConstant() && Math.abs(f2.apply()) < Constant.eps) {
 			return f1;
 		} else {
-			return new AbstractMathFun(Utils.mergeList(f1.getVarNames(), f2.getVarNames())) {
-				@Override
-				public double apply(Variable v) {
-					return f1.apply(v) + f2.apply(v);
-				}
-				
-				@Override
-				public double apply(Variable v, Map<Object,Object> cache) {
-//基本运算不需要cache，否则计算效率会更低					
-//					if(cache != null) {
-//						Double v1, v2;
-//						v1 = cache.get(f1);
-//						if(v1 == null) {
-//							v1 = f1.value(v,cache);
-//							cache.put(f1, v1);
-//						}
-//						v2 = cache.get(f2);
-//						if(v2 == null) {
-//							v2 = f2.value(v,cache);
-//							cache.put(f2, v2);
-//						}
-//						return v1 + v2;
-//					} else {
-//						return value(v);
-//					}
-					return f1.apply(v,cache) + f2.apply(v,cache);
-
-				}
-				
-				@Override
-				public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
-					int len = v.length();
-					double[] la = f1.applyAll(v,cache);
-					double[] ra = f2.applyAll(v,cache);
-					for(int i=0;i<len;i++) {
-						la[i] += ra[i];
-					}
-					return la;
-				}
-				
-				@Override
-				public MathFun _d(String varName) {
-					return f1._d(varName).A(f2._d(varName)).setVarNames(this.getVarNames());
-				}
-				@Override
-				public int getOpOrder() {
-					return OP_ORDER3;
-				}
-				@Override
-				public String toString() {
-					StringBuilder sb = new StringBuilder();
-					sb.append(f1.toString());
-					sb.append(" + ");
-					sb.append(f2.toString());
-					return sb.toString();
-				}
-			};
+			return new FAdd(f1, f2);
 		}
 	}
 	@Override
@@ -289,50 +128,7 @@ public abstract class AbstractMathFun implements MathFun {
 		} else if(f2.isConstant() && Math.abs(f2.apply()) < Constant.eps) {
 			return f1;
 		} else {
-			return new AbstractMathFun(Utils.mergeList(f1.getVarNames(), f2.getVarNames())) {
-				@Override
-				public double apply(Variable v) {
-					return f1.apply(v) - f2.apply(v);
-				}
-				
-				@Override
-				public double apply(Variable v, Map<Object,Object> cache) {
-					return f1.apply(v,cache) - f2.apply(v,cache);
-				}
-				
-				@Override
-				public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
-					int len = v.length();
-					double[] la = f1.applyAll(v,cache);
-					double[] ra = f2.applyAll(v,cache);
-					for(int i=0;i<len;i++) {
-						la[i] -= ra[i];
-					}
-					return la;
-				}
-				
-				@Override
-				public MathFun _d(String varName) {
-					return f1._d(varName).S(f2._d(varName)).setVarNames(this.getVarNames());
-				}
-				@Override
-				public int getOpOrder() {
-					return OP_ORDER3;
-				}
-				@Override
-				public String toString() {
-					StringBuilder sb = new StringBuilder();
-					if(! (f1.isConstant() && Math.abs(f1.apply()) < Constant.eps) ) {
-						sb.append(f1.toString());
-					}
-					sb.append(" - ");
-					if(f2.getOpOrder() >= OP_ORDER3)
-						sb.append("(").append(f2.toString()).append(")");
-					else
-						sb.append(f2.toString());
-					return sb.toString();
-				}
-			};
+			return new FSub(f1, f2);
 		}
 	}
 	@Override
@@ -354,54 +150,7 @@ public abstract class AbstractMathFun implements MathFun {
 		else if(f2.isConstant() && Math.abs(f2.apply()-1.0) < Constant.eps)
 			return f1;
 		else
-			return new AbstractMathFun(Utils.mergeList(f1.getVarNames(), f2.getVarNames())) {
-				@Override
-				public double apply(Variable v) {
-					return f1.apply(v) * f2.apply(v);
-				}
-				
-				@Override
-				public double apply(Variable v, Map<Object,Object> cache) {
-					return f1.apply(v,cache) * f2.apply(v,cache);
-
-				}
-				
-				@Override
-				public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
-					int len = v.length();
-					double[] la = f1.applyAll(v,cache);
-					double[] ra = f2.applyAll(v,cache);
-					for(int i=0;i<len;i++) {
-						la[i] *= ra[i];
-					}
-					return la;
-				}
-				
-				@Override
-				public MathFun _d(String varName) {
-					return 	f1._d(varName).M(f2).A(
-							f1.M(f2._d(varName))
-							).setVarNames(this.getVarNames());
-				}
-				@Override
-				public int getOpOrder() {
-					return OP_ORDER2;
-				}
-				@Override
-				public String toString() {
-					StringBuilder sb = new StringBuilder();
-					if(f1.getOpOrder() > OP_ORDER2)
-						sb.append("(").append(f1.toString()).append(")");
-					else
-						sb.append(f1.toString());
-					sb.append(" * ");
-					if(f2.getOpOrder() > OP_ORDER2)
-						sb.append("(").append(f2.toString()).append(")");
-					else
-						sb.append(f2.toString());
-					return sb.toString();
-				}
-			};
+			return new FMul(f1, f2);
 	}
 	@Override
 	public MathFun M(double g) {
@@ -422,52 +171,7 @@ public abstract class AbstractMathFun implements MathFun {
 		}  else if(f2.isConstant() && Math.abs(f2.apply()-1.0) < Constant.eps) {
 			return f1;
 		} else {
-			return new AbstractMathFun(Utils.mergeList(f1.getVarNames(), f2.getVarNames())) {
-				@Override
-				public double apply(Variable v) {
-					return f1.apply(v) / f2.apply(v);
-				}
-				
-				@Override
-				public double apply(Variable v, Map<Object,Object> cache) {
-					return f1.apply(v,cache) / f2.apply(v,cache);
-				}
-				
-				@Override
-				public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
-					int len = v.length();
-					double[] la = f1.applyAll(v,cache);
-					double[] ra = f2.applyAll(v,cache);
-					for(int i=0;i<len;i++) {
-						la[i] /= ra[i];
-					}
-					return la;
-				}
-				
-				@Override
-				public MathFun _d(String varName) {
-					return f1._d(varName).M(f2).S(f1.M(f2._d(varName)))
-							.D(f2.M(f2)).setVarNames(this.getVarNames());
-				}
-				@Override
-				public int getOpOrder() {
-					return OP_ORDER2;
-				}
-				@Override
-				public String toString() {
-					StringBuilder sb = new StringBuilder();
-					if(f1.getOpOrder() > OP_ORDER2)
-						sb.append("(").append(f1.toString()).append(")");
-					else
-						sb.append(f1.toString());
-					sb.append(" / ");
-					if(f2.getOpOrder() >= OP_ORDER2) //!!!
-						sb.append("(").append(f2.toString()).append(")");
-					else
-						sb.append(f2.toString());
-					return sb.toString();
-				}
-			};
+			return new FDiv(f1, f2);
 		}
 	}
 	@Override
@@ -526,4 +230,5 @@ public abstract class AbstractMathFun implements MathFun {
 	public boolean isConstant() {
 		return false;
 	}
+
 }

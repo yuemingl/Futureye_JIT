@@ -46,7 +46,7 @@ public interface Assembler {
 	 * 
 	 * @param diri
 	 */
-	void imposeDirichletCondition(Expr diri);
+	void imposeDirichletCondition(MathFun diri);
 	
 	/**
 	 * Impose Dirichlet boundary condition constraints for 

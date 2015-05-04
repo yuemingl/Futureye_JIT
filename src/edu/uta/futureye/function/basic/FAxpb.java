@@ -16,7 +16,7 @@ public class FAxpb extends AbstractMathFun {
 	protected String varName;
 
 	public FAxpb(double a, double b) {
-		varNames.add(Constant.x);
+		varNames.add(Constant.x);          
 		varName = Constant.x;
 		this.a = a;
 		this.b = b;

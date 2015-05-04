@@ -49,7 +49,7 @@ public interface WeakForm {
 	 * @param itemType
 	 * @return
 	 */
-	FEMFunc leftHandSide(Element e, ItemType itemType);
+	MathFun leftHandSide(Element e, ItemType itemType);
 	
 	/**
 	 * Right hand side of the weak form
@@ -57,7 +57,7 @@ public interface WeakForm {
 	 * @param itemType
 	 * @return
 	 */
-	FEMFunc rightHandSide(Element e, ItemType itemType);
+	MathFun rightHandSide(Element e, ItemType itemType);
 	
 	/**
 	 * Provide a pre-process function before calling leftHandSide(...) and rightHandSide(...) if necessary

@@ -1,6 +1,16 @@
 package edu.uta.futureye.function.basic;
 
+import static com.sun.org.apache.bcel.internal.generic.InstructionConstants.DALOAD;
+
 import java.util.Map;
+
+import com.sun.org.apache.bcel.internal.generic.ALOAD;
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
 
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
@@ -77,5 +87,14 @@ public class FX extends AbstractMathFun{
 	@Override
 	public String toString() {
 		return varName;
+	}
+
+	@Override
+	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp,
+			InstructionFactory factory, InstructionList il,
+			Map<String, Integer> argsMap, int argsStartPos) {
+		il.append(new ALOAD(argsStartPos));
+		il.append(new PUSH(cp, argsMap.get(varName)));
+		return il.append(DALOAD);
 	}
 }
