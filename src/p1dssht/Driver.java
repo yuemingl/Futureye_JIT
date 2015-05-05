@@ -14,7 +14,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinear1D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace;
@@ -74,23 +74,23 @@ public class Driver {
         mesh.computeNodeBelongsToElements();
 
         // Right Dirichlet boundary condition:
-        MathFun BCR = C(400.0);
+        MathFunc BCR = C(400.0);
         
         // Left Neumann boundary condition:
-        MathFun BCL = C0;
+        MathFunc BCL = C0;
 
         //Right hand side(RHS): q = -b*(4300/(b*x^2 + a + 200) + 21/10) + (8600*b^2*x^2)/(b*x^2 + a + 200)^2;
         //  To force T(x) = 1000-3750 x^2 = a + b x^2
         //   With T(0) = 1000, T(0.4) = 400
         //       Tx(0) = 0
         
-        MathFun XX = X.M(X);
-        MathFun q = C(3750.0).M(C(4300.0).D(C(-3750.0).M(XX).A(C(1020))).A(2.1))
+        MathFunc XX = X.M(X);
+        MathFunc q = C(3750.0).M(C(4300.0).D(C(-3750.0).M(XX).A(C(1020))).A(2.1))
         		.A(C(8600.0).M(14062500.0).M(XX).D(C(-3750.0).M(XX).A(C(1200.0)).M(C(-3750.0).M(XX).A(C(1200.0)))));
         System.out.println(q); //Print your expression
         
         //Mark border type
-        HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Dirichlet boundary of u
 		mapNTF.put(NodeType.Dirichlet, new AbstractMathFun("x") {
 			@Override
@@ -123,7 +123,7 @@ public class Driver {
 
     	WeakFormLaplace weakForm = new WeakFormLaplace();
     	
-    	MathFun k = new FC(1);
+    	MathFunc k = new FC(1);
     	
     	for(int i=0; i<maxIter; ++i) { //Iterate maxIter times
     		//The function setParam(Function k,Function c,Function g,Function d)

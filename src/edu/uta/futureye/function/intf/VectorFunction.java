@@ -71,7 +71,7 @@ public interface VectorFunction {
 	 * @param index
 	 * @param value
 	 */
-	void set(int index, MathFun value);
+	void set(int index, MathFunc value);
 	
 	/**
 	 * Get function at <tt>index</tt>
@@ -81,7 +81,7 @@ public interface VectorFunction {
 	 * @param index
 	 * @return
 	 */
-	MathFun get(int index);
+	MathFunc get(int index);
 
 	/**
 	 * Composite vector valued function
@@ -91,7 +91,7 @@ public interface VectorFunction {
 	 * @param fInners
 	 * @return
 	 */
-	VectorFunction compose(Map<String,MathFun> fInners);
+	VectorFunction compose(Map<String,MathFunc> fInners);
 
 	///////////////////////////////////////////////
 	
@@ -163,7 +163,7 @@ public interface VectorFunction {
 	 * @param <code>\vec{g}(x) = (g1(x), g2(x), ..., gn(x))</code>
 	 * @return
 	 */
-	MathFun dot(VectorFunction g);
+	MathFunc dot(VectorFunction g);
 	
 	/**
 	 * Dot product, returns
@@ -175,7 +175,7 @@ public interface VectorFunction {
 	 * @param <code>\vec{g} = (g1, g2, ..., gn)</code>
 	 * @return
 	 */
-	MathFun dot(Vector g);	
+	MathFunc dot(Vector g);	
 	
 	////////////////////////////////////////////////////
 	

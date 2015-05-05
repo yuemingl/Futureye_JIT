@@ -2,7 +2,7 @@ package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
@@ -31,7 +31,7 @@ public class FLinear1D  extends AbstractMathFun{
 	}
 
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		if(this.getVarNames().contains(varName))
 			return new FC((y2-y1)/(x2-x1));
 		else

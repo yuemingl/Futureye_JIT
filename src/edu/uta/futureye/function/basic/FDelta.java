@@ -2,7 +2,7 @@ package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 
 public class FDelta extends AbstractMathFun {
 	Variable x0;
@@ -58,7 +58,7 @@ public class FDelta extends AbstractMathFun {
 	}
 	
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return null;
 	}
 	

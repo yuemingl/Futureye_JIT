@@ -22,7 +22,7 @@ import edu.uta.futureye.function.basic.FPolynomial1D;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
@@ -34,9 +34,9 @@ import static edu.uta.futureye.function.operator.FMath.*;
 public class FunctionTest {
 	
 	public static void constantTest() {
-		MathFun c0 = FC.C0;
-		MathFun c1 = FC.C1;
-		MathFun fx = FX.fx;
+		MathFunc c0 = FC.C0;
+		MathFunc c1 = FC.C1;
+		MathFunc fx = FX.fx;
 		
 		System.out.println(c0.A(c0));
 		System.out.println(c1.A(c1));
@@ -106,25 +106,25 @@ public class FunctionTest {
 		FC c3 = new FC(3.0);
 		
 		FX fi = FX.fx;
-		MathFun ftest1 = c3.M(fi).A(c2);
+		MathFunc ftest1 = c3.M(fi).A(c2);
 		System.out.println("ftest1 = "+ftest1);
-		MathFun ftest2 = c1.M(fi).A(c0);
+		MathFunc ftest2 = c1.M(fi).A(c0);
 		System.out.println("ftest2 = "+ftest2);
-		MathFun ftest3 = c1.D(fi).A(c3);
+		MathFunc ftest3 = c1.D(fi).A(c3);
 		System.out.println("ftest3 = "+ftest3);
 		
 		//f(x) = c1*l1(x)+c2
 		FLinear1D l1 = new FLinear1D(1,5,2,20);
 		System.out.println(l1);
 
-		MathFun l2 = c1.M(l1).A(c2);
+		MathFunc l2 = c1.M(l1).A(c2);
 		System.out.println(l2);
 		Variable var = new Variable(0.5);
 		System.out.println(l2.apply(var));
 		
-		MathFun ff = c1.D(fi).A(c3);
-		MathFun ff_dx = ff._d("x");
-		MathFun ff_dxx = ff_dx._d("x");
+		MathFunc ff = c1.D(fi).A(c3);
+		MathFunc ff_dx = ff._d("x");
+		MathFunc ff_dxx = ff_dx._d("x");
 		System.out.println("ff = "+ff);
 		System.out.println("ff_dx = "+ff_dx);
 		System.out.println("ff_dxx = "+ff_dxx);
@@ -138,24 +138,24 @@ public class FunctionTest {
 		coef.add(6.0);
 		FPolynomial1D fp = new FPolynomial1D(coef);
 		System.out.println(fp.apply(new Variable(2.0)));
-		MathFun fp_x2 = fp._d("x")._d("x");
+		MathFunc fp_x2 = fp._d("x")._d("x");
 		System.out.println(fp_x2.apply(new Variable(2.0)));
-		MathFun fp_x2d = (MathFun)fp_x2;
-		MathFun fp_x3 = fp_x2d._d("X");
+		MathFunc fp_x2d = (MathFunc)fp_x2;
+		MathFunc fp_x3 = fp_x2d._d("X");
 		System.out.println(fp_x3.apply(new Variable(3.0)));
 		
-		MathFun power = FMath.pow(c2, c3);
+		MathFunc power = FMath.pow(c2, c3);
 		System.out.println(power+"="+power.apply(null));
 		
 	}
 	
 	public static void testOperation() {
-		MathFun fx = FX.fx;
+		MathFunc fx = FX.fx;
 		//f(x)=2*x+3
-		MathFun f1 = new FAxpb(2.0,0.0);
-		MathFun f2 = new FAxpb(2.0,3.0);
-		MathFun f3 = new FAxpb(0.0,3.0);
-		MathFun f4 = new FAxpb(0.0,0.0);
+		MathFunc f1 = new FAxpb(2.0,0.0);
+		MathFunc f2 = new FAxpb(2.0,3.0);
+		MathFunc f3 = new FAxpb(0.0,3.0);
+		MathFunc f4 = new FAxpb(0.0,0.0);
 		System.out.println("f(x)="+f2);
 		System.out.println(fx.M(f1));
 		System.out.println(fx.M(f2));
@@ -166,9 +166,9 @@ public class FunctionTest {
 	}
 	
 	public static void severalVariableFunctions() {
-		MathFun fx = FX.fx;
-		MathFun fy = FX.fy;
-		MathFun f = FC.c(0.25).M(FC.C1.S(fx)).M(FC.C1.S(fy));
+		MathFunc fx = FX.fx;
+		MathFunc fy = FX.fy;
+		MathFunc f = FC.c(0.25).M(FC.C1.S(fx)).M(FC.C1.S(fy));
 		System.out.println(f);
 		Variable v = new Variable("x",0.5).set("y", 0.5);
 		System.out.println(f.apply(v));
@@ -222,13 +222,13 @@ public class FunctionTest {
 		varNames.add("y");
 		
 		VectorFunction f = new AbstractVectorFunction(3,"x","y") {
-			protected MathFun[] data = new MathFun[dim];
+			protected MathFunc[] data = new MathFunc[dim];
 			@Override
-			public void set(int index, MathFun value) {
+			public void set(int index, MathFunc value) {
 				data[index] = value;
 			}
 			@Override
-			public MathFun get(int index) {
+			public MathFunc get(int index) {
 				return data[index];
 			}
 		};
@@ -241,16 +241,16 @@ public class FunctionTest {
 	
 	public static void testLinearCombination() {
 		double[] cs = new double[3];
-		MathFun[] fs = new MathFun[3];
+		MathFunc[] fs = new MathFunc[3];
 		cs[0] = 1;
 		cs[1] = 2;
 		cs[2] = 3;
 		fs[0] = FX.fx;
 		fs[1] = FX.fy;
 		fs[2] = FX.fz;
-		MathFun lc = FMath.linearCombination(cs, fs);
+		MathFunc lc = FMath.linearCombination(cs, fs);
 		System.out.println(lc);
-		MathFun lcd = lc._d("x");
+		MathFunc lcd = lc._d("x");
 		System.out.println(lcd);
 		VariableArray va = new VariableArray();
 		double[] x = {10, 10};
@@ -274,14 +274,14 @@ public class FunctionTest {
 	
 	public static void testForScala() {
 	    //f1 = x^2 + 2x + 2
-	    MathFun f1 = X.M(X).A( X.A(1.0).M(2.0) );
+	    MathFunc f1 = X.M(X).A( X.A(1.0).M(2.0) );
 	    System.out.println(f1);
 	    System.out.println(f1.apply(new Variable(2.0)));
 	    System.out.println(f1._d("x"));
 	    System.out.println(f1._d("x").apply(new Variable(3.0)));
 
 	    //f2 = 3x^2 + 4y + 1
-	    MathFun f2 = new AbstractMathFun("x","y") {
+	    MathFunc f2 = new AbstractMathFun("x","y") {
 	    	@Override
 	    	public double apply(Variable v) {
 		          double x = v.get("x");
@@ -289,7 +289,7 @@ public class FunctionTest {
 		          return 3*x*x + 4*y + 1; 
 	    	}
 	    	@Override
-	    	public MathFun _d(String vn) {
+	    	public MathFunc _d(String vn) {
 	    		if (vn == "x") return C(6).M(X);
 	    		else if(vn == "y") return C(4);
 	    		else throw new FutureyeException("variable name="+vn);
@@ -333,7 +333,7 @@ public class FunctionTest {
 	FAxpb f = new FAxpb(2.0,1.0);
 	double v = f.apply(new Variable("x",3.0));
 	System.out.println(v);
-    MathFun df = f._d("x");
+    MathFunc df = f._d("x");
     System.out.println(df);
 	
 		

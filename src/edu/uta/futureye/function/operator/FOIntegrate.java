@@ -5,7 +5,7 @@ import java.util.HashMap;
 import edu.uta.futureye.function.VN;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 
 /**
  * Function Operator FOIntegrate: 
@@ -101,7 +101,7 @@ public class FOIntegrate{
 	 * @param order
 	 * @return Function
 	 */	
-	public static double intOnTriangleRefElement(MathFun integrand, int order) {
+	public static double intOnTriangleRefElement(MathFunc integrand, int order) {
 		double rlt = 0.0;
 		if(order == 2) {
 			Variable v = new Variable();
@@ -163,7 +163,7 @@ public class FOIntegrate{
 	 * @param order
 	 * @return
 	 */
-	public static double intOnLinearRefElement(MathFun integrand, int order) {
+	public static double intOnLinearRefElement(MathFunc integrand, int order) {
 		double a1_1 = 0.0;
 		double h1_1 = 2.0;
 		
@@ -232,7 +232,7 @@ public class FOIntegrate{
 	 * @param order
 	 * @return
 	 */
-	public static double intOnRectangleRefElement(MathFun integrand, int order) {
+	public static double intOnRectangleRefElement(MathFunc integrand, int order) {
 		double a1_1 = 0.0;
 		double h1_1 = 4.0;
 		double a2 = 0.577350269189626;
@@ -299,7 +299,7 @@ public class FOIntegrate{
 	 * @param order
 	 * @return
 	 */
-	public static double intOnTetrahedraRefElement(MathFun integrand, int order) {
+	public static double intOnTetrahedraRefElement(MathFunc integrand, int order) {
 		double a1_1 = 0.25;
 		double h1_1 = 1;
 		
@@ -330,7 +330,7 @@ public class FOIntegrate{
 		return rlt;
 	}
 	
-	public static double intOnHexahedraRefElement(MathFun integrand, int order) {
+	public static double intOnHexahedraRefElement(MathFunc integrand, int order) {
 		Variable v = new Variable();
 		VariableArray valAry = new VariableArray();
 		double rlt = 0.0;

@@ -7,7 +7,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.container.DOFList;
 
@@ -37,10 +37,10 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 	}
 	
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
-			MathFun integrand = null;
+			MathFunc integrand = null;
 			if(eps > 0.0) {
 				integrand = u._d("x").M(v._d("x")).A(
 						    u._d("y").M(v._d("y"))).M(eps).A(
@@ -54,23 +54,23 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			MathFun rlt = new FC(0.0);
+			MathFunc rlt = new FC(0.0);
 			int nNode = e.nodes.size();
 			for(int i=1;i<=nNode;i++) {
 				DOFList dofListI = e.getNodeDOFList(i);
 				for(int k=1;k<=dofListI.size();k++) {
 					DOF dofI = dofListI.at(k);
 					Variable var = Variable.createFrom(g_U, (Node)dofI.getOwner(), dofI.getGlobalIndex());
-					MathFun PValue = new FC(g_U.apply(var));
+					MathFunc PValue = new FC(g_U.apply(var));
 					ScalarShapeFunction shape = dofI.getSSF();
 					//以前版本需要调用shapeFun.asignElement(e)，现在版本不需要调用了
 					rlt = rlt.A(PValue.M(shape._d(varName)));
 				}
 			}
 			
-			MathFun integrand = rlt.M(v);
+			MathFunc integrand = rlt.M(v);
 			return integrand;
 		}
 		return null;

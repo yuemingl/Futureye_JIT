@@ -8,7 +8,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
@@ -31,30 +31,30 @@ public class WeakFormBuilder {
 		RHS_Border  //Right Hand Side, integration on Border
 		};
 	
-	Map<String, MathFun> param = new HashMap<String, MathFun>();
+	Map<String, MathFunc> param = new HashMap<String, MathFunc>();
 	
-	public WeakFormBuilder(MathFun ...f) {
+	public WeakFormBuilder(MathFunc ...f) {
 		for(int i=0;i<f.length;i++)
 			this.addParamters(f[i]);
 	}
 	
-	public WeakFormBuilder addParamters(MathFun f) {
+	public WeakFormBuilder addParamters(MathFunc f) {
 		if(f.getFunName() == null)
 			throw new FutureyeException("Please specify function name!");
 		param.put(f.getFunName(), f);
 		return this;
 	}
 	
-	public WeakFormBuilder addParam(String fName, MathFun f) {
+	public WeakFormBuilder addParam(String fName, MathFunc f) {
 		param.put(fName, f);
 		return this;
 	}
 	
-	public MathFun getParam(String fName, Element e) {
-		MathFun f = param.get(fName);
+	public MathFunc getParam(String fName, Element e) {
+		MathFunc f = param.get(fName);
 		if(f == null)
 			throw new FutureyeException("Can NOT find the parameter "+fName+"!");
-		MathFun ff = Utils.interpolateOnElement(f,e);
+		MathFunc ff = Utils.interpolateOnElement(f,e);
 		return ff;
 	}
 	
@@ -122,32 +122,32 @@ public class WeakFormBuilder {
 	 * @param type
 	 * @return
 	 */
-	public MathFun makeExpression(Element e, Type type) {
+	public MathFunc makeExpression(Element e, Type type) {
 		throw new FutureyeException("Override this function to implement your Weak Form!");
 	}
 	
 	public WeakForm getScalarWeakForm() {
 		WeakForm wf = new AbstractScalarWeakForm() {
 			@Override
-			public MathFun leftHandSide(Element e, ItemType itemType) {
+			public MathFunc leftHandSide(Element e, ItemType itemType) {
 				if(itemType==ItemType.Domain)  {
 					//Integrand part of Weak Form on element e
-					MathFun integrand = makeExpression(e,Type.LHS_Domain);
+					MathFunc integrand = makeExpression(e,Type.LHS_Domain);
 					return integrand;
 				} else if(itemType==ItemType.Border) {//Neumann border integration on LHS
-					MathFun borderIntegrand = makeExpression(e,Type.LHS_Border);
+					MathFunc borderIntegrand = makeExpression(e,Type.LHS_Border);
 					return borderIntegrand;
 				}
 				return null;
 			}
 
 			@Override
-			public MathFun rightHandSide(Element e, ItemType itemType) {
+			public MathFunc rightHandSide(Element e, ItemType itemType) {
 				if(itemType==ItemType.Domain)  {
-					MathFun integrand = makeExpression(e,Type.RHS_Domain);
+					MathFunc integrand = makeExpression(e,Type.RHS_Domain);
 					return integrand;
 				} else if(itemType==ItemType.Border) {
-					MathFun borderIntegrand = makeExpression(e,Type.RHS_Border);
+					MathFunc borderIntegrand = makeExpression(e,Type.RHS_Border);
 					return borderIntegrand;
 				}
 				return null;	
@@ -174,25 +174,25 @@ public class WeakFormBuilder {
 	public WeakForm getVectorWeakForm() {
 		WeakForm wf = new AbstractVectorWeakForm() {
 			@Override
-			public MathFun leftHandSide(Element e, ItemType itemType) {
+			public MathFunc leftHandSide(Element e, ItemType itemType) {
 				if(itemType==ItemType.Domain)  {
 					//Integrand part of Weak Form on element e
-					MathFun integrand = makeExpression(e,Type.LHS_Domain);
+					MathFunc integrand = makeExpression(e,Type.LHS_Domain);
 					return integrand;
 				} else if(itemType==ItemType.Border) {//Neumann border integration on LHS
-					MathFun borderIntegrand = makeExpression(e,Type.LHS_Border);
+					MathFunc borderIntegrand = makeExpression(e,Type.LHS_Border);
 					return borderIntegrand;
 				}
 				return null;
 			}
 
 			@Override
-			public MathFun rightHandSide(Element e, ItemType itemType) {
+			public MathFunc rightHandSide(Element e, ItemType itemType) {
 				if(itemType==ItemType.Domain)  {
-					MathFun integrand = makeExpression(e,Type.RHS_Domain);
+					MathFunc integrand = makeExpression(e,Type.RHS_Domain);
 					return integrand;
 				} else if(itemType==ItemType.Border) {
-					MathFun borderIntegrand = makeExpression(e,Type.RHS_Border);
+					MathFunc borderIntegrand = makeExpression(e,Type.RHS_Border);
 					return borderIntegrand;
 				}
 				return null;	
@@ -222,15 +222,15 @@ public class WeakFormBuilder {
 	public static void main(String[] args) {
 		WeakFormBuilder wfb = new WeakFormBuilder() {
 			@Override
-			public MathFun makeExpression(Element e, Type type) {
+			public MathFunc makeExpression(Element e, Type type) {
 				//example: equals to class WeakFormLaplace2D
 				ScalarShapeFunction u = getScalarTrial();
 				ScalarShapeFunction v = getScalarTest();
-				MathFun fk = getParam("k",e);
-				MathFun fc = getParam("c",e);
-				MathFun fd = getParam("d",e);
-				MathFun ff = getParam("f",e);
-				MathFun fq = getParam("q",e);
+				MathFunc fk = getParam("k",e);
+				MathFunc fc = getParam("c",e);
+				MathFunc fd = getParam("d",e);
+				MathFunc ff = getParam("f",e);
+				MathFunc fq = getParam("q",e);
 				
 				switch(type) {
 					case LHS_Domain:

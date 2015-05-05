@@ -10,7 +10,7 @@ import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
@@ -65,7 +65,7 @@ public class DuDx extends AbstractMathFun implements ElementDependentFunction {
 	protected Mesh mesh = null;
 	protected Vector2Function u = null;
 	protected String x = null;
-	protected MathFun fdu2 = null;
+	protected MathFunc fdu2 = null;
 	
 	/**
 	 * 
@@ -121,7 +121,7 @@ public class DuDx extends AbstractMathFun implements ElementDependentFunction {
 			double[] a = Utils.computeBilinearFunctionCoef(e.nodes.toArray(new Point[0]), f);
 			//d(a1 + a2*x + a3*y + a4*x*y)/dx
 			//d(a1 + a2*x + a3*y + a4*x*y)/dy
-			MathFun du = null;
+			MathFunc du = null;
 			if(x.equals("x")) {
 				du = new FXY(0.0,a[3],a[1]);
 			} else if(x.equals("y")) {

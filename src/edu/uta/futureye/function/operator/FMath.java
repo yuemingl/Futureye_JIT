@@ -10,7 +10,7 @@ import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
@@ -37,21 +37,21 @@ public class FMath {
 	public final static FX S = new FX(Constant.s); 
 	public final static FX T = new FX(Constant.t); 
 	
-	public static MathFun C(double v) {
+	public static MathFunc C(double v) {
 		return FC.c(v);
 	}
 	
 	
 	//--- Basic operations ------------------------
 	
-	public static MathFun sqrt(final MathFun f) {
+	public static MathFunc sqrt(final MathFunc f) {
 		return new AbstractMathFun(f.getVarNames()) {
 			@Override
 			public double apply(Variable v) {
 				return Math.sqrt(f.apply(v));
 			}
 			@Override
-			public MathFun _d(String varName) {
+			public MathFunc _d(String varName) {
 				return FC.c(0.5).M(pow(f,-0.5)).M(f._d(varName));
 			}
 			@Override
@@ -72,14 +72,14 @@ public class FMath {
 	 * @param p
 	 * @return
 	 */
-	public static MathFun pow(final MathFun f, final double p) {
+	public static MathFunc pow(final MathFunc f, final double p) {
 		return new AbstractMathFun(f.getVarNames()) {
 			@Override
 			public double apply(Variable v) {
 				return Math.pow(f.apply(v),p);
 			}
 			@Override
-			public MathFun _d(String varName) {
+			public MathFunc _d(String varName) {
 				return FC.c(p).M(pow(f,p-1)).M(f._d(varName));
 			}
 			@Override
@@ -101,7 +101,7 @@ public class FMath {
 	 * @param f2
 	 * @return
 	 */
-	public static MathFun pow(final MathFun f1, final MathFun f2) {
+	public static MathFunc pow(final MathFunc f1, final MathFunc f2) {
 		return new AbstractMathFun(Utils.mergeList(f1.getVarNames(), f2.getVarNames())) {
 			@Override
 			public double apply(Variable v) {
@@ -120,7 +120,7 @@ public class FMath {
 		};
 	}	
 	
-	public static MathFun abs(final MathFun f) {
+	public static MathFunc abs(final MathFunc f) {
 		return new AbstractMathFun(f.getVarNames()) {
 			@Override
 			public double apply(Variable v) {
@@ -143,11 +143,11 @@ public class FMath {
 	 * @param fi
 	 * @return
 	 */
-	public static MathFun sum(MathFun ...fi) {
+	public static MathFunc sum(MathFunc ...fi) {
 		if(fi==null || fi.length==0) {
 			throw new FutureyeException("Check parameter f="+fi);
 		}
-		MathFun rlt = fi[0];
+		MathFunc rlt = fi[0];
 		for(int i=1;i<fi.length;i++) {
 			rlt = rlt.A(fi[i]);
 		}
@@ -163,18 +163,18 @@ public class FMath {
 	 * @param f2
 	 * @return
 	 */
-	public static MathFun linearCombination(double c1, MathFun f1,
-			double c2,MathFun f2) {
+	public static MathFunc linearCombination(double c1, MathFunc f1,
+			double c2,MathFunc f2) {
 		return new FC(c1).M(f1).A(new FC(c2).M(f2));
 	}
 	
 	static class FLinearCombination extends AbstractMathFun{
 		double []ci;
-		MathFun []fi;
-		public FLinearCombination(double []ci, MathFun []fi) {
+		MathFunc []fi;
+		public FLinearCombination(double []ci, MathFunc []fi) {
 			int len = ci.length;
 			this.ci = new double[len];
-			this.fi = new MathFun[len];
+			this.fi = new MathFunc[len];
 			for(int i=0;i<fi.length;i++) {
 				this.ci[i] = ci[i];
 				this.fi[i] = fi[i];
@@ -216,8 +216,8 @@ public class FMath {
 		}
 		
 		@Override
-		public MathFun _d(String varName) {
-			MathFun[] fdi = new MathFun[fi.length];
+		public MathFunc _d(String varName) {
+			MathFunc[] fdi = new MathFunc[fi.length];
 			for(int i=0;i<fi.length;i++) {
 				fdi[i] = fi[i]._d(varName).setVarNames(fi[i].getVarNames());
 			}
@@ -255,7 +255,7 @@ public class FMath {
 	 * @param fi
 	 * @return
 	 */
-	public static MathFun linearCombination(double []ci, MathFun []fi) {
+	public static MathFunc linearCombination(double []ci, MathFunc []fi) {
 		if(ci==null || ci.length==0 || fi==null || fi.length==0) {
 			throw new FutureyeException("Check parameters ci="+ci+", fi="+fi);
 		} else if(ci.length != fi.length) {
@@ -277,7 +277,7 @@ public class FMath {
 	 * @param fun
 	 * @return
 	 */
-	public static VectorFunction grad(MathFun fun) {
+	public static VectorFunction grad(MathFunc fun) {
 		List<String> names = fun.getVarNames();
 		VectorFunction rlt = new SpaceVectorFunction(names.size());
 		for(int i=0;i<names.size();i++)
@@ -292,7 +292,7 @@ public class FMath {
 	 * @param vars
 	 * @return
 	 */
-	public static VectorFunction grad(MathFun fun, String ...varNames) {
+	public static VectorFunction grad(MathFunc fun, String ...varNames) {
 		VectorFunction rlt = new SpaceVectorFunction(varNames.length);
 		for(int i=0;i<varNames.length;i++)
 			rlt.set(i+1, fun._d(varNames[i]));
@@ -307,7 +307,7 @@ public class FMath {
 	 * @param varNames
 	 * @return
 	 */
-	public static VectorFunction grad(MathFun fun,ObjList<String> varNames) {
+	public static VectorFunction grad(MathFunc fun,ObjList<String> varNames) {
 		VectorFunction rlt = new SpaceVectorFunction(varNames.size());
 		for(int i=1;i<=varNames.size();i++)
 			rlt.set(i, fun._d(varNames.at(i)));
@@ -320,11 +320,11 @@ public class FMath {
 	 * @param fun
 	 * @return
 	 */
-	public static MathFun div(VectorFunction vFun) {
+	public static MathFunc div(VectorFunction vFun) {
 		int dim = vFun.getDim();
-		MathFun rlt = FC.C0;
+		MathFunc rlt = FC.C0;
 		for(int i=1; i<=dim; i++) {
-			MathFun fd = (MathFun)vFun.get(i);
+			MathFunc fd = (MathFunc)vFun.get(i);
 			rlt = rlt.A(fd._d(vFun.varNames().get(i-1)));
 		}
 		return rlt;
@@ -338,10 +338,10 @@ public class FMath {
 	 * @param varNames
 	 * @return
 	 */
-	public static MathFun div(VectorFunction vFun,String ...varNames) {
-		MathFun rlt = new FC(0.0);
+	public static MathFunc div(VectorFunction vFun,String ...varNames) {
+		MathFunc rlt = new FC(0.0);
 		for(int i=0;i<varNames.length;i++) {
-			MathFun fd = (MathFun)vFun.get(i+1);
+			MathFunc fd = (MathFunc)vFun.get(i+1);
 			rlt = rlt.A(fd._d(varNames[i]));
 		}
 		return rlt;
@@ -355,24 +355,24 @@ public class FMath {
 	 * @param varNames
 	 * @return
 	 */
-	public static MathFun div(VectorFunction vFun,ObjList<String> varNames) {
-		MathFun rlt = new FC(0.0);
+	public static MathFunc div(VectorFunction vFun,ObjList<String> varNames) {
+		MathFunc rlt = new FC(0.0);
 		for(int i=1;i<=varNames.size();i++) {
-			MathFun fd = (MathFun)vFun.get(i);
+			MathFunc fd = (MathFunc)vFun.get(i);
 			rlt = rlt.A(fd._d(varNames.at(i)));
 		}
 		return rlt;
 	}
 	
-	public static MathFun curl(VectorFunction vFun) {
+	public static MathFunc curl(VectorFunction vFun) {
 		//TODO
 		return null;
 	}
-	public static MathFun curl(VectorFunction vFun, String ...varNames) {
+	public static MathFunc curl(VectorFunction vFun, String ...varNames) {
 		//TODO
 		return null;
 	}	
-	public static MathFun curl(VectorFunction vFun, ObjList<String> varNames) {
+	public static MathFunc curl(VectorFunction vFun, ObjList<String> varNames) {
 		//TODO
 		return null;
 	}

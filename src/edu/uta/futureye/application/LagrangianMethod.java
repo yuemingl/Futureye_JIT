@@ -18,7 +18,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -221,8 +221,8 @@ public class LagrangianMethod {
 		//\nabla{lnu0}
 		//Function b1 = FOBasic.Divi(fu0_x,fu0);
 		//Function b2 = FOBasic.Divi(fu0_y,fu0);
-		MathFun b1 = new Vector2Function(lnu0_x);
-		MathFun b2 = new Vector2Function(lnu0_y);
+		MathFunc b1 = new Vector2Function(lnu0_x);
+		MathFunc b2 = new Vector2Function(lnu0_y);
 		plotFunction(mesh, b1, "b1_"+s_i+".dat");
 		plotFunction(mesh, b2, "b2_"+s_i+".dat");
 		
@@ -235,12 +235,12 @@ public class LagrangianMethod {
 				FC.c(2.0).M(b2));
 		
 		//q = d = 1 + \partial_{n}{lnu_0}
-		MathFun param_qd = FC.c(1.0).A(new DuDn(b1, b2, null));
+		MathFunc param_qd = FC.c(1.0).A(new DuDn(b1, b2, null));
 		weakForm.setRobin(FC.c(-1.0).M(param_qd),
 				FC.c(-1.0).M(param_qd));
 
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -295,8 +295,8 @@ public class LagrangianMethod {
 						new SparseVectorHashMap(a.getDim(),k*k)))));
 		
 		//\nabla{lnu0}
-		MathFun b1 = fu0_x.D(fu0);
-		MathFun b2 = fu0_y.D(fu0);
+		MathFunc b1 = fu0_x.D(fu0);
+		MathFunc b2 = fu0_y.D(fu0);
 		WeakFormGCM weakForm = new WeakFormGCM();
 
 		//(v - g)_\partial{\Omega} 
@@ -320,7 +320,7 @@ public class LagrangianMethod {
 		}
 		System.out.println("v-g on border norm -------------> "+v_g2.norm2());
 		br.println("v-g on border norm = "+v_g2.norm2());
-		MathFun fv_g = new Vector2Function(v_g);
+		MathFunc fv_g = new Vector2Function(v_g);
 
 		weakForm.setF(FC.c(0.0));
 		//Test: v_g在整个区域上都已知
@@ -335,7 +335,7 @@ public class LagrangianMethod {
 		
 		
 		plotFunction(mesh, fv_g, "Lagrangian_v_g"+s_i+".dat");
-		MathFun param_d = FC.c(1.0).S(new DuDn(b1, b2, null));
+		MathFunc param_d = FC.c(1.0).S(new DuDn(b1, b2, null));
 		
 		//q=v-g_tidle, d=\partial_{n}{lnu_0}
 		//Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
@@ -346,7 +346,7 @@ public class LagrangianMethod {
 		//		FMath.Mult(FC.c(-1.0), param_d));
 		
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -374,7 +374,7 @@ public class LagrangianMethod {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
 	}
 		
-	public static void plotFunction(Mesh mesh, MathFun fun, String fileName) {
+	public static void plotFunction(Mesh mesh, MathFunc fun, String fileName) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();

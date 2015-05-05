@@ -15,7 +15,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -54,7 +54,7 @@ public class VariationGaussNewtonDOT2 {
 	ModelDOT modelGuess = new ModelDOT();
 
 
-    MathFun diri = null;
+    MathFunc diri = null;
     
     //对应每个光源s_i的参数，包括测量数据
     public static class ParamOfLightSource {
@@ -136,7 +136,7 @@ public class VariationGaussNewtonDOT2 {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
 	}
 
-	public static void plotFunction(Mesh mesh, MathFun fun, String fileName) {
+	public static void plotFunction(Mesh mesh, MathFunc fun, String fileName) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
@@ -165,8 +165,8 @@ public class VariationGaussNewtonDOT2 {
         mesh.computeNeighborNodes();
 
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
         
@@ -199,8 +199,8 @@ public class VariationGaussNewtonDOT2 {
         mesh.computeNeighborNodes();
 
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
         
@@ -283,12 +283,12 @@ public class VariationGaussNewtonDOT2 {
 			Vector v, Vector z) {
 		Vector v_x = Tools.computeDerivative(mesh, v, "x");
 		Vector v_y = Tools.computeDerivative(mesh, v, "x");
-		MathFun b1 = new Vector2Function(v_x);
-		MathFun b2 = new Vector2Function(v_y);
+		MathFunc b1 = new Vector2Function(v_x);
+		MathFunc b2 = new Vector2Function(v_y);
 		WeakFormGCMDual weakForm = new WeakFormGCMDual();
 
 		Vector v_g = FMath.axpy(-1.0, z, v);
-		MathFun fv_g = new Vector2Function(v_g);
+		MathFunc fv_g = new Vector2Function(v_g);
 		plotFunction(mesh, fv_g, String.format("v_g%02d.dat",s_i));
 
 		weakForm.setF(fv_g.M(FC.c(-1.0)));
@@ -301,7 +301,7 @@ public class VariationGaussNewtonDOT2 {
 			);
 		
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 

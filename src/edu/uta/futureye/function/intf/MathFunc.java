@@ -26,7 +26,7 @@ import edu.uta.futureye.util.FutureyeException;
  * @author liuyueming
  *
  */
-public interface MathFun {
+public interface MathFunc {
 	/**
 	 * Return function value at variable v
 	 * <p>
@@ -72,7 +72,7 @@ public interface MathFun {
 	 * @param varNames
 	 * @return TODO
 	 */
-	MathFun setVarNames(List<String> varNames);
+	MathFunc setVarNames(List<String> varNames);
 	
 	/**
 	 * Return all variable names of the function
@@ -89,7 +89,7 @@ public interface MathFun {
 	 * @param g
 	 * @return f+g, f==this
 	 */
-	MathFun A(MathFun g);
+	MathFunc A(MathFunc g);
 	
 	/**
 	 * Add
@@ -97,7 +97,7 @@ public interface MathFun {
 	 * @param g
 	 * @return f+g, f==this
 	 */
-	MathFun A(double g);
+	MathFunc A(double g);
 	
 	/**
 	 * Subtract
@@ -105,7 +105,7 @@ public interface MathFun {
 	 * @param g
 	 * @return f-g, f==this
 	 */
-	MathFun S(MathFun g);
+	MathFunc S(MathFunc g);
 	
 	/**
 	 * Subtract
@@ -113,7 +113,7 @@ public interface MathFun {
 	 * @param g
 	 * @return f-g, f==this
 	 */
-	MathFun S(double g);
+	MathFunc S(double g);
 	
 	/**
 	 * Multiply
@@ -121,7 +121,7 @@ public interface MathFun {
 	 * @param g
 	 * @return f*g, f==this
 	 */
-	MathFun M(MathFun g);
+	MathFunc M(MathFunc g);
 	
 	/**
 	 * Multiply
@@ -129,7 +129,7 @@ public interface MathFun {
 	 * @param g
 	 * @return f*g, f==this
 	 */
-	MathFun M(double g);
+	MathFunc M(double g);
 	
 	/**
 	 * Divide
@@ -137,7 +137,7 @@ public interface MathFun {
 	 * @param g
 	 * @return f/g, f==this
 	 */
-	MathFun D(MathFun g);
+	MathFunc D(MathFunc g);
 	
 	/**
 	 * Divide
@@ -145,7 +145,7 @@ public interface MathFun {
 	 * @param g
 	 * @return f/g, f==this
 	 */	
-	MathFun D(double g);
+	MathFunc D(double g);
 	
 	/**
 	 * Composition function (复合函数)
@@ -169,7 +169,7 @@ public interface MathFun {
 	 * @param fInners: Variable map e.g.[ x = x(r,s), y = y(r,s) ]
 	 * @return composed function e.g. f = f(x,y) = f( x(r,s),y(r,s) )
 	 */
-	MathFun compose(Map<String,MathFun> fInners);
+	MathFunc compose(Map<String,MathFunc> fInners);
 	
 	/**
 	 * First derivative with respect to <code>varName</code> 
@@ -181,7 +181,7 @@ public interface MathFun {
 	 * @param varName
 	 * @return
 	 */
-	MathFun _d(String varName);
+	MathFunc _d(String varName);
 
 	
 	/**
@@ -211,7 +211,7 @@ public interface MathFun {
 	 * 
 	 * @return
 	 */
-	MathFun copy();
+	MathFunc copy();
 	
 	/**
 	 * Return the expression (a string) of the function
@@ -237,7 +237,7 @@ public interface MathFun {
 	 * @param name
 	 * @return
 	 */
-	MathFun setFunName(String name);
+	MathFunc setFunName(String name);
 	
 	/**
 	 * Definition of operand order

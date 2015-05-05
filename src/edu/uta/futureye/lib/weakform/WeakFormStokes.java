@@ -31,7 +31,7 @@ import static edu.uta.futureye.function.operator.FMath.*;
  */
 public class WeakFormStokes extends AbstractVectorWeakForm {
 	protected VectorFunction g_f = null;
-	protected MathFun g_k = null;
+	protected MathFunc g_k = null;
 	//Robin:  k*u_n + d*u - p\vec{n} = 0
 	protected VectorFunction g_d = null;
 
@@ -39,7 +39,7 @@ public class WeakFormStokes extends AbstractVectorWeakForm {
 		this.g_f = f;
 	}
 	
-	public void setParam(MathFun k) {
+	public void setParam(MathFunc k) {
 		this.g_k = k;
 	}
 	
@@ -49,34 +49,34 @@ public class WeakFormStokes extends AbstractVectorWeakForm {
 	}
 	
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
-			MathFun integrand = null;
-			MathFun fk = Utils.interpolateOnElement(g_k,e);
-			MathFun u1 = u.get(1), u2 = u.get(2), p  = u.get(3);
-			MathFun v1 = v.get(1), v2 = v.get(2), q  = v.get(3);
+			MathFunc integrand = null;
+			MathFunc fk = Utils.interpolateOnElement(g_k,e);
+			MathFunc u1 = u.get(1), u2 = u.get(2), p  = u.get(3);
+			MathFunc v1 = v.get(1), v2 = v.get(2), q  = v.get(3);
 			//(v1_x,k*u1_x) + (v1_y,k*u1_y) + 
 			//(v2_x,k*u2_x) + (v2_y,k*u2_y) - 
 			//(v1_x+v2_y,p) + (q,u1_x+u2_y) 
-			MathFun uv1 = grad(u1,"x","y" ).dot( grad(v1,"x","y") );
-			MathFun uv2 = grad(u2,"x","y" ).dot( grad(v2,"x","y") );
-			MathFun div_v = v1._d("x").A(v2._d("y"));
-			MathFun div_u = u1._d("x").A(u2._d("y"));
+			MathFunc uv1 = grad(u1,"x","y" ).dot( grad(v1,"x","y") );
+			MathFunc uv2 = grad(u2,"x","y" ).dot( grad(v2,"x","y") );
+			MathFunc div_v = v1._d("x").A(v2._d("y"));
+			MathFunc div_u = u1._d("x").A(u2._d("y"));
 			integrand = fk.M( uv1.A(uv2) ).S( div_v.M(p) ).A( div_u.M(q) );
 			return integrand;
 		}
 		else if(itemType==ItemType.Border) {
 			if(g_d != null) {
 				Element be = e;
-				MathFun fd1 = Utils.interpolateOnElement(g_d.get(1), be);
-				MathFun fd2 = Utils.interpolateOnElement(g_d.get(2), be);
-				MathFun u1 = u.get(1), u2 = u.get(2);
-				MathFun v1 = v.get(1), v2 = v.get(2);
+				MathFunc fd1 = Utils.interpolateOnElement(g_d.get(1), be);
+				MathFunc fd2 = Utils.interpolateOnElement(g_d.get(2), be);
+				MathFunc u1 = u.get(1), u2 = u.get(2);
+				MathFunc v1 = v.get(1), v2 = v.get(2);
 				//Robin:  - k*u_n = d*u - p\vec{n}
 				//d1*u1 + d2*u2
-				MathFun borderIntegrand = fd1.M(u1.M(v1)).A(fd2.M(u2.M(v2)));
+				MathFunc borderIntegrand = fd1.M(u1.M(v1)).A(fd2.M(u2.M(v2)));
 				return borderIntegrand;
 			}
 		}
@@ -84,25 +84,25 @@ public class WeakFormStokes extends AbstractVectorWeakForm {
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			MathFun f1 = Utils.interpolateOnElement(g_f.get(1), e);
-			MathFun f2 = Utils.interpolateOnElement(g_f.get(2), e);
-			MathFun v1 = v.get(1);
-			MathFun v2 = v.get(2);
+			MathFunc f1 = Utils.interpolateOnElement(g_f.get(1), e);
+			MathFunc f2 = Utils.interpolateOnElement(g_f.get(2), e);
+			MathFunc v1 = v.get(1);
+			MathFunc v2 = v.get(2);
 			//(v1*f1+v2*f2)
-			MathFun integrand = v1.M(f1).A(v2.M(f2));
+			MathFunc integrand = v1.M(f1).A(v2.M(f2));
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
-			MathFun v1 = v.get(1), v2 = v.get(2), p  = v.get(3);
+			MathFunc v1 = v.get(1), v2 = v.get(2), p  = v.get(3);
 			//Robin:  - k*u_n = d*u - p\vec{n}
 			//- p\vec{n} = - p*n1*v1 - p*n2*v2
 			Edge edge = (Edge)be.getGeoEntity();
 			Vector n = edge.getNormVector();
-			MathFun n1 = C(-1.0*n.get(1));
-			MathFun n2 = C(-1.0*n.get(2));
-			MathFun borderIntegrand = p.M(v1.M(n1)).A(p.M(v2.M(n2)));
+			MathFunc n1 = C(-1.0*n.get(1));
+			MathFunc n2 = C(-1.0*n.get(2));
+			MathFunc borderIntegrand = p.M(v1.M(n1)).A(p.M(v2.M(n2)));
 			return borderIntegrand;
 		}
 		return null;

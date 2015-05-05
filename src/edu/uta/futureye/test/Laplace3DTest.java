@@ -19,7 +19,7 @@ import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -39,7 +39,7 @@ public class Laplace3DTest {
 		Mesh mesh = reader.read3DMesh(); //3D
 		mesh.computeNodeBelongsToElements(); //worked in 3D
 		
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y","z"){
 			@Override
 			public double apply(Variable v) {
@@ -152,7 +152,7 @@ public class Laplace3DTest {
 		Mesh mesh = reader.read3DMesh(); //3D
 		mesh.computeNodeBelongsToElements(); //worked in 3D
 		
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 		
@@ -220,7 +220,7 @@ public class Laplace3DTest {
 		mesh.computeNodeBelongsToElements(); //worked in 3D
 		mesh.computeGlobalEdge();
 		
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y","z"){
 			@Override
 			public double apply(Variable v) {

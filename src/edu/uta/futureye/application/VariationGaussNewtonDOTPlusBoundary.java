@@ -31,7 +31,7 @@ import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
@@ -83,11 +83,11 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	ModelDOTPlus modelGuess = new ModelDOTPlus();
 
 	//3*mu_s'
-	MathFun model_k = FC.c(50.0);
+	MathFunc model_k = FC.c(50.0);
 	//background of a(x)=3*mu_a(x)=0.3
 	double aBackground = 0.3;
 	
-    MathFun diri = null;
+    MathFunc diri = null;
     
     //对应每个光源s_i的参数，包括测量数据
     public static class ParamOfLightSource {
@@ -165,7 +165,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
 	}
 
-	public static void plotFunction(Mesh mesh, MathFun fun, String fileName) {
+	public static void plotFunction(Mesh mesh, MathFunc fun, String fileName) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
@@ -214,8 +214,8 @@ public class VariationGaussNewtonDOTPlusBoundary {
         mesh.computeNeighborNodes();
 
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
         
@@ -250,8 +250,8 @@ public class VariationGaussNewtonDOTPlusBoundary {
         mesh.computeNeighborNodes();
       
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
         
@@ -354,9 +354,9 @@ public class VariationGaussNewtonDOTPlusBoundary {
 			if(nodes.at(j).isInnerNode())
 				u_g.set(j,0.0);
 		}
-		MathFun fu_g = new Vector2Function(u_g);
+		MathFunc fu_g = new Vector2Function(u_g);
 		plotFunction(mesh, fu_g, String.format("M%02d_Lagrangian_u_g%02d.dat",s_i,this.iterNum));
-		MathFun fa = new Vector2Function(a);
+		MathFunc fa = new Vector2Function(a);
 
 		if(bTestWholdDomain)
 			weakForm.setF(fu_g.M(-1.0));//!!!!!!1.0=>
@@ -384,7 +384,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 //			);
 		
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		if(bTestWholdDomain)
 			mapNTF.put(NodeType.Dirichlet, null);
 		else
@@ -427,7 +427,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	public Equation getEqnU(Mesh _mesh, Vector a, Vector g) {
 		
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		MathFun fa = new Vector2Function(a);
+		MathFunc fa = new Vector2Function(a);
 		
 		//不能忽略光源的影响???
 		//if(g == null)
@@ -442,7 +442,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 				FC.C1.D(fa.A(model_k)));
 		
 		_mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		if(g == null)
 			mapNTF.put(NodeType.Robin, null);
 		else
@@ -505,16 +505,16 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	 */
 	public Equation getEqnA(Vector[] u, Vector[] lambda, 
 			Vector ak, Vector _aGlob, 
-			MathFun diri) {
+			MathFunc diri) {
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
         weakForm.setParam(FC.C0, FC.C1, null, null);
         //stabilize
         //weakForm.setParam(FC.c(0.01), FC.c1, null, null);
         
-        MathFun faGlob = new Vector2Function(_aGlob);
+        MathFunc faGlob = new Vector2Function(_aGlob);
         int N=u.length;
         Vector[] vMlmd = new Vector[N];
-        MathFun[] fuDotlmd = new MathFun[N];
+        MathFunc[] fuDotlmd = new MathFunc[N];
         Vector[] uDotlmd = new Vector[N];
         for(int i=0; i<N; i++) {
         	//u_i*\lambda_i 
@@ -578,20 +578,20 @@ public class VariationGaussNewtonDOTPlusBoundary {
 		this.connectSells(mesh, sum2);
 		plotVector(mesh,sum2,String.format("La_RHS_v_lmd_sum2_%02d.dat",this.iterNum));
 		  
-		MathFun akpk_2 = FMath.pow(new Vector2Function(ak).A(model_k),-2.0);
+		MathFunc akpk_2 = FMath.pow(new Vector2Function(ak).A(model_k),-2.0);
 		plotFunction(mesh,akpk_2,String.format("La_RHS_akpk_2_%02d.dat",this.iterNum));
 		Vector sum12 = FMath.axpy(1.0, sum1, sum2);
 		plotVector(mesh,sum12,String.format("La_RHS_v_lmd_sum12_%02d.dat",this.iterNum));
 		  
-		MathFun rhs = akpk_2.M(new Vector2Function(sum2)).A(new Vector2Function(sum1)).M(1.0/beta);
+		MathFunc rhs = akpk_2.M(new Vector2Function(sum2)).A(new Vector2Function(sum1)).M(1.0/beta);
 		plotFunction(mesh,rhs,String.format("La_RHS_rhs%02d.dat",this.iterNum));
-		MathFun f2 = faGlob.S(rhs);
+		MathFunc f2 = faGlob.S(rhs);
 		plotFunction(mesh,f2,String.format("La_RHS_all%02d.dat",this.iterNum));
 		weakForm.setF(f2);
 
         //需要重新标记边界条件
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 		
@@ -618,7 +618,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	
 	public Equation getEqnA(Vector u, Vector lambda, 
 			Vector ak, Vector _aGlob, 
-			MathFun diri) {
+			MathFunc diri) {
 		Vector[] vu = new Vector[1];
 		Vector[] vlmd = new Vector[1];
 		vu[0] = u;
@@ -670,7 +670,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	 * @return
 	 */
 	public Vector getResLq(Vector u, Vector lambda,
-			Vector ak, Vector _aGlob, MathFun diri) {
+			Vector ak, Vector _aGlob, MathFunc diri) {
 		Equation eq = this.getEqnA(u, lambda, ak, _aGlob, diri);
         Vector res = new SparseVector(eq.f.getDim());
         eq.A.mult(ak, res);
@@ -690,7 +690,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	}
 	
 	public Vector getResLq(Vector[] u, Vector[] lambda,
-			Vector ak, Vector _aGlob, MathFun diri) {
+			Vector ak, Vector _aGlob, MathFunc diri) {
 		Equation eq = this.getEqnA(u, lambda, ak, _aGlob, diri);
         Vector res = new SparseVector(eq.f.getDim());
         eq.A.mult(ak, res);
@@ -758,7 +758,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
         //需要重新标记边界条件，否则在“整体合成”过程会出现错误。
         //虽然边界条件实在大矩阵中设置，这一步也是需要的。
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Note for Boundary:
 		mapNTF.put(NodeType.Robin, null);
 		mesh.markBorderNode(mapNTF);
@@ -788,9 +788,9 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	public Matrix getA(Vector ak, boolean procHangingNode) {
 		return getA(ak,null,null,procHangingNode).A;
 	}
-	public Equation getA(Vector ak, MathFun f, MathFun diri,boolean procHangingNode) {
+	public Equation getA(Vector ak, MathFunc f, MathFunc diri,boolean procHangingNode) {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		MathFun fa = new Vector2Function(ak);
+		MathFunc fa = new Vector2Function(ak);
 		
 		if(f==null)
 			weakForm.setF(FC.c(0.0));
@@ -805,7 +805,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
         //需要重新标记边界条件，否则在“整体合成”过程会出现错误。
         //虽然边界条件实在大矩阵中设置，这一步也是需要的。
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Note for boundary: Robin
 		mapNTF.put(NodeType.Robin, null);
 		mesh.markBorderNode(mapNTF);
@@ -853,11 +853,11 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	 */
 	public Matrix getC(Vector ak, Vector uk) {
         WeakFormGCMDual weakForm = new WeakFormGCMDual();
-        MathFun fuk = new Vector2Function(uk);
-        MathFun fa = new Vector2Function(ak);
-        MathFun b1 = new Vector2Function(Tools.computeDerivative(mesh, uk, "x"));
-        MathFun b2 = new Vector2Function(Tools.computeDerivative(mesh, uk, "y"));
-        MathFun _apk_2 = FMath.pow(fa.A(model_k),-2).M(-1.0);
+        MathFunc fuk = new Vector2Function(uk);
+        MathFunc fa = new Vector2Function(ak);
+        MathFunc b1 = new Vector2Function(Tools.computeDerivative(mesh, uk, "x"));
+        MathFunc b2 = new Vector2Function(Tools.computeDerivative(mesh, uk, "y"));
+        MathFunc _apk_2 = FMath.pow(fa.A(model_k),-2).M(-1.0);
         
         weakForm.setParam(FC.C0, fuk, b1.M(_apk_2), b2.M(_apk_2));
         //stabilize
@@ -868,7 +868,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
         //需要重新标记边界条件，否则在“整体合成”过程会出现错误。
         //虽然边界条件实在大矩阵中设置，这一步也是需要的。
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Note for boundary: Robin? Dirichlet相当于Robin
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
@@ -902,11 +902,11 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	 */
 	public Matrix getCT(Vector ak, Vector uk) {
         WeakFormGCM weakForm = new WeakFormGCM();
-        MathFun fuk = new Vector2Function(uk);
-        MathFun fa = new Vector2Function(ak);
-        MathFun b1 = new Vector2Function(Tools.computeDerivative(mesh, uk, "x"));
-        MathFun b2 = new Vector2Function(Tools.computeDerivative(mesh, uk, "y"));
-        MathFun _apk_2 = FMath.pow(fa.A(model_k),-2).M(-1.0);
+        MathFunc fuk = new Vector2Function(uk);
+        MathFunc fa = new Vector2Function(ak);
+        MathFunc b1 = new Vector2Function(Tools.computeDerivative(mesh, uk, "x"));
+        MathFunc b2 = new Vector2Function(Tools.computeDerivative(mesh, uk, "y"));
+        MathFunc _apk_2 = FMath.pow(fa.A(model_k),-2).M(-1.0);
         
         weakForm.setParam(FC.C0, fuk, b1.M(_apk_2), b2.M(_apk_2));
         //stabilize
@@ -917,7 +917,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
         //需要重新标记边界条件，否则在“整体合成”过程会出现错误。
         //虽然边界条件实在大矩阵中设置，这一步也是需要的。
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Note for boundary: Robin? Dirichlet相当于Robin
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
@@ -954,7 +954,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
         //需要重新标记边界条件，否则在“整体合成”过程会出现错误。
         //虽然边界条件实在大矩阵中设置，这一步也是需要的。
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 		
@@ -1078,7 +1078,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	}
 	
 	public void imposeDirichletCondition(BlockMatrix BM, BlockVector BV,
-			MathFun diri) {
+			MathFunc diri) {
 		ElementList eList = mesh.getElementList();
 		int nNode = mesh.getNodeList().size();
 		for(int i=1;i<=eList.size();i++) {
@@ -1101,7 +1101,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	}
 	
 	public void imposeDirichletCondition(BlockMatrix BM, BlockVector BV,
-			int nDataBlock, MathFun diri) {
+			int nDataBlock, MathFunc diri) {
 		ElementList eList = mesh.getElementList();
 		int nNode = mesh.getNodeList().size();
 		for(int i=1;i<=eList.size();i++) {

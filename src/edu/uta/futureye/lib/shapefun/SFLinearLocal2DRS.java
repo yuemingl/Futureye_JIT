@@ -7,7 +7,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
@@ -26,8 +26,8 @@ import static edu.uta.futureye.function.operator.FMath.*;
 public class SFLinearLocal2DRS  extends AbstractMathFun 
 							  implements ScalarShapeFunction {
 	protected int funIndex;
-	private MathFun funCompose = null;
-	private MathFun funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	protected ObjList<String> innerVarNames = null;
 	
 	protected Element e = null;
@@ -58,12 +58,12 @@ public class SFLinearLocal2DRS  extends AbstractMathFun
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数 
-		Map<String, MathFun> fInners = new HashMap<String, MathFun>();
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		//r=r(x,y) 
 		//s=s(x,y)
 		for(final String varName : varNames) {
 			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {	
-				public MathFun _d(String var) {
+				public MathFunc _d(String var) {
 					if(varName.equals("r")) { //r对应三角形高h的负倒数
 						if(var.equals("x"))
 							return new FC( (y[1]-y[2]) / jac);
@@ -109,7 +109,7 @@ public class SFLinearLocal2DRS  extends AbstractMathFun
 	}
 	
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return funCompose._d(varName);
 	}
 

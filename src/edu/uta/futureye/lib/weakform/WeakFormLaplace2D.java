@@ -9,7 +9,7 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.Utils;
@@ -44,19 +44,19 @@ import edu.uta.futureye.util.container.ElementList;
  *
  */
 public class WeakFormLaplace2D extends AbstractScalarWeakForm {
-	protected MathFun g_f = null;
-	protected MathFun g_k = null;
-	protected MathFun g_c = null;
-	protected MathFun g_g = null; 
-	protected MathFun g_d = null;
+	protected MathFunc g_f = null;
+	protected MathFunc g_k = null;
+	protected MathFunc g_c = null;
+	protected MathFunc g_g = null; 
+	protected MathFunc g_d = null;
 	
-	protected MathFun ff = null;
-	protected MathFun fk = null;
-	protected MathFun fc = null;
-	protected MathFun fg = null;
-	protected MathFun fd = null;
+	protected MathFunc ff = null;
+	protected MathFunc fk = null;
+	protected MathFunc fc = null;
+	protected MathFunc fg = null;
+	protected MathFunc fd = null;
 
-	public void setF(MathFun f) {
+	public void setF(MathFunc f) {
 		this.g_f = f;
 	}
 	
@@ -64,7 +64,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 	//2011-08-02
 	//E.g.1 Nature boundary condition: u_n + u = 0  =>  d=k, q=0
 	//E.g.2 u_n = g                                 =>  d=0, g=k*g  
-	public void setParam(MathFun k,MathFun c,MathFun g,MathFun d) {
+	public void setParam(MathFunc k,MathFunc c,MathFunc g,MathFunc d) {
 		this.g_k = k;
 		this.g_c = c;
 		this.g_g = g; //2/3/12 q=>g
@@ -84,10 +84,10 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
-			MathFun integrand = null;
+			MathFunc integrand = null;
 			if(g_k == null) {
 				integrand = u._d("x").M(v._d("x")) .A (u._d("y").M(v._d("y")));
 			} else {
@@ -101,7 +101,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 		}
 		else if(itemType==ItemType.Border) {//Neumann border integration on LHS
 			if(g_d != null) {
-				MathFun borderIntegrand = fd.M(u.M(v));
+				MathFunc borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
 		}
@@ -109,13 +109,13 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			MathFun integrand = ff.M(v);
+			MathFunc integrand = ff.M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			if(g_g != null) {
-				MathFun borderIntegrand = fg.M(v);
+				MathFunc borderIntegrand = fg.M(v);
 				return borderIntegrand;
 			}
 		}
@@ -136,8 +136,8 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 		e.updateJacobinLinear2D();
 		
 		//形函数计算需要和单元关联，并提前计算导数
-		Map<Integer, MathFun> mapShape_x = new HashMap<Integer, MathFun>();
-		Map<Integer, MathFun> mapShape_y = new HashMap<Integer, MathFun>();
+		Map<Integer, MathFunc> mapShape_x = new HashMap<Integer, MathFunc>();
+		Map<Integer, MathFunc> mapShape_y = new HashMap<Integer, MathFunc>();
 		for(int i=1;i<=nDOFs;i++) {
 			DOF dof = DOFs.at(i);
 			ScalarShapeFunction sf = dof.getSSF();
@@ -146,9 +146,9 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 			mapShape_y.put(dof.getLocalIndex(), sf._d("y"));
 		}
 
-		MathFun fk = null;
+		MathFunc fk = null;
 		if(g_k != null) fk = Utils.interpolateOnElement(g_k,e);
-		MathFun fc = null;
+		MathFunc fc = null;
 		if(g_c != null) fc = Utils.interpolateOnElement(g_c,e);
 
 		//所有自由度双循环
@@ -162,7 +162,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 				int nLocalCol = dofJ.getLocalIndex();
 				int nGlobalCol = dofJ.getGlobalIndex();
 				//Integrand part of Weak Form on element e
-				MathFun integrand = null;
+				MathFunc integrand = null;
 				if(g_k == null) {
 					integrand = mapShape_x.get(nLocalRow).M(mapShape_x.get(nLocalCol))
 								.A(
@@ -192,8 +192,8 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 				globalStiff.add(nGlobalRow, nGlobalCol, lhsVal);
 			}
 			//Load vector
-			MathFun ff = Utils.interpolateOnElement(g_f, e);
-			MathFun integrand = ff.M(sfI);
+			MathFunc ff = Utils.interpolateOnElement(g_f, e);
+			MathFunc integrand = ff.M(sfI);
 			double rhsVal = 0.0;
 			if(e.vertices().size() == 3) {
 				rhsVal = FOIntegrate.intOnTriangleRefElement(
@@ -215,7 +215,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 			for(int n=1;n<=beList.size();n++) {
 				Element be = beList.at(n);
 				
-				MathFun fd = null;
+				MathFunc fd = null;
 				if(g_d != null) fd = Utils.interpolateOnElement(g_d, be);
 				//Check node type
 				NodeType nodeType = be.getBorderNodeType();
@@ -242,7 +242,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 								ScalarShapeFunction sfJ = dofJ.getSSF();
 								int nGlobalCol = dofJ.getGlobalIndex();
 								//Stiff matrix for border
-								MathFun borderIntegrand = fd.M(sfI.M(sfJ));
+								MathFunc borderIntegrand = fd.M(sfI.M(sfJ));
 								//Numerical integrate the border 'be' of element 'e'
 								double lhsBrVal = FOIntegrate.intOnLinearRefElement(
 										borderIntegrand.M(be.getJacobin()),5
@@ -252,8 +252,8 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 						}
 						//Load vector for border
 						if(g_g != null) {
-							MathFun fq = Utils.interpolateOnElement(g_g, be);
-							MathFun borderIntegrand = fq.M(sfI);
+							MathFunc fq = Utils.interpolateOnElement(g_g, be);
+							MathFunc borderIntegrand = fq.M(sfI);
 							double rhsBrVal = FOIntegrate.intOnLinearRefElement(
 									borderIntegrand.M(be.getJacobin()),5
 								);

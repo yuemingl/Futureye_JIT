@@ -12,7 +12,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.PairDoubleInteger;
@@ -106,7 +106,7 @@ public class MouseHead20110908 extends MouseHead {
 	@Override
 	public void markExteriorBorder(Mesh mesh, final TailType fTailType) {
 		//外问题 Solve exterior problem
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 //		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y") {
 //			@Override
 //			public double value(Variable v) {

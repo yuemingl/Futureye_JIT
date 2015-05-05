@@ -12,7 +12,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
@@ -35,7 +35,7 @@ public class Tools {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v, vs);
 	}
 
-	public static void plotFunction(Mesh mesh, String outputFolder, String fileName, MathFun fun, MathFun ...funs) {
+	public static void plotFunction(Mesh mesh, String outputFolder, String fileName, MathFunc fun, MathFunc ...funs) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
@@ -88,7 +88,7 @@ public class Tools {
         MeshReader reader = new MeshReader("triangle.grd");
         Mesh mesh = reader.read2DMesh();
         //fun(x,y)=x^2+y^2
-        MathFun fun = FX.fx.M(FX.fx).A(FX.fy.M(FX.fy));
+        MathFunc fun = FX.fx.M(FX.fx).A(FX.fy.M(FX.fy));
         plotFunction(mesh,".","testPlotFun.dat",fun);
         VectorFunction gradFun = FMath.grad(fun);
         plotFunction(mesh,".","testPlotFunGrad.dat",

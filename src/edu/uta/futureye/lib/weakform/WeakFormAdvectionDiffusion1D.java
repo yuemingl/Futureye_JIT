@@ -4,7 +4,7 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Utils;
 
 /**
@@ -23,38 +23,38 @@ import edu.uta.futureye.util.Utils;
  *
  */
 public class WeakFormAdvectionDiffusion1D extends AbstractScalarWeakForm {
-	protected MathFun g_f = null;
-	protected MathFun g_k = null;
-	protected MathFun g_u = null;
+	protected MathFunc g_f = null;
+	protected MathFunc g_k = null;
+	protected MathFunc g_u = null;
 
 	/**
 	 * 
 	 * @param k
 	 */
-	public void setParam(MathFun k) {
+	public void setParam(MathFunc k) {
 		this.g_k = k;
 	}
 	
-	public void setConvectionVelocity(MathFun u) {
+	public void setConvectionVelocity(MathFunc u) {
 		this.g_u = u;
 	}
 	
 	//right hand side function (source term)
-	public void setF(MathFun f) {
+	public void setF(MathFunc f) {
 		this.g_f = f;
 	}
 	
 	//Robin:  d*u + k*u_n= g (自然边界：d==k, g=0)
-	public void setRobin(MathFun g,MathFun d) {
+	public void setRobin(MathFunc g,MathFunc d) {
 	}
 
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		 if(itemType==ItemType.Domain)  {
 			 //Interplate functions on element e
-			MathFun fk = Utils.interpolateOnElement(g_k,e);
-			MathFun fu = Utils.interpolateOnElement(g_u,e);
-			MathFun integrand = null;
+			MathFunc fk = Utils.interpolateOnElement(g_k,e);
+			MathFunc fu = Utils.interpolateOnElement(g_u,e);
+			MathFunc integrand = null;
 			
 			DOF dof = e.getAllNodeDOFList().at(vDOFLocalIndex);
 			Node node1 = dof.getNodeOwner();
@@ -84,11 +84,11 @@ public class WeakFormAdvectionDiffusion1D extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//(Dt*f + c_n,w)
-			MathFun ff = Utils.interpolateOnElement(g_f, e);
-			MathFun integrand = ff.M(v);
+			MathFunc ff = Utils.interpolateOnElement(g_f, e);
+			MathFunc integrand = ff.M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 		}

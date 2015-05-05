@@ -15,7 +15,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -43,8 +43,8 @@ public class HumanRealCollins {
         mesh.computeNodeBelongsToElements();
 
         //Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
 
@@ -60,7 +60,7 @@ public class HumanRealCollins {
 		WeakFormLaplace3D weakForm = new WeakFormLaplace3D();
 		
 		//Function f = new FDelta(new Variable("x",90.9314).set("y",230.306).set("z",59.5004),1e-2,1e5);
-		MathFun f = new FDelta(new Variable("x",105.572).set("y",52.3113).set("z",152.091),1e1,1e5);
+		MathFunc f = new FDelta(new Variable("x",105.572).set("y",52.3113).set("z",152.091),1e1,1e5);
 		Tools.plotFunction(mesh, outputFolder, "lightsource.dat", f);
 		weakForm.setF(f);
 		

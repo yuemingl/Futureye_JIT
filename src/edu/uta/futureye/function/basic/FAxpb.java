@@ -6,7 +6,7 @@ import java.util.Map;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 public class FAxpb extends AbstractMathFun {
@@ -30,7 +30,7 @@ public class FAxpb extends AbstractMathFun {
 	}
 	
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		if(this.varName.equals(varName))
 			return new FC(a);
 		else
@@ -87,7 +87,7 @@ public class FAxpb extends AbstractMathFun {
 	 * 
 	 */
 	@Override
-	public MathFun setVarNames(List<String> varNames) {
+	public MathFunc setVarNames(List<String> varNames) {
 		this.varNames = varNames;
 		return this;
 	}

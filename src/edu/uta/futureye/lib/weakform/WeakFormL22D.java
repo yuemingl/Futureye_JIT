@@ -6,7 +6,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Utils;
 
 /**
@@ -18,19 +18,19 @@ import edu.uta.futureye.util.Utils;
  * @author liuyueming
  */
 public class WeakFormL22D extends AbstractScalarWeakForm {
-	protected MathFun g_U = null;
-	protected MathFun g_Ux = null;
-	protected MathFun g_Uy = null;
-	protected MathFun g_f = null;
-	protected MathFun g_k = null;
+	protected MathFunc g_U = null;
+	protected MathFunc g_Ux = null;
+	protected MathFunc g_Uy = null;
+	protected MathFunc g_f = null;
+	protected MathFunc g_k = null;
 
 
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
-			MathFun integrand = null;
-			MathFun fU = Utils.interpolateOnElement(g_U, e);
+			MathFunc integrand = null;
+			MathFunc fU = Utils.interpolateOnElement(g_U, e);
 			integrand = fU.M(u.M(v));
 			return integrand;
 		}
@@ -38,12 +38,12 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			MathFun ff = Utils.interpolateOnElement(g_f, e);
-			MathFun fk = Utils.interpolateOnElement(g_k, e);
+			MathFunc ff = Utils.interpolateOnElement(g_f, e);
+			MathFunc fk = Utils.interpolateOnElement(g_k, e);
 			
-			MathFun integrand = null;
+			MathFunc integrand = null;
 			if(g_Ux == null) {
 //新方法1：计算导数				
 				int N = e.nodes.size();
@@ -55,12 +55,12 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 				}
 				double[] a = Utils.computeBilinearFunctionCoef(e.nodes.toArray(new Point[0]), f);
 				//d(a1 + a2*x + a3*y + a4*x*y)/dx
-				MathFun dx = new FXY(0.0,a[3],a[1]);
+				MathFunc dx = new FXY(0.0,a[3],a[1]);
 				//d(a1 + a2*x + a3*y + a4*x*y)/dy
-				MathFun dy = new FXY(a[3],0.0,a[2]);
+				MathFunc dy = new FXY(a[3],0.0,a[2]);
 				
-				MathFun fUx = Utils.interpolateOnElement(dx, e);
-				MathFun fUy = Utils.interpolateOnElement(dy, e);
+				MathFunc fUx = Utils.interpolateOnElement(dx, e);
+				MathFunc fUy = Utils.interpolateOnElement(dy, e);
 				integrand = 
 					ff.M(v)
 					.S(
@@ -97,8 +97,8 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 //							)
 //						);
 			} else {
-				MathFun fUx = Utils.interpolateOnElement(g_Ux, e);
-				MathFun fUy = Utils.interpolateOnElement(g_Uy, e);
+				MathFunc fUx = Utils.interpolateOnElement(g_Ux, e);
+				MathFunc fUy = Utils.interpolateOnElement(g_Uy, e);
 				integrand = 
 					ff.M(v)
 					.S(
@@ -113,16 +113,16 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 		return null;
 	}
 
-	public void setF(MathFun f) {
+	public void setF(MathFunc f) {
 		this.g_f = f;
 	}
 	
-	public void setParam(MathFun k,MathFun U) {
+	public void setParam(MathFunc k,MathFunc U) {
 		this.g_k = k;
 		this.g_U = U;
 	}
 	
-	public void setParam(MathFun k, MathFun U, MathFun Ux, MathFun Uy) {
+	public void setParam(MathFunc k, MathFunc U, MathFunc Ux, MathFunc Uy) {
 		this.g_k = k;
 		this.g_U = U;
 		this.g_Ux = Ux;

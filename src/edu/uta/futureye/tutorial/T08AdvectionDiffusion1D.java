@@ -14,7 +14,7 @@ import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -96,8 +96,8 @@ public class T08AdvectionDiffusion1D {
 	public static Vector solve(Mesh mesh, 
 			final double L, final int N, double k, double u) {
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
 
@@ -111,11 +111,11 @@ public class T08AdvectionDiffusion1D {
         //4.Weak form
 		WeakFormBuilder wfb = new WeakFormBuilder() {
 			@Override
-			public MathFun makeExpression(Element e, Type type) {
+			public MathFunc makeExpression(Element e, Type type) {
 				ScalarShapeFunction u = getScalarTrial();
 				ScalarShapeFunction v = getScalarTest();
-				MathFun fk = getParam("k",e);
-				MathFun fu = getParam("u",e);
+				MathFunc fk = getParam("k",e);
+				MathFunc fu = getParam("u",e);
 				switch(type) {
 					case LHS_Domain:
 						return fk.M(u._d("x").M(v._d("x"))).A(fu.M(u._d("x").M(v)));
@@ -171,8 +171,8 @@ public class T08AdvectionDiffusion1D {
 	public static Vector solveUpwind(Mesh mesh, 
 			final double L, final int N, double k, double u) {
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
 

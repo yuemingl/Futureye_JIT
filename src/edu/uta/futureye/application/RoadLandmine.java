@@ -10,7 +10,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshReaderForTriangle;
 import edu.uta.futureye.io.MeshWriter;
@@ -63,8 +63,8 @@ public class RoadLandmine {
 	        
 
 	        //2.Mark border types
-	        HashMap<NodeType, MathFun> mapNTF =
-	                new HashMap<NodeType, MathFun>();
+	        HashMap<NodeType, MathFunc> mapNTF =
+	                new HashMap<NodeType, MathFunc>();
 	        mapNTF.put(NodeType.Dirichlet, null);
 	        mesh.markBorderNode(mapNTF);
 	        //mesh.writeNodesInfo("./iphone/nodeInfo.dat");

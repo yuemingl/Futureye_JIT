@@ -11,7 +11,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
@@ -59,7 +59,7 @@ public class AssemblerScalarFast implements Assembler{
 	}
 	
 	@Override
-	public void imposeDirichletCondition(MathFun diri) {
+	public void imposeDirichletCondition(MathFunc diri) {
 		NodeList nList = mesh.getNodeList();
 		for(int i=1;i<=nList.size();i++) {
 			Node n = nList.at(i);

@@ -27,7 +27,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
@@ -86,14 +86,14 @@ public class GCMModel {
 	public String outputFolder = "";
 	
 	//Light source
-	public MathFun delta = null;
+	public MathFunc delta = null;
 	public Variable lightSource = null; //light source position
 	
 	//Inclusion mu_a
-	public MathFun mu_a = null;
+	public MathFunc mu_a = null;
 	
 	//Inclusion 1/(3*mu_s') = 1.0/30.0 ?
-	public MathFun k = new FC(0.02);
+	public MathFunc k = new FC(0.02);
 	
 	public boolean debug = false;
 	
@@ -163,7 +163,7 @@ public class GCMModel {
 
 	public Vector solveForwardNeumann(Mesh mesh) {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.clearBorderNodeMark();
@@ -207,9 +207,9 @@ public class GCMModel {
 	 * @param borderType 1: only top boundary is Dirichlet, 2: all boundary are Dirichlet
 	 * @return
 	 */
-	public Vector solveForwardDirichlet(Mesh mesh, MathFun diri, int borderType) {
+	public Vector solveForwardDirichlet(Mesh mesh, MathFunc diri, int borderType) {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		if(borderType == 1) {
 			mapNTF.put(NodeType.Dirichlet, new AbstractMathFun("x","y"){
@@ -259,7 +259,7 @@ public class GCMModel {
 	}	
 	
 	public Vector solveParamInverse(Mesh mesh, Vector U) {
-		HashMap<NodeType, MathFun> mapNTF2 = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF2 = new HashMap<NodeType, MathFunc>();
 		mapNTF2.put(NodeType.Dirichlet, null);
 		mesh.clearBorderNodeMark();
 		mesh.markBorderNode(mapNTF2);
@@ -288,8 +288,8 @@ public class GCMModel {
 		return u;
 	}
 	
-	public Vector solveParamInverse2(Mesh mesh, Vector U, MathFun f) {
-		HashMap<NodeType, MathFun> mapNTF2 = new HashMap<NodeType, MathFun>();
+	public Vector solveParamInverse2(Mesh mesh, Vector U, MathFunc f) {
+		HashMap<NodeType, MathFunc> mapNTF2 = new HashMap<NodeType, MathFunc>();
 		mapNTF2.put(NodeType.Dirichlet, null);
 		mesh.clearBorderNodeMark();
 		mesh.markBorderNode(mapNTF2);
@@ -331,7 +331,7 @@ public class GCMModel {
 			int iterNum, Vector boundary
 			) {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 //		mapNTF.put(NodeType.Robin, null);
 		mapNTF.put(NodeType.Dirichlet, null);
@@ -342,15 +342,15 @@ public class GCMModel {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side
-		MathFun rhs = null;
-		MathFun diff_am = new Vector2Function(FMath.axpy(-1.0, a_m_1, a_m));
+		MathFunc rhs = null;
+		MathFunc diff_am = new Vector2Function(FMath.axpy(-1.0, a_m_1, a_m));
 		this.plotFunction(mesh, diff_am, "enhance_diff_am"+iterNum+".dat");
 		if(iterNum>=2) {
-			MathFun lamd_exp = new FC(Math.PI*Math.PI*Math.pow(Math.E, iterNum-1)).
+			MathFunc lamd_exp = new FC(Math.PI*Math.PI*Math.pow(Math.E, iterNum-1)).
 								M(diff_am);
 			//lamd_exp = new FConstant(0.8);
 			this.plotFunction(mesh, lamd_exp, "enhance_rhs_lamd_exp"+iterNum+".dat");
-			MathFun lamd = FMath.pow(new FC(Math.E), lamd_exp).M(new FC(Math.pow(1.05, -iterNum)));
+			MathFunc lamd = FMath.pow(new FC(Math.E), lamd_exp).M(new FC(Math.pow(1.05, -iterNum)));
 			this.plotFunction(mesh, lamd, "enhance_rhs_lamd"+iterNum+".dat");
 			rhs = lamd.M(diff_am).M(new Vector2Function(u_m_1));
 			this.plotFunction(mesh, rhs, "enhance_rhs"+iterNum+".dat");
@@ -392,7 +392,7 @@ public class GCMModel {
 		return u;
 	}
 
-	public void plotFunction(Mesh mesh, MathFun fun, String fileName) {
+	public void plotFunction(Mesh mesh, MathFunc fun, String fileName) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
@@ -407,7 +407,7 @@ public class GCMModel {
 	    plotVector(mesh,v,fileName);
 	}
 	
-	public Vector discreteFunction(Mesh mesh,MathFun fun) {
+	public Vector discreteFunction(Mesh mesh,MathFunc fun) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
@@ -443,7 +443,7 @@ public class GCMModel {
 	 */
 	public Vector computeTailLeftLightSource(Mesh mesh,Vector bkUL, Vector incUL) {
 		//Mark border nodes
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.clearBorderNodeMark();
@@ -508,7 +508,7 @@ public class GCMModel {
 	 */
 	public Vector computeTailLeftLightSource2(Mesh mesh,Vector bkUL, Vector incUL) {
 		//Mark border nodes
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.clearBorderNodeMark();
@@ -574,7 +574,7 @@ public class GCMModel {
 	 */
 	public Vector computeTailRightLightSource(Mesh mesh,Vector bkUR, Vector incUR) {
 		//Mark border nodes
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.clearBorderNodeMark();
@@ -891,7 +891,7 @@ public class GCMModel {
 	    plotVector(meshGCM, incUL_subtract_bkUL, "incUL_subtract_bkUL.dat");
 	    
 		mu_a = new Vector2Function(alpha_m1);
-		MathFun diri = new Vector2Function(incUL);
+		MathFunc diri = new Vector2Function(incUL);
 		Vector um01 = solveForwardDirichlet(meshGCM,diri,2);
 		Vector um2 = null;
 		for(int nit=1;nit<=3;nit++) {
@@ -1666,14 +1666,14 @@ public class GCMModel {
 			Vector sumQ_x, Vector sumQ_y,
 			Vector laplaceT,
 			Vector T_x, Vector T_y,
-			MathFun diri,
+			MathFunc diri,
 			Vector q_0,
 			Vector phi, //for check only
 			boolean linearize
 			) {
 		
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		mapNTF.put(NodeType.Dirichlet, null);
 //		mapNTF.put(NodeType.Dirichlet, new FAbstract("x","y"){

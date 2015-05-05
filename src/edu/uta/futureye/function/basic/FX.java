@@ -15,7 +15,7 @@ import com.sun.org.apache.bcel.internal.generic.PUSH;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
@@ -52,7 +52,7 @@ public class FX extends AbstractMathFun{
 	}
 
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		if(this.varName.equals(varName))
 			return FC.C1;
 		else
@@ -80,7 +80,7 @@ public class FX extends AbstractMathFun{
 	}
 	
 	@Override
-	public MathFun copy() {
+	public MathFunc copy() {
 		return new FX(this.varName);
 	}
 	

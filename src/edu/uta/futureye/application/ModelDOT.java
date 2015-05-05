@@ -16,7 +16,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -40,26 +40,26 @@ import static edu.uta.futureye.function.operator.FMath.*;
  */
 public class ModelDOT {
 	//Light source delta function
-	private MathFun delta = null;
+	private MathFunc delta = null;
 	//light source position
 	private Variable lightPosition = null; 
 	
 	//Absorption coefficient mu_a
-	private MathFun mu_a = null;
+	private MathFunc mu_a = null;
 	//Reduced scattering coefficient mu_s'
-	private MathFun mu_sp = null;
+	private MathFunc mu_sp = null;
 	//k = 1/(3*mu_s') = 0.02 (default) 
-	private MathFun k = C(0.02);
+	private MathFunc k = C(0.02);
 	
 	/**
 	 * set Mu_s'
 	 * @param mu_sp
 	 */
-	public void setMu_sp(MathFun mu_sp) {
+	public void setMu_sp(MathFunc mu_sp) {
 		this.mu_sp = mu_sp;
 		k = C1.D(mu_sp.M(3));
 	}
-	public MathFun getMu_sp() {
+	public MathFunc getMu_sp() {
 		return mu_sp;
 	}
 	
@@ -67,10 +67,10 @@ public class ModelDOT {
 	 * Set Mu_a
 	 * @param fMu_a
 	 */
-	public void setMu_a(MathFun fMu_a) {
+	public void setMu_a(MathFunc fMu_a) {
 		this.mu_a = fMu_a;
 	}
-	public MathFun getMu_a() {
+	public MathFunc getMu_a() {
 		return this.mu_a;
 	}
 	
@@ -87,7 +87,7 @@ public class ModelDOT {
 				lightPosition.get("y"));
 		return p;
 	}
-	public MathFun getDelta() {
+	public MathFunc getDelta() {
 		return this.delta;
 	}
 	
@@ -109,9 +109,9 @@ public class ModelDOT {
 	 * @param diri: the values of Dirichlet condition
 	 * @return
 	 */
-	public Vector solveMixedBorder(Mesh mesh, MathFun diriBoundaryMark, MathFun diri) {
+	public Vector solveMixedBorder(Mesh mesh, MathFunc diriBoundaryMark, MathFunc diri) {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		if(diriBoundaryMark == null && diri == null) {
 			mapNTF.put(NodeType.Robin, null);
 		} else if(diriBoundaryMark == null && diri != null) {
@@ -160,9 +160,9 @@ public class ModelDOT {
 		return u;
 	}
 	
-	public Vector solveNitsches(Mesh mesh, MathFun diri, double eps) {
+	public Vector solveNitsches(Mesh mesh, MathFunc diri, double eps) {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.clearBorderNodeMark();
 		mesh.markBorderNode(mapNTF);
@@ -197,7 +197,7 @@ public class ModelDOT {
 		return solveMixedBorder(mesh,null,null);
 	}
 
-	public Vector solveDirichlet(Mesh mesh, MathFun diri) {
+	public Vector solveDirichlet(Mesh mesh, MathFunc diri) {
 		return solveMixedBorder(mesh,null,diri);
 	}	
 	
@@ -327,7 +327,7 @@ public class ModelDOT {
 		Tools.plotVector(meshBig, outputFolder, "a_sovle_big_refine.dat", aBigRefine);
 		
 		//TEST 3. Only up side of the domain is Dirichlet boundary
-		MathFun diriBoundaryMark = new AbstractMathFun("x","y"){
+		MathFunc diriBoundaryMark = new AbstractMathFun("x","y"){
 			@Override
 			public double apply(Variable v) {
 				//double x = v.get("x");

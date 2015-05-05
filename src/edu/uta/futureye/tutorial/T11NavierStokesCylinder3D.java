@@ -16,7 +16,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
@@ -95,7 +95,7 @@ public class T11NavierStokesCylinder3D {
 		Tools.plotVector(mesh, outputFolder, "test.dat", v);
 
 		//Mark boundary type of u
-		HashMap<NodeType, MathFun> mapNTF_u = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF_u = new HashMap<NodeType, MathFunc>();
 		//Dirichlet boundary of u
 		mapNTF_u.put(NodeType.Dirichlet, new AbstractMathFun("x","y","z") {
 			@Override
@@ -125,7 +125,7 @@ public class T11NavierStokesCylinder3D {
 		mapNTF_u.put(NodeType.Neumann, null);
 		
 		//Mark boundary type of p
-		HashMap<NodeType, MathFun> mapNTF_p = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF_p = new HashMap<NodeType, MathFunc>();
 		//Dirichlet boundary of p
 		mapNTF_p.put(NodeType.Dirichlet, new AbstractMathFun("x","y","z") {
 			@Override

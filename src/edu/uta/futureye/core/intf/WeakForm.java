@@ -6,7 +6,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.FEMFunc;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 
 public interface WeakForm {
 	static enum ItemType {Domain, Border};
@@ -49,7 +49,7 @@ public interface WeakForm {
 	 * @param itemType
 	 * @return
 	 */
-	MathFun leftHandSide(Element e, ItemType itemType);
+	MathFunc leftHandSide(Element e, ItemType itemType);
 	
 	/**
 	 * Right hand side of the weak form
@@ -57,7 +57,7 @@ public interface WeakForm {
 	 * @param itemType
 	 * @return
 	 */
-	MathFun rightHandSide(Element e, ItemType itemType);
+	MathFunc rightHandSide(Element e, ItemType itemType);
 	
 	/**
 	 * Provide a pre-process function before calling leftHandSide(...) and rightHandSide(...) if necessary
@@ -88,7 +88,7 @@ public interface WeakForm {
 	 * @param fun: LHS or RHS
 	 * @return
 	 */
-	double integrate(Element e, MathFun fun);
+	double integrate(Element e, MathFunc fun);
 	
 	/**
 	 * This interface has NO meaning for scalar valued problems.

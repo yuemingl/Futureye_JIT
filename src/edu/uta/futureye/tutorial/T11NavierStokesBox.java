@@ -21,7 +21,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
@@ -131,10 +131,10 @@ public class T11NavierStokesBox {
 //		}
 		
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF_uv = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF_uv = new HashMap<NodeType, MathFunc>();
 		mapNTF_uv.put(NodeType.Dirichlet, null);
 		
-		HashMap<NodeType, MathFun> mapNTF_p = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF_p = new HashMap<NodeType, MathFunc>();
 		mapNTF_p.put(NodeType.Neumann, null);
 		
 		mesh.markBorderNode(new ObjIndex(1,2),mapNTF_uv);

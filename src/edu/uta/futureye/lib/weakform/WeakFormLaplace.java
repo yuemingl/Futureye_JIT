@@ -1,7 +1,7 @@
 package edu.uta.futureye.lib.weakform;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Utils;
 import static edu.uta.futureye.function.operator.FMath.*;
 
@@ -37,19 +37,19 @@ import static edu.uta.futureye.function.operator.FMath.*;
  *
  */
 public class WeakFormLaplace extends AbstractScalarWeakForm {
-	protected MathFun g_f = null;
-	protected MathFun g_k = null;
-	protected MathFun g_c = null;
-	protected MathFun g_g = null;
-	protected MathFun g_d = null;
+	protected MathFunc g_f = null;
+	protected MathFunc g_k = null;
+	protected MathFunc g_c = null;
+	protected MathFunc g_g = null;
+	protected MathFunc g_d = null;
 
 	//right hand side function (source term)
-	public void setF(MathFun f) {
+	public void setF(MathFunc f) {
 		this.g_f = f;
 	}
 	
 	//Robin: d*u +  k*u_n = g
-	public void setParam(MathFun k,MathFun c,MathFun g,MathFun d) {
+	public void setParam(MathFunc k,MathFunc c,MathFunc g,MathFunc d) {
 		this.g_k = k;
 		this.g_c = c;
 		this.g_g = g;
@@ -57,16 +57,16 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
-			MathFun integrand = null;
+			MathFunc integrand = null;
 			if(g_k == null) {
 				integrand = grad(u,u.innerVarNames()).dot(
 							grad(v,v.innerVarNames()));
 			} else {
-				MathFun fk = Utils.interpolateOnElement(g_k,e);
-				MathFun fc = Utils.interpolateOnElement(g_c,e);
+				MathFunc fk = Utils.interpolateOnElement(g_k,e);
+				MathFunc fc = Utils.interpolateOnElement(g_c,e);
 				integrand = fk.M(
 					grad(u,u.innerVarNames()).dot(
 					grad(v,v.innerVarNames()))).A(
@@ -77,8 +77,8 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 		else if(itemType==ItemType.Border) {
 			if(g_d != null) {
 				Element be = e;
-				MathFun fd = Utils.interpolateOnElement(g_d, be);
-				MathFun borderIntegrand = fd.M(u.M(v));
+				MathFunc fd = Utils.interpolateOnElement(g_d, be);
+				MathFunc borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
 		}
@@ -86,16 +86,16 @@ public class WeakFormLaplace extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			MathFun ff = Utils.interpolateOnElement(g_f, e);
-			MathFun integrand = ff.M(v);
+			MathFunc ff = Utils.interpolateOnElement(g_f, e);
+			MathFunc integrand = ff.M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			if(g_g != null) {
 				Element be = e;
-				MathFun fq = Utils.interpolateOnElement(g_g, be);
-				MathFun borderIntegrand = fq.M(v);
+				MathFunc fq = Utils.interpolateOnElement(g_g, be);
+				MathFunc borderIntegrand = fq.M(v);
 				return borderIntegrand;
 			}
 		}

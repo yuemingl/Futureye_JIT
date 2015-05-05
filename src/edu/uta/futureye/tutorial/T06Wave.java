@@ -15,7 +15,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTriangle;
@@ -49,11 +49,11 @@ public class T06Wave {
 	double c2;
 
 	//2*u_{n+1} - u_{n}
-	MathFun u_n = null;
-	MathFun u_n1 = null;
+	MathFunc u_n = null;
+	MathFunc u_n1 = null;
 	
 	//u(t=0)=u0(x)
-	MathFun u0 = null;
+	MathFunc u0 = null;
 	
 	//Function f = null;
 	
@@ -82,7 +82,7 @@ public class T06Wave {
 	
 	public void initParam() {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.markBorderNode(mapNTF);
 		
@@ -114,7 +114,7 @@ public class T06Wave {
 		
 		FC k = new FC(Dt*Dt*c2);
 		//Function ff = this.u_n1.mult(FC.c(2.0)).minus(this.u_n).plus(f.mult(FC.c(Dt*Dt)));
-		MathFun ff = this.u_n1.M(FC.c(2.0)).S(this.u_n).M(FC.c(1+13*Dt*step));
+		MathFunc ff = this.u_n1.M(FC.c(2.0)).S(this.u_n).M(FC.c(1+13*Dt*step));
 		weakForm.setF(ff);
 		weakForm.setParam(k, FC.c(1.0).M(FC.c(1+13*Dt*step)), null, k);
 		

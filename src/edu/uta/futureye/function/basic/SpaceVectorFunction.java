@@ -4,27 +4,27 @@ import java.util.LinkedList;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.AbstractVectorFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
 public class SpaceVectorFunction extends AbstractVectorFunction {
-	protected MathFun[] data = null;
+	protected MathFunc[] data = null;
 	
 	public SpaceVectorFunction(int dim) {
 		this.dim = dim;
-		data = new MathFun[dim];
+		data = new MathFunc[dim];
 	}
 	
-	public SpaceVectorFunction(MathFun ...f) {
+	public SpaceVectorFunction(MathFunc ...f) {
 		if(f == null || f.length ==0) {
 			Exception e = new FutureyeException("Dim of SpaceVectorFunction should be > 0!");
 			e.printStackTrace();
 			return;
 		} else {
 			dim = f.length;
-			data = new MathFun[dim];
+			data = new MathFunc[dim];
 			varNames = new LinkedList<String>();
 			for(int i=0; i<f.length; i++) {
 				data[i] = f[i];
@@ -35,19 +35,19 @@ public class SpaceVectorFunction extends AbstractVectorFunction {
 	
 	public SpaceVectorFunction(Vector v) {
 		this.dim = v.getDim();
-		data = new MathFun[dim];
+		data = new MathFunc[dim];
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = new FC(v.get(i));
 		}
 	}
 	
 	@Override
-	public MathFun get(int index) {
+	public MathFunc get(int index) {
 		return data[index-1];
 	}
 
 	@Override
-	public void set(int index, MathFun value) {
+	public void set(int index, MathFunc value) {
 		data[index-1] = value;
 		varNames = Utils.mergeList(varNames, value.getVarNames());
 	}

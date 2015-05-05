@@ -9,7 +9,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.container.ObjList;
 
@@ -22,15 +22,15 @@ import edu.uta.futureye.util.container.ObjList;
  */
 public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunction {
 	private int funIndex;
-	private MathFun funCompose = null;
-	private MathFun funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 	
-	private MathFun jac = null;
-	private MathFun x_r = null;
-	private MathFun x_s = null;
-	private MathFun y_r = null;
-	private MathFun y_s = null;
+	private MathFunc jac = null;
+	private MathFunc x_r = null;
+	private MathFunc x_s = null;
+	private MathFunc y_r = null;
+	private MathFunc y_s = null;
 	
 	/**
 	 * 构造下列形函数中的一个：
@@ -72,11 +72,11 @@ public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunct
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
-		Map<String, MathFun> fInners = new HashMap<String, MathFun>(4);
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
 			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
-				public MathFun _d(String var) {
+				public MathFunc _d(String var) {
 					if(varName.equals("r")) {
 						if(var.equals("x"))
 							return y_s.D(jac);
@@ -99,13 +99,13 @@ public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunct
 			});
 		}
 	
-		MathFun fx = new FX("r");
-		MathFun fy = new FX("s");
+		MathFunc fx = new FX("r");
+		MathFunc fy = new FX("s");
 	
-		MathFun f1mx = new FAxpb("r",-1.0,1.0);
-		MathFun f1px = new FAxpb("r",1.0,1.0);
-		MathFun f1my = new FAxpb("s",-1.0,1.0);
-		MathFun f1py = new FAxpb("s",1.0,1.0);
+		MathFunc f1mx = new FAxpb("r",-1.0,1.0);
+		MathFunc f1px = new FAxpb("r",1.0,1.0);
+		MathFunc f1my = new FAxpb("s",-1.0,1.0);
+		MathFunc f1py = new FAxpb("s",1.0,1.0);
 		
 		if(funIndex == 0)
 			funOuter = FC.c(-0.25).M(f1mx).M(f1my).M(f1px.A(fy));
@@ -130,7 +130,7 @@ public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunct
 	
 	@Override
 	public void assignElement(Element e) {
-		MathFun[] funs = e.getCoordTrans().getJacobianMatrix();
+		MathFunc[] funs = e.getCoordTrans().getJacobianMatrix();
 		
 		x_r = funs[0];
 		x_s = funs[1];
@@ -150,7 +150,7 @@ public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunct
 	}
 
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return funCompose._d(varName);
 	}
 

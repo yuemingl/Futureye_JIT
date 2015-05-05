@@ -23,7 +23,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -49,7 +49,7 @@ public class VariationGaussNewton {
 	protected static String outputFolder = "Lagrangian_Wolfgang";
 	public boolean debug = false;
 
-    MathFun coef_q = new AbstractMathFun("x","y") {
+    MathFunc coef_q = new AbstractMathFun("x","y") {
     	@Override
     	public double apply(Variable v) {
     		double x = v.get("x");
@@ -61,7 +61,7 @@ public class VariationGaussNewton {
     	}
     };
 
-    MathFun diri = new AbstractMathFun("x","y") {
+    MathFunc diri = new AbstractMathFun("x","y") {
     	@Override
     	public double apply(Variable v) {
     		double x = v.get("x");
@@ -71,8 +71,8 @@ public class VariationGaussNewton {
     };
     
     //测量数据
-    MathFun z = null;
-    MathFun qBar = null;
+    MathFunc z = null;
+    MathFunc qBar = null;
     
     //正则化参数
     //double beta = 0.01;
@@ -92,7 +92,7 @@ public class VariationGaussNewton {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
 	}
 
-	public static void plotFunction(Mesh mesh, MathFun fun, String fileName) {
+	public static void plotFunction(Mesh mesh, MathFunc fun, String fileName) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
@@ -114,8 +114,8 @@ public class VariationGaussNewton {
         mesh.computeNodeBelongsToElements();
 
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
         ElementList eList = mesh.getElementList();
@@ -141,7 +141,7 @@ public class VariationGaussNewton {
 	public SparseVector getResLlmd(Vector u, Vector q) {
         //4.Weak form
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFun fq = new Vector2Function(q);
+        MathFunc fq = new Vector2Function(q);
         weakForm.setParam(fq, FC.C0, null, null);
         //Right hand side(RHS): f(x) = -4.0
         weakForm.setF(FC.c(-4.0));
@@ -182,10 +182,10 @@ public class VariationGaussNewton {
 	public SparseVector getResLu(Vector u, Vector lambda, Vector q) {
         //4.Weak form
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFun fq = new Vector2Function(q);
+        MathFunc fq = new Vector2Function(q);
         weakForm.setParam(fq, FC.C0, null, null);
         //Right hand side(RHS): f(x) = - (u - z)
-        MathFun z_u = z.S(new Vector2Function(u));
+        MathFunc z_u = z.S(new Vector2Function(u));
         plotFunction(mesh, z_u, String.format("z_u%02d.dat",this.iterNum));
         weakForm.setF(z_u);
 
@@ -230,11 +230,11 @@ public class VariationGaussNewton {
         WeakFormL22D weakForm = new WeakFormL22D();
         weakForm.setParam(FC.C0, FC.C1);
         //Right hand side(RHS): f(x) = -(1.0/\beta)\nabla{u}\cdot\nabla{v}
-        MathFun fu = new Vector2Function(u,mesh,"x","y");
-        MathFun flmd = new Vector2Function(lambda,mesh,"x","y");
-        MathFun f = FMath.grad(fu).dot(FMath.grad(flmd));
+        MathFunc fu = new Vector2Function(u,mesh,"x","y");
+        MathFunc flmd = new Vector2Function(lambda,mesh,"x","y");
+        MathFunc f = FMath.grad(fu).dot(FMath.grad(flmd));
         plotFunction(mesh,f,String.format("Grad(u)Grad(lmd)%02d.dat",this.iterNum));
-        MathFun f2 = FC.c(-1.0/beta).M(f).A(qBar);
+        MathFunc f2 = FC.c(-1.0/beta).M(f).A(qBar);
         plotFunction(mesh,f2,String.format("LqRHS%02d.dat",this.iterNum));
         weakForm.setF(f2);
 
@@ -300,7 +300,7 @@ public class VariationGaussNewton {
 	public SparseMatrix getA(Vector qk) {
         //4.Weak form: (\nabla{dl},qk*\nabla{\phi})
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFun fqk = new Vector2Function(qk);
+        MathFunc fqk = new Vector2Function(qk);
         weakForm.setParam(fqk, FC.C0, null, null);
         //Right hand side(RHS): f(x) = 0
         weakForm.setF(FC.C0);
@@ -323,9 +323,9 @@ public class VariationGaussNewton {
         //4.Weak form: (\nabla{\phi},dq\nabla{uk})
         WeakFormGCM weakForm = new WeakFormGCM();
         
-        MathFun fuk = new Vector2Function(uk,mesh,"x","y");
-        MathFun u_x = fuk._d("x");
-        MathFun u_y = fuk._d("y");
+        MathFunc fuk = new Vector2Function(uk,mesh,"x","y");
+        MathFunc u_x = fuk._d("x");
+        MathFunc u_y = fuk._d("y");
         plotFunction(mesh, u_x, "u_x.dat");
         plotFunction(mesh, u_y, "u_y.dat");
         weakForm.setParam(FC.C0, FC.C0, u_x, u_y);
@@ -400,7 +400,7 @@ public class VariationGaussNewton {
 	public Vector solveStateEquation(Vector q) {
         //4.Weak form
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFun fq = new Vector2Function(q);
+        MathFunc fq = new Vector2Function(q);
         weakForm.setParam(fq, FC.C0, null, null);
         //Right hand side(RHS): f(x) = -4.0
         weakForm.setF(FC.c(-4.0));
@@ -427,7 +427,7 @@ public class VariationGaussNewton {
 	public Vector solveAdjointEquation(Vector u, Vector q) {
         //4.Weak form
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFun fq = new Vector2Function(q);
+        MathFunc fq = new Vector2Function(q);
         weakForm.setParam(fq, FC.C0, null, null);
         //Right hand side(RHS): f(x) = - (u - z)
         weakForm.setF(z.S(new Vector2Function(u)));
@@ -470,7 +470,7 @@ public class VariationGaussNewton {
 	}
 	
 	public void imposeDirichletCondition(SparseBlockMatrix BM, SparseBlockVector BV,
-			MathFun diri) {
+			MathFunc diri) {
 		ElementList eList = mesh.getElementList();
 		int nNode = mesh.getNodeList().size();
 		for(int i=1;i<=eList.size();i++) {

@@ -1,7 +1,7 @@
 package edu.uta.futureye.lib.weakform;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
@@ -13,24 +13,24 @@ public class WeakFormElasticIsoPlaneStress2D extends AbstractVectorWeakForm {
 	VectorFunction g_t; //Distributed external loading on boundary
 	
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			MathFun u1 = u.get(1);
-			MathFun u2 = u.get(2);
-			MathFun v1 = v.get(1);
-			MathFun v2 = v.get(2);
-			MathFun u1x = u1._d("x");
-			MathFun u1y = u1._d("y");
-			MathFun u2x = u2._d("x");
-			MathFun u2y = u2._d("y");
-			MathFun v1x = v1._d("x");
-			MathFun v1y = v1._d("y");
-			MathFun v2x = v2._d("x");
-			MathFun v2y = v2._d("y");
+			MathFunc u1 = u.get(1);
+			MathFunc u2 = u.get(2);
+			MathFunc v1 = v.get(1);
+			MathFunc v2 = v.get(2);
+			MathFunc u1x = u1._d("x");
+			MathFunc u1y = u1._d("y");
+			MathFunc u2x = u2._d("x");
+			MathFunc u2y = u2._d("y");
+			MathFunc v1x = v1._d("x");
+			MathFunc v1y = v1._d("y");
+			MathFunc v2x = v2._d("x");
+			MathFunc v2y = v2._d("y");
 			
 			double coef1 = E/(1-gamma*gamma);
 			double coef2 = (1-gamma)/2.0;
-			MathFun integrand = null;
+			MathFunc integrand = null;
 			
 //			integrand = 
 //			u1x.M(u1x.A(u2y.M(gamma)))  .A(
@@ -65,14 +65,14 @@ public class WeakFormElasticIsoPlaneStress2D extends AbstractVectorWeakForm {
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			VectorFunction fb = Utils.interpolateOnElement(g_b, e);
 			return v.dot(fb);
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
 			VectorFunction ft = Utils.interpolateOnElement(g_t, be);
-			MathFun borderIntegrand = v.dot(ft);
+			MathFunc borderIntegrand = v.dot(ft);
 			return borderIntegrand;
 		}
 		return null;

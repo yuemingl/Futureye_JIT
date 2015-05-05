@@ -2,7 +2,7 @@ package edu.uta.futureye.application;
 
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.FutureyeException;
 import static edu.uta.futureye.function.operator.FMath.*;
 
@@ -14,7 +14,7 @@ public class ModelParam {
 	 * 
 	 * @return
 	 */
-	public static MathFun getBkMu_a() {
+	public static MathFunc getBkMu_a() {
 		return C(bk);
 	}
 	/**
@@ -29,7 +29,7 @@ public class ModelParam {
 	 * @param maxMu_a
 	 * @param type
 	 */
-	public static MathFun getMu_a(double incX, double incY, double incR, 
+	public static MathFunc getMu_a(double incX, double incY, double incR, 
 			double maxMu_a, int type) {
 		if(type == 1)
 			return getMu_a(incX, incY, incR, maxMu_a, 1, 0.0, false);
@@ -49,7 +49,7 @@ public class ModelParam {
 	 * @param uniform
 	 * @return
 	 */
-	public static MathFun getMu_a(double incX, double incY, double incR, 
+	public static MathFunc getMu_a(double incX, double incY, double incR, 
 			double maxMu_a,int num_inclusion, double distance, boolean uniform) {
 		final double fcx = incX;
 		final double fcy = incY;
@@ -59,7 +59,7 @@ public class ModelParam {
 		final boolean funi = uniform;
 		
 		
-		MathFun rltMu_a = null;
+		MathFunc rltMu_a = null;
 		if(num_inclusion == 1) {
 			rltMu_a = new AbstractMathFun("x","y"){
 				@Override

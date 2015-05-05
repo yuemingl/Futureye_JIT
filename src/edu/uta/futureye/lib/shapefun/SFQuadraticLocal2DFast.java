@@ -5,7 +5,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.FutureyeException;
@@ -35,7 +35,7 @@ import edu.uta.futureye.util.container.ObjList;
  */
 public class SFQuadraticLocal2DFast extends AbstractMathFun implements ScalarShapeFunction {
 	private int funIndex;
-	private MathFun funOuter = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 
 	private double area = -1.0;
@@ -57,15 +57,15 @@ public class SFQuadraticLocal2DFast extends AbstractMathFun implements ScalarSha
 			this.funIndex = funIndex;
 		}
 		@Override
-		public MathFun _d(String var) {
+		public MathFunc _d(String var) {
 			if(area < 0.0) {
 				FutureyeException e = new FutureyeException("SFLinearLocal2D: area < 0.0");
 				e.printStackTrace();
 				return null;
 			}
-			MathFun fr = new FX("r");
-			MathFun fs = new FX("s");
-			MathFun ft = new FX("t");
+			MathFunc fr = new FX("r");
+			MathFunc fs = new FX("s");
+			MathFunc ft = new FX("t");
 			if(var.equals("x")) {
 				if(funIndex == 0)
 					return new FAxpb("r",dlx[0]*4.0,-dlx[0]);
@@ -207,7 +207,7 @@ public class SFQuadraticLocal2DFast extends AbstractMathFun implements ScalarSha
 	}
 
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return funOuter._d(varName);
 	}
 

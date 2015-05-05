@@ -5,7 +5,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Face;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.lib.shapefun.SFConstant0;
@@ -60,9 +60,9 @@ import static edu.uta.futureye.function.operator.FMath.*;
  */
 public class WeakFormNavierStokes3D extends AbstractVectorWeakForm {
 	protected VectorFunction g_f = null;
-	protected MathFun g_k = null;
+	protected MathFunc g_k = null;
 	protected VectorFunction g_U = null;
-	protected MathFun g_c = null;
+	protected MathFunc g_c = null;
 	//Robin:  k*u_n + d*u - p\vec{n} = 0
 	protected VectorFunction g_d = null;
 
@@ -70,7 +70,7 @@ public class WeakFormNavierStokes3D extends AbstractVectorWeakForm {
 		this.g_f = f;
 	}
 	
-	public void setParam(MathFun k, VectorFunction U, MathFun c) {
+	public void setParam(MathFunc k, VectorFunction U, MathFunc c) {
 		this.g_k = k;
 		this.g_U = U;
 		this.g_c = c;
@@ -82,17 +82,17 @@ public class WeakFormNavierStokes3D extends AbstractVectorWeakForm {
 	}
 	
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
-			MathFun integrand = null;
-			MathFun fk = Utils.interpolateOnElement(g_k,e);
-			MathFun fc = Utils.interpolateOnElement(g_c,e);
+			MathFunc integrand = null;
+			MathFunc fk = Utils.interpolateOnElement(g_k,e);
+			MathFunc fc = Utils.interpolateOnElement(g_c,e);
 			VectorFunction fU = Utils.interpolateOnElement(g_U, e);
 			
-			MathFun u1 = u.get(1), u2 = u.get(2), u3 = u.get(3), p  = u.get(4);
-			MathFun v1 = v.get(1), v2 = v.get(2), v3 = v.get(3), q  = v.get(4);
+			MathFunc u1 = u.get(1), u2 = u.get(2), u3 = u.get(3), p  = u.get(4);
+			MathFunc v1 = v.get(1), v2 = v.get(2), v3 = v.get(3), q  = v.get(4);
 			//upwind: v1 and v2 in (u,v,p)
 			if(this.testDOF.getVVFComponent() != 4) {
 			//if(this.vDOFLocalIndex<=24) {
@@ -135,26 +135,26 @@ public class WeakFormNavierStokes3D extends AbstractVectorWeakForm {
 			VectorFunction grad_u1 = grad(u1,"x","y","z");
 			VectorFunction grad_u2 = grad(u2,"x","y","z");
 			VectorFunction grad_u3 = grad(u3,"x","y","z");
-			MathFun uv1 = grad_u1.dot( grad(v1,"x","y","z") );
-			MathFun uv2 = grad_u2.dot( grad(v2,"x","y","z") );
-			MathFun uv3 = grad_u3.dot( grad(v3,"x","y","z") );
-			MathFun div_v = v1._d("x").A(v2._d("y")).A(v3._d("z"));
-			MathFun div_u = u1._d("x").A(u2._d("y")).A(u3._d("z"));
-			MathFun cvect = fU.dot(grad_u1).M(v1).A(fU.dot(grad_u2).M(v2)).A(fU.dot(grad_u3).M(v3));
-			MathFun cuv = fc.M(u1.M(v1).A(u2.M(v2)).A(u3.M(v3)));
+			MathFunc uv1 = grad_u1.dot( grad(v1,"x","y","z") );
+			MathFunc uv2 = grad_u2.dot( grad(v2,"x","y","z") );
+			MathFunc uv3 = grad_u3.dot( grad(v3,"x","y","z") );
+			MathFunc div_v = v1._d("x").A(v2._d("y")).A(v3._d("z"));
+			MathFunc div_u = u1._d("x").A(u2._d("y")).A(u3._d("z"));
+			MathFunc cvect = fU.dot(grad_u1).M(v1).A(fU.dot(grad_u2).M(v2)).A(fU.dot(grad_u3).M(v3));
+			MathFunc cuv = fc.M(u1.M(v1).A(u2.M(v2)).A(u3.M(v3)));
 			integrand = fk.M( uv1.A(uv2).A(uv3) ).A( cvect ).A( cuv ).S( div_v.M(p) ).A( div_u.M(q) );
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			if(g_d != null) {
 				Element be = e;
-				MathFun fd1 = Utils.interpolateOnElement(g_d.get(1), be);
-				MathFun fd2 = Utils.interpolateOnElement(g_d.get(2), be);
-				MathFun fd3 = Utils.interpolateOnElement(g_d.get(3), be);
-				MathFun u1 = u.get(1), u2 = u.get(2), u3 = u.get(3);
-				MathFun v1 = v.get(1), v2 = v.get(2), v3 = v.get(3);
+				MathFunc fd1 = Utils.interpolateOnElement(g_d.get(1), be);
+				MathFunc fd2 = Utils.interpolateOnElement(g_d.get(2), be);
+				MathFunc fd3 = Utils.interpolateOnElement(g_d.get(3), be);
+				MathFunc u1 = u.get(1), u2 = u.get(2), u3 = u.get(3);
+				MathFunc v1 = v.get(1), v2 = v.get(2), v3 = v.get(3);
 				//Robin:  - k*u_n = d*u - p\vec{n}
 				//d1*u1 + d2*u2 + d3*u3
-				MathFun borderIntegrand = fd1.M(u1.M(v1)).A(fd2.M(u2.M(v2))).A(fd3.M(u3.M(v3)));
+				MathFunc borderIntegrand = fd1.M(u1.M(v1)).A(fd2.M(u2.M(v2))).A(fd3.M(u3.M(v3)));
 				return borderIntegrand;
 			}
 		}
@@ -162,24 +162,24 @@ public class WeakFormNavierStokes3D extends AbstractVectorWeakForm {
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			MathFun f1 = Utils.interpolateOnElement(g_f.get(1), e);
-			MathFun f2 = Utils.interpolateOnElement(g_f.get(2), e);
-			MathFun f3 = Utils.interpolateOnElement(g_f.get(3), e);
-			MathFun v1 = v.get(1), v2 = v.get(2), v3 = v.get(3);
+			MathFunc f1 = Utils.interpolateOnElement(g_f.get(1), e);
+			MathFunc f2 = Utils.interpolateOnElement(g_f.get(2), e);
+			MathFunc f3 = Utils.interpolateOnElement(g_f.get(3), e);
+			MathFunc v1 = v.get(1), v2 = v.get(2), v3 = v.get(3);
 			//(v1*f1+v2*f2)
-			MathFun integrand = v1.M(f1).A(v2.M(f2)).A(v3.M(f3));
+			MathFunc integrand = v1.M(f1).A(v2.M(f2)).A(v3.M(f3));
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
-			MathFun v1 = v.get(1), v2 = v.get(2), v3 = v.get(3), p  = v.get(4);
+			MathFunc v1 = v.get(1), v2 = v.get(2), v3 = v.get(3), p  = v.get(4);
 			//Robin:  - k*u_n = d*u - p\vec{n}
 			//- p\vec{n} = - p*n1*v1 - p*n2*v2 - p*n3*v3
 			Face face = (Face)be.getGeoEntity();
 			Vector n = face.getNormVector();
-			MathFun n1 = C(-1.0*n.get(1)), n2 = C(-1.0*n.get(2)), n3 = C(-1.0*n.get(3));
-			MathFun borderIntegrand = p.M(v1.M(n1)).A(p.M(v2.M(n2))).A(p.M(v3.M(n3)));
+			MathFunc n1 = C(-1.0*n.get(1)), n2 = C(-1.0*n.get(2)), n3 = C(-1.0*n.get(3));
+			MathFunc borderIntegrand = p.M(v1.M(n1)).A(p.M(v2.M(n2))).A(p.M(v3.M(n3)));
 			return borderIntegrand;
 		}
 		return null;

@@ -12,7 +12,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
@@ -40,7 +40,7 @@ public class Vector2Function extends AbstractMathFun {
 	int nDim = 0;
 	
 	//当自变量超出mesh范围时，使用该函数求值
-	MathFun defaultFunction = null;
+	MathFunc defaultFunction = null;
 	Map<Integer, Double> valueMap = null;
 	boolean enableCache = false;
 	
@@ -96,11 +96,11 @@ public class Vector2Function extends AbstractMathFun {
 	 * @param fun
 	 * @return
 	 */
-	public Vector2Function setDefaultFunction(MathFun fun) {
+	public Vector2Function setDefaultFunction(MathFunc fun) {
 		this.defaultFunction = fun;
 		return this;
 	}
-	public MathFun getDefaultFunction() {
+	public MathFunc getDefaultFunction() {
 		return this.defaultFunction;
 	}
 	
@@ -203,12 +203,12 @@ public class Vector2Function extends AbstractMathFun {
 	}
 	
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		if(mesh == null) 
 			throw new FutureyeException(
 					"Please use constructor Vector2Function(Vector u, Mesh mesh, String varName, String ...aryVarNames)");
 		Vector vd = Tools.computeDerivative(mesh, u, varName);
-		MathFun fd = new Vector2Function(vd,mesh,this.varNames);
+		MathFunc fd = new Vector2Function(vd,mesh,this.varNames);
 		return fd;
 	}
 	

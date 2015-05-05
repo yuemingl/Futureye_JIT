@@ -11,7 +11,7 @@ import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -52,7 +52,7 @@ public class T04Lapcace2 {
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
 		
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y"){
 			@Override
 			public double apply(Variable v) {

@@ -4,7 +4,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
@@ -130,7 +130,7 @@ public class SFLinearLocal3D extends AbstractMathFun
 	}
 
 	@Override
-	public MathFun _d(String var) {
+	public MathFunc _d(String var) {
 		if(this.volume < 0.0)
 			throw new FutureyeException("SFLinearLocal3D: volume < 0.0");
 		

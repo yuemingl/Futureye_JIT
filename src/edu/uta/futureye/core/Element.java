@@ -20,7 +20,7 @@ import edu.uta.futureye.core.geometry.topology.RectangleTp;
 import edu.uta.futureye.core.geometry.topology.TetrahedronTp;
 import edu.uta.futureye.core.geometry.topology.Topology3D;
 import edu.uta.futureye.core.geometry.topology.TriangleTp;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
@@ -117,7 +117,7 @@ public class Element {
 	}
 
 	private CoordinateTransform trans = null;
-	protected MathFun jac = null;
+	protected MathFunc jac = null;
 
 	////////////////////////////////////////////////////////////////////
 	public Element() {
@@ -1279,7 +1279,7 @@ public class Element {
 			trans.transformLinear3D(this); //coordinate transform of this element
 			trans.computeJacobianMatrix();
 			trans.computeJacobian3D();
-			jac = (MathFun) trans.getJacobian();
+			jac = (MathFunc) trans.getJacobian();
 		}
 	}
 	
@@ -1305,7 +1305,7 @@ public class Element {
 	 * 
 	 * @return
 	 */
-	public MathFun getJacobin() {
+	public MathFunc getJacobin() {
 		if(jac == null) throw new FutureyeException("");
 		return jac;
 	}

@@ -7,7 +7,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -45,8 +45,8 @@ public class T02Laplace {
         mesh.computeNodeBelongsToElements();
 
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
 

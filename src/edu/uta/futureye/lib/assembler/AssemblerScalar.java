@@ -27,7 +27,7 @@ import edu.uta.futureye.core.geometry.GeoEntity3D;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.DOFList;
@@ -159,7 +159,7 @@ public class AssemblerScalar implements Assembler {
 	
 	//2011/11/28 modified according to vector valued case
 	@Override
-	public void imposeDirichletCondition(MathFun diri) {
+	public void imposeDirichletCondition(MathFunc diri) {
 		ElementList eList = mesh.getElementList();
 		for(int i=1;i<=eList.size();i++) {
 			Element e = eList.at(i);
@@ -255,13 +255,13 @@ public class AssemblerScalar implements Assembler {
 				//Local stiff matrix
 				//注意顺序，内循环test基函数不变，trial基函数循环
 				weakForm.setDOF(dofJ, dofI); 
-				MathFun lhs = weakForm.leftHandSide(e, ItemType.Domain);
+				MathFunc lhs = weakForm.leftHandSide(e, ItemType.Domain);
 				double lhsVal = weakForm.integrate(e, lhs);
 				stiff.add(nGlobalRow, nGlobalCol, lhsVal);
 			}
 			//Local load vector
 			weakForm.setDOF(null,dofI);
-			MathFun rhs = weakForm.rightHandSide(e, ItemType.Domain);
+			MathFunc rhs = weakForm.rightHandSide(e, ItemType.Domain);
 			double rhsVal = weakForm.integrate(e, rhs);
 			load.add(nGlobalRow, rhsVal);
 		}
@@ -294,13 +294,13 @@ public class AssemblerScalar implements Assembler {
 							//Local stiff matrix for border
 							//注意顺序，内循环test函数不变，trial函数循环
 							weakForm.setDOF(dofJ, dofI);
-							MathFun lhsBr = weakForm.leftHandSide(be, ItemType.Border);
+							MathFunc lhsBr = weakForm.leftHandSide(be, ItemType.Border);
 							double lhsBrVal = weakForm.integrate(be, lhsBr);
 							stiff.add(nGlobalRow, nGlobalCol, lhsBrVal);
 						}
 						//Local load vector for border
 						weakForm.setDOF(null, dofI);
-						MathFun rhsBr = weakForm.rightHandSide(be, ItemType.Border);
+						MathFunc rhsBr = weakForm.rightHandSide(be, ItemType.Border);
 						double rhsBrVal = weakForm.integrate(be, rhsBr);
 						load.add(nGlobalRow, rhsBrVal);
 					}
@@ -356,13 +356,13 @@ public class AssemblerScalar implements Assembler {
 				//Local stiff matrix
 				//注意顺序，内循环test函数不变，trial函数循环
 				weakForm.setDOF(dofJ, dofI);
-				MathFun lhs = weakForm.leftHandSide(e, WeakForm.ItemType.Domain);
+				MathFunc lhs = weakForm.leftHandSide(e, WeakForm.ItemType.Domain);
 				double lhsVal = weakForm.integrate(e, lhs);
 				localStiff.add(nLocalRow, nLocalCol, lhsVal);
 			}
 			//Local load vector
 			weakForm.setDOF(null, dofI);
-			MathFun rhs = weakForm.rightHandSide(e, WeakForm.ItemType.Domain);
+			MathFunc rhs = weakForm.rightHandSide(e, WeakForm.ItemType.Domain);
 			double rhsVal = weakForm.integrate(e, rhs);
 			localLoad.add(nLocalRow, rhsVal);
 		}
@@ -395,13 +395,13 @@ public class AssemblerScalar implements Assembler {
 							//Local stiff matrix for border
 							//注意顺序，内循环test函数不变，trial函数循环
 							weakForm.setDOF(dofJ, dofI);
-							MathFun lhsBr = weakForm.leftHandSide(be, WeakForm.ItemType.Border);
+							MathFunc lhsBr = weakForm.leftHandSide(be, WeakForm.ItemType.Border);
 							double lhsBrVal = weakForm.integrate(be, lhsBr);
 							localStiffBorder.add(nLocalRow, nLocalCol, lhsBrVal);
 						}
 						//Local load vector for border
 						weakForm.setDOF(null, dofI);
-						MathFun rhsBr = weakForm.rightHandSide(be, WeakForm.ItemType.Border);
+						MathFunc rhsBr = weakForm.rightHandSide(be, WeakForm.ItemType.Border);
 						double rhsBrVal = weakForm.integrate(be, rhsBr);
 						localLoadBorder.add(nLocalRow, rhsBrVal);						
 					}

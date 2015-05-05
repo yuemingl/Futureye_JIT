@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.geometry.Point;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
@@ -224,7 +224,7 @@ public class Variable {
 	 * @param index
 	 * @return
 	 */
-	public static Variable createFrom(MathFun fun, Point point, int index) {
+	public static Variable createFrom(MathFunc fun, Point point, int index) {
 		if(fun == null)
 			return null;
 		Variable var = new Variable();

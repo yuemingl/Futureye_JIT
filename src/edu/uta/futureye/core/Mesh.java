@@ -10,7 +10,7 @@ import java.util.Set;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.tutorial.Tools;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
@@ -45,7 +45,7 @@ public class Mesh {
 	//Boundary types on nodes are defined through functions
 	//A function indicates which node belongs to the corresponding NodeType
 	//by its coordinates
-	protected Map<NodeType, MathFun> mapNTF;
+	protected Map<NodeType, MathFunc> mapNTF;
 	
 	public boolean debug = false;
 	
@@ -171,7 +171,7 @@ public class Mesh {
 	 * @param nodeType
 	 * @param fun 控制函数，fun(x)>0边界点，fun(x)<=0内点，x为结点坐标
 	 */
-	public void addBorderType(NodeType nodeType, MathFun fun) {
+	public void addBorderType(NodeType nodeType, MathFunc fun) {
 		
 	}
 	
@@ -195,7 +195,7 @@ public class Mesh {
 	 * 
 	 * @param mapNTF
 	 */
-	public void markBorderNode(Map<NodeType,MathFun> mapNTF) {
+	public void markBorderNode(Map<NodeType,MathFunc> mapNTF) {
 		markBorderNode(1,mapNTF);
 	}
 	
@@ -207,7 +207,7 @@ public class Mesh {
 	 * @param nVVFComponent
 	 * @param mapNTF
 	 */
-	public void markBorderNode(int nVVFComponent, Map<NodeType,MathFun> mapNTF) {
+	public void markBorderNode(int nVVFComponent, Map<NodeType,MathFunc> mapNTF) {
 		if(debug)
 			System.out.println("markBorderNode...");
 		this.mapNTF = mapNTF;
@@ -227,9 +227,9 @@ public class Mesh {
 					node.setNodeType(nVVFComponent, NodeType.Inner); 
 				} else { //否则是边界结点
 					//System.out.println("Border Node:"+node.globalIndex);
-					for(Entry<NodeType,MathFun> entry : mapNTF.entrySet()) {
+					for(Entry<NodeType,MathFunc> entry : mapNTF.entrySet()) {
 						NodeType nodeType = entry.getKey();
-						MathFun fun = entry.getValue();
+						MathFunc fun = entry.getValue();
 						if(fun != null) {
 							Variable v = new Variable();
 							int ic = 1;
@@ -255,12 +255,12 @@ public class Mesh {
 	 * @param setVVFComponent components indices set
 	 * @param mapNTF
 	 */
-	public void markBorderNode(ObjIndex setVVFComponent, Map<NodeType,MathFun> mapNTF) {
+	public void markBorderNode(ObjIndex setVVFComponent, Map<NodeType,MathFunc> mapNTF) {
 		for(int i:setVVFComponent)
 			markBorderNode(i,mapNTF);
 	}
 	
-	public Map<NodeType, MathFun> getMarkBorderMap() {
+	public Map<NodeType, MathFunc> getMarkBorderMap() {
 		return this.mapNTF;
 	}
 	

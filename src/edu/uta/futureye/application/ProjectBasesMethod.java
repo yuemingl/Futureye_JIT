@@ -22,7 +22,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.element.FELinearTriangle;
@@ -47,7 +47,7 @@ public class ProjectBasesMethod {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
 	}
 
-	public static void plotFunction(Mesh mesh, MathFun fun, String fileName) {
+	public static void plotFunction(Mesh mesh, MathFunc fun, String fileName) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
@@ -75,8 +75,8 @@ public class ProjectBasesMethod {
         mesh.computeNeighborNodes();
 
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
         
@@ -256,7 +256,7 @@ public class ProjectBasesMethod {
 		x.print();
 		
 		
-		MathFun rlt_mu_a = FC.C0;
+		MathFunc rlt_mu_a = FC.C0;
 		double[] coef = x.getData();
 		for(int i=0;i<xx.length;i++) {
 			for(int j=0;j<yy.length;j++) {

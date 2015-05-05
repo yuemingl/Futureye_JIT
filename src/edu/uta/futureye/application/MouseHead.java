@@ -25,7 +25,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -48,15 +48,15 @@ public class MouseHead {
 	public String borderDataPath = null;
 	
 	//Light source
-	public MathFun delta = null;
+	public MathFunc delta = null;
 	public Variable lightSource = null; //light source position
 	
 	//Inclusion mu_a
-	public MathFun mu_a = null;
+	public MathFunc mu_a = null;
 	public double mu_a_bk = 0.1;
 
 	//Inclusion 1/(3*mu_s') = 1.0/30.0 ?
-	public MathFun k = new FC(1.0/50.0);
+	public MathFunc k = new FC(1.0/50.0);
 	
 	public double factor = 10000;
 	public double baseline = 0.0;
@@ -75,7 +75,7 @@ public class MouseHead {
 	public static boolean debug = false;
 	public static boolean outputMiddleData = false;
 	public boolean bSimulate = false;
-	public MathFun mu_aSimulate = null;
+	public MathFunc mu_aSimulate = null;
 
 	//=true 使用base line测量数据做为背景（通过求解一个外问题）
 	//=false 使用计算出来的背景解
@@ -98,8 +98,8 @@ public class MouseHead {
 	 * @param maxMu_a
 	 * @param bkMu_a
 	 */
-	public MathFun makeBandMu_a(double incX, double incBand, double maxMu_a, double bkMu_a) {
-		MathFun rltMu_a = null;
+	public MathFunc makeBandMu_a(double incX, double incBand, double maxMu_a, double bkMu_a) {
+		MathFunc rltMu_a = null;
 		final double fcx = incX;
 		final double fcr = incBand;
 		final double fMaxMu_a = maxMu_a;
@@ -128,8 +128,8 @@ public class MouseHead {
 	 * @param maxMu_a
 	 * @return
 	 */
-	public MathFun makeMu_a(double incX, double incY, double incR, double maxMu_a, double bkMu_a) {
-		MathFun rltMu_a = null;
+	public MathFunc makeMu_a(double incX, double incY, double incR, double maxMu_a, double bkMu_a) {
+		MathFunc rltMu_a = null;
 		final double fcx = incX;
 		final double fcy = incY;
 		final double fcr = incR;
@@ -153,7 +153,7 @@ public class MouseHead {
 	
 	public Vector solveForwardNeumann(Mesh mesh) {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.clearBorderNodeMark();
@@ -182,7 +182,7 @@ public class MouseHead {
 		return u;
 	}	
 	
-	public Vector solveForwardDirichlet(Mesh mesh, MathFun diri) {
+	public Vector solveForwardDirichlet(Mesh mesh, MathFunc diri) {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side
@@ -211,7 +211,7 @@ public class MouseHead {
 	
 	//public Vector solveParamInverse(Mesh mesh, Vector U, final TailType type) {
 	public Vector solveParamInverse(Mesh mesh, Vector U) {
-		HashMap<NodeType, MathFun> mapNTF2 = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF2 = new HashMap<NodeType, MathFunc>();
 		
 		mapNTF2.put(NodeType.Dirichlet, new AbstractMathFun("x","y") {
 			@Override
@@ -981,7 +981,7 @@ public class MouseHead {
 	 */
 	public void markExteriorBorder(Mesh mesh, final TailType fTailType) {
 		//外问题 Solve exterior problem
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y") {
 			@Override
 			public double apply(Variable v) {
@@ -1126,7 +1126,7 @@ public class MouseHead {
 			//-------------求解外问题(Solve exterior problem)-----------
 			markExteriorBorder(meshOmega1,tailType);
 			//读取测量边界条件，光源编号为srcLightId，时间编号为timeId
-			MathFun diri = null;
+			MathFunc diri = null;
 			//取timeId=1作为背景
 			ObjList<PairDoubleInteger> measBorderValues = readInterpData(srcLightId,1);
 			//外问题Omega1的"内外边界"都采用Dirichlet条件
@@ -1148,7 +1148,7 @@ public class MouseHead {
 			Tools.plotVector(meshOmega2, outputFolder, tailType+"_u2_bk_extract.dat", u2_bk);
 		
 			//u2_bk通过在Omega2上指定边界条件为测量值，计算获得内部光强值
-			HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+			HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 			mapNTF.put(NodeType.Dirichlet, null);
 			meshOmega2.clearBorderNodeMark();
 			meshOmega2.markBorderNode(mapNTF);
@@ -1175,7 +1175,7 @@ public class MouseHead {
 		
 		Vector u1_sim = null;
 		if(bSimulate) {
-			MathFun tmp_mu_a = this.mu_a;
+			MathFunc tmp_mu_a = this.mu_a;
 			this.mu_a = mu_aSimulate;
 			Tools.plotFunction(meshOmega0, outputFolder, tailType+"_mu_a_sim.dat", this.mu_a);
 			//大区域模拟Inclusion解，用于观察对比
@@ -1210,7 +1210,7 @@ public class MouseHead {
 			}
 		}
 		//读取测量边界条件，光源编号为srcLightId，时间编号为timeId
-		MathFun diri = null;
+		MathFunc diri = null;
 		if(bSimulate)
 			diri = new Vector2Function(u1_sim);
 		else {

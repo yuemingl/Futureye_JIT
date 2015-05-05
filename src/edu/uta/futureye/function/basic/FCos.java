@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 
 public class FCos extends AbstractMathFun{
 	
@@ -26,7 +26,7 @@ public class FCos extends AbstractMathFun{
 	}
 	
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return (new FSin(getVarNames())).M(-1);
 	}
 

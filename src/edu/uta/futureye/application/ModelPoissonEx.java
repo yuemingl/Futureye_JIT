@@ -9,7 +9,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
@@ -29,11 +29,11 @@ public class ModelPoissonEx {
 	public Mesh mesh;
 	
 	//Right hand side
-	public MathFun f = null;
+	public MathFunc f = null;
 	
 	//Coefficient
-	public MathFun k = FC.C1;
-	public MathFun c = FC.C0;
+	public MathFunc k = FC.C1;
+	public MathFunc c = FC.C0;
 	
 	public ModelPoissonEx(Mesh mesh) {
 		this.mesh = mesh;
@@ -57,10 +57,10 @@ public class ModelPoissonEx {
 	 * @param diri: the values of Dirichlet condition
 	 * @return
 	 */
-	public Vector solveMixedBorder(MathFun diriBoundaryMark, MathFun diri,
-			MathFun robin_g, MathFun robin_d) {
+	public Vector solveMixedBorder(MathFunc diriBoundaryMark, MathFunc diri,
+			MathFunc robin_g, MathFunc robin_d) {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		if(diriBoundaryMark == null && diri == null) {
 			mapNTF.put(NodeType.Robin, null);
 		} else if(diriBoundaryMark == null && diri != null) {
@@ -107,7 +107,7 @@ public class ModelPoissonEx {
 		return solveMixedBorder(null,null,null,FC.C1);
 	}
 
-	public Vector solveDirichlet(MathFun diri) {
+	public Vector solveDirichlet(MathFunc diri) {
 		return solveMixedBorder(null,diri,null,null);
 	}	
 	
@@ -214,8 +214,8 @@ public class ModelPoissonEx {
 
 		MeshReader readerGCM = new MeshReader(gridFileSmall);
 		Mesh meshSmall = readerGCM.read2DMesh();
-		MathFun real = VariationGaussNewtonDOTGeneral.generateRealMu_aTest15(meshSmall, 0.1);
-		MathFun guess = VariationGaussNewtonDOTGeneral.generateGuessMu_aTest15(meshSmall, 0.1);
+		MathFunc real = VariationGaussNewtonDOTGeneral.generateRealMu_aTest15(meshSmall, 0.1);
+		MathFunc guess = VariationGaussNewtonDOTGeneral.generateGuessMu_aTest15(meshSmall, 0.1);
 		Tools.plotFunction(meshSmall, outputFolder, "uReal_Test15.dat", real);
 		Tools.plotFunction(meshSmall, outputFolder, "uGuess_Test15.dat", guess);
 		

@@ -8,7 +8,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
@@ -29,8 +29,8 @@ import static edu.uta.futureye.function.operator.FMath.*;
 public class SFLinearLocal2D  extends AbstractMathFun 
 							  implements ScalarShapeFunction {
 	protected int funIndex;
-	private MathFun funOuter = null;
-	private MathFun funCompose = null;
+	private MathFunc funOuter = null;
+	private MathFunc funCompose = null;
 	protected ObjList<String> innerVarNames = null;
 	
 	protected Element e = null;
@@ -47,7 +47,7 @@ public class SFLinearLocal2D  extends AbstractMathFun
 			super(SFLinearLocal2D.this.varNames);
 		}
 		@Override
-		public MathFun _d(String var) {
+		public MathFunc _d(String var) {
 			if(varNames.get(funIndex).equals(var)) { 
 				//d(N1)/dr = 1.0;  d(N2)/ds = 1.0;  d(N3)/dt = 1.0
 				return C1;
@@ -88,14 +88,14 @@ public class SFLinearLocal2D  extends AbstractMathFun
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
-		Map<String, MathFun> fInners = new HashMap<String, MathFun>();
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		
 		final String varName = varNames.get(funIndex);
 		//r = r(x,y)
 		//s = s(x,y)
 		//t = t(x,y)
 		fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {	
-			public MathFun _d(String var) {
+			public MathFunc _d(String var) {
 				if(area < 0.0) {
 					throw new FutureyeException("Check nodes order: area < 0.0");
 				} else {
@@ -143,7 +143,7 @@ public class SFLinearLocal2D  extends AbstractMathFun
 	}
 	
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return funCompose._d(varName);
 	}
 

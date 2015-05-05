@@ -5,7 +5,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.intf.WeakForm;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.FutureyeException;
@@ -25,12 +25,12 @@ public abstract class AbstractVectorWeakForm implements WeakForm {
 	}
 
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -68,7 +68,7 @@ public abstract class AbstractVectorWeakForm implements WeakForm {
 	}
 	
 	@Override
-	public double integrate(Element e, MathFun fun) {
+	public double integrate(Element e, MathFunc fun) {
 		if(fun == null) return 0.0;
 		if(e.dim() == 2) {
 			if(e.vertices().size() == 3) {

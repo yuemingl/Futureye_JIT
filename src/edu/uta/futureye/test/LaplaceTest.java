@@ -22,7 +22,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -46,7 +46,7 @@ public class LaplaceTest {
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
 		
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 //		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y"){
 //			@Override
 //			public double value(Variable v) {
@@ -150,7 +150,7 @@ public class LaplaceTest {
 		MeshReader reader = new MeshReader("rectangle_refine.grd");
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
 //			@Override
 //			public double value(Variable v) {
@@ -230,7 +230,7 @@ public class LaplaceTest {
 		MeshReader reader = new MeshReader("mixed.grd");
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
 //			@Override
 //			public double value(Variable v) {
@@ -353,7 +353,7 @@ public class LaplaceTest {
 		}
 		
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -451,7 +451,7 @@ public class LaplaceTest {
 		}
 		
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
 //									@Override
 //									public double value(Variable v) {
@@ -531,7 +531,7 @@ public class LaplaceTest {
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
 		
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);		
 		mesh.markBorderNode(mapNTF);
 

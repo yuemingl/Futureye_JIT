@@ -9,7 +9,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.Utils;
@@ -28,8 +28,8 @@ import static edu.uta.futureye.function.operator.FMath.*;
  */
 public class SFBilinearLocal2DRegular extends AbstractMathFun implements ScalarShapeFunction {
 	private int funIndex;
-	private MathFun funCompose = null;
-	private MathFun funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 	private double coef = 1.0;
 
@@ -69,14 +69,14 @@ public class SFBilinearLocal2DRegular extends AbstractMathFun implements ScalarS
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
-		Map<String, MathFun> fInners = new HashMap<String, MathFun>(4);
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		//r = r(x,y)
 		//s = s(x,y)
 		for(final String varName : varNames) {
 			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
 				
-				public MathFun _d(String var) {
+				public MathFunc _d(String var) {
 					double x1 = e.nodes.at(1).coord(1);
 					double x2 = e.nodes.at(2).coord(1);
 					double x3 = e.nodes.at(3).coord(1);
@@ -183,7 +183,7 @@ public class SFBilinearLocal2DRegular extends AbstractMathFun implements ScalarS
 		Create(funID,1.0);
 	}
 
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return funCompose._d(varName);
 	}
 

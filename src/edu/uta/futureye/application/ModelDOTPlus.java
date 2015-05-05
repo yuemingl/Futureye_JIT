@@ -13,7 +13,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -37,15 +37,15 @@ import edu.uta.futureye.util.container.NodeList;
  */
 public class ModelDOTPlus {
 	//Light source
-	public MathFun delta = null;
+	public MathFunc delta = null;
 	public Variable lightPosition = null; //light source position
 	public int lightNum = -1;
 	
 	//Inclusion mu_a
-	public MathFun mu_a = null;
+	public MathFunc mu_a = null;
 	
 	//mu_s'
-	public MathFun mu_s = new FC(50.0/3);
+	public MathFunc mu_s = new FC(50.0/3);
 	
 	/**
 	 * type=1: one inclusion
@@ -127,10 +127,10 @@ public class ModelDOTPlus {
 	 * @param diri: the values of Dirichlet condition
 	 * @return
 	 */
-	public Vector solveMixedBorder(Mesh mesh, MathFun diriBoundaryMark, 
-			MathFun diri, MathFun robinQ, MathFun robinD) {
+	public Vector solveMixedBorder(Mesh mesh, MathFunc diriBoundaryMark, 
+			MathFunc diri, MathFunc robinQ, MathFunc robinD) {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		if(diriBoundaryMark == null && diri == null) {
 			mapNTF.put(NodeType.Robin, null);
 		} else if(diriBoundaryMark == null && diri != null) {
@@ -181,7 +181,7 @@ public class ModelDOTPlus {
 		return solveMixedBorder(mesh,null,null,null, FC.C1.D(mu_s.A(mu_a).M(3.0)));
 	}
 	
-	public Vector solveDirichlet(Mesh mesh, MathFun diri) {
+	public Vector solveDirichlet(Mesh mesh, MathFunc diri) {
 		return solveMixedBorder(mesh,null,diri,null,null);
 	}	
 	
@@ -280,7 +280,7 @@ public class ModelDOTPlus {
 				FMath.axpy(-1.0, uSmallApproximate, uSmallGuess));
 		
 		//TEST 3. Only up side of the domain is Dirichlet boundary
-		MathFun diriBoundaryMark = new AbstractMathFun("x","y"){
+		MathFunc diriBoundaryMark = new AbstractMathFun("x","y"){
 			@Override
 			public double apply(Variable v) {
 				//double x = v.get("x");

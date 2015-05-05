@@ -16,10 +16,10 @@ import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 
 public class BytecodeUtils {
-	public static ClassGen genClassBytecodeFunc(MathFun func, String funcClsName, boolean writeClassFile, boolean staticMethod) {
+	public static ClassGen genClassBytecodeFunc(MathFunc func, String funcClsName, boolean writeClassFile, boolean staticMethod) {
 		String packageName = "edu.uta.futureye.bytecode";
 		String clsName = funcClsName;
 		String fullClsName = packageName+"."+clsName;

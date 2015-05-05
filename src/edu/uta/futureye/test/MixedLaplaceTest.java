@@ -15,7 +15,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerMixedLaplace;
@@ -56,7 +56,7 @@ public class MixedLaplaceTest {
 //	    }
 		
 		
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -91,8 +91,8 @@ public class MixedLaplaceTest {
 		
 		//-\Delta{u} = f
 		//u(x,y)=0, (x,y)\in\partial{\Omega}
-		MathFun fxm5 = new FAxpb("x",1.0,-5.0);
-		MathFun fym5 = new FAxpb("y",1.0,-5.0);
+		MathFunc fxm5 = new FAxpb("x",1.0,-5.0);
+		MathFunc fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
 				//new FConstant(1.0)
 	

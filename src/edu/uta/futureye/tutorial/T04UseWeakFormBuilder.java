@@ -13,7 +13,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
@@ -54,8 +54,8 @@ public class T04UseWeakFormBuilder {
         mesh.computeNodeBelongsToElements();
 
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
 
@@ -72,10 +72,10 @@ public class T04UseWeakFormBuilder {
 			 * Override this function to define weak form
 			 */
 			@Override
-			public MathFun makeExpression(Element e, Type type) {
+			public MathFunc makeExpression(Element e, Type type) {
 				ScalarShapeFunction u = getScalarTrial();
 				ScalarShapeFunction v = getScalarTest();
-				MathFun ff = getParam("f",e);
+				MathFunc ff = getParam("f",e);
 				switch(type) {
 					case LHS_Domain:
 						// A(u,v) = u_x*v_x + u_y*v_y
@@ -135,7 +135,7 @@ public class T04UseWeakFormBuilder {
 		mesh.computeNodeBelongsToElements();
 		
         //2.Mark border types
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Robin type on boundary x=3.0 of \Omega
 		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y"){
 			@Override
@@ -167,14 +167,14 @@ public class T04UseWeakFormBuilder {
 			 * Override this function to define weak form
 			 */
 			@Override
-			public MathFun makeExpression(Element e, Type type) {
+			public MathFunc makeExpression(Element e, Type type) {
 				ScalarShapeFunction u = getScalarTrial();
 				ScalarShapeFunction v = getScalarTest();
 				//Call param() to get parameters, do NOT define functions here 
 				//except for constant functions (or class FC). Because functions 
 				//will be transformed to local coordinate system by param()
-				MathFun fk = getParam("k",e);
-				MathFun ff = getParam("f",e);
+				MathFunc fk = getParam("k",e);
+				MathFunc ff = getParam("f",e);
 				switch(type) {
 					case LHS_Domain:
 						// k*(u_x*v_x + u_y*v_y) in \Omega
@@ -247,8 +247,8 @@ public class T04UseWeakFormBuilder {
         mesh.computeNodeBelongsToElements();
 
         //2.Mark border types
-        HashMap<NodeType, MathFun> mapNTF =
-                new HashMap<NodeType, MathFun>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
 		//Robin type on boundary x=3.0 of \Omega
 		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y"){
 			@Override
@@ -275,14 +275,14 @@ public class T04UseWeakFormBuilder {
 			 * Override this function to define weak form
 			 */
 			@Override
-			public MathFun makeExpression(Element e, Type type) {
+			public MathFunc makeExpression(Element e, Type type) {
 				ScalarShapeFunction u = getScalarTrial();
 				ScalarShapeFunction v = getScalarTest();
-				MathFun ff = getParam("f",e);
-				MathFun fk = getParam("k",e);
-				MathFun fc = getParam("c",e);
-				MathFun fd = getParam("d",e);
-				MathFun fg = getParam("g",e);
+				MathFunc ff = getParam("f",e);
+				MathFunc fk = getParam("k",e);
+				MathFunc fc = getParam("c",e);
+				MathFunc fd = getParam("d",e);
+				MathFunc fg = getParam("g",e);
 				switch(type) {
 				case LHS_Domain:
 					return fk.M( grad(u,"x","y").dot(grad(v,"x","y")) ).A(

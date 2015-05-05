@@ -21,7 +21,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.operator.FMath;
@@ -311,11 +311,11 @@ public class Utils {
 		}
 		return rlt;
 	}
-	public static MathFun interpolateOnElement(MathFun fun, Element e) {
+	public static MathFunc interpolateOnElement(MathFunc fun, Element e) {
 		if(fun == null) throw new FutureyeException("fun should not be null");
 		if(fun.isConstant())
 			return fun;
-		MathFun rlt = new FC(0.0);
+		MathFunc rlt = new FC(0.0);
 //		int nNode = e.nodes.size();
 //		for(int i=1;i<=nNode;i++) {
 //			DOFList dofListI = e.getNodeDOFList(i);
@@ -340,7 +340,7 @@ public class Utils {
 					index = DOFs.at(1).getGlobalIndex();
 				Variable var = Variable.createFrom(fun, p, index);
 				var.setElement(e);
-				MathFun PValue = new FC(fun.apply(var));
+				MathFunc PValue = new FC(fun.apply(var));
 				rlt = rlt.A(PValue.M(sf));			
 			}
 			
@@ -358,7 +358,7 @@ public class Utils {
 					index = DOFs.at(1).getGlobalIndex();
 				Variable var = Variable.createFrom(fun, p, index);
 				var.setElement(e);
-				MathFun PValue = new FC(fun.apply(var));
+				MathFunc PValue = new FC(fun.apply(var));
 				rlt = rlt.A(PValue.M(sf));	
 			}
 		} else if(e.dim()==3) {
@@ -376,7 +376,7 @@ public class Utils {
 					index = DOFs.at(1).getGlobalIndex();
 				Variable var = Variable.createFrom(fun, p, index);
 				var.setElement(e);
-				MathFun PValue = new FC(fun.apply(var));
+				MathFunc PValue = new FC(fun.apply(var));
 				rlt = rlt.A(PValue.M(sf));			
 			}
 		}
@@ -384,9 +384,9 @@ public class Utils {
 	}
 	
 	//只是用于三角形线性元
-	public static Map<String, MathFun> getFunctionComposeMap(Element e) {
+	public static Map<String, MathFunc> getFunctionComposeMap(Element e) {
 		final Element fe =e;
-		Map<String, MathFun> fInners = new HashMap<String, MathFun>();
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		final List<String> varNamesInner = new LinkedList<String>();
 		varNamesInner.add("r");
 		varNamesInner.add("s");
@@ -826,7 +826,7 @@ public class Utils {
 	 * @param debug
 	 * @return
 	 */
-	public static double GoldenSectionSearch(double a, double b, double eps, MathFun f, boolean debug) {
+	public static double GoldenSectionSearch(double a, double b, double eps, MathFunc f, boolean debug) {
 		if(debug) System.out.println("Golden Section Search "+f+" :");
 		double r = (Math.sqrt(5)-1.0)/2.0; //0.618...
 		double x = a + r*(b-a);

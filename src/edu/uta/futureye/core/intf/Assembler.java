@@ -3,7 +3,7 @@ package edu.uta.futureye.core.intf;
 import symjava.symbolic.Expr;
 import edu.uta.futureye.algebra.intf.SparseMatrix;
 import edu.uta.futureye.algebra.intf.SparseVector;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 
 /**
@@ -46,7 +46,7 @@ public interface Assembler {
 	 * 
 	 * @param diri
 	 */
-	void imposeDirichletCondition(MathFun diri);
+	void imposeDirichletCondition(MathFunc diri);
 	
 	/**
 	 * Impose Dirichlet boundary condition constraints for 

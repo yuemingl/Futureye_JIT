@@ -11,7 +11,7 @@ import edu.uta.futureye.function.VN;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
@@ -28,8 +28,8 @@ import edu.uta.futureye.util.container.ObjList;
  */
 public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFunction {
 	private int funIndex;
-	private MathFun funCompose = null;
-	private MathFun funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 	private double coef = 1.0;
 
@@ -44,15 +44,15 @@ public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFu
 			{-1,-1,-1},
 			{-1, 1,-1}
 		};
-	MathFun x_r = null;
-	MathFun x_s = null;
-	MathFun x_t = null;
-	MathFun y_r = null;
-	MathFun y_s = null;
-	MathFun y_t = null;
-	MathFun z_r = null;
-	MathFun z_s = null;
-	MathFun z_t = null;
+	MathFunc x_r = null;
+	MathFunc x_s = null;
+	MathFunc x_t = null;
+	MathFunc y_r = null;
+	MathFunc y_s = null;
+	MathFunc y_t = null;
+	MathFunc z_r = null;
+	MathFunc z_s = null;
+	MathFunc z_t = null;
 	
 	class InvJ extends AbstractMathFun {
 		String rst,xyz;
@@ -213,7 +213,7 @@ public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFu
 		}
 		
 		@Override
-		public MathFun _d(String var) {
+		public MathFunc _d(String var) {
 			return new FOuter_d(varNames,var,funIndex);
 		}
 		public String toString() {
@@ -312,13 +312,13 @@ public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFu
 		innerVarNames = new ObjList<String>("x","y","z");
 		
 		//复合函数
-		Map<String, MathFun> fInners = new HashMap<String, MathFun>(4);
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
 			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
 				
 				//r_x,r_y,r_z, s_x,s_y,s_z, t_x,t_y,t_z
-				public MathFun _d(String var) {
+				public MathFunc _d(String var) {
 /**
 f(x,y,z) = g(r,s,t)
 f_x = g_r*r_x + g_s*s_x + g_t*t_x ---(1)
@@ -382,7 +382,7 @@ from the above 9 equations, we have:
 		Create(funID,1.0);
 	}
 
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return funCompose._d(varName);
 	}
 
@@ -418,7 +418,7 @@ from the above 9 equations, we have:
 //		z_t = fz._d("t");
 		
 		//faster
-		MathFun []funs = e.getCoordTrans().getJacobianMatrix();
+		MathFunc []funs = e.getCoordTrans().getJacobianMatrix();
 		
 		x_r = funs[0];
 		x_s = funs[1];

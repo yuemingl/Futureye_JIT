@@ -8,7 +8,7 @@ import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
@@ -89,7 +89,7 @@ public abstract class AbstractVectorFunction implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction compose(Map<String,MathFun> fInners) {
+	public VectorFunction compose(Map<String,MathFunc> fInners) {
 		for(int i=1; i<=dim; i++)
 			this.set(i,this.get(i).compose(fInners));
 		return this;
@@ -97,7 +97,7 @@ public abstract class AbstractVectorFunction implements VectorFunction {
 	
 	/////////////////////////////////////////////
 	@Override
-	public MathFun get(int index) {
+	public MathFunc get(int index) {
 		throw new FutureyeException("Component of AbstractVectorFunction is not define!");
 	}
 	
@@ -162,13 +162,13 @@ public abstract class AbstractVectorFunction implements VectorFunction {
 	}
 	
 	@Override
-	public MathFun dot(VectorFunction b) {
+	public MathFunc dot(VectorFunction b) {
 		if(dim != b.getDim()) {
 			Exception e = new FutureyeException("Dims between two vector functions must be same!");
 			e.printStackTrace();
 			return null;
 		}
-		MathFun rlt = FC.C0;
+		MathFunc rlt = FC.C0;
 		for(int i=1;i<=dim;i++) {
 			rlt = rlt.A(this.get(i).M(b.get(i)));
 		}
@@ -176,8 +176,8 @@ public abstract class AbstractVectorFunction implements VectorFunction {
 	}
 
 	@Override
-	public MathFun dot(Vector b) {
-		MathFun rlt = FC.C0;
+	public MathFunc dot(Vector b) {
+		MathFunc rlt = FC.C0;
 		for(int i=1;i<=dim;i++) {
 			rlt = rlt.A(this.get(i).M(b.get(i)));
 		}

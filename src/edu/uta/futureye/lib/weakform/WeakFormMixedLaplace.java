@@ -7,7 +7,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.Utils;
@@ -37,18 +37,18 @@ import static edu.uta.futureye.function.operator.FMath.*;
  *
  */
 public class WeakFormMixedLaplace extends AbstractVectorWeakForm {
-	protected MathFun g_f = null;
-	protected MathFun g_k = null;
+	protected MathFunc g_f = null;
+	protected MathFunc g_k = null;
 	//protected Function g_c = null;
 	//protected Function g_g = null;
 	//protected Function g_d = null;
 	
-	public void setF(MathFun f) {
+	public void setF(MathFunc f) {
 		this.g_f = f;
 	}
 	
 	//Robin:  d*u + k*u_n = g
-	public void setParam(MathFun k,MathFun c,MathFun g,MathFun d) {
+	public void setParam(MathFunc k,MathFunc c,MathFunc g,MathFunc d) {
 		this.g_k = k;
 		//this.g_c = c;
 		//this.g_g = g;
@@ -89,7 +89,7 @@ public class WeakFormMixedLaplace extends AbstractVectorWeakForm {
 				VectorShapeFunction vecU = dofU.getVSF();
 				
 				//B = (p,q)_{\Omega}
-				MathFun integrandB = null;
+				MathFunc integrandB = null;
 				integrandB = vecU.dot(vecV);
 				//单元上数值积分
 				if(e.vertices().size() == 3) {
@@ -102,7 +102,7 @@ public class WeakFormMixedLaplace extends AbstractVectorWeakForm {
 			for(int k=1;k<=nElementDOF;k++) {
 				DOF dofE = eleDOFs.at(k);
 				//C = (u,\div{q})_{\Omega}
-				MathFun integrandC = null;
+				MathFunc integrandC = null;
 				integrandC = div(vecV);
 				double val = FOIntegrate.intOnTriangleRefElement(
 						integrandC.M(e.getJacobin()),4);
@@ -117,7 +117,7 @@ public class WeakFormMixedLaplace extends AbstractVectorWeakForm {
 		for(int k=1;k<=nElementDOF;k++) {
 			DOF dofE = eleDOFs.at(k);
 			//ShapeFunction sf = dofE.getSF(); //分片常数元，在积分项中系数是1
-			MathFun integrand = Utils.interpolateOnElement(g_f, e);
+			MathFunc integrand = Utils.interpolateOnElement(g_f, e);
 			//bf = -(v,f)_{\Omega}
 			integrand = FC.c(-1.0).M(integrand);
 			double val = 0.0;

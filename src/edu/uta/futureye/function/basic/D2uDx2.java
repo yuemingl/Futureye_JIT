@@ -5,7 +5,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.FutureyeException;
 
 /**
@@ -52,7 +52,7 @@ public class D2uDx2 extends AbstractMathFun implements ElementDependentFunction 
 	protected Mesh mesh = null;
 	protected Vector2Function u = null;
 	protected String x = null;
-	protected MathFun fdu2 = null;
+	protected MathFunc fdu2 = null;
 	
 	/**
 	 * 

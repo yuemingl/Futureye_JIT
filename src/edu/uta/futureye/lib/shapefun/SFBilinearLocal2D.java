@@ -10,7 +10,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
@@ -21,18 +21,18 @@ import static edu.uta.futureye.function.operator.FMath.*;
 
 public class SFBilinearLocal2D extends AbstractMathFun implements ScalarShapeFunction {
 	private int funIndex;
-	private MathFun funCompose = null;
-	private MathFun funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 	private double coef = 1.0;
 
 	Element e;
 	CoordinateTransform trans = new CoordinateTransform(2);
-	MathFun jac = null;
-	MathFun x_r = null;
-	MathFun x_s = null;
-	MathFun y_r = null;
-	MathFun y_s = null;
+	MathFunc jac = null;
+	MathFunc x_r = null;
+	MathFunc x_s = null;
+	MathFunc y_r = null;
+	MathFunc y_s = null;
 	
 	
 	/**
@@ -67,7 +67,7 @@ public class SFBilinearLocal2D extends AbstractMathFun implements ScalarShapeFun
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
-		Map<String, MathFun> fInners = new HashMap<String, MathFun>(3);
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(3);
 		
 		//r = r(x,y)
 		//s = s(x,y)
@@ -97,7 +97,7 @@ from the above four equations, we have:
  (s_x s_y) = inv(J)
  */				
 				//Derivatives: r_x, r_y, s_x, s_y
-				public MathFun _d(String var) {
+				public MathFunc _d(String var) {
 					if(varName.equals("r")) {
 						if(var.equals("x")) //r_x
 							return y_s.D(jac);
@@ -148,7 +148,7 @@ public double apply(Variable v) {
 		Create(funID,1.0);
 	}
 
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return funCompose._d(varName);
 	}
 
@@ -179,7 +179,7 @@ public double apply(Variable v) {
 //		y_r = fy._d("r");
 //		y_s = fy._d("s");
 		
-		MathFun [] funs = e.getCoordTrans().getJacobianMatrix();
+		MathFunc [] funs = e.getCoordTrans().getJacobianMatrix();
 		x_r = funs[0];
 		x_s = funs[1];
 		y_r = funs[2];

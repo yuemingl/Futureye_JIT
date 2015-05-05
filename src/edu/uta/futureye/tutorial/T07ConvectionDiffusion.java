@@ -12,7 +12,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -79,7 +79,7 @@ public class T07ConvectionDiffusion {
 	
 	public void initParam() {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, new AbstractMathFun("x","y"){
 			@Override
 			public double apply(Variable v) {
@@ -101,7 +101,7 @@ public class T07ConvectionDiffusion {
 			linearTriangle.assignTo(eList.at(i));
 	}
 	
-	public Vector solverOneStep(int step, MathFun c_n) {
+	public Vector solverOneStep(int step, MathFunc c_n) {
 		weakForm.setF(FC.C0);
 		weakForm.setParam(FC.C1, FC.C1, c_n, Dt);
 		weakForm.setConvectionVelocity(v);
@@ -148,7 +148,7 @@ public class T07ConvectionDiffusion {
 		Tools.plotFunction(mesh, outputFolder, String.format("v2.dat"), v.get(2));
 		
 		//c0
-		MathFun c_n = new AbstractMathFun("x","y") {
+		MathFunc c_n = new AbstractMathFun("x","y") {
 			//[-3,3]x[-3,3]			
 			@Override
 			public double apply(Variable v) {

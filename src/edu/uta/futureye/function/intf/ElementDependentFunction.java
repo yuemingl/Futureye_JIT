@@ -9,6 +9,6 @@ import edu.uta.futureye.core.Element;
  * @author liuyueming
  *
  */
-public interface ElementDependentFunction extends MathFun {
+public interface ElementDependentFunction extends MathFunc {
 	void setElement(Element e);
 }

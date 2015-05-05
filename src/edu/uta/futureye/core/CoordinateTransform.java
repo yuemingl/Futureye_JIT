@@ -11,7 +11,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
@@ -29,11 +29,11 @@ public class CoordinateTransform {
 	
 	//coordinate transform functions
 	//e.g. x=x(r,s,t); y=y(r,s,t); z=z(r,s,t)
-	protected List<MathFun> transFuns = null;
+	protected List<MathFunc> transFuns = null;
 	
-	protected MathFun[] JacobianMatrix = null;
+	protected MathFunc[] JacobianMatrix = null;
 	//Jacobian determinant: the determinant of the Jacobian matrix
-	protected MathFun Jacobian = null;
+	protected MathFunc Jacobian = null;
 	
 	//--------------------------------------
 	private ScalarShapeFunction sf1d1 = null;
@@ -238,8 +238,8 @@ public class CoordinateTransform {
 	 * @param mapVS
 	 * @return 坐标变换函数列表: 2D:[x,y]; 3D:[x,y,z]
 	 */
-	public List<MathFun> getTransformFunction(Map<Vertex,ScalarShapeFunction> mapVS) {
-		List<MathFun> r = new LinkedList<MathFun>();
+	public List<MathFunc> getTransformFunction(Map<Vertex,ScalarShapeFunction> mapVS) {
+		List<MathFunc> r = new LinkedList<MathFunc>();
 		int dim = fromVarNames.size();
 		
 		ScalarShapeFunction[] shapeFuns = new ScalarShapeFunction[mapVS.size()];
@@ -258,7 +258,7 @@ public class CoordinateTransform {
 		return r;	
 	}	
 	
-	public void setTransformFunction(List<MathFun> trans) {
+	public void setTransformFunction(List<MathFunc> trans) {
 		this.transFuns = trans;
 	}
 	
@@ -295,9 +295,9 @@ public class CoordinateTransform {
 		if(this.JacobianMatrix == null) {
 			if(transFuns == null)
 				throw new FutureyeException("Call setTransformFunction() first!");
-			MathFun[] funs = new MathFun[transFuns.size()*toVarNames.size()];
+			MathFunc[] funs = new MathFunc[transFuns.size()*toVarNames.size()];
 			int index = 0;
-			for(MathFun transFun : transFuns) { //x=x(r,s,t), y=y(r,s,t), z=z(r,s,t)
+			for(MathFunc transFun : transFuns) { //x=x(r,s,t), y=y(r,s,t), z=z(r,s,t)
 				for(String var : toVarNames) {   //r,s,t
 					funs[index++] = transFun._d(var);
 				}
@@ -321,14 +321,14 @@ public class CoordinateTransform {
 	 * 
 	 * @return Function[] r
 	 */
-	public MathFun[] getJacobianMatrix() {
+	public MathFunc[] getJacobianMatrix() {
 		return this.JacobianMatrix;
 	}
 	
 	/**
 	 * @return det(Jac)
 	 */
-	public MathFun getJacobian() {
+	public MathFunc getJacobian() {
 		return this.Jacobian;
 	}
 	
@@ -339,7 +339,7 @@ public class CoordinateTransform {
 	 *  
 	 */
 	public void computeJacobian1D() {
-		MathFun[] funs = this.JacobianMatrix;
+		MathFunc[] funs = this.JacobianMatrix;
 		this.Jacobian = FMath.sqrt(funs[0].M(funs[0]) .A (funs[1].M(funs[1])));
 	}
 	
@@ -358,7 +358,7 @@ public class CoordinateTransform {
 		 * where r,s are free variables and t=1-r-s
 		 */
 		
-		MathFun[] funs = this.JacobianMatrix;
+		MathFunc[] funs = this.JacobianMatrix;
 		if(funs.length == 4) {
 			/*
 			 * 要求结点编号为逆时针：funs[0:3]
@@ -382,8 +382,8 @@ public class CoordinateTransform {
 	}
 	
 	public static class Jacobian2D extends AbstractMathFun {
-		MathFun[] funs = null;
-		public Jacobian2D(MathFun[] funs) {
+		MathFunc[] funs = null;
+		public Jacobian2D(MathFunc[] funs) {
 			this.funs = funs;
 		}
 		
@@ -446,8 +446,8 @@ public class CoordinateTransform {
 	 *
 	 */
 	public static class Jacobian2DFrom3D extends AbstractMathFun {
-		MathFun[] funs = null;
-		public Jacobian2DFrom3D(MathFun[] funs) {
+		MathFunc[] funs = null;
+		public Jacobian2DFrom3D(MathFunc[] funs) {
 			this.funs = funs;
 		}
 		
@@ -530,7 +530,7 @@ public class CoordinateTransform {
 		 */
 		
 //11/26/2011 重新定义一个函数Jacobian3D，代替下面注释掉的代码，可以提高计算速度1/3
-		MathFun[] funs = this.JacobianMatrix;
+		MathFunc[] funs = this.JacobianMatrix;
 //		/*
 //		 * 要求结点编号为逆时针 ：funs[0:8]
 //		 *            |f0 f1 f2|
@@ -550,8 +550,8 @@ public class CoordinateTransform {
 	}
 	
 	public static class Jacobian3D extends AbstractMathFun {
-		MathFun[] funs = null;
-		public Jacobian3D(MathFun[] funs) {
+		MathFunc[] funs = null;
+		public Jacobian3D(MathFunc[] funs) {
 			this.funs = funs;
 		}
 		@Override
@@ -625,7 +625,7 @@ public class CoordinateTransform {
 	 * @param e
 	 * @return det(Jac)
 	 */
-	public MathFun computeJacobian3DTetrahedron(Element e) {
+	public MathFunc computeJacobian3DTetrahedron(Element e) {
 		double x1,x2,x3,x4;
 		double y1,y2,y3,y4;
 		double z1,z2,z3,z4;

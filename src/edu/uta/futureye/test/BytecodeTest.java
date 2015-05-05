@@ -6,16 +6,16 @@ import com.sun.org.apache.bcel.internal.generic.ClassGen;
 
 import edu.uta.futureye.bytecode.BytecodeFunc;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
 
 public class BytecodeTest {
 
 	public static void test1() {
-		MathFun x = FX.fx;
-		MathFun y = FX.fy;
-		MathFun add = x.S(y);
+		MathFunc x = FX.fx;
+		MathFunc y = FX.fy;
+		MathFunc add = x.S(y);
 		
 		FuncClassLoader<BytecodeFunc> fcl = new FuncClassLoader<BytecodeFunc>();
 		ClassGen genClass = BytecodeUtils.genClassBytecodeFunc(add, "add", true, false);
@@ -24,14 +24,14 @@ public class BytecodeTest {
 	}
 
 	public static void test2() {
-		MathFun x = FX.fx;
-		MathFun y = FX.fy;
-		MathFun add = x.M(y);
+		MathFunc x = FX.fx;
+		MathFunc y = FX.fy;
+		MathFunc add = x.M(y);
 		System.out.println(add);
-		HashMap<String, MathFun> map = new HashMap<String, MathFun>();
+		HashMap<String, MathFunc> map = new HashMap<String, MathFunc>();
 		map.put(x.getVarNames().get(0), FX.fr.A(FX.fs));
 		map.put(y.getVarNames().get(0), FX.fr.S(FX.fs));
-		MathFun add2 = add.compose(map);
+		MathFunc add2 = add.compose(map);
 		System.out.println(add2);
 		
 		FuncClassLoader<BytecodeFunc> fcl = new FuncClassLoader<BytecodeFunc>();

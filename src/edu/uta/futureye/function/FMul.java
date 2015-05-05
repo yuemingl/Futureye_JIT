@@ -10,11 +10,11 @@ import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Utils;
 
 public class FMul extends FBinaryOp {
-	public FMul(MathFun left, MathFun right) {
+	public FMul(MathFunc left, MathFunc right) {
 		super(left, right);
 		setVarNames(Utils.mergeList(left.getVarNames(), right.getVarNames()));
 	}
@@ -42,7 +42,7 @@ public class FMul extends FBinaryOp {
 	}
 	
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return 	arg1._d(varName).M(arg2).A(
 				arg1.M(arg2._d(varName))
 				).setVarNames(this.getVarNames());

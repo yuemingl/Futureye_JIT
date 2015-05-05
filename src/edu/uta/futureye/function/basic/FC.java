@@ -6,7 +6,7 @@ import java.util.Map;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 
 /**
  * Constant function: f=c
@@ -74,7 +74,7 @@ public class FC extends AbstractMathFun{
 	}
 	
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return C0;
 	}
 	
@@ -84,7 +84,7 @@ public class FC extends AbstractMathFun{
 	}
 	
 	@Override
-	public MathFun copy() {
+	public MathFunc copy() {
 		return new FC(this.val);
 	}
 	

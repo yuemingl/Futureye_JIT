@@ -27,15 +27,15 @@ import com.sun.org.apache.bcel.internal.generic.Type;
 
 import edu.uta.futureye.bytecode.BytecodeFunc;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
 
 public class FCompose extends AbstractMathFun {
-	public MathFun fOuter;
-	public Map<String,MathFun> fInners;
+	public MathFunc fOuter;
+	public Map<String,MathFunc> fInners;
 	
-	public FCompose(MathFun fOuter, Map<String,MathFun> fInners) {
+	public FCompose(MathFunc fOuter, Map<String,MathFunc> fInners) {
 		this.fOuter = fOuter;
 		this.fInners = fInners;
 		this.setVarNames(fOuter.getVarNames());
@@ -65,7 +65,7 @@ public class FCompose extends AbstractMathFun {
 		} else {
 			Variable newVar = new Variable();
 			for(String varName : fOuter.getVarNames()) {
-				MathFun fInner = fInners.get(varName);
+				MathFunc fInner = fInners.get(varName);
 				if(fInner != null ) 
 					newVar.set(varName, fInner.apply(v,cache));
 				else //for mixed case: fOuter( x(r,s,t), y(r,s,t), r, s) bugfix 3/19/12
@@ -89,7 +89,7 @@ public class FCompose extends AbstractMathFun {
 		} else {
 			VariableArray newVar = new VariableArray();
 			for(String varName : fOuter.getVarNames()) {
-				MathFun fInner = fInners.get(varName);
+				MathFunc fInner = fInners.get(varName);
 				if(fInner != null )
 					newVar.set(varName, fInner.applyAll(v,cache));
 				else //for mixed case: fOuter( x(r,s,t), y(r,s,t), r, s)
@@ -104,8 +104,8 @@ public class FCompose extends AbstractMathFun {
 	 * f( x(r,s),y(r,s) )_r = f_x * x_r + f_y * y_r
 	 */
 	@Override
-	public MathFun _d(String varName) {
-		MathFun rlt = null;
+	public MathFunc _d(String varName) {
+		MathFunc rlt = null;
 		if(fOuter.getVarNames().contains(varName)) {
 			//f(x,y)关于x或y求导
 			rlt = fOuter._d(varName);
@@ -114,12 +114,12 @@ public class FCompose extends AbstractMathFun {
 			//f(x,y)关于r或s求导
 			rlt = new FC(0.0);
 			for(String innerVarName : fOuter.getVarNames()) {
-				MathFun fInner = fInners.get(innerVarName);
+				MathFunc fInner = fInners.get(innerVarName);
 				if(fInner != null) {
-					MathFun rltOuter = fOuter._d(innerVarName);
+					MathFunc rltOuter = fOuter._d(innerVarName);
 					if(!(rltOuter.isConstant()))
 						rltOuter = rltOuter.compose(fInners);
-					MathFun rltInner = fInner._d(varName);
+					MathFunc rltInner = fInner._d(varName);
 					//f_x * x_r + f_y * y_r
 					rlt = rlt.A(
 							rltOuter.M(rltInner)
@@ -138,7 +138,7 @@ public class FCompose extends AbstractMathFun {
 	@Override
 	public String toString() {
 		String rlt = fOuter.toString();
-		for(Entry<String,MathFun> map : fInners.entrySet()) {
+		for(Entry<String,MathFunc> map : fInners.entrySet()) {
 			String names = map.getValue().getVarNames().toString();
 			rlt = rlt.replace(map.getKey(), 
 					map.getKey()+"("+names.substring(1,names.length()-1)+")");
@@ -173,7 +173,7 @@ public class FCompose extends AbstractMathFun {
 		for(String name : fOuter.getVarNames()) {
 			il.append(new ALOAD(idxArg));
 			il.append(new PUSH(cp, index++));
-			MathFun f = fInners.get(name);
+			MathFunc f = fInners.get(name);
 			HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
 			List<String> args = f.getVarNames();
 			for(int i=0; i<args.size(); i++) {

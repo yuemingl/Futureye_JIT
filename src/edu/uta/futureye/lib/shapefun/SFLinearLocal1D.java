@@ -10,7 +10,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
@@ -18,8 +18,8 @@ import edu.uta.futureye.util.container.VertexList;
 
 public class SFLinearLocal1D extends AbstractMathFun  implements ScalarShapeFunction {
 	private int funIndex;
-	private MathFun funCompose = null;
-	private MathFun funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 
 	private Element e = null;
@@ -46,7 +46,7 @@ public class SFLinearLocal1D extends AbstractMathFun  implements ScalarShapeFunc
 		innerVarNames = new ObjList<String>("x");
 		
 		//复合函数
-		Map<String, MathFun> fInners = new HashMap<String, MathFun>();
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		List<String> varNamesInner = new LinkedList<String>();
 		varNamesInner.add("x");
 		
@@ -59,7 +59,7 @@ public class SFLinearLocal1D extends AbstractMathFun  implements ScalarShapeFunc
 		 *  r_x = 2/(x2-x1)  
 		 */
 		fInners.put("r", new AbstractMathFun(varNamesInner) {	
-			public MathFun _d(String var) {
+			public MathFunc _d(String var) {
 				if(var.equals("x")) {
 					VertexList vl = e.vertices();
 					if(vl.size() == 2) {
@@ -95,7 +95,7 @@ public class SFLinearLocal1D extends AbstractMathFun  implements ScalarShapeFunc
 	}
 
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		return funCompose._d(varName);
 	}
 

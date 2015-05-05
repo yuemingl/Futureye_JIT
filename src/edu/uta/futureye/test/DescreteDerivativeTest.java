@@ -10,7 +10,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -28,7 +28,7 @@ public class DescreteDerivativeTest {
 		MeshReader reader = new MeshReader("rectangle.grd");
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);		
 
 		mesh.markBorderNode(mapNTF);

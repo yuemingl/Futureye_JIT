@@ -10,7 +10,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -39,7 +39,7 @@ public class HeatTransfer_Jiang {
 	WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 	
 	//Source term
-	MathFun f = null;
+	MathFunc f = null;
 	
 	//Time step size
 	double Dt;
@@ -62,7 +62,7 @@ public class HeatTransfer_Jiang {
 			);
 				
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 		
@@ -75,7 +75,7 @@ public class HeatTransfer_Jiang {
 
 	}
 	
-	public Vector solverOneStep(int step, MathFun u_n) {
+	public Vector solverOneStep(int step, MathFunc u_n) {
 		FC FDt = new FC(Dt);
 		
 		if(step%4==1) {
@@ -133,7 +133,7 @@ public class HeatTransfer_Jiang {
 		//Time step size
 		Dt = 0.2;
 		
-		MathFun u_n = new FC(0.0);
+		MathFunc u_n = new FC(0.0);
 		for(int i=1;i<=40;i++) {
 			Vector rlt = solverOneStep(i, u_n);
 			u_n = new Vector2Function(rlt);

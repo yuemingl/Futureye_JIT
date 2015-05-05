@@ -9,7 +9,7 @@ import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.NodeList;
@@ -41,7 +41,7 @@ public class KlibanovNew {
 	
 	//Parameters of forward problem
 	double k = 0.1;
-	MathFun ax = ModelParam.getMu_a(-0.5, 2.5, 0.5, //center: (x,y;r)
+	MathFunc ax = ModelParam.getMu_a(-0.5, 2.5, 0.5, //center: (x,y;r)
 									0.3, //maxMu_a: 0.3
 									1); //type: one inclusion
 	
@@ -164,7 +164,7 @@ public class KlibanovNew {
 		ModelPoissonEx model_Imw = new ModelPoissonEx(omega);
 		
 		//delta(z-z1) == delta(y-y1) [let y denote z]
-		MathFun delta = new AbstractMathFun("x","y") {
+		MathFunc delta = new AbstractMathFun("x","y") {
 			FDelta dt = new FDelta(new Variable("x",domain.z1),0.01,2e5);
 			Variable tmp = new Variable();
 			public double apply(Variable v) {
@@ -175,7 +175,7 @@ public class KlibanovNew {
 		Tools.plotFunction(omega, outputFolder, String.format("delta_z.dat"), delta);
 
 		//Return a positive value to indicate the Dirichlet boundary type
-		MathFun diriMark = new AbstractMathFun("x","y") {
+		MathFunc diriMark = new AbstractMathFun("x","y") {
 			public double apply(Variable v) {
 				if(Math.abs(domain.z_max-v.get("y"))<Constant.meshEps)
 					return 1;

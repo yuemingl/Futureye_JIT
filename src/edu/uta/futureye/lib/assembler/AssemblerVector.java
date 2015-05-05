@@ -29,7 +29,7 @@ import edu.uta.futureye.core.geometry.GeoEntity3D;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.lib.element.FiniteElementType;
 import edu.uta.futureye.util.Constant;
@@ -137,7 +137,7 @@ public class AssemblerVector implements Assembler {
 					//Local stiff matrix
 					//注意顺序，内循环test函数不变，trial函数循环
 					weakForm.setDOF(dofJ, dofI);
-					MathFun lhs = weakForm.leftHandSide(e, WeakForm.ItemType.Domain);
+					MathFunc lhs = weakForm.leftHandSide(e, WeakForm.ItemType.Domain);
 					double lhsVal = weakForm.integrate(e, lhs);
 					stiff.add(nGlobalRow, nGlobalCol, lhsVal);
 					//System.out.println(nVVFCmptI+"  "+nVVFCmptJ+"   "+lhsVal);
@@ -145,7 +145,7 @@ public class AssemblerVector implements Assembler {
 			}
 			//Local load vector
 			weakForm.setDOF(null, dofI);
-			MathFun rhs = weakForm.rightHandSide(e, WeakForm.ItemType.Domain);
+			MathFunc rhs = weakForm.rightHandSide(e, WeakForm.ItemType.Domain);
 			double rhsVal = weakForm.integrate(e, rhs);
 			load.add(nGlobalRow, rhsVal);
 		}
@@ -184,7 +184,7 @@ public class AssemblerVector implements Assembler {
 								//Local stiff matrix for border
 								//注意顺序，内循环test函数不变，trial函数循环
 								weakForm.setDOF(dofJ, dofI);
-								MathFun lhsBr = weakForm.leftHandSide(be, WeakForm.ItemType.Border);
+								MathFunc lhsBr = weakForm.leftHandSide(be, WeakForm.ItemType.Border);
 								double lhsBrVal = weakForm.integrate(be, lhsBr);
 								stiff.add(nGlobalRow, nGlobalCol, lhsBrVal);
 							}
@@ -195,7 +195,7 @@ public class AssemblerVector implements Assembler {
 					if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
 						//Local load vector for border
 						weakForm.setDOF(null, dofI);
-						MathFun rhsBr = weakForm.rightHandSide(be, WeakForm.ItemType.Border);
+						MathFunc rhsBr = weakForm.rightHandSide(be, WeakForm.ItemType.Border);
 						double rhsBrVal = weakForm.integrate(be, rhsBr);
 						load.add(nGlobalRow, rhsBrVal);
 					}
@@ -215,7 +215,7 @@ public class AssemblerVector implements Assembler {
 	}
 
 	@Override
-	public void imposeDirichletCondition(MathFun diri) {
+	public void imposeDirichletCondition(MathFunc diri) {
 		throw new UnsupportedOperationException();
 
 	}
@@ -318,7 +318,7 @@ public class AssemblerVector implements Assembler {
 				DOF dof = DOFs.at(j);
 				GeoEntity ge = dof.getOwner();
 				int nVVFCmpt = dof.getVVFComponent();
-				MathFun fdiri = diri.get(nVVFCmpt);
+				MathFunc fdiri = diri.get(nVVFCmpt);
 				if(ge instanceof Node) {
 					//if(!nodeDOFSet.contains(dof.getGlobalIndex())) {
 						Node n = (Node)ge;

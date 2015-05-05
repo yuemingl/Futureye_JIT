@@ -10,10 +10,10 @@ import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
-public abstract class AbstractMathFun implements MathFun {
+public abstract class AbstractMathFun implements MathFunc {
 	protected List<String> varNames = new LinkedList<String>();
 	protected String fName = null;
 	
@@ -36,7 +36,7 @@ public abstract class AbstractMathFun implements MathFun {
 	}
 
 	@Override
-	public MathFun setVarNames(List<String> varNames) {
+	public MathFunc setVarNames(List<String> varNames) {
 		this.varNames = varNames;
 		return this;
 	}
@@ -82,12 +82,12 @@ public abstract class AbstractMathFun implements MathFun {
 	 * Implement this function yourself if necessary
 	 */
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public MathFun compose(final Map<String,MathFun> fInners) {
+	public MathFunc compose(final Map<String,MathFunc> fInners) {
 		boolean find = false;
 		for(String key : fInners.keySet()) {
 			if(getVarNames().contains(key)) find = true;
@@ -101,9 +101,9 @@ public abstract class AbstractMathFun implements MathFun {
 	////////////////////////Operations////////////////////////////////////
 	
 	@Override
-	public MathFun A(MathFun g) {
-		final MathFun f1 = this;
-		final MathFun f2 = g;
+	public MathFunc A(MathFunc g) {
+		final MathFunc f1 = this;
+		final MathFunc f2 = g;
 		if(f1.isConstant() && f2.isConstant()) {
 			return new FC(f1.apply() + f2.apply());
 		} else if(f1.isConstant() && Math.abs(f1.apply()) < Constant.eps) {
@@ -115,14 +115,14 @@ public abstract class AbstractMathFun implements MathFun {
 		}
 	}
 	@Override
-	public MathFun A(double g) {
+	public MathFunc A(double g) {
 		return A(FC.c(g));
 	}
 	
 	@Override
-	public MathFun S(MathFun g) {
-		final MathFun f1 = this;
-		final MathFun f2 = g;
+	public MathFunc S(MathFunc g) {
+		final MathFunc f1 = this;
+		final MathFunc f2 = g;
 		if(f1.isConstant() && f2.isConstant()) {
 			return new FC(f1.apply() - f2.apply());
 		} else if(f2.isConstant() && Math.abs(f2.apply()) < Constant.eps) {
@@ -132,14 +132,14 @@ public abstract class AbstractMathFun implements MathFun {
 		}
 	}
 	@Override
-	public MathFun S(double g) {
+	public MathFunc S(double g) {
 		return S(FC.c(g));
 	}	
 	
 	@Override
-	public MathFun M(MathFun f) {
-		final MathFun f1 = this;
-		final MathFun f2 = f;
+	public MathFunc M(MathFunc f) {
+		final MathFunc f1 = this;
+		final MathFunc f2 = f;
 		if(f1.isConstant() && f2.isConstant()) {
 			return new FC(f1.apply() * f2.apply());
 		} else if( (f1.isConstant() && Math.abs(f1.apply()) < Constant.eps) ||
@@ -153,14 +153,14 @@ public abstract class AbstractMathFun implements MathFun {
 			return new FMul(f1, f2);
 	}
 	@Override
-	public MathFun M(double g) {
+	public MathFunc M(double g) {
 		return M(FC.c(g));
 	}	
 	
 	@Override
-	public MathFun D(MathFun f) {
-		final MathFun f1 = this;
-		final MathFun f2 = f;
+	public MathFunc D(MathFunc f) {
+		final MathFunc f1 = this;
+		final MathFunc f2 = f;
 		if(f1.isConstant() && f2.isConstant()) {
 			return new FC(f1.apply() / f2.apply());
 		} else if(f1.isConstant() && Double.compare(f1.apply(),0.0)==0) {
@@ -175,12 +175,12 @@ public abstract class AbstractMathFun implements MathFun {
 		}
 	}
 	@Override
-	public MathFun D(double g) {
+	public MathFunc D(double g) {
 		return D(FC.c(g));
 	}
 	
 	@Override
-	public MathFun copy() {
+	public MathFunc copy() {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -190,7 +190,7 @@ public abstract class AbstractMathFun implements MathFun {
 	}
 	
 	@Override
-	public MathFun setFunName(String name) {
+	public MathFunc setFunName(String name) {
 		this.fName = name;
 		return this;
 	}

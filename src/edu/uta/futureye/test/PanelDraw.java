@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
 
@@ -15,8 +15,8 @@ public class PanelDraw extends JPanel{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public MathFun fx;
-	public MathFun fy;
+	public MathFunc fx;
+	public MathFunc fy;
 	
 	public double[] convert(int[] iArray) {
 		double[] dArray = new double[iArray.length];

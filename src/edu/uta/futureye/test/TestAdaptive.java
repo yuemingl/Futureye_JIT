@@ -15,7 +15,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Refiner;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -41,7 +41,7 @@ public class TestAdaptive {
 		mesh.computeGlobalEdge();
 		mesh.computeNeighborElements();
 		
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 		mesh.markBorderNode(mapNTF);
 		
@@ -67,8 +67,8 @@ public class TestAdaptive {
 		//\Omega = [0,10]*[0,10]
 		//u=[(x-5)^2-25]*[(y-5)^2-25]
 		//f=-2*( (x-5)^2 + (y-5)^2 ) + 100
-		MathFun fxm5 = new FAxpb("x",1.0,-5.0);
-		MathFun fym5 = new FAxpb("y",1.0,-5.0);
+		MathFunc fxm5 = new FAxpb("x",1.0,-5.0);
+		MathFunc fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
 				FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
 						FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )
@@ -256,7 +256,7 @@ public class TestAdaptive {
 //		MeshReader reader = new MeshReader("patch_rectangle_refine.grd");
 	
 		Mesh mesh = reader.read2DMesh();
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 //验证边界结点加密后是自由的，而不是hanging node		
 //		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y"){
 //			@Override
@@ -345,8 +345,8 @@ public class TestAdaptive {
 		//\Omega = [0,10]*[0,10]
 		//u=[(x-5)^2-25]*[(y-5)^2-25]
 		//f=-2*( (x-5)^2 + (y-5)^2 ) + 100
-		MathFun fxm5 = new FAxpb("x",1.0,-5.0);
-		MathFun fym5 = new FAxpb("y",1.0,-5.0);
+		MathFunc fxm5 = new FAxpb("x",1.0,-5.0);
+		MathFunc fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
 				FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
 						FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )
@@ -414,7 +414,7 @@ public class TestAdaptive {
 		mesh.computeGlobalEdge();
 		mesh.computeNeighborElements();
 		
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 		mesh.markBorderNode(mapNTF);
 
@@ -478,8 +478,8 @@ public class TestAdaptive {
 		//\Omega = [0,10]*[0,10]
 		//u=[(x-5)^2-25]*[(y-5)^2-25]
 		//f=-2*( (x-5)^2 + (y-5)^2 ) + 100
-		MathFun fxm5 = new FAxpb("x",1.0,-5.0);
-		MathFun fym5 = new FAxpb("y",1.0,-5.0);
+		MathFunc fxm5 = new FAxpb("x",1.0,-5.0);
+		MathFunc fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
 						FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
 						FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )

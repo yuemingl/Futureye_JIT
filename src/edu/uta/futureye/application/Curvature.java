@@ -7,7 +7,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import static edu.uta.futureye.function.operator.FMath.*;
 
@@ -112,7 +112,7 @@ public class Curvature {
 	
 	//extract bounday values [1.0, 4.0]*[1.0, 3.0]
 	class BoundaryValues extends AbstractMathFun {
-		MathFun f = null;
+		MathFunc f = null;
 		public BoundaryValues(Vector uDiff) {
 			super("x","y");
 			f = new Vector2Function(uDiff, meshBig, "x", "y");
@@ -132,7 +132,7 @@ public class Curvature {
 	}
 	
 	public Variable findPosition(Vector  uDiff) {
-		MathFun f = new Vector2Function(uDiff, meshBig, "x", "y");
+		MathFunc f = new Vector2Function(uDiff, meshBig, "x", "y");
 		Variable ret = new Variable();
 		double delta = 0.02;
 		Variable v = new Variable();

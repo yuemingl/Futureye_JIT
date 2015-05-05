@@ -26,7 +26,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -45,13 +45,13 @@ public class HumanRealSimulate {
 	String workFolder = "HumanReal/Simulate";
 	//light source position
 	public Variable lightPosition = null; 
-	MathFun delta = null;
+	MathFunc delta = null;
 	Mesh meshOmega = null;
 	
 	double mu_sp = 0.0;
-	MathFun mu_a = null;
+	MathFunc mu_a = null;
 	
-	public void setModelParam(double mu_sp, MathFun mu_a) {
+	public void setModelParam(double mu_sp, MathFunc mu_a) {
 		this.mu_sp = mu_sp;
 		this.mu_a = mu_a;
 	}
@@ -93,7 +93,7 @@ public class HumanRealSimulate {
 	public Vector solveForward(String info) {
 		System.out.println("Solve forward: mesh \""+meshOmega.getName() + "\" info:" + info);
 				
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Neumann, null);
 		meshOmega.markBorderNode(mapNTF);
 		meshOmega.writeNodesInfo(workFolder+"/meshInfo.dat");
@@ -199,7 +199,7 @@ public class HumanRealSimulate {
 		//mu_s'
 		double mu_sp = 10;
 		//mu_a
-		MathFun fmu_a = new AbstractMathFun("x","y","z"){
+		MathFunc fmu_a = new AbstractMathFun("x","y","z"){
 			double x0 = 4.0,y0=-3.0, z0=4.0;//z0=13
 			@Override
 			public double apply(Variable v) {
@@ -213,7 +213,7 @@ public class HumanRealSimulate {
 			}
 		};
 		Tools.plotFunction(meshOmega, workFolder, "mu_a.dat", fmu_a);
-		MathFun fmu_a0 = C(0.1);
+		MathFunc fmu_a0 = C(0.1);
 
 		
 		for(int i=0;i<lightSources.length;i++) {
@@ -302,7 +302,7 @@ public class HumanRealSimulate {
 		
 		//mu_s'
 		double mu_sp = 10;
-		MathFun fmu_a0 = C(0.1);
+		MathFunc fmu_a0 = C(0.1);
 		sim.setLightPosition(lightSources[0]);
 		Tools.plotFunction(sim.meshOmega, sim.workFolder, String.format("delta_src%02d.dat",0), sim.delta);
 		sim.setModelParam(mu_sp, fmu_a0);
@@ -313,7 +313,7 @@ public class HumanRealSimulate {
 
 		
 		//mu_a
-		MathFun fmu_aBig = new AbstractMathFun("x","y","z"){
+		MathFunc fmu_aBig = new AbstractMathFun("x","y","z"){
 			//深度 y=-3.0
 			double x0 = 4.0,y0=-3.0, z0=4.0;//z0=13
 			@Override
@@ -355,7 +355,7 @@ public class HumanRealSimulate {
 	
 		//mu_s'
 		double mu_sp = 10;
-		MathFun fmu_aSmall = new AbstractMathFun("x","y","z"){
+		MathFunc fmu_aSmall = new AbstractMathFun("x","y","z"){
 			//深度 y=-1.5
 			double x0 = 4.0,y0=-1.5, z0=4.0;//z0=13
 			@Override

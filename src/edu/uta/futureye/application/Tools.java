@@ -25,7 +25,7 @@ import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MatlabMatFileReader;
@@ -95,7 +95,7 @@ public class Tools {
 		Vector rltVector = U.copy();
 		rltVector.setAll(0.0);
 		
-		MathFun fU = new Vector2Function(U);
+		MathFunc fU = new Vector2Function(U);
 		for(int i=1;i<=eList.size();i++) {
 			Element e = eList.at(i);
 			int N = e.nodes.size();
@@ -143,7 +143,7 @@ public class Tools {
 			for(int j=1;j<=nE;j++) {
 				Element e = list.at(j);
 				Double[] aa = map.get(e.globalIndex);
-				MathFun dd = null;
+				MathFunc dd = null;
 				//如果单元包含2个Handing Node，则不参与导数计算，这样处理的结果会使导数更加光滑
 				if(e.getHangingNode().size()<=threthHode) {
 					if(varName.equals("x")) {
@@ -198,7 +198,7 @@ public class Tools {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v, vs);
 	}
 
-	public static void plotFunction(Mesh mesh, String outputFolder, String fileName, MathFun fun, MathFun ...funs) {
+	public static void plotFunction(Mesh mesh, String outputFolder, String fileName, MathFunc fun, MathFunc ...funs) {
 //	    NodeList list = mesh.getNodeList();
 //	    int nNode = list.size();
 //		Variable var = new Variable();
@@ -272,8 +272,8 @@ public class Tools {
 	 * @param k
 	 * @return a(x)
 	 */
-	public static Vector solveParamInverse(Mesh mesh, Vector U, MathFun f,MathFun k,MathFun diri) {
-		HashMap<NodeType, MathFun> mapNTF2 = new HashMap<NodeType, MathFun>();
+	public static Vector solveParamInverse(Mesh mesh, Vector U, MathFunc f,MathFunc k,MathFunc diri) {
+		HashMap<NodeType, MathFunc> mapNTF2 = new HashMap<NodeType, MathFunc>();
 		mapNTF2.put(NodeType.Dirichlet, null);
 		mesh.clearBorderNodeMark();
 		mesh.markBorderNode(mapNTF2);
@@ -319,7 +319,7 @@ public class Tools {
 		return u;
 	}
 	
-	public static Vector function2vector(Mesh mesh, MathFun f) {
+	public static Vector function2vector(Mesh mesh, MathFunc f) {
 		NodeList nodes = mesh.getNodeList();
 		Vector v = new SparseVectorHashMap(nodes.size());
 		for(int j=1;j<=nodes.size();j++) {

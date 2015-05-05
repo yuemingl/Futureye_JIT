@@ -1,7 +1,7 @@
 package edu.uta.futureye.test;
 import static edu.uta.futureye.function.operator.FMath.*;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 
 public class LambdaTest {
 

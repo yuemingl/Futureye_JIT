@@ -26,7 +26,7 @@ import edu.uta.futureye.function.basic.DiscreteIndexFunction;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -48,15 +48,15 @@ public class MouseHeadOld {
 	public static String outputFolder = "MouseHead";
 	
 	//Light source
-	public MathFun delta = null;
+	public MathFunc delta = null;
 	public Variable lightSource = null; //light source position
 	
 	//Inclusion mu_a
-	public MathFun mu_a = null;
+	public MathFunc mu_a = null;
 	public double mu_a_bk = 0.1;
 
 	//Inclusion 1/(3*mu_s') = 1.0/30.0 ?
-	public MathFun k = new FC(1.0/50.0);
+	public MathFunc k = new FC(1.0/50.0);
 	
 	public double factor = 70000;
 	
@@ -110,7 +110,7 @@ public class MouseHeadOld {
 	
 	public Vector solveForwardNeumann(Mesh mesh) {
 		//Mark border type
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.clearBorderNodeMark();
@@ -139,7 +139,7 @@ public class MouseHeadOld {
 		return u;
 	}	
 	
-	public Vector solveForwardDirichlet(Mesh mesh, MathFun diri) {
+	public Vector solveForwardDirichlet(Mesh mesh, MathFunc diri) {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side
@@ -165,7 +165,7 @@ public class MouseHeadOld {
 	}	
 	
 	public Vector solveParamInverse(Mesh mesh, Vector U) {
-		HashMap<NodeType, MathFun> mapNTF2 = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF2 = new HashMap<NodeType, MathFunc>();
 		mapNTF2.put(NodeType.Dirichlet, null);
 		mesh.clearBorderNodeMark();
 		mesh.markBorderNode(mapNTF2);
@@ -921,7 +921,7 @@ public class MouseHeadOld {
 		
 		//澶栭棶棰� Solve exterior problem
 		final TailType fTailType = tailType;
-		HashMap<NodeType, MathFun> mapNTF = new HashMap<NodeType, MathFun>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y") {
 			@Override
 			public double apply(Variable v) {
@@ -973,7 +973,7 @@ public class MouseHeadOld {
 //			System.out.println(o1_ele.at(i));
 		
 		//璇诲彇娴嬮噺杈圭晫鏉′欢锛屽厜婧愮紪鍙蜂负srcLightId锛屾椂闂寸紪鍙蜂负timeId
-		MathFun diri = new DiscreteIndexFunction(readInterpData(srcLightId,timeId));
+		MathFunc diri = new DiscreteIndexFunction(readInterpData(srcLightId,timeId));
 		Vector u1 = solveForwardDirichlet(meshOmega1,diri);
 		Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1.dat", u1);
 		

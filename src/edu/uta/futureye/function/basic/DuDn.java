@@ -8,7 +8,7 @@ import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.FutureyeException;
 
@@ -21,17 +21,17 @@ import edu.uta.futureye.util.FutureyeException;
  */
 public class DuDn extends AbstractMathFun implements ElementDependentFunction {
 	protected Element e = null;
-	protected MathFun u = null;
-	protected MathFun u_x = null;
-	protected MathFun u_y = null;
-	protected MathFun u_z = null;
+	protected MathFunc u = null;
+	protected MathFunc u_x = null;
+	protected MathFunc u_y = null;
+	protected MathFunc u_z = null;
 	protected Vector norm = null;
 	
-	public DuDn(MathFun u) {
+	public DuDn(MathFunc u) {
 		this.u = u;
 	}
 	
-	public DuDn(MathFun u_x, MathFun u_y, MathFun u_z) {
+	public DuDn(MathFunc u_x, MathFunc u_y, MathFunc u_z) {
 		this.u_x = u_x;
 		this.u_y = u_y;
 		this.u_z = u_z;
@@ -53,7 +53,7 @@ public class DuDn extends AbstractMathFun implements ElementDependentFunction {
 
 	@Override
 	public double apply(Variable v) {
-		MathFun rlt = null;
+		MathFunc rlt = null;
 		this.setElement(v.getElement());
 		if(u != null) {
 			//u is passed into constructor

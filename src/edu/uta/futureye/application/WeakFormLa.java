@@ -5,7 +5,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.lib.weakform.AbstractScalarWeakForm;
 import edu.uta.futureye.util.Utils;
@@ -28,19 +28,19 @@ import edu.uta.futureye.util.Utils;
  *
  */
 public class WeakFormLa extends AbstractScalarWeakForm {
-	protected MathFun g_f = null;
+	protected MathFunc g_f = null;
 	
-	protected MathFun g_k1 = null;
-	protected MathFun g_k2 = null;
-	protected MathFun[] g_b = null;
-	protected MathFun[] g_c = null;
+	protected MathFunc g_k1 = null;
+	protected MathFunc g_k2 = null;
+	protected MathFunc[] g_b = null;
+	protected MathFunc[] g_c = null;
 	
-	protected MathFun g_q = null;
-	protected MathFun g_d = null;
+	protected MathFunc g_q = null;
+	protected MathFunc g_d = null;
 
-	public void setF(MathFun f,
-			MathFun k1,MathFun k2,
-			MathFun[] b,MathFun[] c) {
+	public void setF(MathFunc f,
+			MathFunc k1,MathFunc k2,
+			MathFunc[] b,MathFunc[] c) {
 		this.g_f = f;
 		this.g_c = c;
 		this.g_b = b;
@@ -49,24 +49,24 @@ public class WeakFormLa extends AbstractScalarWeakForm {
 	}
 	
 	//Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
-	public void setRobin(MathFun q,MathFun d) {
+	public void setRobin(MathFunc q,MathFunc d) {
 		this.g_q = q;
 		this.g_d = d;
 	}	
 
 	@Override
-	public MathFun leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//Integrand part of Weak Form on element e
-			MathFun integrand = null;
+			MathFunc integrand = null;
 			integrand = u.M(v);
 			return integrand;
 		}
 		else if(itemType==ItemType.Border) {
 			if(g_d != null) {
 				Element be = e;
-				MathFun fd = Utils.interpolateOnElement(g_d, be);
-				MathFun borderIntegrand = fd.M(u.M(v));
+				MathFunc fd = Utils.interpolateOnElement(g_d, be);
+				MathFunc borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
 		}
@@ -74,21 +74,21 @@ public class WeakFormLa extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public MathFun rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			MathFun ff = Utils.interpolateOnElement(g_f, e);
-			MathFun fk1 = Utils.interpolateOnElement(g_k1,e);
-			MathFun fk2 = Utils.interpolateOnElement(g_k2,e);
+			MathFunc ff = Utils.interpolateOnElement(g_f, e);
+			MathFunc fk1 = Utils.interpolateOnElement(g_k1,e);
+			MathFunc fk2 = Utils.interpolateOnElement(g_k2,e);
 			int NF = g_b.length;
-			MathFun[] fb = new MathFun[NF];
-			MathFun[] fc = new MathFun[NF];
-			MathFun[] fbx = new MathFun[NF];
-			MathFun[] fby = new MathFun[NF];
-			MathFun[] fcx = new MathFun[NF];
-			MathFun[] fcy = new MathFun[NF];
-			MathFun[] fbxMfcx = new MathFun[NF];
-			MathFun[] fbyMfcy = new MathFun[NF];
-			MathFun[] fbMfc = new MathFun[NF];
+			MathFunc[] fb = new MathFunc[NF];
+			MathFunc[] fc = new MathFunc[NF];
+			MathFunc[] fbx = new MathFunc[NF];
+			MathFunc[] fby = new MathFunc[NF];
+			MathFunc[] fcx = new MathFunc[NF];
+			MathFunc[] fcy = new MathFunc[NF];
+			MathFunc[] fbxMfcx = new MathFunc[NF];
+			MathFunc[] fbyMfcy = new MathFunc[NF];
+			MathFunc[] fbMfc = new MathFunc[NF];
 
 			for(int k=0;k<NF;k++) {
 				fb[k] = Utils.interpolateOnElement(g_b[k],e);
@@ -107,10 +107,10 @@ public class WeakFormLa extends AbstractScalarWeakForm {
 				//d(a1 + a2*x + a3*y + a4*x*y)/dy
 				double[] ab = Utils.computeBilinearFunctionCoef(e.nodes.toArray(new Point[0]), fbv);
 				double[] ac = Utils.computeBilinearFunctionCoef(e.nodes.toArray(new Point[0]), fcv);
-				MathFun bdx = new FXY(0.0,ab[3],ab[1]);
-				MathFun bdy = new FXY(ab[3],0.0,ab[2]);
-				MathFun cdx = new FXY(0.0,ac[3],ac[1]);
-				MathFun cdy = new FXY(ac[3],0.0,ac[2]);
+				MathFunc bdx = new FXY(0.0,ab[3],ab[1]);
+				MathFunc bdy = new FXY(ab[3],0.0,ab[2]);
+				MathFunc cdx = new FXY(0.0,ac[3],ac[1]);
+				MathFunc cdy = new FXY(ac[3],0.0,ac[2]);
 			
 				fbx[k] = Utils.interpolateOnElement(bdx, e);
 				fby[k] = Utils.interpolateOnElement(bdy, e);
@@ -122,7 +122,7 @@ public class WeakFormLa extends AbstractScalarWeakForm {
 				fbMfc[k] = fb[k].M(fc[k]);
 			}
 			
-			MathFun integrand = FMath.sum(
+			MathFunc integrand = FMath.sum(
 						ff,
 						fk1.M(FMath.sum(fbxMfcx)),
 						fk1.M(FMath.sum(fbyMfcy)),
@@ -132,8 +132,8 @@ public class WeakFormLa extends AbstractScalarWeakForm {
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
-			MathFun fq = Utils.interpolateOnElement(g_q, be);
-			MathFun borderIntegrand = fq.M(v);
+			MathFunc fq = Utils.interpolateOnElement(g_q, be);
+			MathFunc borderIntegrand = fq.M(v);
 			return borderIntegrand;
 		} 
 		return null;

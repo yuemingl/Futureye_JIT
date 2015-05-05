@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
@@ -45,7 +45,7 @@ public class FXY extends AbstractMathFun{
 	}	
 	
 	@Override
-	public MathFun _d(String varName) {
+	public MathFunc _d(String varName) {
 		if(varNames.get(0).equals(varName))
 			return new FC(c1);
 		else if(varNames.get(1).equals(varName)) {

@@ -5,7 +5,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.AbstractVectorFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
@@ -97,19 +97,19 @@ public class SFLinearLocal2DVector extends AbstractVectorFunction
 		}
 		
 		@Override
-		public MathFun get(int index) {
+		public MathFunc get(int index) {
 			return sf.get(index);
 		}
 
 		@Override
-		public void set(int index, MathFun value) {
+		public void set(int index, MathFunc value) {
 			throw new UnsupportedOperationException();
 		}
 		public String toString() {
 			return sf.toString();
 		}
 		@Override
-		public MathFun dot(Vector b) {
+		public MathFunc dot(Vector b) {
 			return sf.dot(b);
 		}
 	}
@@ -127,22 +127,22 @@ public class SFLinearLocal2DVector extends AbstractVectorFunction
 	}
 
 	@Override
-	public MathFun dot(VectorFunction b) {
+	public MathFunc dot(VectorFunction b) {
 		return sf.dot(b);
 	}
 
 	@Override
-	public MathFun dot(Vector b) {
+	public MathFunc dot(Vector b) {
 		return sf.dot(b);
 	}
 
 	@Override
-	public MathFun get(int index) {
+	public MathFunc get(int index) {
 		return sf.get(index);
 	}
 
 	@Override
-	public void set(int index, MathFun value) {
+	public void set(int index, MathFunc value) {
 		throw new UnsupportedOperationException();
 	}
 	

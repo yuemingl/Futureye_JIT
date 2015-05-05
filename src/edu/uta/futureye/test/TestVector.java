@@ -8,7 +8,7 @@ import edu.uta.futureye.function.VarPair;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FMath;
 
 public class TestVector {
@@ -34,9 +34,9 @@ public class TestVector {
 		sv.print();
 		
 		//Space Vector Function
-		MathFun f1 = new FAxpb("x",1.0,1.0);
-		MathFun f2 = new FAxpb("y",2.0,2.0);
-		MathFun f3 = new FAxpb("z",3.0,3.0);
+		MathFunc f1 = new FAxpb("x",1.0,1.0);
+		MathFunc f2 = new FAxpb("y",2.0,2.0);
+		MathFunc f3 = new FAxpb("z",3.0,3.0);
 		
 		SpaceVectorFunction svf = new SpaceVectorFunction(f1,f2,f3);
 		System.out.println("svf(x,y,z)="+svf);
@@ -45,7 +45,7 @@ public class TestVector {
 				);
 		
 		System.out.println(svf.dot(new SpaceVector(1,2,3)));
-		MathFun dot2 = svf.dot(svf);
+		MathFunc dot2 = svf.dot(svf);
 		System.out.println(dot2);
 		System.out.println(dot2.apply(
 				new Variable(

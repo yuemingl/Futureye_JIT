@@ -16,7 +16,7 @@ import edu.uta.futureye.function.AbstractVectorFunction;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.MathFun;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
@@ -75,8 +75,8 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 	@Override
 	public void assignElement(final Element e) {
 		//Space Vector Function
-		MathFun fx = new FXY(varNames,1,0);
-		MathFun fy = new FXY(varNames,0,1);
+		MathFunc fx = new FXY(varNames,1,0);
+		MathFunc fy = new FXY(varNames,0,1);
 		SpaceVectorFunction svf = new SpaceVectorFunction(fx,fy);
 	
 		EdgeLocal lEdge = e.edges().at(funIndex+1);
@@ -93,7 +93,7 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 		this.funOuter = svf.S(v).scale(coef);
 		
 		//复合函数
-		Map<String, MathFun> fInners = new HashMap<String, MathFun>();
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		List<String> varNamesInner = new LinkedList<String>();
 		varNamesInner.add("r");
 		varNamesInner.add("s");
@@ -106,13 +106,13 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
-				public MathFun _d(String varName) {
+				public MathFunc _d(String varName) {
 					return null;
 				}
 				@Override
 				public double apply(Variable v) {
 					//根据不同的varName给出不同的表达式
-					List<MathFun> transFun = trans.getTransformFunction(
+					List<MathFunc> transFun = trans.getTransformFunction(
 							trans.getTransformLinear2DShapeFunction(e));
 					if(varName.equals("x")) {//x = x(r,s,t)
 						return transFun.get(0).apply(v);
@@ -139,18 +139,18 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 	}
 
 	@Override
-	public MathFun dot(VectorFunction b) {
+	public MathFunc dot(VectorFunction b) {
 		return this.funCompose.dot(b);
 	}
 
 	@Override
-	public MathFun get(int index) {
+	public MathFunc get(int index) {
 		return this.funCompose.get(index);
 	}
 	
 
 	@Override
-	public void set(int index, MathFun value) {
+	public void set(int index, MathFunc value) {
 		throw new UnsupportedOperationException();
 	}
 	
