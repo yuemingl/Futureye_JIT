@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
 import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 
@@ -230,5 +231,176 @@ public abstract class AbstractMathFun implements MathFunc {
 	public boolean isConstant() {
 		return false;
 	}
-
+	
+	@Override
+	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp, 
+			InstructionFactory factory, InstructionList il, 
+			Map<String, Integer> argsMap, int argsStartPos) {
+		throw new RuntimeException("This method is not implemented!");
+	}
+	
+	//////////////Operator overloading support through Java-OO//////////////////
+	/**
+	 * Operator overloading support:
+	 * MathFunc a = 5;
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public MathFunc valueOf(int v) {
+		return new FC(v);
+	}
+	public MathFunc valueOf(long v) {
+		return new FC(v);
+	}
+	public MathFunc valueOf(float v) {
+		return new FC(v);
+	}
+	public MathFunc valueOf(double v) {
+		return new FC(v);
+	}
+	/**
+	 * Operator overload support:
+	 * a+b
+	 * @param other
+	 * @return
+	 */
+	public MathFunc add(MathFunc other) {
+		return new FAdd(this, other);
+	}
+	public MathFunc add(int other) {
+		return new FAdd(this, new FC(other));
+	}
+	public MathFunc addRev(int other) {
+		return new FAdd(new FC(other), this);
+	}
+	public MathFunc add(long other) {
+		return new FAdd(this, new FC(other));
+	}
+	public MathFunc addRev(long other) {
+		return new FAdd(new FC(other), this);
+	}	
+	public MathFunc add(float other) {
+		return new FAdd(this, new FC(other));
+	}
+	public MathFunc addRev(float other) {
+		return new FAdd(new FC(other), this);
+	}	
+	public MathFunc add(double other) {
+		return new FAdd(this, new FC(other));
+	}
+	public MathFunc addRev(double other) {
+		return new FAdd(new FC(other), this);
+	}
+	
+	/**
+	 * Operator overload support:
+	 * a-b
+	 * @param other
+	 * @return
+	 */
+	public MathFunc subtract(MathFunc other) {
+		return new FSub(this, other);
+	}
+	public MathFunc subtract(int other) {
+		return new FSub(this, new FC(other));
+	}
+	public MathFunc subtractRev(int other) {
+		return new FSub(new FC(other), this);
+	}
+	public MathFunc subtract(long other) {
+		return new FSub(this, new FC(other));
+	}
+	public MathFunc subtractRev(long other) {
+		return new FSub(new FC(other), this);
+	}	
+	public MathFunc subtract(float other) {
+		return new FSub(this, new FC(other));
+	}
+	public MathFunc subtractRev(float other) {
+		return new FSub(new FC(other), this);
+	}
+	public MathFunc subtract(double other) {
+		return new FSub(this, new FC(other));
+	}
+	public MathFunc subtractRev(double other) {
+		return new FSub(new FC(other), this);
+	}
+	
+	/**
+	 * Operator overload support:
+	 * a*b
+	 * @param other
+	 * @return
+	 */
+	public MathFunc multiply(MathFunc other) {
+		return new FMul(this, other);
+	}
+	public MathFunc multiply(int other) {
+		return new FMul(this, new FC(other));
+	}
+	public MathFunc multiplyRev(int other) {
+		return new FMul(new FC(other), this);
+	}
+	public MathFunc multiply(long other) {
+		return new FMul(this, new FC(other));
+	}
+	public MathFunc multiplyRev(long other) {
+		return new FMul(new FC(other), this);
+	}
+	public MathFunc multiply(float other) {
+		return new FMul(this, new FC(other));
+	}
+	public MathFunc multiplyRev(float other) {
+		return new FMul(new FC(other), this);
+	}
+	public MathFunc multiply(double other) {
+		return new FMul(this, new FC(other));
+	}
+	public MathFunc multiplyRev(double other) {
+		return new FMul(new FC(other), this);
+	}
+	
+	/**
+	 * Operator overload support:
+	 * a/b
+	 * @param other
+	 * @return
+	 */
+	public MathFunc divide(MathFunc other) {
+		return new FDiv(this, other);
+	}	
+	public MathFunc divide(int other) {
+		return new FDiv(this, new FC(other));
+	}
+	public MathFunc divideRev(int other) {
+		return new FDiv(new FC(other), this);
+	}
+	public MathFunc divide(long other) {
+		return new FDiv(this, new FC(other));
+	}
+	public MathFunc divideRev(long other) {
+		return new FDiv(new FC(other), this);
+	}
+	public MathFunc divide(float other) {
+		return new FDiv(this, new FC(other));
+	}
+	public MathFunc divideRev(float other) {
+		return new FDiv(new FC(other), this);
+	}
+	public MathFunc divide(double other) {
+		return new FDiv(this, new FC(other));
+	}
+	public MathFunc divideRev(double other) {
+		return new FDiv(new FC(other), this);
+	}
+	
+	/**
+	 * Operator overload support:
+	 * -a
+	 * 
+	 */
+	public MathFunc negate() {
+		return new FSub(FC.C0, this);
+	};
 }

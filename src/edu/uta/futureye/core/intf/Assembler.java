@@ -1,6 +1,5 @@
 package edu.uta.futureye.core.intf;
 
-import symjava.symbolic.Expr;
 import edu.uta.futureye.algebra.intf.SparseMatrix;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.function.intf.MathFunc;

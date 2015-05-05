@@ -5,7 +5,6 @@ import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.FEMFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public interface WeakForm {

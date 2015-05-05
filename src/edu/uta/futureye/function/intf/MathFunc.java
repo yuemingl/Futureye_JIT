@@ -14,11 +14,8 @@ import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 
-import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
-import edu.uta.futureye.util.Constant;
-import edu.uta.futureye.util.FutureyeException;
 
 /**
  * Mathematical function interface
@@ -214,10 +211,10 @@ public interface MathFunc {
 	MathFunc copy();
 	
 	/**
-	 * Return the expression (a string) of the function
-	 * 
-	 * @return
-	 */
+	* Return the expression (a string) of the function
+	*
+	* @return
+	*/
 	String getExpression();
 	
 	/**
@@ -232,7 +229,7 @@ public interface MathFunc {
 	 * <p>
 	 * It is suggested to implement toString method that return this
 	 * name for the function. If the function name is not specified the 
-	 * expression of the function should be returned by toString method.
+	 * MathFuncession of the function should be returned by toString method.
 	 * 
 	 * @param name
 	 * @return
@@ -277,7 +274,80 @@ public interface MathFunc {
 	 * @param factory
 	 * @param il
 	 */
-	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp, 
+	InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp, 
 			InstructionFactory factory, InstructionList il, 
 			Map<String, Integer> argsMap, int argsStartPos);
+	
+	
+	//////////////Operator overloading support through Java-OO//////////////////
+//	/**
+//	 * Operator overloading support:
+//	 * MathFunc a = 5;
+//	 */
+//	public MathFunc valueOf(int v);
+//	public MathFunc valueOf(long v);
+//	public MathFunc valueOf(float v) ;
+//	public MathFunc valueOf(double v);
+	
+	/**
+	 * Operator overload support:
+	 * a+b
+	 */
+	public MathFunc add(MathFunc other);
+	public MathFunc add(int other);
+	public MathFunc addRev(int other);
+	public MathFunc add(long other);
+	public MathFunc addRev(long other);
+	public MathFunc add(float other);
+	public MathFunc addRev(float other);
+	public MathFunc add(double other);
+	public MathFunc addRev(double other);
+	
+	/**
+	 * Operator overload support:
+	 * a-b
+	 */
+	public MathFunc subtract(MathFunc other);
+	public MathFunc subtract(int other);
+	public MathFunc subtractRev(int other);
+	public MathFunc subtract(long other);
+	public MathFunc subtractRev(long other);
+	public MathFunc subtract(float other);
+	public MathFunc subtractRev(float other);
+	public MathFunc subtract(double other);
+	public MathFunc subtractRev(double other);
+	
+	/**
+	 * Operator overload support:
+	 * a*b
+	 */
+	public MathFunc multiply(MathFunc other);
+	public MathFunc multiply(int other);
+	public MathFunc multiplyRev(int other);
+	public MathFunc multiply(long other);
+	public MathFunc multiplyRev(long other);
+	public MathFunc multiply(float other);
+	public MathFunc multiplyRev(float other);
+	public MathFunc multiply(double other);
+	public MathFunc multiplyRev(double other);
+	
+	/**
+	 * Operator overload support:
+	 * a/b
+	 */
+	public MathFunc divide(MathFunc other);
+	public MathFunc divide(int other);
+	public MathFunc divideRev(int other);
+	public MathFunc divide(long other);
+	public MathFunc divideRev(long other);
+	public MathFunc divide(float other);
+	public MathFunc divideRev(float other);
+	public MathFunc divide(double other);
+	public MathFunc divideRev(double other);
+	
+	/**
+	 * Operator overload support:
+	 * -a
+	 */
+	public MathFunc negate();
 }
