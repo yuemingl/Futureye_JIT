@@ -9,6 +9,9 @@ import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
+/**
+ * f(x) = a*x + b
+ */
 public class FAxpb extends AbstractMathFun {
 	protected double a;
 	protected double b;
@@ -16,7 +19,7 @@ public class FAxpb extends AbstractMathFun {
 	protected String varName;
 
 	public FAxpb(double a, double b) {
-		varNames.add(Constant.x);          
+		varNames.add(Constant.x);
 		varName = Constant.x;
 		this.a = a;
 		this.b = b;

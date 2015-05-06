@@ -5,6 +5,10 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
+/**
+ * f(x) = a*x
+ *
+ */
 public class FAx extends AbstractMathFun {
 	protected double a;
 	

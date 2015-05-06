@@ -1,14 +1,21 @@
 package edu.uta.futureye.function;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.bcel.internal.Constants;
+import com.sun.org.apache.bcel.internal.generic.ALOAD;
+import com.sun.org.apache.bcel.internal.generic.ArrayType;
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.DASTORE;
 import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
 import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
+import com.sun.org.apache.bcel.internal.generic.Type;
 
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -236,6 +243,31 @@ public abstract class AbstractMathFun implements MathFunc {
 	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp, 
 			InstructionFactory factory, InstructionList il, 
 			Map<String, Integer> argsMap, int argsStartPos) {
+
+
+//		il.append(new ALOAD(argsStartPos));
+//		
+//		int index = 0;
+//		for(String name : getVarNames()) {
+//			
+//			il.append(new PUSH(cp, index++));
+//			MathFunc f = fInners.get(name);
+//			HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
+//			List<String> args = f.getVarNames();
+//			for(int i=0; i<args.size(); i++) {
+//				fArgsMap.put(args[i], i);
+//			}
+//			f.bytecodeGen(mg, cp, factory, il, fArgsMap, 1);
+//			il.append(new DASTORE());
+//		}
+//		
+//		// Call the outer function
+//		il.append(new ALOAD(idxArg));
+//		return  il.append(factory.createInvoke("edu.uta.futureye.bytecode."+outerName, "apply",
+//				Type.DOUBLE, new Type[] { new ArrayType(Type.DOUBLE, 1) }, 
+//		Constants.INVOKESTATIC));
+		
+		
 		throw new RuntimeException("This method is not implemented!");
 	}
 	

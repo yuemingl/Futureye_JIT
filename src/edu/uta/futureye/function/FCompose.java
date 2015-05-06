@@ -25,7 +25,9 @@ import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
 import com.sun.org.apache.bcel.internal.generic.PUSH;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
-import edu.uta.futureye.bytecode.BytecodeFunc;
+import edu.uta.futureye.bytecode.CompiledFunc;
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
@@ -152,8 +154,8 @@ public class FCompose extends AbstractMathFun {
 			Map<String, Integer> argsMap, int argsStartPos) {
 		String outerName  = "fun_outer_"+java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		// Generate the outer function
-		FuncClassLoader<BytecodeFunc> fcl = new FuncClassLoader<BytecodeFunc>();
-		ClassGen genClass = BytecodeUtils.genClassBytecodeFunc(fOuter, outerName, true, true);
+		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		ClassGen genClass = BytecodeUtils.genClass(fOuter, outerName, true, true);
 		fcl.newInstance(genClass);
 
 		// Prepare arguments for calling the outer function
@@ -179,14 +181,21 @@ public class FCompose extends AbstractMathFun {
 			for(int i=0; i<args.size(); i++) {
 				fArgsMap.put(args[i], i);
 			}
-			f.bytecodeGen(mg, cp, factory, il, fArgsMap, 1);
+			f.bytecodeGen(mg, cp, factory, il, fArgsMap, 3);
 			il.append(new DASTORE());
 		}
 		
 		// Call the outer function
+		il.append(ACONST_NULL);
+		il.append(ACONST_NULL);
 		il.append(new ALOAD(idxArg));
 		return  il.append(factory.createInvoke("edu.uta.futureye.bytecode."+outerName, "apply",
-				Type.DOUBLE, new Type[] { new ArrayType(Type.DOUBLE, 1) }, 
+				Type.DOUBLE, 
+				new Type[] { 
+					Type.getType(Element.class),
+					Type.getType(Node.class),
+					new ArrayType(Type.DOUBLE, 1)
+				}, 
 		Constants.INVOKESTATIC));
 	}
 }

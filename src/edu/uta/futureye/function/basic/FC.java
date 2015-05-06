@@ -3,16 +3,21 @@ package edu.uta.futureye.function.basic;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
+
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
 
 /**
- * Constant function: f=c
+ * Constant function: f = c
  * 
- * @author liuyueming
- *
  */
 public class FC extends AbstractMathFun{
 	//Predefined constant
@@ -96,5 +101,12 @@ public class FC extends AbstractMathFun{
 	@Override 
 	public boolean isConstant() {
 		return true;
+	}
+	
+	@Override
+	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp,
+			InstructionFactory factory, InstructionList il,
+			Map<String, Integer> argsMap, int argsStartPos) {
+		return il.append(new PUSH(cp, val));
 	}
 }

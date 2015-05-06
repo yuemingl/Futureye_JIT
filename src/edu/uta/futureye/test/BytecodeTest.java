@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import com.sun.org.apache.bcel.internal.generic.ClassGen;
 
-import edu.uta.futureye.bytecode.BytecodeFunc;
+import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
@@ -17,9 +17,9 @@ public class BytecodeTest {
 		MathFunc y = FX.fy;
 		MathFunc add = x.S(y);
 		
-		FuncClassLoader<BytecodeFunc> fcl = new FuncClassLoader<BytecodeFunc>();
-		ClassGen genClass = BytecodeUtils.genClassBytecodeFunc(add, "add", true, false);
-		BytecodeFunc fadd = fcl.newInstance(genClass);
+		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		ClassGen genClass = BytecodeUtils.genClass(add, "add", true, false);
+		CompiledFunc fadd = fcl.newInstance(genClass);
 		System.out.println(fadd.apply(1.0, 2.0));
 	}
 
@@ -34,9 +34,9 @@ public class BytecodeTest {
 		MathFunc add2 = add.compose(map);
 		System.out.println(add2);
 		
-		FuncClassLoader<BytecodeFunc> fcl = new FuncClassLoader<BytecodeFunc>();
-		ClassGen genClass = BytecodeUtils.genClassBytecodeFunc(add2, "add2", true, false);
-		BytecodeFunc fadd2 = fcl.newInstance(genClass);
+		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		ClassGen genClass = BytecodeUtils.genClass(add2, "add2", true, false);
+		CompiledFunc fadd2 = fcl.newInstance(genClass);
 		System.out.println(fadd2.apply(4.0, 2.0));
 	}
 	
