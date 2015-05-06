@@ -104,9 +104,9 @@ public class FC extends AbstractMathFun{
 	}
 	
 	@Override
-	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp,
-			InstructionFactory factory, InstructionList il,
-			Map<String, Integer> argsMap, int argsStartPos) {
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+			ConstantPoolGen cp, InstructionFactory factory,
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
 		return il.append(new PUSH(cp, val));
 	}
 }

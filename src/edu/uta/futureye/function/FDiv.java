@@ -67,11 +67,11 @@ public class FDiv extends FBinaryOp {
 	}
 
 	@Override
-	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp,
-			InstructionFactory factory, InstructionList il,
-			Map<String, Integer> argsMap, int argsStartPos) {
-		arg1.bytecodeGen(mg, cp, factory, il, argsMap, argsStartPos);
-		arg2.bytecodeGen(mg, cp, factory, il, argsMap, argsStartPos);
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+			ConstantPoolGen cp, InstructionFactory factory,
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
+		arg1.bytecodeGen(null, mg, cp, factory, il, argsMap, argsStartPos, null);
+		arg2.bytecodeGen(null, mg, cp, factory, il, argsMap, argsStartPos, null);
 		return il.append(InstructionConstants.DDIV);
 	}
 }

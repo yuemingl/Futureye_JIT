@@ -1,25 +1,34 @@
 package edu.uta.futureye.function;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.org.apache.bcel.internal.Constants;
+import static com.sun.org.apache.bcel.internal.Constants.*;
+import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import com.sun.org.apache.bcel.internal.generic.ALOAD;
 import com.sun.org.apache.bcel.internal.generic.ArrayType;
+import com.sun.org.apache.bcel.internal.generic.ClassGen;
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
-import com.sun.org.apache.bcel.internal.generic.DASTORE;
+import com.sun.org.apache.bcel.internal.generic.FieldGen;
+import com.sun.org.apache.bcel.internal.generic.GETFIELD;
 import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
 import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.PUSH;
 import com.sun.org.apache.bcel.internal.generic.Type;
+import com.sun.org.apache.bcel.internal.Constants;
 
+import edu.uta.futureye.bytecode.CompiledFunc;
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.Constant;
+import edu.uta.futureye.util.FuncClassLoader;
 
 public abstract class AbstractMathFun implements MathFunc {
 	protected List<String> varNames = new LinkedList<String>();
@@ -54,6 +63,8 @@ public abstract class AbstractMathFun implements MathFunc {
 	 */
 	@Override
 	public abstract double apply(Variable v);
+	
+	public abstract double apply(Element e, Node n, double... args);
 	
 	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {
@@ -239,36 +250,53 @@ public abstract class AbstractMathFun implements MathFunc {
 		return false;
 	}
 	
+	///////////////////////////Compilation///////////////////////////////
+	
+	/**
+	 * 
+	 */
 	@Override
-	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp, 
-			InstructionFactory factory, InstructionList il, 
-			Map<String, Integer> argsMap, int argsStartPos) {
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
+			ConstantPoolGen cp, InstructionFactory factory, 
+			InstructionList il, Map<String, Integer> argsMap, 
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
 
-
-//		il.append(new ALOAD(argsStartPos));
-//		
-//		int index = 0;
-//		for(String name : getVarNames()) {
-//			
-//			il.append(new PUSH(cp, index++));
-//			MathFunc f = fInners.get(name);
-//			HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
-//			List<String> args = f.getVarNames();
-//			for(int i=0; i<args.size(); i++) {
-//				fArgsMap.put(args[i], i);
-//			}
-//			f.bytecodeGen(mg, cp, factory, il, fArgsMap, 1);
-//			il.append(new DASTORE());
-//		}
-//		
-//		// Call the outer function
-//		il.append(new ALOAD(idxArg));
-//		return  il.append(factory.createInvoke("edu.uta.futureye.bytecode."+outerName, "apply",
-//				Type.DOUBLE, new Type[] { new ArrayType(Type.DOUBLE, 1) }, 
-//		Constants.INVOKESTATIC));
+		FieldGen fg = new FieldGen(ACC_PUBLIC, new ArrayType(Type.getType(MathFunc.class), 1), "funcRefs", cp);
+		//System.out.println(fg.getSignature());
+		int idxFuncRefs = cp.addFieldref("edu.uta.futureye.bytecode.CompiledFunc", "funcRefs", fg.getSignature());
 		
+		il.append(new ALOAD(0));
+		il.append(new GETFIELD(idxFuncRefs));
+		il.append(new PUSH(cp, funcRefsMap.get(this)));
+		il.append(new AALOAD());
+		il.append(new ALOAD(1));
+		il.append(new ALOAD(2));
+		il.append(new ALOAD(3));
+		return  il.append(factory.createInvoke("edu.uta.futureye.function.intf.MathFunc", "apply",
+				Type.DOUBLE, new Type[] {
+					Type.getType(Element.class),
+					Type.getType(Node.class),
+					new ArrayType(Type.DOUBLE, 1)
+				}, 
+				Constants.INVOKEINTERFACE));
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public CompiledFunc compile() {
+		String clsName = this.fName + java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		
-		throw new RuntimeException("This method is not implemented!");
+		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		ClassGen genClass = BytecodeUtils.genClass(this, clsName, true, false);
+		CompiledFunc func = fcl.newInstance(genClass);
+		
+		List<MathFunc> list = new ArrayList<MathFunc>();
+		BytecodeUtils.postOrder(this, list);
+		func.setFuncRefs(list.toArray(new MathFunc[0]));
+		
+		return func;
 	}
 	
 	//////////////Operator overloading support through Java-OO//////////////////
@@ -435,4 +463,5 @@ public abstract class AbstractMathFun implements MathFunc {
 	public MathFunc negate() {
 		return new FSub(FC.C0, this);
 	};
+
 }

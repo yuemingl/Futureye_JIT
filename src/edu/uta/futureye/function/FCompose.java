@@ -149,9 +149,9 @@ public class FCompose extends AbstractMathFun {
 	}
 
 	@Override
-	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp,
-			InstructionFactory factory, InstructionList il,
-			Map<String, Integer> argsMap, int argsStartPos) {
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+			ConstantPoolGen cp, InstructionFactory factory,
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
 		String outerName  = "fun_outer_"+java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		// Generate the outer function
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
@@ -181,7 +181,7 @@ public class FCompose extends AbstractMathFun {
 			for(int i=0; i<args.size(); i++) {
 				fArgsMap.put(args[i], i);
 			}
-			f.bytecodeGen(mg, cp, factory, il, fArgsMap, 3);
+			f.bytecodeGen(null, mg, cp, factory, il, fArgsMap, 3, null);
 			il.append(new DASTORE());
 		}
 		

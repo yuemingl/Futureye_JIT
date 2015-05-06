@@ -90,9 +90,9 @@ public class FX extends AbstractMathFun{
 	}
 
 	@Override
-	public InstructionHandle bytecodeGen(MethodGen mg, ConstantPoolGen cp,
-			InstructionFactory factory, InstructionList il,
-			Map<String, Integer> argsMap, int argsStartPos) {
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+			ConstantPoolGen cp, InstructionFactory factory,
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
 		il.append(new ALOAD(argsStartPos));
 		il.append(new PUSH(cp, argsMap.get(varName)));
 		return il.append(DALOAD);

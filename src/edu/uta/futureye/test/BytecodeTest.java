@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.sun.org.apache.bcel.internal.generic.ClassGen;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
+import edu.uta.futureye.function.basic.FAx;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
@@ -40,9 +41,17 @@ public class BytecodeTest {
 		System.out.println(fadd2.apply(4.0, 2.0));
 	}
 	
+	public static void test3() {
+		FAx fax = new FAx(2.0);
+		fax.setFunName("fax");
+		CompiledFunc cfax = fax.compile();
+		System.out.println(cfax.apply(0.1));
+	}
+
 	public static void main(String[] args) {
-		test1();
-		test2();
+//		test1();
+//		test2();
+		test3();
 	}
 
 }
