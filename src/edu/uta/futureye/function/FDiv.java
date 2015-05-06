@@ -25,6 +25,11 @@ public class FDiv extends FBinaryOp {
 	public double apply(Variable v) {
 		return arg1.apply(v) / arg2.apply(v);
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 	
 	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {

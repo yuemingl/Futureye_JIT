@@ -222,4 +222,9 @@ public class DuDx extends AbstractMathFun implements ElementDependentFunction {
 			return fdu2.apply(e, n, args);
 		}
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 }

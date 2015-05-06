@@ -280,6 +280,11 @@ public class Vector2Function extends AbstractMathFun {
 		}
 	}
 
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
+
 	
 	@Override
 	public MathFunc _d(String varName) {

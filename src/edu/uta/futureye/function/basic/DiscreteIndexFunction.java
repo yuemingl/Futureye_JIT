@@ -42,4 +42,9 @@ public class DiscreteIndexFunction extends AbstractMathFun {
 		return data.get(n.getIndex());
 	}
 
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
+
 }

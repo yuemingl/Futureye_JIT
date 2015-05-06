@@ -63,6 +63,11 @@ public class FXY extends AbstractMathFun{
 	public double apply(Element e, Node n, double... args) {
 		return c1*args[0] + c2*args[1] + c3;
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 	
 	public String toString() {
 		String s1 = "";

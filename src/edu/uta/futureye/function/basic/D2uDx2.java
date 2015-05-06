@@ -123,13 +123,17 @@ public class D2uDx2 extends AbstractMathFun implements ElementDependentFunction 
 		}
 		*/
 	}
-	
-	public String toString() {
-		return "D2uDx2";
-	}
-
 	@Override
 	public double apply(Element e, Node n, double... args) {
 		throw new FutureyeException("unsupported error!");
+	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
+
+	public String toString() {
+		return "D2uDx2";
 	}
 }

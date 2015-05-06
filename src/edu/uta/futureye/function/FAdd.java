@@ -26,6 +26,11 @@ public class FAdd extends FBinaryOp {
 	}
 
 	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
+
+	@Override
 	public double apply(Element e, Node n, double... args) {
 		return arg1.apply(e,n,args) + arg2.apply(e, n, args);
 	}
@@ -89,5 +94,4 @@ public class FAdd extends FBinaryOp {
 		arg2.bytecodeGen(null, mg, cp, factory, il, argsMap, argsStartPos, null);
 		return il.append(InstructionConstants.DADD);
 	}
-
 }

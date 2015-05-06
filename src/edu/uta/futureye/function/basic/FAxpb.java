@@ -51,6 +51,11 @@ public class FAxpb extends AbstractMathFun {
 	public double apply(Element e, Node n, double... args) {
 		return a*args[0]+b;
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 	
 	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {

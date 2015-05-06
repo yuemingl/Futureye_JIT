@@ -72,4 +72,9 @@ public class FPolynomial1D extends AbstractMathFun {
 		}
 		return f;
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 }

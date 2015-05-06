@@ -70,6 +70,11 @@ public class FC extends AbstractMathFun{
 	public double apply(Element e, Node n, double... args) {
 		return val;
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 	
 	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {

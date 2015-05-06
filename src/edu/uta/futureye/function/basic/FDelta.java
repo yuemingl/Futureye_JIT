@@ -73,6 +73,11 @@ public class FDelta extends AbstractMathFun {
 		}
 		return amp*Math.exp(-d2/eps/4.0) / (2*Math.sqrt(Math.PI*eps));
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 	
 	public double apply() {
 		return 0.0;

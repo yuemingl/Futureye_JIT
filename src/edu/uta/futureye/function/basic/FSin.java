@@ -31,6 +31,11 @@ public class FSin extends AbstractMathFun {
 	public double apply(Element e, Node n, double... args) {
 		return Math.sin(args[0]);
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 	
 	@Override
 	public MathFunc _d(String varName) {

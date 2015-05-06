@@ -64,7 +64,11 @@ public abstract class AbstractMathFun implements MathFunc {
 	@Override
 	public abstract double apply(Variable v);
 	
-	public abstract double apply(Element e, Node n, double... args);
+	public abstract double apply(double ...args);
+	
+	public double apply(Element e, Node n, double... args) {
+		return apply(args);
+	}
 	
 	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {

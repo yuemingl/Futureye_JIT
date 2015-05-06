@@ -34,6 +34,11 @@ public class FLinear1D  extends AbstractMathFun{
 	public double apply(Element e, Node n, double... args) {
 		return (args[0]-x1)*(y2-y1)/(x2-x1) + y1;
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 	
 	@Override
 	public MathFunc _d(String varName) {

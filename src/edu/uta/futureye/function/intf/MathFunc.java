@@ -37,6 +37,8 @@ public interface MathFunc {
 	 */
 	double apply(Variable v);
 	
+	double apply(double ...args);
+	
 	double apply(Element e, Node n, double ...args);
 	
 	/**

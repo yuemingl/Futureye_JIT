@@ -49,6 +49,11 @@ public class FCompose extends AbstractMathFun {
 	}
 
 	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
+
+	@Override
 	public double apply(Element e, Node n, double... args) {
 		throw new UnsupportedOperationException();
 	}

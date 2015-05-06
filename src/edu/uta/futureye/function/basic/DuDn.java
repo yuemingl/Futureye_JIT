@@ -109,4 +109,9 @@ public class DuDn extends AbstractMathFun implements ElementDependentFunction {
 		}
 		return rlt.apply(e, n, args);
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 }

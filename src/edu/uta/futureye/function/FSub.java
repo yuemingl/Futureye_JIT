@@ -26,6 +26,11 @@ public class FSub extends FBinaryOp {
 	public double apply(Variable v) {
 		return arg1.apply(v) - arg2.apply(v);
 	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
 	
 	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {
@@ -80,5 +85,4 @@ public class FSub extends FBinaryOp {
 		arg2.bytecodeGen(null, mg, cp, factory, il, argsMap, argsStartPos, null);
 		return il.append(InstructionConstants.DSUB);
 	}
-
 }
