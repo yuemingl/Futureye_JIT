@@ -82,9 +82,10 @@ public class FMul extends FBinaryOp {
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
 			ConstantPoolGen cp, InstructionFactory factory,
-			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
-		arg1.bytecodeGen(null, mg, cp, factory, il, argsMap, argsStartPos, null);
-		arg2.bytecodeGen(null, mg, cp, factory, il, argsMap, argsStartPos, null);
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
+			Map<MathFunc, Integer> funcRefsMap) {
+		arg1.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
+		arg2.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		return il.append(InstructionConstants.DMUL);
 	}
 }

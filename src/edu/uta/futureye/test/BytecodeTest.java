@@ -6,6 +6,8 @@ import com.sun.org.apache.bcel.internal.generic.ClassGen;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.function.basic.FAx;
+import edu.uta.futureye.function.basic.FCos;
+import edu.uta.futureye.function.basic.FSin;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
@@ -48,10 +50,22 @@ public class BytecodeTest {
 		System.out.println(cfax.apply(0.1));
 	}
 
+	public static void test4() {
+		FSin sin = new FSin("x");
+		FCos cos = new FCos("y");
+		MathFunc f = sin * cos;
+		System.out.println(f);
+		System.out.println(f.getVarNames());
+		CompiledFunc cf = f.compile();
+		System.out.println(cf.apply(Math.PI/4, Math.PI/4));
+	}
+
+	
 	public static void main(String[] args) {
 //		test1();
 //		test2();
-		test3();
+//		test3();
+		test4();
 	}
 
 }
