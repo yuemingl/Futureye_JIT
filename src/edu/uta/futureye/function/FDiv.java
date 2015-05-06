@@ -10,6 +10,8 @@ import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Utils;
 
@@ -27,6 +29,11 @@ public class FDiv extends FBinaryOp {
 	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {
 		return arg1.apply(v,cache) / arg2.apply(v,cache);
+	}
+	
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		return arg1.apply(e,n,args) / arg2.apply(e, n, args);
 	}
 	
 	@Override

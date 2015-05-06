@@ -10,6 +10,8 @@ import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Utils;
 
@@ -22,8 +24,13 @@ public class FAdd extends FBinaryOp {
 	public double apply(Variable v) {
 		return arg1.apply(v) + arg2.apply(v);
 	}
-		
-		@Override
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		return arg1.apply(e,n,args) + arg2.apply(e, n, args);
+	}
+	
+	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {
 //基本运算不需要cache，否则计算效率会更低
 //			if(cache != null) {
@@ -82,4 +89,5 @@ public class FAdd extends FBinaryOp {
 		arg2.bytecodeGen(null, mg, cp, factory, il, argsMap, argsStartPos, null);
 		return il.append(InstructionConstants.DADD);
 	}
+
 }

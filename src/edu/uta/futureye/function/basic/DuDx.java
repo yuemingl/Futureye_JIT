@@ -155,4 +155,71 @@ public class DuDx extends AbstractMathFun implements ElementDependentFunction {
 	public String toString() {
 		return "DuDx";
 	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		Element newEle = e;
+		if(newEle != null) {
+			Element ve = e;
+			//3D?
+			if(ve.nodes.size()==2 && ve.getGeoEntity() instanceof Edge) {
+				//find the cell that includes this edge
+				Node n1 = ve.nodes.at(1);
+				Node n2 = ve.nodes.at(2);
+				int findIndex = -1;
+				for(int i=1;i<=n1.belongToElements.size();i++) {
+					for(int j=1;j<=n2.belongToElements.size();j++) {
+						int idx1 = n1.belongToElements.at(i).globalIndex;
+						int idx2 = n2.belongToElements.at(j).globalIndex;
+						if(idx1 == idx2) {
+							findIndex = idx1;
+							break;
+						}
+						if(findIndex > 0) break;
+					}
+				}
+				this.setElement(mesh.getElementList().at(findIndex));
+			}
+			
+		
+			int N = e.nodes.size();
+			double[] f = new double[N];
+			for(int i=1;i<=N;i++) {
+				Node node = e.nodes.at(i);
+				Variable var = Variable.createFrom(u, node, node.globalIndex);
+				f[i-1] = u.apply(var);
+			}
+			double[] a = Utils.computeBilinearFunctionCoef(e.nodes.toArray(new Point[0]), f);
+			//d(a1 + a2*x + a3*y + a4*x*y)/dx
+			//d(a1 + a2*x + a3*y + a4*x*y)/dy
+			MathFunc du = null;
+			if(x.equals("x")) {
+				du = new FXY(0.0,a[3],a[1]);
+			} else if(x.equals("y")) {
+				du = new FXY(a[3],0.0,a[2]);
+			} else {
+				throw new FutureyeException("x(="+x+") should be 'x' or 'y'!");
+			}
+			Variable vv = new Variable();
+			if(varNames==null || varNames.size()==0) {
+				throw new FutureyeException("varNames should be specified in parameter 'u'.");
+			}
+			if(n.getIndex() != 0) {
+				Node node = mesh.getNodeList().at(n.getIndex());
+				for(int i=0;i<varNames.size();i++) {
+					vv.set(varNames.get(i),node.coord(i+1));
+				}
+				return du.apply(vv);
+			} else {
+				return du.apply(e, n, args);	
+			}
+			
+		} else {
+			if(this.fdu2 == null) {
+				Vector du2 = Tools.computeDerivativeFast(mesh, u.u, x);
+				fdu2 = new Vector2Function(du2);
+			}
+			return fdu2.apply(e, n, args);
+		}
+	}
 }

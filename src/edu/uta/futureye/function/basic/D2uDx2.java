@@ -2,6 +2,7 @@ package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
@@ -125,5 +126,10 @@ public class D2uDx2 extends AbstractMathFun implements ElementDependentFunction 
 	
 	public String toString() {
 		return "D2uDx2";
+	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		throw new FutureyeException("unsupported error!");
 	}
 }

@@ -2,6 +2,8 @@ package edu.uta.futureye.function.basic;
 
 import java.util.List;
 
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -54,6 +56,16 @@ public class FPolynomial1D extends AbstractMathFun {
 	@Override
 	public double apply(Variable v) {
 		double x = v.get(getVarNames().get(0));
+		double f = 0.0;
+		for(int i=0;i<coefList.size();i++) {
+			f += coefList.get(i)*Math.pow(x, i);
+		}
+		return f;
+	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		double x = args[0];
 		double f = 0.0;
 		for(int i=0;i<coefList.size();i++) {
 			f += coefList.get(i)*Math.pow(x, i);

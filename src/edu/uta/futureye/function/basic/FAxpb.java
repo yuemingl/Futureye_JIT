@@ -3,6 +3,8 @@ package edu.uta.futureye.function.basic;
 import java.util.List;
 import java.util.Map;
 
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
@@ -43,6 +45,11 @@ public class FAxpb extends AbstractMathFun {
 	@Override
 	public double apply(Variable v) {
 		return a*v.get(varName)+b;
+	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		return a*args[0]+b;
 	}
 	
 	@Override

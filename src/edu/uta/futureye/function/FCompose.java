@@ -47,6 +47,11 @@ public class FCompose extends AbstractMathFun {
 	public double apply(Variable v) {
 		return apply(v,null);
 	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		throw new UnsupportedOperationException();
+	}
 	
 	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {
@@ -198,4 +203,5 @@ public class FCompose extends AbstractMathFun {
 				}, 
 		Constants.INVOKESTATIC));
 	}
+
 }

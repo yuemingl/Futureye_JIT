@@ -3,6 +3,8 @@ package edu.uta.futureye.function.basic;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.util.FutureyeException;
@@ -31,6 +33,13 @@ public class DiscreteIndexFunction extends AbstractMathFun {
 		if(v.getIndex()<=0) 
 			throw new FutureyeException("v.getIndex()="+v.getIndex());
 		return data.get(v.getIndex());
+	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		if(n.getIndex()<=0) 
+			throw new FutureyeException("v.getIndex()="+n.getIndex());
+		return data.get(n.getIndex());
 	}
 
 }

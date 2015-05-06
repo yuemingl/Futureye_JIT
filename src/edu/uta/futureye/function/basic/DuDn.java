@@ -4,6 +4,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Face;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
@@ -80,5 +81,32 @@ public class DuDn extends AbstractMathFun implements ElementDependentFunction {
 	
 	public String toString() {
 		return "DuDn";
+	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		MathFunc rlt = null;
+		this.setElement(e);
+		if(u != null) {
+			//u is passed into constructor
+			rlt = FMath.grad(u).dot(norm);
+		} else if(this.norm.getDim() == 2) {
+			//2D case
+			rlt = u_x.M(new FC(norm.get(1)))
+					.A(
+				  u_y.M(new FC(norm.get(2)))
+					);
+		} else if(this.norm.getDim() == 3) {
+			//3D case
+			rlt = FMath.sum(
+					u_x.M(new FC(norm.get(1))),
+					u_y.M(new FC(norm.get(2))),
+					u_z.M(new FC(norm.get(3)))
+					);
+		} else {
+			throw new FutureyeException(
+					"Error: u="+u+", this.norm.getDim()="+this.norm.getDim());
+		}
+		return rlt.apply(e, n, args);
 	}
 }

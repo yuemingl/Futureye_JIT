@@ -1,14 +1,14 @@
 package edu.uta.futureye.function.basic;
 
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractMathFun;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
- * 
  * f(x) = (y2-y1)/(x2-x1)*(x-x1)+y1;
- * @author liuyueming
  *
  */
 public class FLinear1D  extends AbstractMathFun{
@@ -31,6 +31,11 @@ public class FLinear1D  extends AbstractMathFun{
 	}
 
 	@Override
+	public double apply(Element e, Node n, double... args) {
+		return (args[0]-x1)*(y2-y1)/(x2-x1) + y1;
+	}
+	
+	@Override
 	public MathFunc _d(String varName) {
 		if(this.getVarNames().contains(varName))
 			return new FC((y2-y1)/(x2-x1));
@@ -41,4 +46,5 @@ public class FLinear1D  extends AbstractMathFun{
 	public String toString() {
 		return (y2-y1)/(x2-x1)+"*("+getVarNames().get(0)+"-"+x1+")+"+y1;
 	}
+
 }
