@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
@@ -13,7 +13,7 @@ import edu.uta.futureye.util.Constant;
  * f(x,y) = c1*x + c2*y + c3
  * 
  */
-public class FXY extends AbstractMathFun{
+public class FXY extends AbstractMathFunc{
 	protected double c1,c2,c3=0.0;
 
 	public FXY(double c1,double c2) {

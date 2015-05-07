@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
@@ -14,7 +14,7 @@ import edu.uta.futureye.util.Constant;
  * @author liuyueming
  *
  */
-public class FPolynomial1D extends AbstractMathFun {
+public class FPolynomial1D extends AbstractMathFunc {
 	List<Double> coefList;
 	
 	/**

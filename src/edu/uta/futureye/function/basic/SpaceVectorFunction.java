@@ -3,13 +3,13 @@ package edu.uta.futureye.function.basic;
 import java.util.LinkedList;
 
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.function.AbstractVectorFunction;
+import edu.uta.futureye.function.AbstractVectorFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
-public class SpaceVectorFunction extends AbstractVectorFunction {
+public class SpaceVectorFunction extends AbstractVectorFunc {
 	protected MathFunc[] data = null;
 	
 	public SpaceVectorFunction(int dim) {

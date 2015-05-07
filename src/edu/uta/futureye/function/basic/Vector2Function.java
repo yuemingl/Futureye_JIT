@@ -10,7 +10,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.geometry.Point;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.FutureyeException;
@@ -34,7 +34,7 @@ import edu.uta.futureye.util.Utils;
  * @author liuyueming
  *
  */
-public class Vector2Function extends AbstractMathFun {
+public class Vector2Function extends AbstractMathFunc {
 	Vector u = null;
 	Mesh mesh = null;
 	int nDim = 0;

@@ -19,7 +19,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.geometry.GeoEntity;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
@@ -49,7 +49,7 @@ public class VariationGaussNewton {
 	protected static String outputFolder = "Lagrangian_Wolfgang";
 	public boolean debug = false;
 
-    MathFunc coef_q = new AbstractMathFun("x","y") {
+    MathFunc coef_q = new AbstractMathFunc("x","y") {
     	@Override
     	public double apply(Variable v) {
     		double x = v.get("x");
@@ -61,7 +61,7 @@ public class VariationGaussNewton {
     	}
     };
 
-    MathFunc diri = new AbstractMathFun("x","y") {
+    MathFunc diri = new AbstractMathFunc("x","y") {
     	@Override
     	public double apply(Variable v) {
     		double x = v.get("x");
@@ -657,7 +657,7 @@ public class VariationGaussNewton {
 		//u测量值
 		vgn.z = new Vector2Function(uReal);
 		//q参考值
-		vgn.qBar = new AbstractMathFun("x","y") {
+		vgn.qBar = new AbstractMathFunc("x","y") {
 	    	@Override
 	    	public double apply(Variable v) {
 	    		double x = v.get("x");

@@ -14,7 +14,7 @@ import com.sun.org.apache.bcel.internal.generic.PUSH;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -26,7 +26,7 @@ import edu.uta.futureye.util.Constant;
  * @author liuyueming
  *
  */
-public class FX extends AbstractMathFun{
+public class FX extends AbstractMathFunc{
 	/**
 	 * Used to form f(x)=x, instead of construct a new FX object, 
 	 * it will be faster and memory saving :)

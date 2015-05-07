@@ -2,7 +2,7 @@ package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
@@ -11,7 +11,7 @@ import edu.uta.futureye.util.Constant;
  * f(x) = a*x
  *
  */
-public class FAx extends AbstractMathFun {
+public class FAx extends AbstractMathFunc {
 	protected double a;
 	
 	public FAx(double a) {

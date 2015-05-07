@@ -30,7 +30,7 @@ import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Refiner;
 import edu.uta.futureye.core.geometry.GeoEntity;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.DuDx;
@@ -491,7 +491,7 @@ public class VariationGaussNewtonDOTGeneral {
 	public static MathFunc generateTestRealMu_a(double max, double bk) {
 		final double fmax = max;
 		final double fbk = bk;
-		return new AbstractMathFun("x","y"){
+		return new AbstractMathFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				double x = v.get("x");
@@ -511,7 +511,7 @@ public class VariationGaussNewtonDOTGeneral {
 	public static MathFunc generateTestGuessMu_a(double max, double bk) {
 		final double fmax = max;
 		final double fbk = bk;
-		return new AbstractMathFun("x","y"){
+		return new AbstractMathFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				double x = v.get("x");

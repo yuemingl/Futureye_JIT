@@ -20,7 +20,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DiscreteIndexFunction;
 import edu.uta.futureye.function.basic.FC;
@@ -74,7 +74,7 @@ public class MouseHeadOld {
 		final double fcx = incX;
 		final double fcr = incBand;
 		final double fmu_a = maxMu_a;
-		mu_a = new AbstractMathFun("x","y"){
+		mu_a = new AbstractMathFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;
@@ -93,7 +93,7 @@ public class MouseHeadOld {
 		final double fcy = incY;
 		final double fcr = incR;
 		final double fmu_a = maxMu_a;
-		mu_a = new AbstractMathFun("x","y"){
+		mu_a = new AbstractMathFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;
@@ -922,7 +922,7 @@ public class MouseHeadOld {
 		//澶栭棶棰� Solve exterior problem
 		final TailType fTailType = tailType;
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y") {
+		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y") {
 			@Override
 			public double apply(Variable v) {
 				double x = v.get("x");

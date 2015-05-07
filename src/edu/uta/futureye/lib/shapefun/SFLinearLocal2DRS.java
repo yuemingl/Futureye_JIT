@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -23,7 +23,7 @@ import static edu.uta.futureye.function.operator.FMath.*;
  * @author liuyueming
  *
  */
-public class SFLinearLocal2DRS  extends AbstractMathFun 
+public class SFLinearLocal2DRS  extends AbstractMathFunc 
 							  implements ScalarShapeFunction {
 	protected int funIndex;
 	private MathFunc funCompose = null;
@@ -62,7 +62,7 @@ public class SFLinearLocal2DRS  extends AbstractMathFun
 		//r=r(x,y) 
 		//s=s(x,y)
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {	
+			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {	
 				public MathFunc diff(String var) {
 					if(varName.equals("r")) { //r对应三角形高h的负倒数
 						if(var.equals("x"))

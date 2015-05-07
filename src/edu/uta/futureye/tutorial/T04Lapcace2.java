@@ -8,7 +8,7 @@ import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -53,7 +53,7 @@ public class T04Lapcace2 {
 		mesh.computeNodeBelongsToElements();
 		
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y"){
+		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				if(3.0-v.get("x")<0.01)

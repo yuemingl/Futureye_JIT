@@ -16,7 +16,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -40,7 +40,7 @@ public class Laplace3DTest {
 		mesh.computeNodeBelongsToElements(); //worked in 3D
 		
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y","z"){
+		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y","z"){
 			@Override
 			public double apply(Variable v) {
 				if(1.0-v.get("x")<0.01)
@@ -221,7 +221,7 @@ public class Laplace3DTest {
 		mesh.computeGlobalEdge();
 		
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Robin, new AbstractMathFun("x","y","z"){
+		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y","z"){
 			@Override
 			public double apply(Variable v) {
 				if(2.8-v.get("x")<0.01 || 2.8-v.get("z")<0.01)

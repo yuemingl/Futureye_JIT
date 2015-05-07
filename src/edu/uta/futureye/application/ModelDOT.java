@@ -11,7 +11,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Refiner;
 import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
@@ -327,7 +327,7 @@ public class ModelDOT {
 		Tools.plotVector(meshBig, outputFolder, "a_sovle_big_refine.dat", aBigRefine);
 		
 		//TEST 3. Only up side of the domain is Dirichlet boundary
-		MathFunc diriBoundaryMark = new AbstractMathFun("x","y"){
+		MathFunc diriBoundaryMark = new AbstractMathFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				//double x = v.get("x");

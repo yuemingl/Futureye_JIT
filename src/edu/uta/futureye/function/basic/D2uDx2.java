@@ -3,7 +3,7 @@ package edu.uta.futureye.function.basic;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -48,7 +48,7 @@ import edu.uta.futureye.util.FutureyeException;
  * @author liuyueming
  *
  */
-public class D2uDx2 extends AbstractMathFun implements ElementDependentFunction {
+public class D2uDx2 extends AbstractMathFunc implements ElementDependentFunction {
 	protected Element e = null;
 	protected Mesh mesh = null;
 	protected Vector2Function u = null;

@@ -2,7 +2,7 @@ package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractVectorFunction;
+import edu.uta.futureye.function.AbstractVectorFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -74,7 +74,7 @@ import edu.uta.futureye.util.container.ObjList;
  *
  * @author liuyueming
  */
-public class QuadraticV_LinearP extends AbstractVectorFunction 
+public class QuadraticV_LinearP extends AbstractVectorFunc 
 								implements VectorShapeFunction {
 	//(u1,u2,p)
 	protected SpaceVectorFunction sf = null;
@@ -180,7 +180,7 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 	 * @author liuyueming
 	 *
 	 */
-	public class QuadraticV_LinearP1D extends AbstractVectorFunction 
+	public class QuadraticV_LinearP1D extends AbstractVectorFunc 
 						implements VectorShapeFunction {
 		//(u1,u2,p)
 		protected SpaceVectorFunction sf = new SpaceVectorFunction(3);

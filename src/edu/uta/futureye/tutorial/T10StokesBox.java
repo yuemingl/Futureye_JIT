@@ -12,7 +12,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -144,7 +144,7 @@ public class T10StokesBox {
 		SparseBlockMatrix stiff = assembler.getStiffnessMatrix();
 		SparseBlockVector load = assembler.getLoadVector();
 		VectorFunction diri = new SpaceVectorFunction(3);
-		diri.set(1, new AbstractMathFun("x","y") {
+		diri.set(1, new AbstractMathFunc("x","y") {
 					@Override
 					public double apply(Variable v) {
 						double y = v.get("y");

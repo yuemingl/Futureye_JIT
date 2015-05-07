@@ -6,7 +6,7 @@ import java.util.Map;
 
 import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.VN;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
@@ -26,7 +26,7 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFunction {
+public class SFTrilinearLocal3D extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
 	private MathFunc funCompose = null;
 	private MathFunc funOuter = null;
@@ -54,7 +54,7 @@ public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFu
 	MathFunc z_s = null;
 	MathFunc z_t = null;
 	
-	class InvJ extends AbstractMathFun {
+	class InvJ extends AbstractMathFunc {
 		String rst,xyz;
 		InvJ(String rst, String xyz) {
 			this.rst = rst;
@@ -181,7 +181,7 @@ public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFu
 		}
 	}
 	
-	static class FOuter extends AbstractMathFun {
+	static class FOuter extends AbstractMathFunc {
 		int funIndex;
 		FOuter(List<String> varNames, int funIndex) {
 			this.varNames = varNames;
@@ -226,7 +226,7 @@ public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFu
 		}
 	}
 	
-	static class FOuter_d extends AbstractMathFun {
+	static class FOuter_d extends AbstractMathFunc {
 		int funIndex;
 		String var;
 		FOuter_d(List<String> varNames, String var, int funIndex) {
@@ -315,7 +315,7 @@ public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFu
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
+			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {
 				
 				//r_x,r_y,r_z, s_x,s_y,s_z, t_x,t_y,t_z
 				public MathFunc diff(String var) {

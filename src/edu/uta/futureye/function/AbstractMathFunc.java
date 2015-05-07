@@ -30,18 +30,18 @@ import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FuncClassLoader;
 
-public abstract class AbstractMathFun implements MathFunc {
+public abstract class AbstractMathFunc implements MathFunc {
 	protected List<String> varNames = new LinkedList<String>();
 	protected String fName = null;
 	
-	public AbstractMathFun() {
+	public AbstractMathFunc() {
 	}
 	
-	public AbstractMathFun(List<String> varNames) {
+	public AbstractMathFunc(List<String> varNames) {
 		this.varNames = varNames;
 	}
 	
-	public AbstractMathFun(String varName, String ...aryVarNames) {
+	public AbstractMathFunc(String varName, String ...aryVarNames) {
 		varNames.add(varName);
 		for(String s : aryVarNames)
 			varNames.add(s);

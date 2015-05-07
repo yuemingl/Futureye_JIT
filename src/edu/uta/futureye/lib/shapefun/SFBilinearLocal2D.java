@@ -5,7 +5,7 @@ import java.util.Map;
 
 import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FAxpb;
@@ -19,7 +19,7 @@ import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 import static edu.uta.futureye.function.operator.FMath.*;
 
-public class SFBilinearLocal2D extends AbstractMathFun implements ScalarShapeFunction {
+public class SFBilinearLocal2D extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
 	private MathFunc funCompose = null;
 	private MathFunc funOuter = null;
@@ -72,7 +72,7 @@ public class SFBilinearLocal2D extends AbstractMathFun implements ScalarShapeFun
 		//r = r(x,y)
 		//s = s(x,y)
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
+			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {
 				
 /**
 How to get derivative r_x, r_y, s_x, s_y:

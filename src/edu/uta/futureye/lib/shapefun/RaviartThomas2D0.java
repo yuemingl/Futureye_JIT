@@ -11,8 +11,8 @@ import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFun;
-import edu.uta.futureye.function.AbstractVectorFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.AbstractVectorFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -57,7 +57,7 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorShapeFunction {
+public class RaviartThomas2D0 extends AbstractVectorFunc implements VectorShapeFunction {
 	int funIndex = 0;
 	
 	private VectorFunction funCompose = null;
@@ -102,7 +102,7 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 		//y = y(r,s,t)
 		//	where t = 1 - r - s
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractMathFun(varNamesInner) {
+			fInners.put(varName, new AbstractMathFunc(varNamesInner) {
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				

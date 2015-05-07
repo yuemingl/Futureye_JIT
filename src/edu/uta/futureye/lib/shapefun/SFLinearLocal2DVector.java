@@ -2,7 +2,7 @@ package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractVectorFunction;
+import edu.uta.futureye.function.AbstractVectorFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -12,7 +12,7 @@ import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.container.ObjList;
 
-public class SFLinearLocal2DVector extends AbstractVectorFunction 
+public class SFLinearLocal2DVector extends AbstractVectorFunc 
 								implements VectorShapeFunction {
 	protected SpaceVectorFunction sf = new SpaceVectorFunction(2);
 	protected int funIndex;
@@ -51,7 +51,7 @@ public class SFLinearLocal2DVector extends AbstractVectorFunction
 		return innerVarNames;
 	}
 
-	public class SFLinearLocal1DVector extends AbstractVectorFunction 
+	public class SFLinearLocal1DVector extends AbstractVectorFunc 
 			implements VectorShapeFunction {
 		protected SpaceVectorFunction sf = new SpaceVectorFunction(2);
 		protected int funIndex;

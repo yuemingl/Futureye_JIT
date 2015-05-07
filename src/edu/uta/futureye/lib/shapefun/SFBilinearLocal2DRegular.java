@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FAxpb;
@@ -26,7 +26,7 @@ import static edu.uta.futureye.function.operator.FMath.*;
  * @author liuyueming
  *
  */
-public class SFBilinearLocal2DRegular extends AbstractMathFun implements ScalarShapeFunction {
+public class SFBilinearLocal2DRegular extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
 	private MathFunc funCompose = null;
 	private MathFunc funOuter = null;
@@ -74,7 +74,7 @@ public class SFBilinearLocal2DRegular extends AbstractMathFun implements ScalarS
 		//r = r(x,y)
 		//s = s(x,y)
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
+			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {
 				
 				public MathFunc diff(String var) {
 					double x1 = e.nodes.at(1).coord(1);

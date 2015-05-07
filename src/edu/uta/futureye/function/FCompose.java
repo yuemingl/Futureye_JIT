@@ -33,7 +33,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
 
-public class FCompose extends AbstractMathFun {
+public class FCompose extends AbstractMathFunc {
 	public MathFunc fOuter;
 	public Map<String,MathFunc> fInners;
 	

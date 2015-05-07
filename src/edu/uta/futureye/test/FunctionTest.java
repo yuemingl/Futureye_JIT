@@ -9,8 +9,8 @@ import edu.uta.futureye.application.Tools;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFun;
-import edu.uta.futureye.function.AbstractVectorFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.AbstractVectorFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.DuDx;
@@ -221,7 +221,7 @@ public class FunctionTest {
 		varNames.add("x");
 		varNames.add("y");
 		
-		VectorFunction f = new AbstractVectorFunction(3,"x","y") {
+		VectorFunction f = new AbstractVectorFunc(3,"x","y") {
 			protected MathFunc[] data = new MathFunc[dim];
 			@Override
 			public void set(int index, MathFunc value) {
@@ -281,7 +281,7 @@ public class FunctionTest {
 	    System.out.println(f1.diff("x").apply(new Variable(3.0)));
 
 	    //f2 = 3x^2 + 4y + 1
-	    MathFunc f2 = new AbstractMathFun("x","y") {
+	    MathFunc f2 = new AbstractMathFunc("x","y") {
 	    	@Override
 	    	public double apply(Variable v) {
 		          double x = v.get("x");
@@ -306,7 +306,7 @@ public class FunctionTest {
 	    
 	    //f3 = (x+y, x*y, 1.0)
 	    VectorFunction f3 = new SpaceVectorFunction( 
-	    		new AbstractMathFun("x","y") {
+	    		new AbstractMathFunc("x","y") {
 	    	    	@Override
 	    	    	public double apply(Variable v) {
 	    		          return v.get("x") + v.get("y"); 

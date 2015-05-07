@@ -11,7 +11,7 @@ import edu.uta.futureye.algebra.solver.SchurComplementStokesSolver;
 import edu.uta.futureye.application.DataReader;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -111,7 +111,7 @@ public class T11NavierStokesBox3D {
 		}
 
 		diri = new SpaceVectorFunction(4);
-		diri.set(1, new AbstractMathFun("x","y","z") {
+		diri.set(1, new AbstractMathFunc("x","y","z") {
 					@Override
 					public double apply(Variable v) {
 						double z = v.get("z");

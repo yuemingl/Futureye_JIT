@@ -2,7 +2,7 @@ package edu.uta.futureye.function;
 
 import edu.uta.futureye.function.intf.MathFunc;
 
-public abstract class FBinaryOp extends AbstractMathFun {
+public abstract class FBinaryOp extends AbstractMathFunc {
 	public MathFunc arg1;
 	public MathFunc arg2;
 	

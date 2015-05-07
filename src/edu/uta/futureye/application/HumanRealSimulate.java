@@ -21,7 +21,7 @@ import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.geometry.GeoEntity3D;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
@@ -199,7 +199,7 @@ public class HumanRealSimulate {
 		//mu_s'
 		double mu_sp = 10;
 		//mu_a
-		MathFunc fmu_a = new AbstractMathFun("x","y","z"){
+		MathFunc fmu_a = new AbstractMathFunc("x","y","z"){
 			double x0 = 4.0,y0=-3.0, z0=4.0;//z0=13
 			@Override
 			public double apply(Variable v) {
@@ -313,7 +313,7 @@ public class HumanRealSimulate {
 
 		
 		//mu_a
-		MathFunc fmu_aBig = new AbstractMathFun("x","y","z"){
+		MathFunc fmu_aBig = new AbstractMathFunc("x","y","z"){
 			//深度 y=-3.0
 			double x0 = 4.0,y0=-3.0, z0=4.0;//z0=13
 			@Override
@@ -355,7 +355,7 @@ public class HumanRealSimulate {
 	
 		//mu_s'
 		double mu_sp = 10;
-		MathFunc fmu_aSmall = new AbstractMathFun("x","y","z"){
+		MathFunc fmu_aSmall = new AbstractMathFunc("x","y","z"){
 			//深度 y=-1.5
 			double x0 = 4.0,y0=-1.5, z0=4.0;//z0=13
 			@Override

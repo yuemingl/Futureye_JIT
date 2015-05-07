@@ -4,11 +4,11 @@ import java.util.List;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 
-public class FSin extends AbstractMathFun {
+public class FSin extends AbstractMathFunc {
 	
 	public FSin() {
 		super("x");

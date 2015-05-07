@@ -5,7 +5,7 @@ import java.util.Map;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -14,7 +14,7 @@ import edu.uta.futureye.util.Constant;
 /**
  * f(x) = a*x + b
  */
-public class FAxpb extends AbstractMathFun {
+public class FAxpb extends AbstractMathFunc {
 	protected double a;
 	protected double b;
 	//varName在构造的时候已经确定，以后不可以修改，但是varNames可以修改

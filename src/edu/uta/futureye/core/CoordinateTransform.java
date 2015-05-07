@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import edu.uta.futureye.core.geometry.topology.TetrahedronTp;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
@@ -381,7 +381,7 @@ public class CoordinateTransform {
 		}
 	}
 	
-	public static class Jacobian2D extends AbstractMathFun {
+	public static class Jacobian2D extends AbstractMathFunc {
 		MathFunc[] funs = null;
 		public Jacobian2D(MathFunc[] funs) {
 			this.funs = funs;
@@ -445,7 +445,7 @@ public class CoordinateTransform {
 	 * @author liuyueming
 	 *
 	 */
-	public static class Jacobian2DFrom3D extends AbstractMathFun {
+	public static class Jacobian2DFrom3D extends AbstractMathFunc {
 		MathFunc[] funs = null;
 		public Jacobian2DFrom3D(MathFunc[] funs) {
 			this.funs = funs;
@@ -549,7 +549,7 @@ public class CoordinateTransform {
 		this.Jacobian = new Jacobian3D(funs);
 	}
 	
-	public static class Jacobian3D extends AbstractMathFun {
+	public static class Jacobian3D extends AbstractMathFunc {
 		MathFunc[] funs = null;
 		public Jacobian3D(MathFunc[] funs) {
 			this.funs = funs;

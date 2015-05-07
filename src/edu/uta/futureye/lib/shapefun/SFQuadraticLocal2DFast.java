@@ -1,7 +1,7 @@
 package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FX;
@@ -33,7 +33,7 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFQuadraticLocal2DFast extends AbstractMathFun implements ScalarShapeFunction {
+public class SFQuadraticLocal2DFast extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
 	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
@@ -50,7 +50,7 @@ public class SFQuadraticLocal2DFast extends AbstractMathFun implements ScalarSha
 	 * @author liuyueming
 	 *
 	 */
-	protected class SF123456 extends AbstractMathFun {
+	protected class SF123456 extends AbstractMathFunc {
 		int funIndex;
 		public SF123456(int funIndex) {
 			super(SFQuadraticLocal2DFast.this.varNames);

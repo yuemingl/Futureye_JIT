@@ -6,7 +6,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Face;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.geometry.GeoEntity;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -20,7 +20,7 @@ import edu.uta.futureye.util.FutureyeException;
  * @author liuyueming
  *
  */
-public class DuDn extends AbstractMathFun implements ElementDependentFunction {
+public class DuDn extends AbstractMathFunc implements ElementDependentFunction {
 	protected Element e = null;
 	protected MathFunc u = null;
 	protected MathFunc u_x = null;

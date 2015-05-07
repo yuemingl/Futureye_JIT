@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
@@ -45,7 +45,7 @@ public class FMath {
 	//--- Basic operations ------------------------
 	
 	public static MathFunc sqrt(final MathFunc f) {
-		return new AbstractMathFun(f.getVarNames()) {
+		return new AbstractMathFunc(f.getVarNames()) {
 			@Override
 			public double apply(Variable v) {
 				return Math.sqrt(f.apply(v));
@@ -73,7 +73,7 @@ public class FMath {
 	 * @return
 	 */
 	public static MathFunc pow(final MathFunc f, final double p) {
-		return new AbstractMathFun(f.getVarNames()) {
+		return new AbstractMathFunc(f.getVarNames()) {
 			@Override
 			public double apply(Variable v) {
 				return Math.pow(f.apply(v),p);
@@ -102,7 +102,7 @@ public class FMath {
 	 * @return
 	 */
 	public static MathFunc pow(final MathFunc f1, final MathFunc f2) {
-		return new AbstractMathFun(Utils.mergeList(f1.getVarNames(), f2.getVarNames())) {
+		return new AbstractMathFunc(Utils.mergeList(f1.getVarNames(), f2.getVarNames())) {
 			@Override
 			public double apply(Variable v) {
 				return Math.pow(f1.apply(v),f2.apply(v));
@@ -121,7 +121,7 @@ public class FMath {
 	}	
 	
 	public static MathFunc abs(final MathFunc f) {
-		return new AbstractMathFun(f.getVarNames()) {
+		return new AbstractMathFunc(f.getVarNames()) {
 			@Override
 			public double apply(Variable v) {
 				return Math.abs(f.apply(v));
@@ -168,7 +168,7 @@ public class FMath {
 		return new FC(c1).M(f1).A(new FC(c2).M(f2));
 	}
 	
-	static class FLinearCombination extends AbstractMathFun{
+	static class FLinearCombination extends AbstractMathFunc{
 		double []ci;
 		MathFunc []fi;
 		public FLinearCombination(double []ci, MathFunc []fi) {

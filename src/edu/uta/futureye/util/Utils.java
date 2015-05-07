@@ -17,7 +17,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.geometry.Point;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -391,7 +391,7 @@ public class Utils {
 		varNamesInner.add("r");
 		varNamesInner.add("s");
 		varNamesInner.add("t");
-		fInners.put("x", new AbstractMathFun(varNamesInner) {	
+		fInners.put("x", new AbstractMathFunc(varNamesInner) {	
 			@Override
 			public double apply(Variable v) {
 				double rlt = 0.0;
@@ -401,7 +401,7 @@ public class Utils {
 				
 			}
 		});
-		fInners.put("y", new AbstractMathFun(varNamesInner) {	
+		fInners.put("y", new AbstractMathFunc(varNamesInner) {	
 			@Override
 			public double apply(Variable v) {
 				double rlt = 0.0;

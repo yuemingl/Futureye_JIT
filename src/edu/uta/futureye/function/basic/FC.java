@@ -12,7 +12,7 @@ import com.sun.org.apache.bcel.internal.generic.PUSH;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -21,7 +21,7 @@ import edu.uta.futureye.function.intf.MathFunc;
  * Constant function: f = c
  * 
  */
-public class FC extends AbstractMathFun{
+public class FC extends AbstractMathFunc{
 	//Predefined constant
 	public static FC C0 = new FC(0.0);
 	public static FC C1 = new FC(1.0);

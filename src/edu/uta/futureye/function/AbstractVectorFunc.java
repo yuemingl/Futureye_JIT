@@ -22,24 +22,24 @@ import edu.uta.futureye.util.Utils;
  * @author liuyueming
  *
  */
-public abstract class AbstractVectorFunction implements VectorFunction {
+public abstract class AbstractVectorFunc implements VectorFunction {
 	protected int dim = 0;
 	protected List<String> varNames = new LinkedList<String>();
 	protected String fName = null;
 	
-	public AbstractVectorFunction() {
+	public AbstractVectorFunc() {
 	}
 	
-	public AbstractVectorFunction(int dim) {
+	public AbstractVectorFunc(int dim) {
 		this.dim = dim;
 	}
 	
-	public AbstractVectorFunction(int dim, List<String> varNames) {
+	public AbstractVectorFunc(int dim, List<String> varNames) {
 		this.dim = dim;
 		this.varNames = varNames;
 	}
 	
-	public AbstractVectorFunction(int dim, String varName, String ...aryVarNames) {
+	public AbstractVectorFunc(int dim, String varName, String ...aryVarNames) {
 		this.dim = dim;
 		varNames.add(varName);
 		for(String s : aryVarNames)

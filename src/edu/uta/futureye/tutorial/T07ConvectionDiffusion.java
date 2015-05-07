@@ -7,7 +7,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -80,7 +80,7 @@ public class T07ConvectionDiffusion {
 	public void initParam() {
 		//Mark border type
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Dirichlet, new AbstractMathFun("x","y"){
+		mapNTF.put(NodeType.Dirichlet, new AbstractMathFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				//double x = v.get("x");
@@ -135,7 +135,7 @@ public class T07ConvectionDiffusion {
 		
 		//the convection velocity vector
 		v = new SpaceVectorFunction(2);
-		v.set(1, new AbstractMathFun("x","y") {
+		v.set(1, new AbstractMathFunc("x","y") {
 			@Override
 			public double apply(Variable v) {
 				double y = v.get("y");
@@ -148,7 +148,7 @@ public class T07ConvectionDiffusion {
 		Tools.plotFunction(mesh, outputFolder, String.format("v2.dat"), v.get(2));
 		
 		//c0
-		MathFunc c_n = new AbstractMathFun("x","y") {
+		MathFunc c_n = new AbstractMathFunc("x","y") {
 			//[-3,3]x[-3,3]			
 			@Override
 			public double apply(Variable v) {

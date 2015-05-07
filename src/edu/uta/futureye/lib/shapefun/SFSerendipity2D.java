@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
@@ -20,7 +20,7 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunction {
+public class SFSerendipity2D extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
 	private MathFunc funCompose = null;
 	private MathFunc funOuter = null;
@@ -75,7 +75,7 @@ public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunct
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
+			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {
 				public MathFunc diff(String var) {
 					if(varName.equals("r")) {
 						if(var.equals("x"))

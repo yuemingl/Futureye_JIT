@@ -1,7 +1,7 @@
 package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -35,7 +35,7 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFLinearLocal3D extends AbstractMathFun 
+public class SFLinearLocal3D extends AbstractMathFunc 
 							 implements ScalarShapeFunction {
 	private int funIndex;
 	private ObjList<String> innerVarNames = null;

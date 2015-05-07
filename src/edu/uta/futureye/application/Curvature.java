@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -111,7 +111,7 @@ public class Curvature {
 	}
 	
 	//extract bounday values [1.0, 4.0]*[1.0, 3.0]
-	class BoundaryValues extends AbstractMathFun {
+	class BoundaryValues extends AbstractMathFunc {
 		MathFunc f = null;
 		public BoundaryValues(Vector uDiff) {
 			super("x","y");

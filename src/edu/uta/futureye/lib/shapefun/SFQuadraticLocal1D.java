@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
@@ -15,7 +15,7 @@ import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
-public class SFQuadraticLocal1D extends AbstractMathFun implements ScalarShapeFunction {
+public class SFQuadraticLocal1D extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
 	private MathFunc funCompose = null;
 	private MathFunc funOuter = null;
@@ -52,7 +52,7 @@ public class SFQuadraticLocal1D extends AbstractMathFun implements ScalarShapeFu
 		/*
 		 *  r_x = 2/(x2-x1)  
 		 */
-		fInners.put("r", new AbstractMathFun(innerVarNames.toList()) {	
+		fInners.put("r", new AbstractMathFunc(innerVarNames.toList()) {	
 			public MathFunc diff(String var) {
 				if(var.contains("x")) {
 					VertexList vl = e.vertices();

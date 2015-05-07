@@ -20,7 +20,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.function.AbstractMathFun;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -139,7 +139,7 @@ public class T11NavierStokesCylinder {
 		//Mark boundary type of u
 		HashMap<NodeType, MathFunc> mapNTF_u = new HashMap<NodeType, MathFunc>();
 		//Dirichlet boundary of u
-		mapNTF_u.put(NodeType.Dirichlet, new AbstractMathFun("x","y") {
+		mapNTF_u.put(NodeType.Dirichlet, new AbstractMathFunc("x","y") {
 			@Override
 			public double apply(Variable v) {
 				double x = v.get("x");
@@ -164,7 +164,7 @@ public class T11NavierStokesCylinder {
 		//Mark boundary type of p
 		HashMap<NodeType, MathFunc> mapNTF_p = new HashMap<NodeType, MathFunc>();
 		//Dirichlet boundary of p
-		mapNTF_p.put(NodeType.Dirichlet, new AbstractMathFun("x","y") {
+		mapNTF_p.put(NodeType.Dirichlet, new AbstractMathFunc("x","y") {
 			@Override
 			public double apply(Variable v) {
 				double x = v.get("x");
@@ -209,7 +209,7 @@ public class T11NavierStokesCylinder {
 	 */
 	public void imposeDirichletCondition1() {
 		diri = new SpaceVectorFunction(3);
-		diri.set(1, new AbstractMathFun("x","y") {
+		diri.set(1, new AbstractMathFunc("x","y") {
 					@Override
 					public double apply(Variable v) {
 						double x = v.get("x");
@@ -235,7 +235,7 @@ public class T11NavierStokesCylinder {
 	 */
 	public void imposeDirichletCondition2() {
 		diri = new SpaceVectorFunction(3);
-		diri.set(1, new AbstractMathFun("x","y") {
+		diri.set(1, new AbstractMathFunc("x","y") {
 					@Override
 					public double apply(Variable v) {
 						double x = v.get("x");
@@ -261,7 +261,7 @@ public class T11NavierStokesCylinder {
 	 */
 	public void imposeDirichletCondition3() {
 		diri = new SpaceVectorFunction(3);
-		diri.set(1, new AbstractMathFun("x","y") {
+		diri.set(1, new AbstractMathFunc("x","y") {
 					@Override
 					public double apply(Variable v) {
 						double x = v.get("x");
