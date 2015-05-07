@@ -25,7 +25,7 @@ public class FXYZ extends AbstractMathFun{
 
 	
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		return null;
 	}
 

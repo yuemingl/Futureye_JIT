@@ -65,7 +65,7 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 					ff.M(v)
 					.S(
 						fk.M(
-							fUx.M(v._d("x")).A(fUy.M(v._d("y")))
+							fUx.M(v.diff("x")).A(fUy.M(v.diff("y")))
 						)
 					);	
 //新方法2：计算导数
@@ -103,7 +103,7 @@ public class WeakFormL22D extends AbstractScalarWeakForm {
 					ff.M(v)
 					.S(
 						fk.M(
-							fUx.M(v._d("x")).A(fUy.M(v._d("y")))
+							fUx.M(v.diff("x")).A(fUy.M(v.diff("y")))
 						)
 					);
 				

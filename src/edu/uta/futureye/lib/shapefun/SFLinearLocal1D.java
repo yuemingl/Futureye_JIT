@@ -59,7 +59,7 @@ public class SFLinearLocal1D extends AbstractMathFun  implements ScalarShapeFunc
 		 *  r_x = 2/(x2-x1)  
 		 */
 		fInners.put("r", new AbstractMathFun(varNamesInner) {	
-			public MathFunc _d(String var) {
+			public MathFunc diff(String var) {
 				if(var.equals("x")) {
 					VertexList vl = e.vertices();
 					if(vl.size() == 2) {
@@ -95,8 +95,8 @@ public class SFLinearLocal1D extends AbstractMathFun  implements ScalarShapeFunc
 	}
 
 	@Override
-	public MathFunc _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override

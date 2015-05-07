@@ -47,7 +47,7 @@ public class SFLinearLocal2D  extends AbstractMathFun
 			super(SFLinearLocal2D.this.varNames);
 		}
 		@Override
-		public MathFunc _d(String var) {
+		public MathFunc diff(String var) {
 			if(varNames.get(funIndex).equals(var)) { 
 				//d(N1)/dr = 1.0;  d(N2)/ds = 1.0;  d(N3)/dt = 1.0
 				return C1;
@@ -95,7 +95,7 @@ public class SFLinearLocal2D  extends AbstractMathFun
 		//s = s(x,y)
 		//t = t(x,y)
 		fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {	
-			public MathFunc _d(String var) {
+			public MathFunc diff(String var) {
 				if(area < 0.0) {
 					throw new FutureyeException("Check nodes order: area < 0.0");
 				} else {
@@ -143,8 +143,8 @@ public class SFLinearLocal2D  extends AbstractMathFun
 	}
 	
 	@Override
-	public MathFunc _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override

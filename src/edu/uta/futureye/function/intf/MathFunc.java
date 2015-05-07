@@ -28,6 +28,46 @@ import edu.uta.futureye.function.VariableArray;
  */
 public interface MathFunc {
 	/**
+	 * Get the function name if a name is assigned
+	 * 
+	 * @return
+	 */
+	String getName();
+	
+	/**
+	 * Set a name for the function
+	 * <p>
+	 * It is suggested to implement toString method that return this
+	 * name for the function. If the function name is not specified the 
+	 * MathFuncession of the function should be returned by toString method.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	MathFunc setName(String name);
+	
+	/**
+	 * Set function variable names
+	 * <p>
+	 * 设置函数自变量名称，对于复合函数，只设置外层自变量名称
+	 * <p>
+	 * 关于复合函数的构造 @see compose()
+	 * 
+	 * @param varNames
+	 * @return TODO
+	 */
+	MathFunc setVarNames(List<String> varNames);
+	
+	/**
+	 * Return all variable names of the function
+	 * <p>
+	 * 返回所有自变量名称
+	 * 
+	 * @return
+	 */
+	List<String> getVarNames();
+	
+	/**
 	 * Return function value at variable v
 	 * <p>
 	 * 返回自变量v对应的函数值
@@ -65,27 +105,6 @@ public interface MathFunc {
 	 * @return Function values evaluated at array of variables <tt>valAry</tt> 
 	 */
 	double[] applyAll(VariableArray valAry, Map<Object, Object> cache);
-	
-	/**
-	 * Set function variable names
-	 * <p>
-	 * 设置函数自变量名称，对于复合函数，只设置外层自变量名称
-	 * <p>
-	 * 关于复合函数的构造 @see compose()
-	 * 
-	 * @param varNames
-	 * @return TODO
-	 */
-	MathFunc setVarNames(List<String> varNames);
-	
-	/**
-	 * Return all variable names of the function
-	 * <p>
-	 * 返回所有自变量名称
-	 * 
-	 * @return
-	 */
-	List<String> getVarNames();
 	
 	/**
 	 * Add
@@ -185,7 +204,7 @@ public interface MathFunc {
 	 * @param varName
 	 * @return
 	 */
-	MathFunc _d(String varName);
+	MathFunc diff(String varName);
 
 	
 	/**
@@ -222,26 +241,7 @@ public interface MathFunc {
 	*
 	* @return
 	*/
-	String getExpression();
-	
-	/**
-	 * Get the function name if a name is assigned
-	 * 
-	 * @return
-	 */
-	String getFunName();
-	
-	/**
-	 * Set a name for the function
-	 * <p>
-	 * It is suggested to implement toString method that return this
-	 * name for the function. If the function name is not specified the 
-	 * MathFuncession of the function should be returned by toString method.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	MathFunc setFunName(String name);
+	String getExpr();
 	
 	/**
 	 * Definition of operand order
@@ -276,12 +276,15 @@ public interface MathFunc {
 	
 	/**
 	 * 
-	 * @param clsName TODO
+	 * @param clsName
 	 * @param mg
 	 * @param cp
 	 * @param factory
 	 * @param il
-	 * @param funcRefsMap TODO
+	 * @param argsMap Arguments name=>index pair
+	 * @param argsStartPos Start index of 'args' in generated function apply()
+	 * @param funcRefsMap An array of objects in the expression that implements MathFun 
+	 * @return
 	 */
 	InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
 			ConstantPoolGen cp, InstructionFactory factory, 

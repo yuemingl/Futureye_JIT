@@ -56,11 +56,11 @@ public class WeakFormGCMDual extends AbstractScalarWeakForm {
 			
 			integrand = FMath.sum(
 						fk.M(
-								u._d("x").M(v._d("x")).A(
-								u._d("y").M(v._d("y"))
+								u.diff("x").M(v.diff("x")).A(
+								u.diff("y").M(v.diff("y"))
 						)),
-						fb1.M(v._d("x").M(u)),
-						fb2.M(v._d("y").M(u)),
+						fb1.M(v.diff("x").M(u)),
+						fb2.M(v.diff("y").M(u)),
 						fc.M(u.M(v))
 					);
 			return integrand;

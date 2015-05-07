@@ -97,7 +97,7 @@ from the above four equations, we have:
  (s_x s_y) = inv(J)
  */				
 				//Derivatives: r_x, r_y, s_x, s_y
-				public MathFunc _d(String var) {
+				public MathFunc diff(String var) {
 					if(varName.equals("r")) {
 						if(var.equals("x")) //r_x
 							return y_s.D(jac);
@@ -148,8 +148,8 @@ public double apply(Variable v) {
 		Create(funID,1.0);
 	}
 
-	public MathFunc _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	public double apply(Variable v) {

@@ -118,7 +118,7 @@ public class T08AdvectionDiffusion1D {
 				MathFunc fu = getParam("u",e);
 				switch(type) {
 					case LHS_Domain:
-						return fk.M(u._d("x").M(v._d("x"))).A(fu.M(u._d("x").M(v)));
+						return fk.M(u.diff("x").M(v.diff("x"))).A(fu.M(u.diff("x").M(v)));
 					default:
 						return null;
 				}

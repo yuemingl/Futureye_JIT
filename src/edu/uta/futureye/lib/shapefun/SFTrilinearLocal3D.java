@@ -213,7 +213,7 @@ public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFu
 		}
 		
 		@Override
-		public MathFunc _d(String var) {
+		public MathFunc diff(String var) {
 			return new FOuter_d(varNames,var,funIndex);
 		}
 		public String toString() {
@@ -318,7 +318,7 @@ public class SFTrilinearLocal3D extends AbstractMathFun implements ScalarShapeFu
 			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
 				
 				//r_x,r_y,r_z, s_x,s_y,s_z, t_x,t_y,t_z
-				public MathFunc _d(String var) {
+				public MathFunc diff(String var) {
 /**
 f(x,y,z) = g(r,s,t)
 f_x = g_r*r_x + g_s*s_x + g_t*t_x ---(1)
@@ -382,8 +382,8 @@ from the above 9 equations, we have:
 		Create(funID,1.0);
 	}
 
-	public MathFunc _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	public double apply(Variable v) {

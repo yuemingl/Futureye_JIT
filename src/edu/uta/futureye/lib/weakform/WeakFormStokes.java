@@ -62,8 +62,8 @@ public class WeakFormStokes extends AbstractVectorWeakForm {
 			//(v1_x+v2_y,p) + (q,u1_x+u2_y) 
 			MathFunc uv1 = grad(u1,"x","y" ).dot( grad(v1,"x","y") );
 			MathFunc uv2 = grad(u2,"x","y" ).dot( grad(v2,"x","y") );
-			MathFunc div_v = v1._d("x").A(v2._d("y"));
-			MathFunc div_u = u1._d("x").A(u2._d("y"));
+			MathFunc div_v = v1.diff("x").A(v2.diff("y"));
+			MathFunc div_u = u1.diff("x").A(u2.diff("y"));
 			integrand = fk.M( uv1.A(uv2) ).S( div_v.M(p) ).A( div_u.M(q) );
 			return integrand;
 		}

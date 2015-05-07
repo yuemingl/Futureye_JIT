@@ -79,8 +79,8 @@ public class WeakFormC extends AbstractScalarWeakForm {
 			MathFunc fby = Utils.interpolateOnElement(dy, e);
 			
 			integrand = FMath.sum(
-						fk.M(fbx.M(u.M(v._d("x")))),
-						fk.M(fby.M(u.M(v._d("y")))),
+						fk.M(fbx.M(u.M(v.diff("x")))),
+						fk.M(fby.M(u.M(v.diff("y")))),
 						fc.M(u.M(v))
 					);
 			return integrand;

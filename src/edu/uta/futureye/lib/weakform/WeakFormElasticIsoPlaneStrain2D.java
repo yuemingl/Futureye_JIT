@@ -18,14 +18,14 @@ public class WeakFormElasticIsoPlaneStrain2D extends AbstractVectorWeakForm {
 			MathFunc u2 = u.get(2);
 			MathFunc v1 = v.get(1);
 			MathFunc v2 = v.get(2);
-			MathFunc u1x = u1._d("x");
-			MathFunc u1y = u1._d("y");
-			MathFunc u2x = u2._d("x");
-			MathFunc u2y = u2._d("y");
-			MathFunc v1x = v1._d("x");
-			MathFunc v1y = v1._d("y");
-			MathFunc v2x = v2._d("x");
-			MathFunc v2y = v2._d("y");
+			MathFunc u1x = u1.diff("x");
+			MathFunc u1y = u1.diff("y");
+			MathFunc u2x = u2.diff("x");
+			MathFunc u2y = u2.diff("y");
+			MathFunc v1x = v1.diff("x");
+			MathFunc v1y = v1.diff("y");
+			MathFunc v2x = v2.diff("x");
+			MathFunc v2y = v2.diff("y");
 			
 			double coef1 = E/((1+gamma)*(1-2.0*gamma));
 			double coef2 = (1-2.0*gamma)/2.0;

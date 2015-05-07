@@ -42,8 +42,8 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 			//Integrand part of Weak Form on element e
 			MathFunc integrand = null;
 			if(eps > 0.0) {
-				integrand = u._d("x").M(v._d("x")).A(
-						    u._d("y").M(v._d("y"))).M(eps).A(
+				integrand = u.diff("x").M(v.diff("x")).A(
+						    u.diff("y").M(v.diff("y"))).M(eps).A(
 						    u.M(v));
 			} else {
 				integrand = u.M(v);
@@ -66,7 +66,7 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 					MathFunc PValue = new FC(g_U.apply(var));
 					ScalarShapeFunction shape = dofI.getSSF();
 					//以前版本需要调用shapeFun.asignElement(e)，现在版本不需要调用了
-					rlt = rlt.A(PValue.M(shape._d(varName)));
+					rlt = rlt.A(PValue.M(shape.diff(varName)));
 				}
 			}
 			

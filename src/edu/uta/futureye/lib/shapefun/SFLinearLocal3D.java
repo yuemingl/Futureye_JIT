@@ -130,7 +130,7 @@ public class SFLinearLocal3D extends AbstractMathFun
 	}
 
 	@Override
-	public MathFunc _d(String var) {
+	public MathFunc diff(String var) {
 		if(this.volume < 0.0)
 			throw new FutureyeException("SFLinearLocal3D: volume < 0.0");
 		

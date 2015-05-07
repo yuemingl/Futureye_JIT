@@ -41,7 +41,7 @@ public class FLinear1D  extends AbstractMathFun{
 	}
 	
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		if(this.getVarNames().contains(varName))
 			return new FC((y2-y1)/(x2-x1));
 		else

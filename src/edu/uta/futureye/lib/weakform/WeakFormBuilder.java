@@ -39,9 +39,9 @@ public class WeakFormBuilder {
 	}
 	
 	public WeakFormBuilder addParamters(MathFunc f) {
-		if(f.getFunName() == null)
+		if(f.getName() == null)
 			throw new FutureyeException("Please specify function name!");
-		param.put(f.getFunName(), f);
+		param.put(f.getName(), f);
 		return this;
 	}
 	
@@ -235,7 +235,7 @@ public class WeakFormBuilder {
 				switch(type) {
 					case LHS_Domain:
 						return fk.M(
-								u._d("x").M(v._d("x")) .A (u._d("y").M(v._d("y")))
+								u.diff("x").M(v.diff("x")) .A (u.diff("y").M(v.diff("y")))
 							).A(
 								fc.M(u.M(v))
 							);

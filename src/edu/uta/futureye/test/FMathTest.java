@@ -19,9 +19,9 @@ public class FMathTest {
 		//Grad(u) \cdot Grad(v)
 		System.out.println(
 				sum(
-					u._d("x").M(v._d("x")),
-					u._d("y").M(v._d("y")),
-					u._d("z").M(v._d("z"))));
+					u.diff("x").M(v.diff("x")),
+					u.diff("y").M(v.diff("y")),
+					u.diff("z").M(v.diff("z"))));
 		
 		//Grad(u) \cdot Grad(v)
 		System.out.println(grad(u).dot(grad(v)));

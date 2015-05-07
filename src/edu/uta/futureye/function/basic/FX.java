@@ -44,6 +44,7 @@ public class FX extends AbstractMathFun{
 	public final static FX ft = new FX(Constant.t); 
 	
 	protected String varName = null;
+	protected int argIdx = 0;
 	
 	/**
 	 * Use this to construct f(varName)
@@ -54,7 +55,7 @@ public class FX extends AbstractMathFun{
 	}
 
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		if(this.varName.equals(varName))
 			return FC.C1;
 		else
@@ -68,7 +69,7 @@ public class FX extends AbstractMathFun{
 
 	@Override
 	public double apply(Element e, Node n, double... args) {
-		return args[0];
+		return args[argIdx];
 	}
 
 	@Override

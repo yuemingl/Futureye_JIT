@@ -35,7 +35,7 @@ public class FAxpb extends AbstractMathFun {
 	}
 	
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		if(this.varName.equals(varName))
 			return new FC(a);
 		else

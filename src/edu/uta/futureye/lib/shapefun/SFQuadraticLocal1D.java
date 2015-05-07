@@ -53,7 +53,7 @@ public class SFQuadraticLocal1D extends AbstractMathFun implements ScalarShapeFu
 		 *  r_x = 2/(x2-x1)  
 		 */
 		fInners.put("r", new AbstractMathFun(innerVarNames.toList()) {	
-			public MathFunc _d(String var) {
+			public MathFunc diff(String var) {
 				if(var.contains("x")) {
 					VertexList vl = e.vertices();
 					if(vl.size() == 2) {
@@ -96,8 +96,8 @@ public class SFQuadraticLocal1D extends AbstractMathFun implements ScalarShapeFu
 	}
 
 	@Override
-	public MathFunc _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override

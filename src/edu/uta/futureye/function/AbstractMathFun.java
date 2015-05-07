@@ -105,7 +105,7 @@ public abstract class AbstractMathFun implements MathFunc {
 	 * Implement this function yourself if necessary
 	 */
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -208,12 +208,12 @@ public abstract class AbstractMathFun implements MathFunc {
 	}
 	
 	@Override
-	public String getFunName() {
+	public String getName() {
 		return this.fName;
 	}
 	
 	@Override
-	public MathFunc setFunName(String name) {
+	public MathFunc setName(String name) {
 		this.fName = name;
 		return this;
 	}
@@ -229,7 +229,7 @@ public abstract class AbstractMathFun implements MathFunc {
 	}
 	
 	@Override
-	public String getExpression() {
+	public String getExpr() {
 		String varList = getVarNames().toString();
 		String displayVarList = "("+varList.substring(1, varList.length()-1)+")";
 		
@@ -243,10 +243,10 @@ public abstract class AbstractMathFun implements MathFunc {
 	
 	@Override
 	public String toString() {
-		if(getFunName() == null) {
-			return getExpression();
+		if(getName() == null) {
+			return getExpr();
 		} else 
-			return getFunName();
+			return getName();
 	}
 	
 	@Override

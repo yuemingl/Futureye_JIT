@@ -57,7 +57,7 @@ public class SFQuadraticLocal2DFast extends AbstractMathFun implements ScalarSha
 			this.funIndex = funIndex;
 		}
 		@Override
-		public MathFunc _d(String var) {
+		public MathFunc diff(String var) {
 			if(area < 0.0) {
 				FutureyeException e = new FutureyeException("SFLinearLocal2D: area < 0.0");
 				e.printStackTrace();
@@ -207,8 +207,8 @@ public class SFQuadraticLocal2DFast extends AbstractMathFun implements ScalarSha
 	}
 
 	@Override
-	public MathFunc _d(String varName) {
-		return funOuter._d(varName);
+	public MathFunc diff(String varName) {
+		return funOuter.diff(varName);
 	}
 
 	@Override

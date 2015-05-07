@@ -43,7 +43,7 @@ public class T01Start {
 		
 		//Derivative of f(x): f'(x)=df(x)/dx
 		System.out.println("\nDerivative of f(x):");
-		System.out.println("df(x)/dx="+f._d("x"));
+		System.out.println("df(x)/dx="+f.diff("x"));
 		
 		//Composite functions
 		System.out.println("\nComposite functions:");
@@ -62,8 +62,8 @@ public class T01Start {
 		System.out.println("Evaluate at r=2.0: fComp( x(2.0) )="+
 				fComp.apply(new Variable("r",2.0)));
 		
-		System.out.println("d(fComp)/dx="+fComp._d("x"));
-		MathFunc dr = fComp._d("r");
+		System.out.println("d(fComp)/dx="+fComp.diff("x"));
+		MathFunc dr = fComp.diff("r");
 		System.out.println("d(fComp)/dr="+dr);
 		System.out.println("d(fComp)/dr|_r=2.0  = "+
 				dr.apply(new Variable("r",2.0)));

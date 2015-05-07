@@ -25,7 +25,7 @@ public class FAx extends AbstractMathFun {
 	}
 	
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		if(this.getVarNames().contains(varName))
 			return new FC(a);
 		else

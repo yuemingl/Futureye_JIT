@@ -106,7 +106,7 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
-				public MathFunc _d(String varName) {
+				public MathFunc diff(String varName) {
 					return null;
 				}
 				@Override

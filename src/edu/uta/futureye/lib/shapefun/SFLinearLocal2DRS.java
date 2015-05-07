@@ -63,7 +63,7 @@ public class SFLinearLocal2DRS  extends AbstractMathFun
 		//s=s(x,y)
 		for(final String varName : varNames) {
 			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {	
-				public MathFunc _d(String var) {
+				public MathFunc diff(String var) {
 					if(varName.equals("r")) { //r对应三角形高h的负倒数
 						if(var.equals("x"))
 							return new FC( (y[1]-y[2]) / jac);
@@ -109,8 +109,8 @@ public class SFLinearLocal2DRS  extends AbstractMathFun
 	}
 	
 	@Override
-	public MathFunc _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override

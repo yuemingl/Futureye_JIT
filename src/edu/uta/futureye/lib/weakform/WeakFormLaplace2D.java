@@ -89,10 +89,10 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 			//Integrand part of Weak Form on element e
 			MathFunc integrand = null;
 			if(g_k == null) {
-				integrand = u._d("x").M(v._d("x")) .A (u._d("y").M(v._d("y")));
+				integrand = u.diff("x").M(v.diff("x")) .A (u.diff("y").M(v.diff("y")));
 			} else {
 				integrand = fk.M(
-								u._d("x").M(v._d("x")) .A (u._d("y").M(v._d("y")))
+								u.diff("x").M(v.diff("x")) .A (u.diff("y").M(v.diff("y")))
 							).A(
 								fc.M(u.M(v))
 							);
@@ -142,8 +142,8 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 			DOF dof = DOFs.at(i);
 			ScalarShapeFunction sf = dof.getSSF();
 			dof.getSSF().assignElement(e);
-			mapShape_x.put(dof.getLocalIndex(), sf._d("x"));
-			mapShape_y.put(dof.getLocalIndex(), sf._d("y"));
+			mapShape_x.put(dof.getLocalIndex(), sf.diff("x"));
+			mapShape_y.put(dof.getLocalIndex(), sf.diff("y"));
 		}
 
 		MathFunc fk = null;

@@ -324,8 +324,8 @@ public class VariationGaussNewton {
         WeakFormGCM weakForm = new WeakFormGCM();
         
         MathFunc fuk = new Vector2Function(uk,mesh,"x","y");
-        MathFunc u_x = fuk._d("x");
-        MathFunc u_y = fuk._d("y");
+        MathFunc u_x = fuk.diff("x");
+        MathFunc u_y = fuk.diff("y");
         plotFunction(mesh, u_x, "u_x.dat");
         plotFunction(mesh, u_y, "u_y.dat");
         weakForm.setParam(FC.C0, FC.C0, u_x, u_y);

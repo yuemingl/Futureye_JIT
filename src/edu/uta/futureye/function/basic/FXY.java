@@ -45,7 +45,7 @@ public class FXY extends AbstractMathFun{
 	}	
 	
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		if(varNames.get(0).equals(varName))
 			return new FC(c1);
 		else if(varNames.get(1).equals(varName)) {

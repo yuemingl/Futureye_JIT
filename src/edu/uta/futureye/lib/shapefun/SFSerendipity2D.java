@@ -76,7 +76,7 @@ public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunct
 		
 		for(final String varName : varNames) {
 			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
-				public MathFunc _d(String var) {
+				public MathFunc diff(String var) {
 					if(varName.equals("r")) {
 						if(var.equals("x"))
 							return y_s.D(jac);
@@ -150,8 +150,8 @@ public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunct
 	}
 
 	@Override
-	public MathFunc _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override
@@ -167,8 +167,8 @@ public class SFSerendipity2D extends AbstractMathFun implements ScalarShapeFunct
 		for(int i=1;i<=8;i++) {
 			SFSerendipity2D s = new SFSerendipity2D(i);
 			System.out.println(s);
-			System.out.println(s._d("r"));
-			System.out.println(s._d("s"));
+			System.out.println(s.diff("r"));
+			System.out.println(s.diff("s"));
 		}
 	}
 

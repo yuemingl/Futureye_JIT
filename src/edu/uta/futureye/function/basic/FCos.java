@@ -38,7 +38,7 @@ public class FCos extends AbstractMathFun{
 	}
 	
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		return (new FSin(getVarNames())).M(-1);
 	}
 

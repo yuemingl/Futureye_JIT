@@ -123,8 +123,8 @@ public class FunctionTest {
 		System.out.println(l2.apply(var));
 		
 		MathFunc ff = c1.D(fi).A(c3);
-		MathFunc ff_dx = ff._d("x");
-		MathFunc ff_dxx = ff_dx._d("x");
+		MathFunc ff_dx = ff.diff("x");
+		MathFunc ff_dxx = ff_dx.diff("x");
 		System.out.println("ff = "+ff);
 		System.out.println("ff_dx = "+ff_dx);
 		System.out.println("ff_dxx = "+ff_dxx);
@@ -138,10 +138,10 @@ public class FunctionTest {
 		coef.add(6.0);
 		FPolynomial1D fp = new FPolynomial1D(coef);
 		System.out.println(fp.apply(new Variable(2.0)));
-		MathFunc fp_x2 = fp._d("x")._d("x");
+		MathFunc fp_x2 = fp.diff("x").diff("x");
 		System.out.println(fp_x2.apply(new Variable(2.0)));
 		MathFunc fp_x2d = (MathFunc)fp_x2;
-		MathFunc fp_x3 = fp_x2d._d("X");
+		MathFunc fp_x3 = fp_x2d.diff("X");
 		System.out.println(fp_x3.apply(new Variable(3.0)));
 		
 		MathFunc power = FMath.pow(c2, c3);
@@ -250,7 +250,7 @@ public class FunctionTest {
 		fs[2] = FX.fz;
 		MathFunc lc = FMath.linearCombination(cs, fs);
 		System.out.println(lc);
-		MathFunc lcd = lc._d("x");
+		MathFunc lcd = lc.diff("x");
 		System.out.println(lcd);
 		VariableArray va = new VariableArray();
 		double[] x = {10, 10};
@@ -277,8 +277,8 @@ public class FunctionTest {
 	    MathFunc f1 = X.M(X).A( X.A(1.0).M(2.0) );
 	    System.out.println(f1);
 	    System.out.println(f1.apply(new Variable(2.0)));
-	    System.out.println(f1._d("x"));
-	    System.out.println(f1._d("x").apply(new Variable(3.0)));
+	    System.out.println(f1.diff("x"));
+	    System.out.println(f1.diff("x").apply(new Variable(3.0)));
 
 	    //f2 = 3x^2 + 4y + 1
 	    MathFunc f2 = new AbstractMathFun("x","y") {
@@ -289,19 +289,19 @@ public class FunctionTest {
 		          return 3*x*x + 4*y + 1; 
 	    	}
 	    	@Override
-	    	public MathFunc _d(String vn) {
+	    	public MathFunc diff(String vn) {
 	    		if (vn == "x") return C(6).M(X);
 	    		else if(vn == "y") return C(4);
 	    		else throw new FutureyeException("variable name="+vn);
 	    	}
-	    }.setFunName("f(x,y) = 3x^2+4y+1");
+	    }.setName("f(x,y) = 3x^2+4y+1");
 	    
 	    System.out.println(f2);
 	    Variable vv = new Variable("x",2.0).set("y",3.0);
 	    System.out.println(f2.apply(vv));
 	    
-	    System.out.println(f2._d("x"));
-	    System.out.println(f2._d("y"));
+	    System.out.println(f2.diff("x"));
+	    System.out.println(f2.diff("y"));
 	    //System.out.println(f2._d("z")); //Exception
 	    
 	    //f3 = (x+y, x*y, 1.0)
@@ -311,7 +311,7 @@ public class FunctionTest {
 	    	    	public double apply(Variable v) {
 	    		          return v.get("x") + v.get("y"); 
 	    	    	}
-	    	    }.setFunName("x+y"),
+	    	    }.setName("x+y"),
 	    	    X.M(Y),
 	    	    C1
 	        );
@@ -333,7 +333,7 @@ public class FunctionTest {
 	FAxpb f = new FAxpb(2.0,1.0);
 	double v = f.apply(new Variable("x",3.0));
 	System.out.println(v);
-    MathFunc df = f._d("x");
+    MathFunc df = f.diff("x");
     System.out.println(df);
 	
 		

@@ -68,7 +68,7 @@ public class SFQuadraticLocal2D extends AbstractMathFun implements ScalarShapeFu
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
-				public MathFunc _d(String var) {
+				public MathFunc diff(String var) {
 					//Coordinate transform and Jacbian on element e
 					List<MathFunc> funs = trans.getTransformFunction(
 							//两种变换都可以，二次的要慢一些
@@ -96,10 +96,10 @@ public class SFQuadraticLocal2D extends AbstractMathFun implements ScalarShapeFu
 //					fxCompose.setVarNames(independentVarNames);
 //					fyCompose.setVarNames(independentVarNames);
 
-					MathFunc x_r = fx._d("r");
-					MathFunc x_s = fx._d("s");
-					MathFunc y_r = fy._d("r");
-					MathFunc y_s = fy._d("s");
+					MathFunc x_r = fx.diff("r");
+					MathFunc x_s = fx.diff("s");
+					MathFunc y_r = fy.diff("r");
+					MathFunc y_s = fy.diff("s");
 					
 					//Function jac = (Function) trans.getJacobian2D();
 					MathFunc jac = (MathFunc) e.getJacobin();
@@ -200,8 +200,8 @@ public class SFQuadraticLocal2D extends AbstractMathFun implements ScalarShapeFu
 	}
 
 	@Override
-	public MathFunc _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override
@@ -220,7 +220,7 @@ public class SFQuadraticLocal2D extends AbstractMathFun implements ScalarShapeFu
 		for(int i=1;i<=6;i++) {
 			SFQuadraticLocal2D s = new SFQuadraticLocal2D(i);
 			System.out.println(s);
-			System.out.println(s._d("r"));
+			System.out.println(s.diff("r"));
 		}
 	}
 

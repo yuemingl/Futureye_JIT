@@ -116,11 +116,11 @@ public class FCompose extends AbstractMathFun {
 	 * f( x(r,s),y(r,s) )_r = f_x * x_r + f_y * y_r
 	 */
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		MathFunc rlt = null;
 		if(fOuter.getVarNames().contains(varName)) {
 			//f(x,y)关于x或y求导
-			rlt = fOuter._d(varName);
+			rlt = fOuter.diff(varName);
 			return rlt;
 		} else {
 			//f(x,y)关于r或s求导
@@ -128,10 +128,10 @@ public class FCompose extends AbstractMathFun {
 			for(String innerVarName : fOuter.getVarNames()) {
 				MathFunc fInner = fInners.get(innerVarName);
 				if(fInner != null) {
-					MathFunc rltOuter = fOuter._d(innerVarName);
+					MathFunc rltOuter = fOuter.diff(innerVarName);
 					if(!(rltOuter.isConstant()))
 						rltOuter = rltOuter.compose(fInners);
-					MathFunc rltInner = fInner._d(varName);
+					MathFunc rltInner = fInner.diff(varName);
 					//f_x * x_r + f_y * y_r
 					rlt = rlt.A(
 							rltOuter.M(rltInner)

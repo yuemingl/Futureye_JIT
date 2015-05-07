@@ -30,7 +30,7 @@ public class FPolynomial1D extends AbstractMathFun {
 	}
 	
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		if(this.getVarNames().contains(varName))
 			return derivative1(1,1);
 		else 

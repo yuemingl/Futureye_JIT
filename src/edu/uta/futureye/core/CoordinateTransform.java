@@ -299,7 +299,7 @@ public class CoordinateTransform {
 			int index = 0;
 			for(MathFunc transFun : transFuns) { //x=x(r,s,t), y=y(r,s,t), z=z(r,s,t)
 				for(String var : toVarNames) {   //r,s,t
-					funs[index++] = transFun._d(var);
+					funs[index++] = transFun.diff(var);
 				}
 			}
 			this.JacobianMatrix = funs;

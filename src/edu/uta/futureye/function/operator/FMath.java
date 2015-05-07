@@ -51,8 +51,8 @@ public class FMath {
 				return Math.sqrt(f.apply(v));
 			}
 			@Override
-			public MathFunc _d(String varName) {
-				return FC.c(0.5).M(pow(f,-0.5)).M(f._d(varName));
+			public MathFunc diff(String varName) {
+				return FC.c(0.5).M(pow(f,-0.5)).M(f.diff(varName));
 			}
 			@Override
 			public int getOpOrder() {
@@ -79,8 +79,8 @@ public class FMath {
 				return Math.pow(f.apply(v),p);
 			}
 			@Override
-			public MathFunc _d(String varName) {
-				return FC.c(p).M(pow(f,p-1)).M(f._d(varName));
+			public MathFunc diff(String varName) {
+				return FC.c(p).M(pow(f,p-1)).M(f.diff(varName));
 			}
 			@Override
 			public int getOpOrder() {
@@ -216,10 +216,10 @@ public class FMath {
 		}
 		
 		@Override
-		public MathFunc _d(String varName) {
+		public MathFunc diff(String varName) {
 			MathFunc[] fdi = new MathFunc[fi.length];
 			for(int i=0;i<fi.length;i++) {
-				fdi[i] = fi[i]._d(varName).setVarNames(fi[i].getVarNames());
+				fdi[i] = fi[i].diff(varName).setVarNames(fi[i].getVarNames());
 			}
 			return new FLinearCombination(ci,fdi);
 		}
@@ -281,7 +281,7 @@ public class FMath {
 		List<String> names = fun.getVarNames();
 		VectorFunction rlt = new SpaceVectorFunction(names.size());
 		for(int i=0;i<names.size();i++)
-			rlt.set(i+1, fun._d(names.get(i)));
+			rlt.set(i+1, fun.diff(names.get(i)));
 		return rlt;
 	}
 	
@@ -295,7 +295,7 @@ public class FMath {
 	public static VectorFunction grad(MathFunc fun, String ...varNames) {
 		VectorFunction rlt = new SpaceVectorFunction(varNames.length);
 		for(int i=0;i<varNames.length;i++)
-			rlt.set(i+1, fun._d(varNames[i]));
+			rlt.set(i+1, fun.diff(varNames[i]));
 		return rlt;
 	}
 	
@@ -310,7 +310,7 @@ public class FMath {
 	public static VectorFunction grad(MathFunc fun,ObjList<String> varNames) {
 		VectorFunction rlt = new SpaceVectorFunction(varNames.size());
 		for(int i=1;i<=varNames.size();i++)
-			rlt.set(i, fun._d(varNames.at(i)));
+			rlt.set(i, fun.diff(varNames.at(i)));
 		return rlt;
 	}
 	
@@ -325,7 +325,7 @@ public class FMath {
 		MathFunc rlt = FC.C0;
 		for(int i=1; i<=dim; i++) {
 			MathFunc fd = (MathFunc)vFun.get(i);
-			rlt = rlt.A(fd._d(vFun.varNames().get(i-1)));
+			rlt = rlt.A(fd.diff(vFun.varNames().get(i-1)));
 		}
 		return rlt;
 	}
@@ -342,7 +342,7 @@ public class FMath {
 		MathFunc rlt = new FC(0.0);
 		for(int i=0;i<varNames.length;i++) {
 			MathFunc fd = (MathFunc)vFun.get(i+1);
-			rlt = rlt.A(fd._d(varNames[i]));
+			rlt = rlt.A(fd.diff(varNames[i]));
 		}
 		return rlt;
 	}
@@ -359,7 +359,7 @@ public class FMath {
 		MathFunc rlt = new FC(0.0);
 		for(int i=1;i<=varNames.size();i++) {
 			MathFunc fd = (MathFunc)vFun.get(i);
-			rlt = rlt.A(fd._d(varNames.at(i)));
+			rlt = rlt.A(fd.diff(varNames.at(i)));
 		}
 		return rlt;
 	}

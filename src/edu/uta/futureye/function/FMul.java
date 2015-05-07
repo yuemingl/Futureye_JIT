@@ -53,9 +53,9 @@ public class FMul extends FBinaryOp {
 	}
 	
 	@Override
-	public MathFunc _d(String varName) {
-		return 	arg1._d(varName).M(arg2).A(
-				arg1.M(arg2._d(varName))
+	public MathFunc diff(String varName) {
+		return 	arg1.diff(varName).M(arg2).A(
+				arg1.M(arg2.diff(varName))
 				).setVarNames(this.getVarNames());
 	}
 	

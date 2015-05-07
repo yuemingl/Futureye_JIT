@@ -76,7 +76,7 @@ public class SFBilinearLocal2DRegular extends AbstractMathFun implements ScalarS
 		for(final String varName : varNames) {
 			fInners.put(varName, new AbstractMathFun(innerVarNames.toList()) {
 				
-				public MathFunc _d(String var) {
+				public MathFunc diff(String var) {
 					double x1 = e.nodes.at(1).coord(1);
 					double x2 = e.nodes.at(2).coord(1);
 					double x3 = e.nodes.at(3).coord(1);
@@ -183,8 +183,8 @@ public class SFBilinearLocal2DRegular extends AbstractMathFun implements ScalarS
 		Create(funID,1.0);
 	}
 
-	public MathFunc _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	public double apply(Variable v) {

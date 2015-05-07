@@ -41,8 +41,8 @@ public class ShapeFunctionTest {
 		
 		shapeFun[0].assignElement(e);
 		System.out.println(shapeFun[0]);
-		MathFunc SF0dx = shapeFun[0]._d("x");
-		MathFunc SF0dy = shapeFun[0]._d("y");
+		MathFunc SF0dx = shapeFun[0].diff("x");
+		MathFunc SF0dy = shapeFun[0].diff("y");
 		System.out.println(SF0dx);
 		System.out.println(SF0dx.apply(null));
 		System.out.println(SF0dy);
@@ -50,15 +50,15 @@ public class ShapeFunctionTest {
 		
 		shapeFun[1].assignElement(e);
 		System.out.println(shapeFun[1]);
-		MathFunc SF1dx = shapeFun[1]._d("x");
-		MathFunc SF1dy = shapeFun[1]._d("y");
+		MathFunc SF1dx = shapeFun[1].diff("x");
+		MathFunc SF1dy = shapeFun[1].diff("y");
 		System.out.println(SF1dx.apply(null));
 		System.out.println(SF1dy.apply(null));
 		
 		shapeFun[2].assignElement(e);
 		System.out.println(shapeFun[2]);
-		MathFunc SF2dx = shapeFun[2]._d("x");
-		MathFunc SF2dy = shapeFun[2]._d("y");
+		MathFunc SF2dx = shapeFun[2].diff("x");
+		MathFunc SF2dy = shapeFun[2].diff("y");
 		System.out.println(SF2dx.apply(null));
 		System.out.println(SF2dy.apply(null));		
 		
@@ -108,28 +108,28 @@ public class ShapeFunctionTest {
 		//Test the derivatives of shape function
 		
 		shapeFun[0].assignElement(e);
-		MathFunc SF0dx = shapeFun[0]._d("x");
-		MathFunc SF0dy = shapeFun[0]._d("y");
+		MathFunc SF0dx = shapeFun[0].diff("x");
+		MathFunc SF0dy = shapeFun[0].diff("y");
 		System.out.println(SF0dx);
 		System.out.println("SF0dx("+v+")="+SF0dx.apply(v));
 		System.out.println(SF0dy);
 		System.out.println("SF0dy("+v+")="+SF0dy.apply(v));
 		
 		shapeFun[1].assignElement(e);
-		MathFunc SF1dx = shapeFun[1]._d("x");
-		MathFunc SF1dy = shapeFun[1]._d("y");
+		MathFunc SF1dx = shapeFun[1].diff("x");
+		MathFunc SF1dy = shapeFun[1].diff("y");
 		System.out.println(SF1dx);
 		System.out.println(SF1dy);
 		
 		shapeFun[2].assignElement(e);
-		MathFunc SF2dx = shapeFun[2]._d("x");
-		MathFunc SF2dy = shapeFun[2]._d("y");
+		MathFunc SF2dx = shapeFun[2].diff("x");
+		MathFunc SF2dy = shapeFun[2].diff("y");
 		System.out.println(SF2dx);
 		System.out.println(SF2dy);	
 		
 		shapeFun[3].assignElement(e);
-		MathFunc SF3dx = shapeFun[3]._d("x");
-		MathFunc SF3dy = shapeFun[3]._d("y");
+		MathFunc SF3dx = shapeFun[3].diff("x");
+		MathFunc SF3dy = shapeFun[3].diff("y");
 		System.out.println(SF3dx);
 		System.out.println(SF3dy);		
 	}

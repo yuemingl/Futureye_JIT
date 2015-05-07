@@ -132,8 +132,8 @@ public class WeakFormNavierStokes2D extends AbstractVectorWeakForm {
 			VectorFunction grad_u2 = grad(u2,"x","y");
 			MathFunc uv1 = grad_u1.dot(grad(v1,"x","y"));
 			MathFunc uv2 = grad_u2.dot(grad(v2,"x","y"));
-			MathFunc div_v = v1._d("x").A(v2._d("y"));
-			MathFunc div_u = u1._d("x").A(u2._d("y"));
+			MathFunc div_v = v1.diff("x").A(v2.diff("y"));
+			MathFunc div_u = u1.diff("x").A(u2.diff("y"));
 			MathFunc cvect = fU.dot(grad_u1).M(v1).A(fU.dot(grad_u2).M(v2));
 			MathFunc cuv = fc.M(u1.M(v1).A(u2.M(v2)));
 			integrand = fk.M( uv1.A(uv2) ).A( cvect ).A( cuv ).S( div_v.M(p) ).A( div_u.M(q) );

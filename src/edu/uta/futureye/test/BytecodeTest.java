@@ -45,7 +45,7 @@ public class BytecodeTest {
 	
 	public static void test3() {
 		FAx fax = new FAx(2.0);
-		fax.setFunName("fax");
+		fax.setName("fax");
 		CompiledFunc cfax = fax.compile();
 		System.out.println(cfax.apply(0.1));
 	}

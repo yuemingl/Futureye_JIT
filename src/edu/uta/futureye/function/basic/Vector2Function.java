@@ -287,7 +287,7 @@ public class Vector2Function extends AbstractMathFun {
 
 	
 	@Override
-	public MathFunc _d(String varName) {
+	public MathFunc diff(String varName) {
 		if(mesh == null) 
 			throw new FutureyeException(
 					"Please use constructor Vector2Function(Vector u, Mesh mesh, String varName, String ...aryVarNames)");

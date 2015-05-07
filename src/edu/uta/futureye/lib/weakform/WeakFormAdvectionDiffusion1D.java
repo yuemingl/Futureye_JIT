@@ -75,7 +75,7 @@ public class WeakFormAdvectionDiffusion1D extends AbstractScalarWeakForm {
 				upwindWeight = 0.1;
 			}
 			
-			integrand = fk.M(u._d("x").M(v._d("x"))).A(fu.M(u._d("x").M(v.A(upwindWeight))));
+			integrand = fk.M(u.diff("x").M(v.diff("x"))).A(fu.M(u.diff("x").M(v.A(upwindWeight))));
 			return integrand;
 		}
 		else if(itemType==ItemType.Border) {
