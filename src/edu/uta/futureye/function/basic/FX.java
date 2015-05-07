@@ -2,8 +2,6 @@ package edu.uta.futureye.function.basic;
 
 import static com.sun.org.apache.bcel.internal.generic.InstructionConstants.DALOAD;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import com.sun.org.apache.bcel.internal.generic.ALOAD;
@@ -16,7 +14,7 @@ import com.sun.org.apache.bcel.internal.generic.PUSH;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.MathFuncBasic;
+import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -26,7 +24,7 @@ import edu.uta.futureye.util.Constant;
  * f(x) = x
  * 
  */
-public class FX extends MathFuncBasic {
+public class FX extends AbstractSimpleMathFunc {
 	/**
 	 * Used to form f(x)=x, instead of construct a new FX object, 
 	 * it will be faster and memory saving :)
@@ -50,15 +48,7 @@ public class FX extends MathFuncBasic {
 	 * Use this to construct a function: f(varName) = varName
 	 */
 	public FX(String varName) {
-		this.varName = varName;
-	}
-
-	@Override
-	public MathFunc diff(String varName) {
-		if(this.varName.equals(varName))
-			return FC.C1;
-		else
-			return FC.C0;
+		super(varName);
 	}
 
 	@Override
@@ -85,57 +75,15 @@ public class FX extends MathFuncBasic {
 	public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
 		return v.get(varName);
 	}
-	
-	@Override
-	public int getOpOrder() {
-		return OP_ORDER0;
-	}
 
 	@Override
-	public void setOpOrder(int order) {
-		throw new UnsupportedOperationException();
+	public MathFunc diff(String varName) {
+		if(this.varName.equals(varName))
+			return FC.C1;
+		else
+			return FC.C0;
 	}
 	
-	@Override
-	public MathFunc copy() {
-		return new FX(this.varName);
-	}
-
-	@Override
-	public String getName() {
-		return varName;
-	}
-
-	@Override
-	public MathFunc setName(String name) {
-		this.varName = name;
-		return this;
-	}
-
-	@Override
-	public List<String> getVarNames() {
-		List<String> ret = new ArrayList<String>();
-		ret.add(varName);
-		return ret;
-	}
-
-	@Override
-	public MathFunc setVarNames(List<String> varNames) {
-		this.varName = varNames.get(0);
-		return this;
-	}
-
-	@Override
-	public MathFunc setArgIdx(int... argIdx) {
-		this.argIdx = argIdx[0];
-		return this;
-	}
-
-	@Override
-	public boolean isConstant() {
-		return false;
-	}
-
 	@Override
 	public String getExpr() {
 		return varName;
@@ -146,6 +94,11 @@ public class FX extends MathFuncBasic {
 		return varName;
 	}
 	
+	@Override
+	public MathFunc copy() {
+		return new FX(this.varName);
+	}
+
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
 			ConstantPoolGen cp, InstructionFactory factory,

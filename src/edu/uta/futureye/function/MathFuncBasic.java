@@ -390,6 +390,16 @@ public abstract class MathFuncBasic implements MathFunc {
 	
 	/////////////////////////////////////////////////////////////
 	@Override
+	public int getOpOrder() {
+		return OP_ORDER0;
+	}
+
+	@Override
+	public void setOpOrder(int order) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
 	public MathFunc copy() {
 		throw new UnsupportedOperationException();
 	}

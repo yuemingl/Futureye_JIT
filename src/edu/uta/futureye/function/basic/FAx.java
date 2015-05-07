@@ -2,7 +2,7 @@ package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
@@ -11,11 +11,12 @@ import edu.uta.futureye.util.Constant;
  * f(x) = a*x
  *
  */
-public class FAx extends AbstractMathFunc {
+public class FAx extends AbstractSimpleMathFunc {
 	protected double a;
 	
 	public FAx(double a) {
-		varNames.add(Constant.x);
+		super(Constant.x);
+		varName = Constant.x;
 		this.a = a;
 	}
 	
@@ -49,7 +50,12 @@ public class FAx extends AbstractMathFunc {
 	
 	@Override
 	public MathFunc copy() {
-		return new FAx(this.varNames.get(0),a);
+		return new FAx(this.varName, a);
+	}
+
+	@Override
+	public String getExpr() {
+		return toString();
 	}
 	
 	@Override
@@ -59,5 +65,10 @@ public class FAx extends AbstractMathFunc {
 		else if(Double.compare(a, 0.0) == 0)
 			return " 0.0 ";
 		return " "+a+"*"+getVarNames().get(0)+" ";
+	}
+
+	@Override
+	public boolean isConstant() {
+		return false;
 	}
 }

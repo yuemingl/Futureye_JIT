@@ -1,6 +1,8 @@
 package edu.uta.futureye.function.basic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
@@ -12,7 +14,7 @@ import com.sun.org.apache.bcel.internal.generic.PUSH;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MathFuncBasic;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -21,7 +23,7 @@ import edu.uta.futureye.function.intf.MathFunc;
  * Constant function: f = c
  * 
  */
-public class FC extends AbstractMathFunc{
+public class FC extends MathFuncBasic {
 	//Predefined constant
 	public static FC C0 = new FC(0.0);
 	public static FC C1 = new FC(1.0);
@@ -29,11 +31,10 @@ public class FC extends AbstractMathFunc{
 	public static FC PI = new FC(Math.PI);
 	public static FC E = new FC(Math.E);
 	
-	protected double val = 0.0;
-	protected static Map<Double, FC> cs = new HashMap<Double, FC>();
+	protected double val;
 	
-	public FC() {
-	}
+	//Constants cache
+	protected static Map<Double, FC> cs = new HashMap<Double, FC>();
 	
 	public FC(double val) {
 		this.val = val;
@@ -73,7 +74,7 @@ public class FC extends AbstractMathFunc{
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return val;
 	}
 	
 	@Override
@@ -94,11 +95,7 @@ public class FC extends AbstractMathFunc{
 	public MathFunc diff(String varName) {
 		return C0;
 	}
-	
-	@Override
-	public int getOpOrder() {
-		return OP_ORDER0;
-	}
+
 	
 	@Override
 	public MathFunc copy() {
@@ -114,6 +111,36 @@ public class FC extends AbstractMathFunc{
 	public boolean isConstant() {
 		return true;
 	}
+
+	@Override
+	public String getName() {
+		return String.valueOf(val);
+	}
+
+	@Override
+	public MathFunc setName(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public MathFunc setVarNames(List<String> varNames) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<String> getVarNames() {
+		return new ArrayList<String>();
+	}
+
+	@Override
+	public MathFunc setArgIdx(int... argIdx) {
+		return this;
+	}
+
+	@Override
+	public String getExpr() {
+		return String.valueOf(val);
+	}
 	
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
@@ -122,4 +149,5 @@ public class FC extends AbstractMathFunc{
 			Map<MathFunc, Integer> funcRefsMap) {
 		return il.append(new PUSH(cp, val));
 	}
+	
 }
