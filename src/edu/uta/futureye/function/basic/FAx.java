@@ -15,13 +15,12 @@ public class FAx extends AbstractSimpleMathFunc {
 	protected double a;
 	
 	public FAx(double a) {
-		super(Constant.x);
-		varName = Constant.x;
+		super(null, Constant.x);
 		this.a = a;
 	}
 	
 	public FAx(String varName, double a) {
-		super(varName);
+		super(null, varName);
 		this.a = a;
 	}
 	
@@ -40,35 +39,28 @@ public class FAx extends AbstractSimpleMathFunc {
 
 	@Override
 	public double apply(Element e, Node n, double... args) {
-		return a*args[0];
+		return a*args[argIdx];
 	}
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return a*args[argIdx];
 	}
 	
 	@Override
 	public MathFunc copy() {
-		return new FAx(this.varName, a);
+		FAx ret = new FAx(this.varName, a);
+		ret.fName = this.fName;
+		ret.argIdx = this.argIdx;
+		return ret;
 	}
 
 	@Override
 	public String getExpr() {
-		return toString();
-	}
-	
-	@Override
-	public String toString() {
 		if(Double.compare(a, 1.0) == 0)
-			return " "+getVarNames().get(0)+" ";
+			return varName;
 		else if(Double.compare(a, 0.0) == 0)
-			return " 0.0 ";
-		return " "+a+"*"+getVarNames().get(0)+" ";
-	}
-
-	@Override
-	public boolean isConstant() {
-		return false;
+			return "0.0";
+		return a+"*"+varName;
 	}
 }

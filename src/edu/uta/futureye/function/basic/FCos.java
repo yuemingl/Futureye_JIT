@@ -1,11 +1,13 @@
 package edu.uta.futureye.function.basic;
 
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 
+/**
+ * f(x) = cos(x)
+ *
+ */
 public class FCos extends AbstractSimpleMathFunc{
 	
 	public FCos() {
@@ -22,13 +24,8 @@ public class FCos extends AbstractSimpleMathFunc{
 	}
 
 	@Override
-	public double apply(Element e, Node n, double... args) {
-		return Math.cos(args[argIdx]);
-	}
-
-	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return Math.cos(args[argIdx]);
 	}
 	
 	@Override

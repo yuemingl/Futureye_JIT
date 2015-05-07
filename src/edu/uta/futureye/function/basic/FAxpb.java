@@ -1,35 +1,27 @@
 package edu.uta.futureye.function.basic;
 
-import java.util.List;
 import java.util.Map;
 
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.util.Constant;
 
 /**
  * f(x) = a*x + b
  */
-public class FAxpb extends AbstractMathFunc {
+public class FAxpb extends AbstractSimpleMathFunc {
 	protected double a;
 	protected double b;
-	//varName在构造的时候已经确定，以后不可以修改，但是varNames可以修改
-	protected String varName;
 
 	public FAxpb(double a, double b) {
-		varNames.add(Constant.x);
-		varName = Constant.x;
+		super(null, "x");
 		this.a = a;
 		this.b = b;
 	}
 	
 	public FAxpb(String varName, double a, double b) {
-		super(varName);
-		this.varName = varName;
+		super(varName, "x");
 		this.a = a;
 		this.b = b;
 	}
@@ -48,13 +40,8 @@ public class FAxpb extends AbstractMathFunc {
 	}
 
 	@Override
-	public double apply(Element e, Node n, double... args) {
-		return a*args[0]+b;
-	}
-
-	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return a*args[argIdx]+b;
 	}
 	
 	@Override
@@ -82,7 +69,7 @@ public class FAxpb extends AbstractMathFunc {
 			return OP_ORDER3;
 	}
 	
-	public String toString() {
+	public String getExpr() {
 		if(Double.compare(a, 1.0) == 0) {
 			if(Double.compare(b, 0.0) == 0)
 				return varName;
@@ -95,15 +82,24 @@ public class FAxpb extends AbstractMathFunc {
 		}
 		return a+"*"+varName+"+"+b;
 	}
-	
-	/**
-	 * varNames在由单个自变量表达式运算组合而成的多自变量函数情况下计算导数后可能被修改，
-	 * 这种修改是允许的，例如：(x+1)*(y+1)关于x求导数后，原来(y+1)的varNames由[y]变为[x,y]
-	 * 
-	 */
+
 	@Override
-	public MathFunc setVarNames(List<String> varNames) {
-		this.varNames = varNames;
-		return this;
+	public MathFunc copy() {
+		FAxpb ret = new FAxpb(this.varName, this.a, this.b);
+		ret.fName = this.fName;
+		ret.argIdx = this.argIdx;
+		return ret;
 	}
+
+//TODO	
+//	/**
+//	 * varNames在由单个自变量表达式运算组合而成的多自变量函数情况下计算导数后可能被修改，
+//	 * 这种修改是允许的，例如：(x+1)*(y+1)关于x求导数后，原来(y+1)的varNames由[y]变为[x,y]
+//	 * 
+//	 */
+//	@Override
+//	public MathFunc setVarNames(List<String> varNames) {
+//		this.varNames = varNames;
+//		return this;
+//	}
 }

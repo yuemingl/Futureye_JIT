@@ -43,11 +43,6 @@ public class FX extends AbstractSimpleMathFunc {
 		super(varName, varName);
 	}
 
-	public FX(String varName, int argIdx) {
-		super(varName, varName);
-		this.argIdx = argIdx;
-	}
-
 	@Override
 	public double apply(Variable v) {
 		return v.get(varName);
@@ -93,7 +88,10 @@ public class FX extends AbstractSimpleMathFunc {
 	
 	@Override
 	public MathFunc copy() {
-		return new FX(this.varName, this.argIdx);
+		FX ret = new FX(this.varName);
+		ret.fName = this.fName;
+		ret.argIdx = this.argIdx;
+		return ret;
 	}
 
 	@Override

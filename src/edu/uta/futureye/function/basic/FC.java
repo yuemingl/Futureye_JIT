@@ -12,8 +12,6 @@ import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.PUSH;
 
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.MathFuncBasic;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
@@ -59,11 +57,6 @@ public class FC extends MathFuncBasic {
 	
 	@Override
 	public double apply(Variable v) {
-		return val;
-	}
-
-	@Override
-	public double apply(Element e, Node n, double... args) {
 		return val;
 	}
 
