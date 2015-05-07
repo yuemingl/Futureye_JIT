@@ -31,7 +31,7 @@ public class FMul extends FBinaryOp {
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return arg1.apply(null, null, args) * arg2.apply(null, null, args);
 	}
 	
 	@Override
@@ -74,7 +74,7 @@ public class FMul extends FBinaryOp {
 			sb.append("(").append(arg1.toString()).append(")");
 		else
 			sb.append(arg1.toString());
-		sb.append(" * ");
+		sb.append("*");
 		if(arg2.getOpOrder() > OP_ORDER2)
 			sb.append("(").append(arg2.toString()).append(")");
 		else

@@ -26,14 +26,9 @@ import edu.uta.futureye.util.Constant;
  */
 public class FX extends AbstractSimpleMathFunc {
 	/**
-	 * Used to form f(x)=x, instead of construct a new FX object, 
-	 * it will be faster and memory saving :)
+	 * Predefined instances of FX
 	 */
 	public final static FX fx = new FX(Constant.x); 
-	
-	/**
-	 * Different variable names
-	 */
 	public final static FX fy = new FX(Constant.y); 
 	public final static FX fz = new FX(Constant.z); 
 	
@@ -45,11 +40,11 @@ public class FX extends AbstractSimpleMathFunc {
 	 * Use this to construct a function: f(varName) = varName
 	 */
 	public FX(String varName) {
-		super(varName);
+		super(varName, varName);
 	}
 
 	public FX(String varName, int argIdx) {
-		super(varName);
+		super(varName, varName);
 		this.argIdx = argIdx;
 	}
 

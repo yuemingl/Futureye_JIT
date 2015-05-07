@@ -378,4 +378,9 @@ public abstract class MathFuncBasic implements MathFunc {
 	public void setOpOrder(int order) {
 		throw new UnsupportedOperationException();
 	}
+	
+	@Override
+	public String toString() {
+		return getExpr();
+	}
 }

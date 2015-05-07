@@ -56,8 +56,10 @@ public class BytecodeTest {
 		MathFunc f = sin * cos;
 		System.out.println(f);
 		System.out.println(f.getVarNames());
+		System.out.println(f.apply(Math.PI/2, Math.PI/4));
+		
 		CompiledFunc cf = f.compile();
-		System.out.println(cf.apply(Math.PI/4, Math.PI/4));
+		System.out.println(cf.apply(Math.PI/2, Math.PI/4));
 	}
 
 	public static void test5() {
@@ -73,7 +75,7 @@ public class BytecodeTest {
 //		test1();
 //		test2();
 //		test3();
-//		test4();
+		test4();
 		test5();
 	}
 

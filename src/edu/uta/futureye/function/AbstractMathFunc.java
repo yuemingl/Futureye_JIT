@@ -86,20 +86,12 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 		String varList = getVarNames().toString();
 		String displayVarList = "("+varList.substring(1, varList.length()-1)+")";
 		
-		Class<?> enclosingClass = getClass().getEnclosingClass();
-		if (enclosingClass != null) {
-		  return enclosingClass.getSimpleName() + displayVarList;
-		} else {
-		  return getClass().getSimpleName() + displayVarList;
-		}
+//		Class<?> enclosingClass = getClass().getEnclosingClass();
+//		if (enclosingClass != null) {
+//			return enclosingClass.getSimpleName() + displayVarList;
+//		} else {
+//			return getClass().getSimpleName() + displayVarList;
+//		}
+		return getName() + displayVarList;
 	}
-	
-	@Override
-	public String toString() {
-		if(getName() == null) {
-			return getExpr();
-		} else 
-			return getName();
-	}
-
 }

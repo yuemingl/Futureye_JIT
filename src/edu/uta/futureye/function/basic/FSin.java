@@ -1,25 +1,19 @@
 package edu.uta.futureye.function.basic;
 
-import java.util.List;
-
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 
-public class FSin extends AbstractMathFunc {
+public class FSin extends AbstractSimpleMathFunc {
 	
 	public FSin() {
-		super("x");
+		super("sin", "x");
 	}
 	
 	public FSin(String varName) {
-		super(varName);
-	}
-	
-	public FSin(List<String> varNames) {
-		super(varNames);
+		super("sin", varName);
 	}
 	
 	@Override
@@ -29,16 +23,26 @@ public class FSin extends AbstractMathFunc {
 
 	@Override
 	public double apply(Element e, Node n, double... args) {
-		return Math.sin(args[0]);
+		return Math.sin(args[argIdx]);
 	}
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return Math.sin(args[argIdx]);
 	}
 	
 	@Override
 	public MathFunc diff(String varName) {
-		return new FCos(getVarNames());
+		if(varName.equals(this.varName))
+			return new FCos(this.varName);
+		else
+			return FC.C0;
+	}
+
+	@Override
+	public MathFunc copy() {
+		FSin ret = new FSin(this.varName);
+		ret.argIdx = this.argIdx;
+		return ret;
 	}
 }
