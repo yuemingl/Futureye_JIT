@@ -6,6 +6,7 @@ import com.sun.org.apache.bcel.internal.generic.ClassGen;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.function.basic.FAx;
+import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FCos;
 import edu.uta.futureye.function.basic.FSin;
 import edu.uta.futureye.function.basic.FTan;
@@ -81,6 +82,10 @@ public class BytecodeTest {
 		System.out.println(fax.diff("x"));
 		System.out.println(fax.compile().apply(5.0));
 		
+		FAxpb faxpb = new FAxpb("x",2.0, 3.0);
+		System.out.println(faxpb);
+		System.out.println(faxpb.diff("x"));
+		System.out.println(faxpb.compile().apply(5.0));
 	}
 	
 	public static void main(String[] args) {
