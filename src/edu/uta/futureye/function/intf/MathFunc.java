@@ -107,13 +107,18 @@ public interface MathFunc {
 	double[] applyAll(VariableArray valAry, Map<Object, Object> cache);
 	
 	/**
-	 * Set the index of each variable of the MathFunc in parameter 'args' 
-	 * of the 'apply' methods
+	 * Set the index of each variable in parameter 'args' for the 'apply' methods
 	 *  
 	 * @param argIdx
 	 * @return
 	 */
-	MathFunc setArgIdx(int ...argIdx); 
+	MathFunc setArgIdx(Map<String, Integer> argsMap); 
+	
+	/**
+	 * 
+	 * @return
+	 */
+	Map<String, Integer> getArgIdxMap();
 	
 	/**
 	 * Add
@@ -214,22 +219,6 @@ public interface MathFunc {
 	 * @return
 	 */
 	MathFunc diff(String varName);
-
-	
-	/**
-	 * Return value of constant function only
-	 * <p>
-	 * 返回常值函数的函数值，仅用于常值函数
-	 * 
-	 * @return
-	 */
-	double apply();
-	
-	double apply(double x);
-	
-	double apply(double x, double y);
-	
-	double apply(double x, double y, double z);
 
 	/**
 	 * Returns true if it is a constant function

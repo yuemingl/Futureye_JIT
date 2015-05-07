@@ -57,26 +57,6 @@ public abstract class MathFuncBasic implements MathFunc {
 	}
 	
 	@Override
-	public double apply() {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public double apply(double x) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public double apply(double x, double y) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public double apply(double x, double y, double z) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
 	public MathFunc diff(String varName) {
 		throw new UnsupportedOperationException();
 	}
@@ -396,11 +376,6 @@ public abstract class MathFuncBasic implements MathFunc {
 
 	@Override
 	public void setOpOrder(int order) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public MathFunc copy() {
 		throw new UnsupportedOperationException();
 	}
 }

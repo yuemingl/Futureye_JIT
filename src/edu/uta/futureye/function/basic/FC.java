@@ -58,11 +58,6 @@ public class FC extends MathFuncBasic {
 	}
 	
 	@Override
-	public double apply() {
-		return val;
-	}
-	
-	@Override
 	public double apply(Variable v) {
 		return val;
 	}
@@ -99,7 +94,8 @@ public class FC extends MathFuncBasic {
 	
 	@Override
 	public MathFunc copy() {
-		return new FC(this.val);
+		//return new FC(this.val);
+		return this;
 	}
 	
 	@Override
@@ -133,8 +129,13 @@ public class FC extends MathFuncBasic {
 	}
 
 	@Override
-	public MathFunc setArgIdx(int... argIdx) {
+	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
 		return this;
+	}
+
+	@Override
+	public Map<String, Integer> getArgIdxMap() {
+		return new HashMap<String, Integer>();
 	}
 
 	@Override
@@ -149,5 +150,4 @@ public class FC extends MathFuncBasic {
 			Map<MathFunc, Integer> funcRefsMap) {
 		return il.append(new PUSH(cp, val));
 	}
-	
 }

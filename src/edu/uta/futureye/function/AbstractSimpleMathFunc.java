@@ -1,7 +1,9 @@
 package edu.uta.futureye.function;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.uta.futureye.function.intf.MathFunc;
 
@@ -10,8 +12,8 @@ import edu.uta.futureye.function.intf.MathFunc;
  *
  */
 public abstract class AbstractSimpleMathFunc extends MathFuncBasic {
-	protected String varName = null;
-	protected int argIdx = 0;
+	protected String varName;
+	protected int argIdx;
 	
 	public AbstractSimpleMathFunc(String varName) {
 		this.varName = varName;
@@ -42,10 +44,18 @@ public abstract class AbstractSimpleMathFunc extends MathFuncBasic {
 	}
 
 	@Override
-	public MathFunc setArgIdx(int... argIdx) {
-		this.argIdx = argIdx[0];
+	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+		this.argIdx = argsMap.get(varName);
 		return this;
 	}
+	
+	@Override
+	public Map<String, Integer> getArgIdxMap() {
+		Map<String, Integer> ret = new HashMap<String, Integer>();
+		ret.put(varName, argIdx);
+		return ret;
+	}
+	
 	@Override
 	public boolean isConstant() {
 		return false;

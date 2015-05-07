@@ -41,14 +41,16 @@ public class FX extends AbstractSimpleMathFunc {
 	public final static FX fs = new FX(Constant.s); 
 	public final static FX ft = new FX(Constant.t); 
 	
-	protected String varName = null;
-	protected int argIdx = 0;
-	
 	/**
 	 * Use this to construct a function: f(varName) = varName
 	 */
 	public FX(String varName) {
 		super(varName);
+	}
+
+	public FX(String varName, int argIdx) {
+		super(varName);
+		this.argIdx = argIdx;
 	}
 
 	@Override
@@ -96,7 +98,7 @@ public class FX extends AbstractSimpleMathFunc {
 	
 	@Override
 	public MathFunc copy() {
-		return new FX(this.varName);
+		return new FX(this.varName, this.argIdx);
 	}
 
 	@Override

@@ -1,8 +1,5 @@
 package edu.uta.futureye.function;
 
-import static com.sun.org.apache.bcel.internal.generic.InstructionConstants.ACONST_NULL;
-import static com.sun.org.apache.bcel.internal.generic.InstructionConstants.DRETURN;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +172,7 @@ public class FCompose extends AbstractMathFunc {
 		lg = mg.addLocalVariable("arg_"+outerName,
 			new ArrayType(Type.DOUBLE, 1), null, null);
 		int idxArg = lg.getIndex();
-		il.append(ACONST_NULL);
+		il.append(InstructionConstants.ACONST_NULL);
 		lg.setStart(il.append(new ASTORE(idxArg))); // "idxArg" valid from here
 		//arg = new double[size]
 		il.append(new PUSH(cp, fInners.size()));
@@ -197,8 +194,8 @@ public class FCompose extends AbstractMathFunc {
 		}
 		
 		// Call the outer function
-		il.append(ACONST_NULL);
-		il.append(ACONST_NULL);
+		il.append(InstructionConstants.ACONST_NULL);
+		il.append(InstructionConstants.ACONST_NULL);
 		il.append(new ALOAD(idxArg));
 		return  il.append(factory.createInvoke("edu.uta.futureye.bytecode."+outerName, "apply",
 				Type.DOUBLE, 
@@ -208,6 +205,21 @@ public class FCompose extends AbstractMathFunc {
 					new ArrayType(Type.DOUBLE, 1)
 				}, 
 		Constants.INVOKESTATIC));
+	}
+	
+	@Override
+	public Map<String, Integer> getArgIdxMap() {
+		Map<String, Integer> ret = new HashMap<String, Integer>();
+		for(int i=0; i<varNames.length; i++) {
+			ret.put(varNames[i], argIdx[i]);
+		}
+		return ret;
+	}
+	
+	@Override
+	public MathFunc copy() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

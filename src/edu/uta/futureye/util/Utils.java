@@ -34,7 +34,6 @@ public class Utils {
 	
 	public static List<String> mergeList(List<String> a, List<String> b) {
 		Set<String> set = new LinkedHashSet<String>();
-		//TODO ??? 是否要做判断？
 		if(a != null)
 			set.addAll(a);
 		if(b != null)
@@ -42,6 +41,23 @@ public class Utils {
 		List<String> rlt = new LinkedList<String>();
 		rlt.addAll(set);
 		return rlt;
+	}
+	
+	public static Map<String, Integer> getIndexMap(List<String> list) {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		for(int i=0; i<list.size(); i++) {
+			map.put(list.get(i), i);
+		}
+		return map;
+	}
+	
+	public static boolean isContained(Map<String, Integer> container, Map<String, Integer> target) {
+		if(container.size() < target.size()) return false;
+		for(Entry<String, Integer> e : target.entrySet()) {
+			if(container.get(e.getKey()) != e.getValue())
+				return false;
+		}
+		return true;
 	}
 	
 	/**

@@ -1,5 +1,6 @@
 package edu.uta.futureye.function;
 
+import java.util.List;
 import java.util.Map;
 
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
@@ -17,7 +18,10 @@ import edu.uta.futureye.util.Utils;
 public class FAdd extends FBinaryOp {
 	public FAdd(MathFunc left, MathFunc right) {
 		super(left, right);
-		setVarNames(Utils.mergeList(left.getVarNames(), right.getVarNames()));
+		List<String> list = Utils.mergeList(left.getVarNames(), right.getVarNames());
+		Map<String, Integer> map = Utils.getIndexMap(list);
+		setVarNames(list);
+		setArgIdx(map);
 	}
 	
 	public double apply(Variable v) {
@@ -93,5 +97,10 @@ public class FAdd extends FBinaryOp {
 		arg1.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		arg2.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		return il.append(InstructionConstants.DADD);
+	}
+	
+	@Override
+	public MathFunc copy() {
+		return new FAdd(this.arg1, this.arg2).setName(this.getName());
 	}
 }

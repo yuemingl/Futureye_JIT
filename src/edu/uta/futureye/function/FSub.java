@@ -1,9 +1,9 @@
 package edu.uta.futureye.function;
 
+import java.util.List;
 import java.util.Map;
 
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
-import com.sun.org.apache.bcel.internal.generic.DSUB;
 import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
 import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
 import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
@@ -19,7 +19,10 @@ import edu.uta.futureye.util.Utils;
 public class FSub extends FBinaryOp {
 	public FSub(MathFunc left, MathFunc right) {
 		super(left, right);
-		setVarNames(Utils.mergeList(left.getVarNames(), right.getVarNames()));
+		List<String> list = Utils.mergeList(left.getVarNames(), right.getVarNames());
+		Map<String, Integer> map = Utils.getIndexMap(list);
+		setVarNames(list);
+		setArgIdx(map);
 	}
 
 	@Override
@@ -85,5 +88,10 @@ public class FSub extends FBinaryOp {
 		arg1.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		arg2.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		return il.append(InstructionConstants.DSUB);
+	}
+	
+	@Override
+	public MathFunc copy() {
+		return new FSub(this.arg1, this.arg2).setName(this.getName());
 	}
 }
