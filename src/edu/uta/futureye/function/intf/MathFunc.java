@@ -39,7 +39,7 @@ public interface MathFunc {
 	 * <p>
 	 * It is suggested to implement toString method that return this
 	 * name for the function. If the function name is not specified the 
-	 * MathFuncession of the function should be returned by toString method.
+	 * expression of the function should be returned by toString method.
 	 * 
 	 * @param name
 	 * @return
@@ -105,6 +105,15 @@ public interface MathFunc {
 	 * @return Function values evaluated at array of variables <tt>valAry</tt> 
 	 */
 	double[] applyAll(VariableArray valAry, Map<Object, Object> cache);
+	
+	/**
+	 * Set the index of each variable of the MathFunc in parameter 'args' 
+	 * of the 'apply' methods
+	 *  
+	 * @param argIdx
+	 * @return
+	 */
+	MathFunc setArgIdx(int ...argIdx); 
 	
 	/**
 	 * Add
