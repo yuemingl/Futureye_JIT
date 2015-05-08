@@ -19,12 +19,12 @@ public class FTan extends AbstractSimpleMathFunc {
 		super("tan", varName);
 	}
 
-	@Override
-	public MathFunc copy() {
-		FTan ret = new FTan(this.varName);
-		ret.argIdx = this.argIdx;
-		return ret;
-	}
+//	@Override
+//	public MathFunc copy() {
+//		FTan ret = new FTan(this.varName);
+//		ret.argIdx = this.argIdx;
+//		return ret;
+//	}
 
 	@Override
 	public double apply(double... args) {

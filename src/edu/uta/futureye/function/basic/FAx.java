@@ -47,13 +47,13 @@ public class FAx extends AbstractSimpleMathFunc {
 		return a*args[argIdx];
 	}
 	
-	@Override
-	public MathFunc copy() {
-		FAx ret = new FAx(this.varName, a);
-		ret.fName = this.fName;
-		ret.argIdx = this.argIdx;
-		return ret;
-	}
+//	@Override
+//	public MathFunc copy() {
+//		FAx ret = new FAx(this.varName, a);
+//		ret.fName = this.fName;
+//		ret.argIdx = this.argIdx;
+//		return ret;
+//	}
 
 	@Override
 	public String getExpr() {

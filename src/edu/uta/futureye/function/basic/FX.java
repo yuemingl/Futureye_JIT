@@ -86,13 +86,13 @@ public class FX extends AbstractSimpleMathFunc {
 		return varName;
 	}
 	
-	@Override
-	public MathFunc copy() {
-		FX ret = new FX(this.varName);
-		ret.fName = this.fName;
-		ret.argIdx = this.argIdx;
-		return ret;
-	}
+//	@Override
+//	public MathFunc copy() {
+//		FX ret = new FX(this.varName);
+//		ret.fName = this.fName;
+//		ret.argIdx = this.argIdx;
+//		return ret;
+//	}
 
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,

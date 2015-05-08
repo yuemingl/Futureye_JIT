@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.sun.org.apache.bcel.internal.generic.ClassGen;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
+import edu.uta.futureye.function.FSqrt;
 import edu.uta.futureye.function.basic.FAx;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FCos;
@@ -93,14 +94,23 @@ public class BytecodeTest {
 		FSin sin = new FSin();
 		MathFunc fun = FMath.pow(sin, 2);
 		System.out.println(fun.toString());
+		System.out.println(fun.diff("x"));
+		
+		System.out.println(FMath.sqrt(sin));
+		System.out.println(FMath.sqrt(sin).diff("x"));
+		
+		FSqrt sqrt = new FSqrt();
+		System.out.println(sqrt.compile().apply(16));
+		System.out.println(FMath.sqrt(FX.x).compile().apply(16));
+		
 	}
 	public static void main(String[] args) {
-//		test1();
-//		test2();
-//		test3();
-//		test4();
-//		test5();
-//		test6();
+		test1();
+		test2();
+		test3();
+		test4();
+		test5();
+		test6();
 		test7();
 	}
 

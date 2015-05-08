@@ -1,5 +1,6 @@
 package edu.uta.futureye.function.operator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Map;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.FPow;
+import edu.uta.futureye.function.FSqrt;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
@@ -47,7 +49,10 @@ public class FMath {
 	//--- Basic operations ------------------------
 	
 	public static MathFunc sqrt(final MathFunc f) {
-		
+		FSqrt sqrt = new FSqrt();
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
+		fInners.put(sqrt.getVarName(), f);
+		return sqrt.compose(fInners);
 /*		return (MathFunc)new AbstractSimpleMathFunc(f.getVarNames()) {
 			@Override
 			public double apply(Variable v) {
@@ -126,6 +131,10 @@ public class FMath {
 					return "~0.0";
 				return "("+f1.toString()+")^("+f2.toString()+")";
 			}
+			@Override
+			public double apply(double... args) {
+				return Math.pow(f1.apply(args),f2.apply(args));
+			}
 		};
 	}	
 	
@@ -142,6 +151,10 @@ public class FMath {
 			@Override
 			public String toString() {
 				return "abs("+f.toString()+")";
+			}
+			@Override
+			public double apply(double... args) {
+				return Math.abs(f.apply(args));
 			}
 		};
 	}
@@ -184,11 +197,13 @@ public class FMath {
 			int len = ci.length;
 			this.ci = new double[len];
 			this.fi = new MathFunc[len];
+			List<String> list = new ArrayList<String>();
 			for(int i=0;i<fi.length;i++) {
 				this.ci[i] = ci[i];
 				this.fi[i] = fi[i];
-				Utils.mergeList(varNames, fi[i].getVarNames());
+				list = Utils.mergeList(list, fi[i].getVarNames());
 			}
+			this.setVarNames(list);
 		}
 		
 		@Override
@@ -228,7 +243,8 @@ public class FMath {
 		public MathFunc diff(String varName) {
 			MathFunc[] fdi = new MathFunc[fi.length];
 			for(int i=0;i<fi.length;i++) {
-				fdi[i] = fi[i].diff(varName).setVarNames(fi[i].getVarNames());
+				//fdi[i] = fi[i].diff(varName).setVarNames(fi[i].getVarNames());
+				fdi[i] = fi[i].diff(varName);
 			}
 			return new FLinearCombination(ci,fdi);
 		}
@@ -254,6 +270,21 @@ public class FMath {
 					sb.append(fi[i].toString());
 			}
 			return sb.toString();
+		}
+
+		@Override
+		public MathFunc copy() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public double apply(double... args) {
+			double rlt = 0.0;
+			for(int i=0;i<fi.length;i++) {
+				rlt += ci[i]*fi[i].apply(args);
+			}
+			return rlt;
 		}
 	}
 	

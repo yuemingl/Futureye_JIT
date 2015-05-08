@@ -88,11 +88,6 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 					throw new FutureyeException("\nERROR:\n Not supported evaluate: "+v);
 				}
 				@Override
-				public MathFunc copy() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-				@Override
 				public double apply(double... args) {
 					// TODO Auto-generated method stub
 					return 0;
@@ -161,12 +156,6 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
-	}
-
-	@Override
-	public MathFunc copy() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

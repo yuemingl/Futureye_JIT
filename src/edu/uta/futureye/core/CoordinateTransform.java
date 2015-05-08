@@ -1,5 +1,6 @@
 package edu.uta.futureye.core;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -385,6 +386,11 @@ public class CoordinateTransform {
 		MathFunc[] funs = null;
 		public Jacobian2D(MathFunc[] funs) {
 			this.funs = funs;
+			List<String> list = new ArrayList<String>();
+			for(MathFunc fun : funs) {
+				list = Utils.mergeList(list, fun.getVarNames());
+			}
+			this.setVarNames(list);
 		}
 		
 		@Override
@@ -437,6 +443,15 @@ public class CoordinateTransform {
 		public String toString() {
 			return "Jacobian2D";
 		}
+
+		@Override
+		public double apply(double... args) {
+			double J11 = funs[0].apply(args);
+			double J12 = funs[1].apply(args);
+			double J21 = funs[2].apply(args);
+			double J22 = funs[3].apply(args);
+			return J11*J22-J12*J21;
+		}
 	}
 	
 	/**
@@ -449,6 +464,11 @@ public class CoordinateTransform {
 		MathFunc[] funs = null;
 		public Jacobian2DFrom3D(MathFunc[] funs) {
 			this.funs = funs;
+			List<String> list = new ArrayList<String>();
+			for(MathFunc fun : funs) {
+				list = Utils.mergeList(list, fun.getVarNames());
+			}
+			this.setVarNames(list);
 		}
 		
 		@Override
@@ -505,6 +525,17 @@ public class CoordinateTransform {
 		public String toString() {
 			return "Jacobian2DFrom3D";
 		}
+
+		@Override
+		public double apply(double... args) {
+			double f0 = funs[0].apply(args);
+			double f1 = funs[1].apply(args);
+			double f2 = funs[2].apply(args);
+			double f3 = funs[3].apply(args);
+			double f4 = funs[4].apply(args);
+			double f5 = funs[5].apply(args);
+			return Math.sqrt( (f1*f5-f4*f2)*(f1*f5-f4*f2) + (f0*f5-f3*f2)*(f0*f5-f3*f2) + (f0*f4-f3*f1)*(f0*f4-f3*f1) );
+		}
 	}
 	
 	/**
@@ -553,6 +584,11 @@ public class CoordinateTransform {
 		MathFunc[] funs = null;
 		public Jacobian3D(MathFunc[] funs) {
 			this.funs = funs;
+			List<String> list = new ArrayList<String>();
+			for(MathFunc fun : funs) {
+				list = Utils.mergeList(list, fun.getVarNames());
+			}
+			this.setVarNames(list);
 		}
 		@Override
 		public double apply(Variable v) {
@@ -616,6 +652,22 @@ public class CoordinateTransform {
 		
 		public String toString() {
 			return "Jacobian3D";
+		}
+
+		@Override
+		public double apply(double... args) {
+			double[][] J = new double[3][3];
+			J[0][0] = funs[0].apply(args);
+			J[0][1] = funs[1].apply(args);
+			J[0][2] = funs[2].apply(args);
+			J[1][0] = funs[3].apply(args);
+			J[1][1] = funs[4].apply(args);
+			J[1][2] = funs[5].apply(args);
+			J[2][0] = funs[6].apply(args);
+			J[2][1] = funs[7].apply(args);
+			J[2][2] = funs[8].apply(args);
+			//@see ./doc_ex/invA33.png
+			return Utils.determinant(J);
 		}
 	}
 	

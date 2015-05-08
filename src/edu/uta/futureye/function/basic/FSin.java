@@ -37,10 +37,10 @@ public class FSin extends AbstractSimpleMathFunc {
 			return FC.C0;
 	}
 
-	@Override
-	public MathFunc copy() {
-		FSin ret = new FSin(this.varName);
-		ret.argIdx = this.argIdx;
-		return ret;
-	}
+//	@Override
+//	public MathFunc copy() {
+//		FSin ret = new FSin(this.varName);
+//		ret.argIdx = this.argIdx;
+//		return ret;
+//	}
 }

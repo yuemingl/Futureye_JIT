@@ -101,8 +101,8 @@ public class FAdd extends FBinaryOp {
 		return il.append(InstructionConstants.DADD);
 	}
 	
-	@Override
-	public MathFunc copy() {
-		return new FAdd(this.arg1, this.arg2).setName(this.getName());
-	}
+//	@Override
+//	public MathFunc copy() {
+//		return new FAdd(this.arg1, this.arg2).setName(this.getName());
+//	}
 }

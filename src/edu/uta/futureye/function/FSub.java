@@ -91,8 +91,8 @@ public class FSub extends FBinaryOp {
 		return il.append(InstructionConstants.DSUB);
 	}
 	
-	@Override
-	public MathFunc copy() {
-		return new FSub(this.arg1, this.arg2).setName(this.getName());
-	}
+//	@Override
+//	public MathFunc copy() {
+//		return new FSub(this.arg1, this.arg2).setName(this.getName());
+//	}
 }

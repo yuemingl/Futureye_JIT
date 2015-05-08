@@ -19,21 +19,29 @@ public class FPow extends AbstractSimpleMathFunc {
 
 	@Override
 	public MathFunc diff(String varName) {
-		if(exponent == 0.0)
-			return FC.C1;
-		FPow ret = new FPow(this.varName, this.exponent-1);
-		ret.argIdx = this.argIdx;
-		ret.fName = this.fName;
-		return ret.M(exponent);
+		if(varName.equals(this.varName)) {
+			if(exponent == 0.0)
+				return FC.C0;
+			else if(exponent == 1.0)
+				return FC.C1;
+			else {
+				FPow ret = new FPow(this.varName, this.exponent-1);
+				ret.argIdx = this.argIdx;
+				ret.fName = this.fName;
+				return ret.M(exponent);
+			}
+		} else {
+			return FC.C0;
+		}
 	}
 	
-	@Override
-	public MathFunc copy() {
-		FPow ret = new FPow(this.varName, this.exponent);
-		ret.argIdx = this.argIdx;
-		ret.fName = this.fName;
-		return ret;
-	}
+//	@Override
+//	public MathFunc copy() {
+//		FPow ret = new FPow(this.varName, this.exponent);
+//		ret.argIdx = this.argIdx;
+//		ret.fName = this.fName;
+//		return ret;
+//	}
 
 	@Override
 	public double apply(double... args) {
@@ -44,5 +52,9 @@ public class FPow extends AbstractSimpleMathFunc {
 	public double apply(Variable v) {
 		return Math.pow(v.get(varName), exponent);
 	}
-
+	
+	@Override
+	public String getExpr() {
+		return fName + "(" + varName + ", "+this.exponent+")";
+	}
 }

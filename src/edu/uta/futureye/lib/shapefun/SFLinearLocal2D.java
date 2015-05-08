@@ -69,11 +69,6 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 			return varNames[funIndex];
 		}
 		@Override
-		public MathFunc copy() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
 		public double apply(double... args) {
 			// TODO Auto-generated method stub
 			return 0;
@@ -138,13 +133,6 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 				// TODO Auto-generated method stub
 				return 0;
 			}
-
-			@Override
-			public MathFunc copy() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
 			@Override
 			public double apply(double... args) {
 				// TODO Auto-generated method stub
@@ -221,13 +209,6 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
 	}
-
-	@Override
-	public MathFunc copy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public double apply(double... args) {
 		// TODO Auto-generated method stub

@@ -30,7 +30,7 @@ import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FuncClassLoader;
 
-public abstract class MathFuncBasic implements MathFunc {
+public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	@Override
 	public abstract double apply(double ...args);
 	
@@ -382,5 +382,15 @@ public abstract class MathFuncBasic implements MathFunc {
 	@Override
 	public String toString() {
 		return getExpr();
+	}
+	
+	@Override
+	public MathFunc copy() {
+		try {
+			return (MathFunc)this.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

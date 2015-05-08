@@ -1,41 +1,70 @@
 package edu.uta.futureye.function;
 
-import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.FX;
+import static com.sun.org.apache.bcel.internal.Constants.ACC_PUBLIC;
+import static com.sun.org.apache.bcel.internal.generic.InstructionConstants.DALOAD;
+
+import java.util.Map;
+
+import com.sun.org.apache.bcel.internal.Constants;
+import com.sun.org.apache.bcel.internal.generic.AALOAD;
+import com.sun.org.apache.bcel.internal.generic.ALOAD;
+import com.sun.org.apache.bcel.internal.generic.ArrayType;
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.FieldGen;
+import com.sun.org.apache.bcel.internal.generic.GETFIELD;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
+import com.sun.org.apache.bcel.internal.generic.Type;
+
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.util.Constant;
 
 public class FSqrt extends AbstractSimpleMathFunc {
 
-	public FSqrt(String funcName, String varName) {
+	public FSqrt() {
+		super("sqrt", Constant.x);
+	}
+	
+	public FSqrt(String varName) {
 		super("sqrt", varName);
+	}
+
+//	@Override
+//	public MathFunc copy() {
+//		FSqrt ret = new FSqrt(this.varName);
+//		ret.argIdx = this.argIdx;
+//		ret.fName = this.fName;
+//		return ret;
+//	}
+
+	@Override
+	public double apply(double... args) {
+		return Math.sqrt(args[argIdx]);
 	}
 
 	@Override
 	public double apply(Variable v) {
 		return Math.sqrt(v.get(varName));
 	}
-	
 	@Override
 	public MathFunc diff(String varName) {
-		return FC.c(0.5).M(pow(new FX(varName),-0.5)).M(f.diff(varName));
+		return new FPow(0.5).diff(varName).setArgIdx(this.getArgIdxMap());
 	}
+	
 	@Override
-	public int getOpOrder() {
-		return OP_ORDER1;
-	}
-	@Override
-	public String toString() {
-		return "sqrt("+f.toString()+")";
-	}
-	@Override
-	public MathFunc copy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public double apply(double... args) {
-		// TODO Auto-generated method stub
-		return args[argIdx];
-	}
-
-}
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
+			ConstantPoolGen cp, InstructionFactory factory, 
+			InstructionList il, Map<String, Integer> argsMap, 
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
+		il.append(new ALOAD(argsStartPos));
+		il.append(new PUSH(cp, argsMap.get(varName)));
+		il.append(DALOAD);
+		return  il.append(factory.createInvoke("java.lang.Math", "sqrt",
+				Type.DOUBLE, new Type[] { Type.DOUBLE }, 
+				Constants.INVOKESTATIC));
+	}}
