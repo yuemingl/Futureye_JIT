@@ -305,14 +305,14 @@ public interface MathFunc {
 	CompiledFunc compile(String[] varNames);
 	
 	//////////////Operator overloading support through Java-OO//////////////////
-//	/**
-//	 * Operator overloading support:
-//	 * MathFunc a = 5;
-//	 */
-//	MathFunc valueOf(int v);
-//	MathFunc valueOf(long v);
-//	MathFunc valueOf(float v) ;
-//	MathFunc valueOf(double v);
+	/**
+	 * Operator overloading support:
+	 * MathFunc a = 5;
+	 */
+	MathFunc valueOf(int v);
+	MathFunc valueOf(long v);
+	MathFunc valueOf(float v) ;
+	MathFunc valueOf(double v);
 	
 	/**
 	 * Operator overload support:

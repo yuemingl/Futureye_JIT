@@ -25,7 +25,7 @@ public class BytecodeTest {
 		MathFunc add = x.S(y);
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
-		ClassGen genClass = BytecodeUtils.genClass(add, "add", true, false);
+		ClassGen genClass = BytecodeUtils.genClass(add, null, "add", true, false);
 		CompiledFunc fadd = fcl.newInstance(genClass);
 		System.out.println(fadd.apply(1.0, 2.0));
 	}
@@ -42,7 +42,7 @@ public class BytecodeTest {
 		System.out.println(add2);
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
-		ClassGen genClass = BytecodeUtils.genClass(add2, "add2", true, false);
+		ClassGen genClass = BytecodeUtils.genClass(add2, null, "add2", true, false);
 		CompiledFunc fadd2 = fcl.newInstance(genClass);
 		System.out.println(fadd2.apply(4.0, 2.0));
 	}

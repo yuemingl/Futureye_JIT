@@ -165,7 +165,7 @@ public class FCompose extends AbstractMathFunc {
 		String outerName  = "fun_outer_"+java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		// Generate the outer function
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
-		ClassGen genClass = BytecodeUtils.genClass(fOuter, outerName, true, true);
+		ClassGen genClass = BytecodeUtils.genClass(fOuter, null, outerName, true, true);
 		fcl.newInstance(genClass);
 
 		// Prepare arguments for calling the outer function

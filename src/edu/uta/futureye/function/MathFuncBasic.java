@@ -226,118 +226,116 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		return new FC(v);
 	}
 
-
 	public MathFunc add(MathFunc other) {
-		return new FAdd(this, other);
+		return this.A(other);
 	}
 	public MathFunc add(int other) {
-		return new FAdd(this, new FC(other));
+		return this.A(other);
 	}
 	public MathFunc addRev(int other) {
-		return new FAdd(new FC(other), this);
+		return this.A(other);
 	}
 	public MathFunc add(long other) {
-		return new FAdd(this, new FC(other));
+		return this.A(other);
 	}
 	public MathFunc addRev(long other) {
-		return new FAdd(new FC(other), this);
+		return this.A(other);
 	}	
 	public MathFunc add(float other) {
-		return new FAdd(this, new FC(other));
+		return this.A(other);
 	}
 	public MathFunc addRev(float other) {
-		return new FAdd(new FC(other), this);
+		return this.A(other);
 	}	
 	public MathFunc add(double other) {
-		return new FAdd(this, new FC(other));
+		return this.A(other);
 	}
 	public MathFunc addRev(double other) {
-		return new FAdd(new FC(other), this);
+		return this.A(other);
 	}
 	
-
 	public MathFunc subtract(MathFunc other) {
-		return new FSub(this, other);
+		return this.S(other);
 	}
 	public MathFunc subtract(int other) {
-		return new FSub(this, new FC(other));
+		return this.S(other);
 	}
 	public MathFunc subtractRev(int other) {
-		return new FSub(new FC(other), this);
+		return new FC(other).S(this);
 	}
 	public MathFunc subtract(long other) {
-		return new FSub(this, new FC(other));
+		return this.S(other);
 	}
 	public MathFunc subtractRev(long other) {
-		return new FSub(new FC(other), this);
+		return new FC(other).S(this);
 	}	
 	public MathFunc subtract(float other) {
-		return new FSub(this, new FC(other));
+		return this.S(other);
 	}
 	public MathFunc subtractRev(float other) {
-		return new FSub(new FC(other), this);
+		return new FC(other).S(this);
 	}
 	public MathFunc subtract(double other) {
-		return new FSub(this, new FC(other));
+		return this.S(other);
 	}
 	public MathFunc subtractRev(double other) {
-		return new FSub(new FC(other), this);
+		return new FC(other).S(this);
 	}
 	
 	public MathFunc multiply(MathFunc other) {
-		return new FMul(this, other);
+		return this.M(other);
 	}
 	public MathFunc multiply(int other) {
-		return new FMul(this, new FC(other));
+		return this.M(other);
 	}
 	public MathFunc multiplyRev(int other) {
-		return new FMul(new FC(other), this);
+		return this.M(other);
 	}
 	public MathFunc multiply(long other) {
-		return new FMul(this, new FC(other));
+		return this.M(other);
 	}
 	public MathFunc multiplyRev(long other) {
-		return new FMul(new FC(other), this);
+		return this.M(other);
 	}
 	public MathFunc multiply(float other) {
-		return new FMul(this, new FC(other));
+		return this.M(other);
 	}
 	public MathFunc multiplyRev(float other) {
-		return new FMul(new FC(other), this);
+		return this.M(other);
 	}
 	public MathFunc multiply(double other) {
-		return new FMul(this, new FC(other));
+		return this.M(other);
 	}
 	public MathFunc multiplyRev(double other) {
-		return new FMul(new FC(other), this);
+		return this.M(other);
 	}
 	
 	public MathFunc divide(MathFunc other) {
-		return new FDiv(this, other);
+		return this.D(other);
 	}	
 	public MathFunc divide(int other) {
-		return new FDiv(this, new FC(other));
+		return this.D(other);
 	}
 	public MathFunc divideRev(int other) {
-		return new FDiv(new FC(other), this);
+		return new FC(other).D(this);
 	}
 	public MathFunc divide(long other) {
-		return new FDiv(this, new FC(other));
+		return this.D(other);
 	}
 	public MathFunc divideRev(long other) {
-		return new FDiv(new FC(other), this);
+		return new FC(other).D(this);
 	}
 	public MathFunc divide(float other) {
-		return new FDiv(this, new FC(other));
+		return this.D(other);
 	}
 	public MathFunc divideRev(float other) {
-		return new FDiv(new FC(other), this);
+		return new FC(other).D(this);
 	}
 	public MathFunc divide(double other) {
-		return new FDiv(this, new FC(other));
+		return this.D(other);
 	}
 	public MathFunc divideRev(double other) {
-		return new FDiv(new FC(other), this);
+		return new FC(other).D(this);
 	}
 	
 	public MathFunc negate() {
