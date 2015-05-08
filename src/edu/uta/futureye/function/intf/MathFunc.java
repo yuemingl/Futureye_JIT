@@ -290,9 +290,19 @@ public interface MathFunc {
 			int argsStartPos, Map<MathFunc, Integer> funcRefsMap);
 
 	/**
-	 * 
+	 * Compile the function to bytecode with order of arguments from
+	 * the call of getVarNames()
 	 */
 	CompiledFunc compile();
+	
+	/**
+	 * Compile the function to bytecode with a specified order of
+	 * arguments
+	 * 
+	 * @param varNames
+	 * @return
+	 */
+	CompiledFunc compile(String[] varNames);
 	
 	//////////////Operator overloading support through Java-OO//////////////////
 //	/**

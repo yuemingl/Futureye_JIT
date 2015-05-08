@@ -50,7 +50,8 @@ public class BytecodeUtils {
 		return map;
 	}
 	
-	public static ClassGen genClass(MathFunc func, String funcClsName, boolean writeClassFile, boolean staticMethod) {
+	public static ClassGen genClass(MathFunc func, String[] varNames, String funcClsName, 
+			boolean writeClassFile, boolean staticMethod) {
 		
 		String packageName = "edu.uta.futureye.bytecode";
 		String clsName = funcClsName;
@@ -80,10 +81,17 @@ public class BytecodeUtils {
 
 		
 		HashMap<String, Integer> argsMap = new HashMap<String, Integer>();
-		List<String> args = func.getVarNames();
-		for(int i=0; i<args.size(); i++) {
-			argsMap.put(args[i], i);
+		if(varNames == null) {
+			List<String> args = func.getVarNames();
+			for(int i=0; i<args.size(); i++) {
+				argsMap.put(args[i], i);
+			}
+		} else {
+			for(int i=0; i<varNames.length; i++) {
+				argsMap.put(varNames[i], i);
+			}
 		}
+
 
 		Map<MathFunc, Integer> refsMap = getFuncRefsMap(func);
 		

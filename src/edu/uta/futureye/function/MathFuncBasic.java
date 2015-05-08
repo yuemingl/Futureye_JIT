@@ -156,9 +156,6 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	
 	///////////////////////////Compilation///////////////////////////////
 	
-	/**
-	 * 
-	 */
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
 			ConstantPoolGen cp, InstructionFactory factory, 
@@ -185,15 +182,12 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 				Constants.INVOKEINTERFACE));
 	}
 	
-	/**
-	 * 
-	 */
 	@Override
 	public CompiledFunc compile() {
 		String clsName = getName() + java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
-		ClassGen genClass = BytecodeUtils.genClass(this, clsName, true, false);
+		ClassGen genClass = BytecodeUtils.genClass(this, null, clsName, true, false);
 		CompiledFunc func = fcl.newInstance(genClass);
 		
 		List<MathFunc> list = new ArrayList<MathFunc>();
@@ -203,14 +197,22 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		return func;
 	}
 	
+	@Override
+	public CompiledFunc compile(String[] varNames) {
+		String clsName = getName() + java.util.UUID.randomUUID().toString().replaceAll("-", "");
+		
+		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		ClassGen genClass = BytecodeUtils.genClass(this, varNames, clsName, true, false);
+		CompiledFunc func = fcl.newInstance(genClass);
+		
+		List<MathFunc> list = new ArrayList<MathFunc>();
+		BytecodeUtils.postOrder(this, list);
+		func.setFuncRefs(list.toArray(new MathFunc[0]));
+		
+		return func;
+	}	
 	//////////////Operator overloading support through Java-OO//////////////////
-	/**
-	 * Operator overloading support:
-	 * MathFunc a = 5;
-	 * 
-	 * @param v
-	 * @return
-	 */
+
 	public MathFunc valueOf(int v) {
 		return new FC(v);
 	}
@@ -223,12 +225,8 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	public MathFunc valueOf(double v) {
 		return new FC(v);
 	}
-	/**
-	 * Operator overload support:
-	 * a+b
-	 * @param other
-	 * @return
-	 */
+
+
 	public MathFunc add(MathFunc other) {
 		return new FAdd(this, other);
 	}
@@ -257,12 +255,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		return new FAdd(new FC(other), this);
 	}
 	
-	/**
-	 * Operator overload support:
-	 * a-b
-	 * @param other
-	 * @return
-	 */
+
 	public MathFunc subtract(MathFunc other) {
 		return new FSub(this, other);
 	}
@@ -291,12 +284,6 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		return new FSub(new FC(other), this);
 	}
 	
-	/**
-	 * Operator overload support:
-	 * a*b
-	 * @param other
-	 * @return
-	 */
 	public MathFunc multiply(MathFunc other) {
 		return new FMul(this, other);
 	}
@@ -325,12 +312,6 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		return new FMul(new FC(other), this);
 	}
 	
-	/**
-	 * Operator overload support:
-	 * a/b
-	 * @param other
-	 * @return
-	 */
 	public MathFunc divide(MathFunc other) {
 		return new FDiv(this, other);
 	}	
@@ -359,11 +340,6 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		return new FDiv(new FC(other), this);
 	}
 	
-	/**
-	 * Operator overload support:
-	 * -a
-	 * 
-	 */
 	public MathFunc negate() {
 		return new FSub(FC.C0, this);
 	};
