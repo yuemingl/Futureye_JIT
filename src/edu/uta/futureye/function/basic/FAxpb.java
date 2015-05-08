@@ -6,6 +6,7 @@ import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.util.Constant;
 
 /**
  * f(x) = a*x + b
@@ -15,13 +16,13 @@ public class FAxpb extends AbstractSimpleMathFunc {
 	protected double b;
 
 	public FAxpb(double a, double b) {
-		super(null, "x");
+		super(null, Constant.x);
 		this.a = a;
 		this.b = b;
 	}
 	
 	public FAxpb(String varName, double a, double b) {
-		super(varName, "x");
+		super(varName, Constant.x);
 		this.a = a;
 		this.b = b;
 	}

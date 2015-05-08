@@ -3,6 +3,7 @@ package edu.uta.futureye.function.basic;
 import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.util.Constant;
 
 /**
  * f(x) = cos(x)
@@ -11,7 +12,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 public class FCos extends AbstractSimpleMathFunc{
 	
 	public FCos() {
-		super("cos", "x");
+		super("cos", Constant.x);
 	}
 	
 	public FCos(String varName) {
@@ -20,7 +21,7 @@ public class FCos extends AbstractSimpleMathFunc{
 	
 	@Override
 	public double apply(Variable v) {
-		return Math.cos(v.get());
+		return Math.cos(v.get(varName));
 	}
 
 	@Override

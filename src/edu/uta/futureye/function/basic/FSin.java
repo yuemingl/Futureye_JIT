@@ -3,6 +3,7 @@ package edu.uta.futureye.function.basic;
 import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.util.Constant;
 
 /**
  * f(x) = sin(x)
@@ -11,7 +12,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 public class FSin extends AbstractSimpleMathFunc {
 	
 	public FSin() {
-		super("sin", "x");
+		super("sin", Constant.x);
 	}
 	
 	public FSin(String varName) {

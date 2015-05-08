@@ -12,14 +12,15 @@ import edu.uta.futureye.function.basic.FSin;
 import edu.uta.futureye.function.basic.FTan;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
 
 public class BytecodeTest {
 
 	public static void test1() {
-		MathFunc x = FX.fx;
-		MathFunc y = FX.fy;
+		MathFunc x = FX.x;
+		MathFunc y = FX.y;
 		MathFunc add = x.S(y);
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
@@ -29,13 +30,13 @@ public class BytecodeTest {
 	}
 
 	public static void test2() {
-		MathFunc x = FX.fx;
-		MathFunc y = FX.fy;
+		MathFunc x = FX.x;
+		MathFunc y = FX.y;
 		MathFunc add = x.M(y);
 		System.out.println(add);
 		HashMap<String, MathFunc> map = new HashMap<String, MathFunc>();
-		map.put(x.getVarNames().get(0), FX.fr.A(FX.fs));
-		map.put(y.getVarNames().get(0), FX.fr.S(FX.fs));
+		map.put(x.getVarNames().get(0), FX.r.A(FX.s));
+		map.put(y.getVarNames().get(0), FX.r.S(FX.s));
 		MathFunc add2 = add.compose(map);
 		System.out.println(add2);
 		
@@ -65,7 +66,7 @@ public class BytecodeTest {
 	}
 
 	public static void test5() {
-		MathFunc f = FX.fx * FX.fy * FX.fz + 1;
+		MathFunc f = FX.x * FX.y * FX.z + 1;
 		System.out.println(f);
 		System.out.println(f.getVarNames());
 		System.out.println(f.apply(2,3,4));
@@ -88,13 +89,19 @@ public class BytecodeTest {
 		System.out.println(faxpb.compile().apply(5.0));
 	}
 	
+	public static void test7() {
+		FSin sin = new FSin();
+		MathFunc fun = FMath.pow(sin, 2);
+		System.out.println(fun.toString());
+	}
 	public static void main(String[] args) {
 //		test1();
 //		test2();
 //		test3();
-		test4();
-		test5();
-		test6();
+//		test4();
+//		test5();
+//		test6();
+		test7();
 	}
 
 }

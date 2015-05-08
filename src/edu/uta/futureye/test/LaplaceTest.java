@@ -94,7 +94,7 @@ public class LaplaceTest {
 		 */
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-						FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+						FX.x.M(FX.x).A(FX.y.M(FX.y))
 					).A(FC.c(36.0))
 				);
 //		weakForm.setF(new FConstant(-2.0));
@@ -191,7 +191,7 @@ public class LaplaceTest {
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		
@@ -278,7 +278,7 @@ public class LaplaceTest {
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		weakForm.setParam(
@@ -375,7 +375,7 @@ public class LaplaceTest {
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		
@@ -488,14 +488,14 @@ public class LaplaceTest {
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		
 		weakForm.setParam(
 				null,
 				null,
-				FC.c(6.0).M(FX.fy.M(FX.fy)).S(FC.c(54.0)),
+				FC.c(6.0).M(FX.y.M(FX.y)).S(FC.c(54.0)),
 				null //Robin: 6*y^2-54
 				); 
 		
@@ -557,7 +557,7 @@ public class LaplaceTest {
 		// u=(x^2-9)*(y^2-9)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		

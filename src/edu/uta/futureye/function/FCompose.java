@@ -145,12 +145,14 @@ public class FCompose extends AbstractMathFunc {
 	}
 	
 	@Override
-	public String toString() {
+	public String getExpr() {
 		String rlt = fOuter.toString();
 		for(Entry<String,MathFunc> map : fInners.entrySet()) {
 			String names = map.getValue().getVarNames().toString();
+//			rlt = rlt.replace(map.getKey(), 
+//					map.getKey()+"("+names.substring(1,names.length()-1)+")");
 			rlt = rlt.replace(map.getKey(), 
-					map.getKey()+"("+names.substring(1,names.length()-1)+")");
+					map.getKey()+"=>"+map.getValue().toString());
 		}
 		return rlt;
 	}

@@ -3,6 +3,7 @@ package edu.uta.futureye.function.basic;
 import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.util.Constant;
 
 /**
  * f(x) = tan(x)
@@ -10,6 +11,10 @@ import edu.uta.futureye.function.intf.MathFunc;
  */
 public class FTan extends AbstractSimpleMathFunc {
 
+	public FTan() {
+		super("tan", Constant.x);
+	}
+	
 	public FTan(String varName) {
 		super("tan", varName);
 	}

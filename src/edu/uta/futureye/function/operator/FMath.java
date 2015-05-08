@@ -1,10 +1,12 @@
 package edu.uta.futureye.function.operator;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FPow;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
@@ -45,7 +47,8 @@ public class FMath {
 	//--- Basic operations ------------------------
 	
 	public static MathFunc sqrt(final MathFunc f) {
-		return new AbstractMathFunc(f.getVarNames()) {
+		
+/*		return (MathFunc)new AbstractSimpleMathFunc(f.getVarNames()) {
 			@Override
 			public double apply(Variable v) {
 				return Math.sqrt(f.apply(v));
@@ -62,7 +65,7 @@ public class FMath {
 			public String toString() {
 				return "sqrt("+f.toString()+")";
 			}
-		};
+		};*/
 	}
 	
 	/**
@@ -73,26 +76,32 @@ public class FMath {
 	 * @return
 	 */
 	public static MathFunc pow(final MathFunc f, final double p) {
-		return new AbstractMathFunc(f.getVarNames()) {
-			@Override
-			public double apply(Variable v) {
-				return Math.pow(f.apply(v),p);
-			}
-			@Override
-			public MathFunc diff(String varName) {
-				return FC.c(p).M(pow(f,p-1)).M(f.diff(varName));
-			}
-			@Override
-			public int getOpOrder() {
-				return OP_ORDER1;
-			}
-			@Override
-			public String toString() {
-				if( (f.isConstant() && Math.abs(f.apply()) < Constant.eps))
-					return "~0.0";
-				return "("+f.toString()+")^"+p+"";
-			}
-		};
+		FPow pow = new FPow(p);
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
+		fInners.put(pow.getVarName(), f);
+		return pow.compose(fInners);
+		
+		
+//		return new AbstractMathFunc(f.getVarNames()) {
+//			@Override
+//			public double apply(Variable v) {
+//				return Math.pow(f.apply(v),p);
+//			}
+//			@Override
+//			public MathFunc diff(String varName) {
+//				return FC.c(p).M(pow(f,p-1)).M(f.diff(varName));
+//			}
+//			@Override
+//			public int getOpOrder() {
+//				return OP_ORDER1;
+//			}
+//			@Override
+//			public String toString() {
+//				if( (f.isConstant() && Math.abs(f.apply()) < Constant.eps))
+//					return "~0.0";
+//				return "("+f.toString()+")^"+p+"";
+//			}
+//		};
 	}
 
 	/**

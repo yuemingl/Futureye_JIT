@@ -58,7 +58,8 @@ public class FSub extends FBinaryOp {
 	
 	@Override
 	public MathFunc diff(String varName) {
-		return arg1.diff(varName).S(arg2.diff(varName)).setVarNames(this.getVarNames());
+		//return arg1.diff(varName).S(arg2.diff(varName)).setVarNames(this.getVarNames());
+		return arg1.diff(varName).S(arg2.diff(varName));
 	}
 	
 	@Override

@@ -253,7 +253,7 @@ public class WeakFormBuilder {
 		wfb.addParam("k", FC.C1);
 		wfb.addParam("c", FC.C0);
 		wfb.addParam("d", FC.C1);
-		wfb.addParam("f", FX.fx.M(FX.fx));
+		wfb.addParam("f", FX.x.M(FX.x));
 		wfb.addParam("q", FC.C0);
 		WeakForm wf = wfb.getScalarWeakForm();
 		System.out.println(wf.getTrialDOF());

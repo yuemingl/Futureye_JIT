@@ -36,7 +36,7 @@ public class FunctionTest {
 	public static void constantTest() {
 		MathFunc c0 = FC.C0;
 		MathFunc c1 = FC.C1;
-		MathFunc fx = FX.fx;
+		MathFunc fx = FX.x;
 		
 		System.out.println(c0.A(c0));
 		System.out.println(c1.A(c1));
@@ -105,7 +105,7 @@ public class FunctionTest {
 		FC c2 = new FC(2.0);
 		FC c3 = new FC(3.0);
 		
-		FX fi = FX.fx;
+		FX fi = FX.x;
 		MathFunc ftest1 = c3.M(fi).A(c2);
 		System.out.println("ftest1 = "+ftest1);
 		MathFunc ftest2 = c1.M(fi).A(c0);
@@ -150,7 +150,7 @@ public class FunctionTest {
 	}
 	
 	public static void testOperation() {
-		MathFunc fx = FX.fx;
+		MathFunc fx = FX.x;
 		//f(x)=2*x+3
 		MathFunc f1 = new FAxpb(2.0,0.0);
 		MathFunc f2 = new FAxpb(2.0,3.0);
@@ -166,8 +166,8 @@ public class FunctionTest {
 	}
 	
 	public static void severalVariableFunctions() {
-		MathFunc fx = FX.fx;
-		MathFunc fy = FX.fy;
+		MathFunc fx = FX.x;
+		MathFunc fy = FX.y;
 		MathFunc f = FC.c(0.25).M(FC.C1.S(fx)).M(FC.C1.S(fy));
 		System.out.println(f);
 		Variable v = new Variable("x",0.5).set("y", 0.5);
@@ -180,7 +180,7 @@ public class FunctionTest {
 	    Mesh mesh = reader.read2DMesh();
 	    mesh.computeNodeBelongsToElements();
 	    
-	    Vector v = Tools.function2vector(mesh, FX.fx.M(FX.fy));
+	    Vector v = Tools.function2vector(mesh, FX.x.M(FX.y));
 	    
 	    Tools.plotVector(mesh, "testCase", "v.dat", v);
 	    DuDx vx = new DuDx(mesh,new Vector2Function(v, mesh, "x","y"),"y");
@@ -245,9 +245,9 @@ public class FunctionTest {
 		cs[0] = 1;
 		cs[1] = 2;
 		cs[2] = 3;
-		fs[0] = FX.fx;
-		fs[1] = FX.fy;
-		fs[2] = FX.fz;
+		fs[0] = FX.x;
+		fs[1] = FX.y;
+		fs[2] = FX.z;
 		MathFunc lc = FMath.linearCombination(cs, fs);
 		System.out.println(lc);
 		MathFunc lcd = lc.diff("x");

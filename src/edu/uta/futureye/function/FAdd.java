@@ -73,8 +73,10 @@ public class FAdd extends FBinaryOp {
 		
 	@Override
 	public MathFunc diff(String varName) {
-		return arg2.diff(varName).A(arg2.diff(varName)).setVarNames(this.getVarNames());
+		//return arg1.diff(varName).A(arg2.diff(varName)).setVarNames(this.getVarNames());
+		return arg1.diff(varName).A(arg2.diff(varName));
 	}
+	
 	@Override
 	public int getOpOrder() {
 		return OP_ORDER3;

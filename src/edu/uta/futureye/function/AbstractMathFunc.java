@@ -24,6 +24,11 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 		this.argIdx = new int[this.varNames.length];
 	}
 	
+	public AbstractMathFunc(String[] varNames) {
+		this.varNames = varNames;
+		this.argIdx = new int[this.varNames.length];
+	}
+	
 	public AbstractMathFunc(String varName, String ...aryVarNames) {
 		List<String> list = new ArrayList<String>();
 		list.add(varName);

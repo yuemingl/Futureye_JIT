@@ -1,6 +1,8 @@
 package edu.uta.futureye.lib.shapefun;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
@@ -51,9 +53,12 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 			throw new FutureyeException("ERROR: funID should be 1,2 or 3.");
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
-		//varNames.add("t"); //DONOT add this name! It's not a free variable
+		List<String> nameList = new ArrayList<String>();
+		nameList.add("r");
+		nameList.add("s");
+		//nameList.add("t"); //DONOT add this name! It's not a free variable
+		this.setVarNames(nameList);
+		
 		
 		innerVarNames = new ObjList<String>("x","y");
 		
@@ -82,6 +87,16 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 				public double apply(Variable v) {
 					throw new FutureyeException("\nERROR:\n Not supported evaluate: "+v);
 				}
+				@Override
+				public MathFunc copy() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+				@Override
+				public double apply(double... args) {
+					// TODO Auto-generated method stub
+					return 0;
+				}
 			});
 		}
 		
@@ -93,7 +108,7 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 			funOuter = S; //N2 = s
 		else 
 			funOuter = C1.S(R).S(S); //N3 = t = 1 - r - s
-		funOuter.setVarNames(varNames);
+		funOuter.setVarNames(getVarNames());
 		
 		this.coef = coef;
 		funCompose = funOuter.compose(fInners).M(FC.c(this.coef));
@@ -146,6 +161,18 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public MathFunc copy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double apply(double... args) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 }

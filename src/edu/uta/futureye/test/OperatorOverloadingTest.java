@@ -13,8 +13,8 @@ import edu.uta.futureye.util.FuncClassLoader;
 public class OperatorOverloadingTest {
 
 	public static void test1() {
-		MathFunc x = FX.fx;
-		MathFunc y = FX.fy;
+		MathFunc x = FX.x;
+		MathFunc y = FX.y;
 		MathFunc add = x - y + 1;
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
@@ -24,13 +24,13 @@ public class OperatorOverloadingTest {
 	}
 
 	public static void test2() {
-		MathFunc x = FX.fx;
-		MathFunc y = FX.fy;
+		MathFunc x = FX.x;
+		MathFunc y = FX.y;
 		MathFunc add = x * y;
 		System.out.println(add);
 		HashMap<String, MathFunc> map = new HashMap<String, MathFunc>();
-		map.put(x.getVarNames().get(0), FX.fr + FX.fs);
-		map.put(y.getVarNames().get(0), FX.fr - FX.fs);
+		map.put(x.getVarNames().get(0), FX.r + FX.s);
+		map.put(y.getVarNames().get(0), FX.r - FX.s);
 		MathFunc add2 = add.compose(map);
 		System.out.println(add2);
 		

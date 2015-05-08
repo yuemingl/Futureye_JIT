@@ -57,8 +57,10 @@ public class FDiv extends FBinaryOp {
 	
 	@Override
 	public MathFunc diff(String varName) {
+//		return arg1.diff(varName).M(arg2).S(arg1.M(arg2.diff(varName)))
+//				.D(arg2.M(arg2)).setVarNames(this.getVarNames());
 		return arg1.diff(varName).M(arg2).S(arg1.M(arg2.diff(varName)))
-				.D(arg2.M(arg2)).setVarNames(this.getVarNames());
+				.D(arg2.M(arg2));
 	}
 	
 	@Override

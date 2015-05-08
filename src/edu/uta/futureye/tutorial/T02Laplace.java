@@ -15,8 +15,8 @@ import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.SymWeakFormLaplace2D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.container.ElementList;
-//import static edu.uta.futureye.function.operator.FMath.*;
-import static symjava.symbolic.Symbol.*;
+import static edu.uta.futureye.function.basic.FC.*;
+import static edu.uta.futureye.function.basic.FX.*;
 
 
 /**
@@ -58,11 +58,10 @@ public class T02Laplace {
             feLT.assignTo(eList.at(i));
 
         //4.Weak form
-        SymWeakFormLaplace2D weakForm = new SymWeakFormLaplace2D();
+        WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
         //Right hand side(RHS): f = -2*(x^2+y^2)+36
         weakForm.setF(-2*(x*x+y*y)+36);
         weakForm.setParam(C1, C0, C0, C0);
-        weakForm.generateOrLoadBytecode();
 
         //5.Assembly process
         AssemblerScalar assembler =

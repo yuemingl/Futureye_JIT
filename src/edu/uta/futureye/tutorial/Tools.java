@@ -88,7 +88,7 @@ public class Tools {
         MeshReader reader = new MeshReader("triangle.grd");
         Mesh mesh = reader.read2DMesh();
         //fun(x,y)=x^2+y^2
-        MathFunc fun = FX.fx.M(FX.fx).A(FX.fy.M(FX.fy));
+        MathFunc fun = FX.x.M(FX.x).A(FX.y.M(FX.y));
         plotFunction(mesh,".","testPlotFun.dat",fun);
         VectorFunction gradFun = FMath.grad(fun);
         plotFunction(mesh,".","testPlotFunGrad.dat",

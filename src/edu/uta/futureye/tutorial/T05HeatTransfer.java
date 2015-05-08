@@ -59,7 +59,7 @@ public class T05HeatTransfer {
 		//Right hand side(RHS): f = -2*(x^2+y^2)+36
 		f = FC.c(-2.0)
 			.M( 
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy)) )
+				FX.x.M(FX.x).A(FX.y.M(FX.y)) )
 			.A(
 				FC.c(36.0)
 			);

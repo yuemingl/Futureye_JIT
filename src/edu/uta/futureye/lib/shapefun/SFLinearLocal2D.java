@@ -1,6 +1,8 @@
 package edu.uta.futureye.lib.shapefun;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
@@ -48,7 +50,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 		}
 		@Override
 		public MathFunc diff(String var) {
-			if(varNames.get(funIndex).equals(var)) { 
+			if(varNames[funIndex].equals(var)) { 
 				//d(N1)/dr = 1.0;  d(N2)/ds = 1.0;  d(N3)/dt = 1.0
 				return C1;
 			} else if(funIndex == 2){ 
@@ -61,10 +63,20 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 		}
 		@Override
 		public double apply(Variable v) {
-			return v.get(varNames.get(funIndex));
+			return v.get(varNames[funIndex]);
 		}
 		public String toString() {
-			return varNames.get(funIndex);
+			return varNames[funIndex];
+		}
+		@Override
+		public MathFunc copy() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public double apply(double... args) {
+			// TODO Auto-generated method stub
+			return 0;
 		}
  	}
 	
@@ -82,15 +94,17 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 			throw new FutureyeException("ERROR: funID should be 1,2 or 3.");
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
-		varNames.add("t");
+		List<String> nameList = new ArrayList<String>();
+		nameList.add("r");
+		nameList.add("s");
+		nameList.add("t");
+		this.setVarNames(nameList);
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		
-		final String varName = varNames.get(funIndex);
+		final String varName = varNames[funIndex];
 		//r = r(x,y)
 		//s = s(x,y)
 		//t = t(x,y)
@@ -121,6 +135,18 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 
 			@Override
 			public double apply(Variable v) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public MathFunc copy() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public double apply(double... args) {
 				// TODO Auto-generated method stub
 				return 0;
 			}
@@ -179,7 +205,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 	}
 
 	public String toString() {
-		String varName = varNames.get(funIndex);
+		String varName = varNames[funIndex];
 		return "N"+(funIndex+1)+"( "+varName+"(x,y) )="+funOuter.toString();
 	}
 	
@@ -194,6 +220,18 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public MathFunc copy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double apply(double... args) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 }

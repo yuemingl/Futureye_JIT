@@ -28,13 +28,13 @@ public class FX extends AbstractSimpleMathFunc {
 	/**
 	 * Predefined instances of FX
 	 */
-	public final static FX fx = new FX(Constant.x); 
-	public final static FX fy = new FX(Constant.y); 
-	public final static FX fz = new FX(Constant.z); 
+	public final static FX x = new FX(Constant.x); 
+	public final static FX y = new FX(Constant.y); 
+	public final static FX z = new FX(Constant.z); 
 	
-	public final static FX fr = new FX(Constant.r); 
-	public final static FX fs = new FX(Constant.s); 
-	public final static FX ft = new FX(Constant.t); 
+	public final static FX r = new FX(Constant.r); 
+	public final static FX s = new FX(Constant.s); 
+	public final static FX t = new FX(Constant.t); 
 	
 	/**
 	 * Use this to construct a function: f(varName) = varName

@@ -44,6 +44,15 @@ public abstract class AbstractSimpleMathFunc extends MathFuncBasic {
 		this.varName = varNames.get(0);
 		return this;
 	}
+	
+	public String getVarName() {
+		return this.varName;
+	}
+	
+	public MathFunc setVarName(String varName) {
+		this.varName = varName;
+		return this;
+	}
 
 	@Override
 	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
