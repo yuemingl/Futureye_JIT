@@ -1,4 +1,4 @@
-package edu.uta.futureye.function;
+package edu.uta.futureye.function.operator;
 
 import java.util.Map;
 
@@ -11,77 +11,71 @@ import com.sun.org.apache.bcel.internal.generic.MethodGen;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
+import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
 
-public class FAdd extends FBinaryOp {
-	public FAdd(MathFunc left, MathFunc right) {
+public class FDiv extends FBinaryOp {
+	public FDiv(MathFunc left, MathFunc right) {
 		super(left, right);
 	}
 	
+	@Override
 	public double apply(Variable v) {
-		return arg1.apply(v) + arg2.apply(v);
+		return arg1.apply(v) / arg2.apply(v);
 	}
 
 	@Override
 	public double apply(double... args) {
-		return arg1.apply(null, null, args) + arg2.apply(null, null, args);
-	}
-
-	@Override
-	public double apply(Element e, Node n, double... args) {
-		return arg1.apply(e,n,args) + arg2.apply(e, n, args);
+		return arg1.apply(null, null, args) / arg2.apply(null, null, args);
 	}
 	
 	@Override
 	public double apply(Variable v, Map<Object,Object> cache) {
-//基本运算不需要cache，否则计算效率会更低
-//			if(cache != null) {
-//				Double v1, v2;
-//				v1 = cache.get(f1);
-//				if(v1 == null) {
-//					v1 = f1.value(v,cache);
-//					cache.put(f1, v1);
-//				}
-//				v2 = cache.get(f2);
-//				if(v2 == null) {
-//					v2 = f2.value(v,cache);
-//					cache.put(f2, v2);
-//				}
-//				return v1 + v2;
-//			} else {
-//				return value(v);
-//			}
-		return arg1.apply(v,cache) + arg2.apply(v,cache);
+		return arg1.apply(v,cache) / arg2.apply(v,cache);
 	}
-
+	
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		return arg1.apply(e,n,args) / arg2.apply(e, n, args);
+	}
+	
 	@Override
 	public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
 		int len = v.length();
 		double[] la = arg1.applyAll(v,cache);
 		double[] ra = arg2.applyAll(v,cache);
 		for(int i=0;i<len;i++) {
-			la[i] += ra[i];
+			la[i] /= ra[i];
 		}
 		return la;
 	}
-		
+	
 	@Override
 	public MathFunc diff(String varName) {
-		//return arg1.diff(varName).A(arg2.diff(varName)).setVarNames(this.getVarNames());
-		return arg1.diff(varName).A(arg2.diff(varName));
+//		return arg1.diff(varName).M(arg2).S(arg1.M(arg2.diff(varName)))
+//				.D(arg2.M(arg2)).setVarNames(this.getVarNames());
+		return arg1.diff(varName).M(arg2).S(arg1.M(arg2.diff(varName)))
+				.D(arg2.M(arg2));
 	}
 	
 	@Override
 	public int getOpOrder() {
-		return OP_ORDER3;
+		return OP_ORDER2;
 	}
 	
 	@Override
 	public String getExpr() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(arg1.getExpr());
-		sb.append(" + ");
-		sb.append(arg2.getExpr());
+		if(arg1.getOpOrder() > OP_ORDER2)
+			sb.append("(").append(arg1.getExpr()).append(")");
+		else
+			sb.append(arg1.getExpr());
+		sb.append("/");
+		if(arg2.getOpOrder() >= OP_ORDER2) //!!!
+			sb.append("(").append(arg2.getExpr()).append(")");
+		else
+			sb.append(arg2.getExpr());
 		return sb.toString();
 	}
 
@@ -92,7 +86,7 @@ public class FAdd extends FBinaryOp {
 			Map<MathFunc, Integer> funcRefsMap) {
 		arg1.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		arg2.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
-		return il.append(InstructionConstants.DADD);
+		return il.append(InstructionConstants.DDIV);
 	}
-
+	
 }

@@ -1,4 +1,4 @@
-package edu.uta.futureye.function;
+package edu.uta.futureye.function.operator;
 
 import java.util.Map;
 
@@ -10,6 +10,7 @@ import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
+import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public class FSin2 extends FUniaryOp {

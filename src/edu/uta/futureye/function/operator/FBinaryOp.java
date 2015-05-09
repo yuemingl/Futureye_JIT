@@ -1,8 +1,9 @@
-package edu.uta.futureye.function;
+package edu.uta.futureye.function.operator;
 
 import java.util.List;
 import java.util.Map;
 
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Utils;
 

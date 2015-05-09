@@ -1,4 +1,4 @@
-package edu.uta.futureye.function;
+package edu.uta.futureye.function.basic;
 
 import static com.sun.org.apache.bcel.internal.generic.InstructionConstants.DALOAD;
 
@@ -14,6 +14,8 @@ import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.PUSH;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
+import edu.uta.futureye.function.AbstractSimpleMathFunc;
+import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 

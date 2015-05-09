@@ -22,9 +22,9 @@ import com.sun.org.apache.xpath.internal.operations.Variable;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.FBinaryOp;
-import edu.uta.futureye.function.FCompose;
+import edu.uta.futureye.function.basic.FCompose;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.function.operator.FBinaryOp;
 
 public class BytecodeUtils {
 	public static void postOrder(MathFunc func, List<MathFunc> list) {

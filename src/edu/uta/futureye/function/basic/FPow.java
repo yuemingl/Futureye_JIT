@@ -1,6 +1,7 @@
-package edu.uta.futureye.function;
+package edu.uta.futureye.function.basic;
 
-import edu.uta.futureye.function.basic.FC;
+import edu.uta.futureye.function.AbstractSimpleMathFunc;
+import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 

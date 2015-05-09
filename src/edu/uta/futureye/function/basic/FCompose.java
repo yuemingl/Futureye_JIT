@@ -1,4 +1,4 @@
-package edu.uta.futureye.function;
+package edu.uta.futureye.function.basic;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +25,9 @@ import com.sun.org.apache.bcel.internal.generic.Type;
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.basic.FC;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;

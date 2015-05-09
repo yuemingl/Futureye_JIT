@@ -7,11 +7,11 @@ import java.util.Map;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.AbstractMathFunc;
-import edu.uta.futureye.function.FPow;
-import edu.uta.futureye.function.FSqrt;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
+import edu.uta.futureye.function.basic.FPow;
+import edu.uta.futureye.function.basic.FSqrt;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
