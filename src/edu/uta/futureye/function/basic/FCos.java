@@ -18,11 +18,6 @@ public class FCos extends AbstractSimpleMathFunc{
 	public FCos(String varName) {
 		super("cos", varName);
 	}
-	
-	@Override
-	public double apply(Variable v) {
-		return Math.cos(v.get(varName));
-	}
 
 	@Override
 	public double apply(double... args) {

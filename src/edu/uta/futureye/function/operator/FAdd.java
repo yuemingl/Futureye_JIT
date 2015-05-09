@@ -19,10 +19,6 @@ public class FAdd extends FBinaryOp {
 	public FAdd(MathFunc left, MathFunc right) {
 		super(left, right);
 	}
-	
-	public double apply(Variable v) {
-		return arg1.apply(v) + arg2.apply(v);
-	}
 
 	@Override
 	public double apply(double... args) {
@@ -35,28 +31,6 @@ public class FAdd extends FBinaryOp {
 	}
 	
 	@Override
-	public double apply(Variable v, Map<Object,Object> cache) {
-//基本运算不需要cache，否则计算效率会更低
-//			if(cache != null) {
-//				Double v1, v2;
-//				v1 = cache.get(f1);
-//				if(v1 == null) {
-//					v1 = f1.value(v,cache);
-//					cache.put(f1, v1);
-//				}
-//				v2 = cache.get(f2);
-//				if(v2 == null) {
-//					v2 = f2.value(v,cache);
-//					cache.put(f2, v2);
-//				}
-//				return v1 + v2;
-//			} else {
-//				return value(v);
-//			}
-		return arg1.apply(v,cache) + arg2.apply(v,cache);
-	}
-
-	@Override
 	public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
 		int len = v.length();
 		double[] la = arg1.applyAll(v,cache);
@@ -66,7 +40,7 @@ public class FAdd extends FBinaryOp {
 		}
 		return la;
 	}
-		
+
 	@Override
 	public MathFunc diff(String varName) {
 		//return arg1.diff(varName).A(arg2.diff(varName)).setVarNames(this.getVarNames());

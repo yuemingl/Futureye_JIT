@@ -27,11 +27,6 @@ public class FSin2 extends FUniaryOp {
 	public double apply(double... args) {
 		throw new UnsupportedOperationException();
 	}
-
-	@Override
-	public double apply(Variable v) {
-		throw new UnsupportedOperationException();
-	}
 	
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,

@@ -19,21 +19,9 @@ public class FTan extends AbstractSimpleMathFunc {
 		super("tan", varName);
 	}
 
-//	@Override
-//	public MathFunc copy() {
-//		FTan ret = new FTan(this.varName);
-//		ret.argIdx = this.argIdx;
-//		return ret;
-//	}
-
 	@Override
 	public double apply(double... args) {
 		return Math.tan(args[argIdx]);
-	}
-
-	@Override
-	public double apply(Variable v) {
-		return Math.tan(v.get(varName));
 	}
 	
 	@Override

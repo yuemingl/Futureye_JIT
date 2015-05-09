@@ -20,6 +20,10 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 		this.varNames = varNames;
 	}
 	
+	public AbstractMathFunc(List<String> varNames) {
+		this.varNames = varNames.toArray(new String[0]);
+	}
+	
 	@Override
 	public List<String> getVarNames() {
 		List<String> list = new ArrayList<String>();

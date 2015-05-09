@@ -17,11 +17,6 @@ public class FSin extends AbstractSimpleMathFunc {
 	public FSin(String varName) {
 		super("sin", varName);
 	}
-	
-	@Override
-	public double apply(Variable v) {
-		return Math.sin(v.get());
-	}
 
 	@Override
 	public double apply(double... args) {
