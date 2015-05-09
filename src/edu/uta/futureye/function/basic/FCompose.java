@@ -1,5 +1,6 @@
 package edu.uta.futureye.function.basic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
+import edu.uta.futureye.util.Utils;
 
 public class FCompose extends AbstractMathFunc {
 	public MathFunc fOuter;
@@ -39,7 +41,11 @@ public class FCompose extends AbstractMathFunc {
 	public FCompose(MathFunc fOuter, Map<String,MathFunc> fInners) {
 		this.fOuter = fOuter;
 		this.fInners = fInners;
-		setVarNames(fOuter.getVarNames());
+		List<String> list = new ArrayList<String>();
+		for(Entry<String, MathFunc> e : fInners.entrySet()) {
+			list = Utils.mergeList(list, e.getValue().getVarNames());
+		}
+		setVarNames(list);
 	}
 
 	@Override
