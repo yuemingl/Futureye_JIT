@@ -62,16 +62,16 @@ public class FSub extends FBinaryOp {
 	}
 	
 	@Override
-	public String toString() {
+	public String getExpr() {
 		StringBuilder sb = new StringBuilder();
 		if(! (arg1.isConstant() && Math.abs(arg1.apply()) < Constant.eps) ) {
-			sb.append(arg1.toString());
+			sb.append(arg1.getExpr());
 		}
 		sb.append(" - ");
 		if(arg2.getOpOrder() >= OP_ORDER3)
-			sb.append("(").append(arg2.toString()).append(")");
+			sb.append("(").append(arg2.getExpr()).append(")");
 		else
-			sb.append(arg2.toString());
+			sb.append(arg2.getExpr());
 		return sb.toString();
 	}
 
