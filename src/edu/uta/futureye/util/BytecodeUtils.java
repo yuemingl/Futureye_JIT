@@ -90,6 +90,7 @@ public class BytecodeUtils {
 			for(int i=0; i<varNames.length; i++) {
 				argsMap.put(varNames[i], i);
 			}
+			func.setArgIdx(argsMap);
 		}
 
 

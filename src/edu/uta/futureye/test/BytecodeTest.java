@@ -22,29 +22,33 @@ public class BytecodeTest {
 	public static void test1() {
 		MathFunc x = FX.x;
 		MathFunc y = FX.y;
-		MathFunc add = x.S(y);
+		MathFunc xy = x.S(y);
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
-		ClassGen genClass = BytecodeUtils.genClass(add, null, "add", true, false);
-		CompiledFunc fadd = fcl.newInstance(genClass);
-		System.out.println(fadd.apply(1.0, 2.0));
+		ClassGen genClass = BytecodeUtils.genClass(xy, null, "add", true, false);
+		CompiledFunc fxy = fcl.newInstance(genClass);
+		System.out.println(fxy.apply(1.0, 2.0));
+		
+		System.out.println(xy.compile(new String[]{"y","x"}).apply(1.0,2.0));
+		
+		
 	}
 
 	public static void test2() {
 		MathFunc x = FX.x;
 		MathFunc y = FX.y;
-		MathFunc add = x.M(y);
-		System.out.println(add);
+		MathFunc xy = x.M(y);
+		System.out.println(xy);
 		HashMap<String, MathFunc> map = new HashMap<String, MathFunc>();
 		map.put(x.getVarNames().get(0), FX.r.A(FX.s));
 		map.put(y.getVarNames().get(0), FX.r.S(FX.s));
-		MathFunc add2 = add.compose(map);
-		System.out.println(add2);
+		MathFunc xy2 = xy.compose(map);
+		System.out.println(xy2);
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
-		ClassGen genClass = BytecodeUtils.genClass(add2, null, "add2", true, false);
-		CompiledFunc fadd2 = fcl.newInstance(genClass);
-		System.out.println(fadd2.apply(4.0, 2.0));
+		ClassGen genClass = BytecodeUtils.genClass(xy2, null, "add2", true, false);
+		CompiledFunc fxy2 = fcl.newInstance(genClass);
+		System.out.println(fxy2.apply(4.0, 2.0));
 	}
 	
 	public static void test3() {
