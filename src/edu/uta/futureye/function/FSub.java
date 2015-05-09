@@ -84,9 +84,5 @@ public class FSub extends FBinaryOp {
 		arg2.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		return il.append(InstructionConstants.DSUB);
 	}
-	
-//	@Override
-//	public MathFunc copy() {
-//		return new FSub(this.arg1, this.arg2).setName(this.getName());
-//	}
+
 }

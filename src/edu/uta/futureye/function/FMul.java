@@ -89,9 +89,4 @@ public class FMul extends FBinaryOp {
 		return il.append(InstructionConstants.DMUL);
 	}
 
-//	@Override
-//	public MathFunc copy() {
-//		return new FMul(this.arg1, this.arg2).setName(this.getName());
-//	}
-
 }

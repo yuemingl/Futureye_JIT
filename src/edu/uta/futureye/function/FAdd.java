@@ -94,9 +94,5 @@ public class FAdd extends FBinaryOp {
 		arg2.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		return il.append(InstructionConstants.DADD);
 	}
-	
-//	@Override
-//	public MathFunc copy() {
-//		return new FAdd(this.arg1, this.arg2).setName(this.getName());
-//	}
+
 }

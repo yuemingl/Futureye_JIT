@@ -87,8 +87,4 @@ public class FDiv extends FBinaryOp {
 		return il.append(InstructionConstants.DDIV);
 	}
 	
-	@Override
-	public MathFunc copy() {
-		return new FDiv(this.arg1, this.arg2).setName(this.getName());
-	}
 }
