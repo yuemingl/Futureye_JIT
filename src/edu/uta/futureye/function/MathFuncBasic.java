@@ -379,7 +379,10 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 			}
 			sb.delete(sb.length()-1, sb.length());
 			sb.append(")");
-			return getName() + sb.toString() + getExpr();
+			if(getName().length() == 0)
+				return "f" + sb.toString() + " = " + getExpr();
+			else
+				return getName() + sb.toString() + " = " + getExpr();
 		}
 	}
 	

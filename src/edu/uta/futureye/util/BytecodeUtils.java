@@ -90,16 +90,7 @@ public class BytecodeUtils {
 			func.setArgIdx(argsMap);
 		}
 
-		String[] aryArgs = varNames;
-		if(aryArgs == null) aryArgs = func.getVarNames().toArray(new String[0]);
-		StringBuilder sb = new  StringBuilder();
-		for(String arg : aryArgs) {
-			sb.append(arg).append(",");
-		}
-		if(sb.length() > 0)
-			sb.delete(sb.length()-1, sb.length());
-
-		System.out.println("JIT Compiled: "+func.getName()+"("+sb.toString()+")=" + func);
+		System.out.println("JIT Compiled: "+func);
 
 		Map<MathFunc, Integer> refsMap = getFuncRefsMap(func);
 		

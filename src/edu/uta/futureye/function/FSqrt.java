@@ -1,17 +1,12 @@
 package edu.uta.futureye.function;
 
-import static com.sun.org.apache.bcel.internal.Constants.ACC_PUBLIC;
 import static com.sun.org.apache.bcel.internal.generic.InstructionConstants.DALOAD;
 
 import java.util.Map;
 
 import com.sun.org.apache.bcel.internal.Constants;
-import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import com.sun.org.apache.bcel.internal.generic.ALOAD;
-import com.sun.org.apache.bcel.internal.generic.ArrayType;
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
-import com.sun.org.apache.bcel.internal.generic.FieldGen;
-import com.sun.org.apache.bcel.internal.generic.GETFIELD;
 import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
 import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
@@ -19,8 +14,6 @@ import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.PUSH;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
@@ -33,14 +26,6 @@ public class FSqrt extends AbstractSimpleMathFunc {
 	public FSqrt(String varName) {
 		super("sqrt", varName);
 	}
-
-//	@Override
-//	public MathFunc copy() {
-//		FSqrt ret = new FSqrt(this.varName);
-//		ret.argIdx = this.argIdx;
-//		ret.fName = this.fName;
-//		return ret;
-//	}
 
 	@Override
 	public double apply(double... args) {
@@ -67,4 +52,16 @@ public class FSqrt extends AbstractSimpleMathFunc {
 		return  il.append(factory.createInvoke("java.lang.Math", "sqrt",
 				Type.DOUBLE, new Type[] { Type.DOUBLE }, 
 				Constants.INVOKESTATIC));
-	}}
+	}
+	
+	@Override
+	public String getExpr() {
+		return fName + "(" + varName + ")";
+	}
+	
+	@Override
+	public String toString() {
+		return fName + "(" + varName + ")";
+	}
+	
+}

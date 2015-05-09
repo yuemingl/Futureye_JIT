@@ -57,4 +57,10 @@ public class FPow extends AbstractSimpleMathFunc {
 	public String getExpr() {
 		return fName + "(" + varName + ", "+this.exponent+")";
 	}
+	
+	@Override
+	public String toString() {
+		return fName + "(" + varName + ", "+this.exponent+")";
+	}
+
 }

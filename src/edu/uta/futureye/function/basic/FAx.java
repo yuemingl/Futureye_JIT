@@ -20,7 +20,7 @@ public class FAx extends AbstractSimpleMathFunc {
 	}
 	
 	public FAx(String varName, double a) {
-		super(null, varName);
+		super("", varName);
 		this.a = a;
 	}
 	

@@ -44,4 +44,15 @@ public class FTan extends AbstractSimpleMathFunc {
 		else
 			return FC.C0;
 	}
+
+	@Override
+	public String getExpr() {
+		return "tan("+varName+")";
+	}
+	
+	@Override
+	public String toString() {
+		return "tan("+varName+")";
+	}
+
 }

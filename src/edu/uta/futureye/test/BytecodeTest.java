@@ -91,7 +91,7 @@ public class BytecodeTest {
 		System.out.println(fax.compile().apply(5.0));
 		
 		FAxpb faxpb = new FAxpb("x",2.0, 3.0);
-		System.out.println(faxpb);
+		System.out.println(">>>"+faxpb);
 		System.out.println(faxpb.diff("x"));
 		System.out.println(faxpb.compile().apply(5.0));
 	}

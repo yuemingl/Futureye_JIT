@@ -37,7 +37,7 @@ public class FCompose extends AbstractMathFunc {
 	public FCompose(MathFunc fOuter, Map<String,MathFunc> fInners) {
 		this.fOuter = fOuter;
 		this.fInners = fInners;
-		this.setVarNames(fOuter.getVarNames());
+		setVarNames(fOuter.getVarNames());
 	}
 
 	@Override

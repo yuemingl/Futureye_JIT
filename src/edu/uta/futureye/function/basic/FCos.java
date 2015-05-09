@@ -37,11 +37,14 @@ public class FCos extends AbstractSimpleMathFunc{
 			return FC.C0;
 	}
 
-//	@Override
-//	public MathFunc copy() {
-//		FCos ret = new FCos(this.varName);
-//		ret.argIdx = this.argIdx;
-//		return ret;
-//	}
+	@Override
+	public String getExpr() {
+		return "cos("+varName+")";
+	}
+	
+	@Override
+	public String toString() {
+		return "cos("+varName+")";
+	}
 
 }

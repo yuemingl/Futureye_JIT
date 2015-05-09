@@ -16,13 +16,13 @@ public class FAxpb extends AbstractSimpleMathFunc {
 	protected double b;
 
 	public FAxpb(double a, double b) {
-		super(null, Constant.x);
+		super("", Constant.x);
 		this.a = a;
 		this.b = b;
 	}
 	
 	public FAxpb(String varName, double a, double b) {
-		super(varName, Constant.x);
+		super("", varName);
 		this.a = a;
 		this.b = b;
 	}
@@ -82,14 +82,6 @@ public class FAxpb extends AbstractSimpleMathFunc {
 			return a+"*"+varName;
 		}
 		return a+"*"+varName+"+"+b;
-	}
-
-	@Override
-	public MathFunc copy() {
-		FAxpb ret = new FAxpb(this.varName, this.a, this.b);
-		ret.fName = this.fName;
-		ret.argIdx = this.argIdx;
-		return ret;
 	}
 
 //TODO	
