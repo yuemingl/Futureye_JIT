@@ -46,7 +46,10 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 
 	@Deprecated
 	@Override
-	public abstract double apply(Variable v);
+	public double apply(Variable v) {
+		Node n = new Node(v.getIndex());
+		return apply(v.getElement(), n, v.getVarValues());
+	}
 	
 	@Deprecated
 	@Override
