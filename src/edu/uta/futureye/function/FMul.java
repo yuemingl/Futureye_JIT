@@ -1,6 +1,5 @@
 package edu.uta.futureye.function;
 
-import java.util.List;
 import java.util.Map;
 
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
@@ -13,15 +12,10 @@ import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.util.Utils;
 
 public class FMul extends FBinaryOp {
 	public FMul(MathFunc left, MathFunc right) {
 		super(left, right);
-		List<String> list = Utils.mergeList(left.getVarNames(), right.getVarNames());
-		Map<String, Integer> map = Utils.getIndexMap(list);
-		setVarNames(list);
-		setArgIdx(map);
 	}
 	
 	@Override
