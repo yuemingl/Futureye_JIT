@@ -64,6 +64,8 @@ public class BytecodeTest {
 		
 		CompiledFunc cf = f.compile();
 		System.out.println(cf.apply(Math.PI/2, Math.PI/4));
+		//bug in order of args
+		System.out.println(f.compile(new String[]{"y","x"}).apply(Math.PI/2, Math.PI/4));
 	}
 
 	public static void test5() {
