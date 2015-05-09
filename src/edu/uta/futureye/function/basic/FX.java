@@ -2,6 +2,9 @@ package edu.uta.futureye.function.basic;
 
 import static com.sun.org.apache.bcel.internal.generic.InstructionConstants.DALOAD;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sun.org.apache.bcel.internal.generic.ALOAD;
@@ -14,7 +17,7 @@ import com.sun.org.apache.bcel.internal.generic.PUSH;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractSimpleMathFunc;
+import edu.uta.futureye.function.MathFuncBasic;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -24,7 +27,7 @@ import edu.uta.futureye.util.Constant;
  * f(x) = x
  * 
  */
-public class FX extends AbstractSimpleMathFunc {
+public class FX extends MathFuncBasic {
 	/**
 	 * Predefined instances of FX
 	 */
@@ -36,11 +39,14 @@ public class FX extends AbstractSimpleMathFunc {
 	public final static FX s = new FX(Constant.s); 
 	public final static FX t = new FX(Constant.t); 
 	
+	String varName;
+	int argIdx;
+	
 	/**
-	 * Use this to construct a function: f(varName) = varName
+	 * Identity function: f(varName) = varName
 	 */
 	public FX(String varName) {
-		super(varName, varName);
+		this.varName = varName;
 	}
 
 	@Override
@@ -85,14 +91,6 @@ public class FX extends AbstractSimpleMathFunc {
 	public String toString() {
 		return varName;
 	}
-	
-//	@Override
-//	public MathFunc copy() {
-//		FX ret = new FX(this.varName);
-//		ret.fName = this.fName;
-//		ret.argIdx = this.argIdx;
-//		return ret;
-//	}
 
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
@@ -104,4 +102,48 @@ public class FX extends AbstractSimpleMathFunc {
 		return il.append(DALOAD);
 	}
 
+	@Override
+	public MathFunc setName(String name) {
+		this.varName = name;
+		return this;
+	}
+
+	@Override
+	public MathFunc setVarNames(List<String> varNames) {
+		this.varName = varNames.get(0);
+		return this;
+	}
+	@Override
+	public List<String> getVarNames() {
+		List<String> ret = new ArrayList<String>();
+		ret.add(varName);
+		return ret;
+	}
+
+	public String getVarName() {
+		return this.varName;
+	}
+	
+	public MathFunc setVarName(String varName) {
+		this.varName = varName;
+		return this;
+	}
+
+	@Override
+	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+		this.argIdx = argsMap.get(varName);
+		return this;
+	}
+	
+	@Override
+	public Map<String, Integer> getArgIdxMap() {
+		Map<String, Integer> ret = new HashMap<String, Integer>();
+		ret.put(varName, argIdx);
+		return ret;
+	}
+	
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
 }

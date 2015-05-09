@@ -47,7 +47,7 @@ public interface MathFunc {
 	MathFunc setName(String name);
 	
 	/**
-	 * Set function variable names
+	 * Set free variable names of the function
 	 * <p>
 	 * 设置函数自变量名称，对于复合函数，只设置外层自变量名称
 	 * <p>
@@ -59,7 +59,7 @@ public interface MathFunc {
 	MathFunc setVarNames(List<String> varNames);
 	
 	/**
-	 * Return all variable names of the function
+	 * Return all free variable names of the function
 	 * <p>
 	 * 返回所有自变量名称
 	 * 
@@ -115,7 +115,7 @@ public interface MathFunc {
 	MathFunc setArgIdx(Map<String, Integer> argsMap); 
 	
 	/**
-	 * 
+	 * Get the index map of free variables of the function
 	 * @return
 	 */
 	Map<String, Integer> getArgIdxMap();

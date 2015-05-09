@@ -1,4 +1,4 @@
-package edu.uta.futureye.util;
+	package edu.uta.futureye.util;
 
 import static com.sun.org.apache.bcel.internal.Constants.*;
 
@@ -77,9 +77,6 @@ public class BytecodeUtils {
 				"apply", fullClsName, // method, class
 				il, cp);
 		
-		System.out.println("JIT Compiled: "+func);
-
-		
 		HashMap<String, Integer> argsMap = new HashMap<String, Integer>();
 		if(varNames == null) {
 			List<String> args = func.getVarNames();
@@ -93,6 +90,16 @@ public class BytecodeUtils {
 			func.setArgIdx(argsMap);
 		}
 
+		String[] aryArgs = varNames;
+		if(aryArgs == null) aryArgs = func.getVarNames().toArray(new String[0]);
+		StringBuilder sb = new  StringBuilder();
+		for(String arg : aryArgs) {
+			sb.append(arg).append(",");
+		}
+		if(sb.length() > 0)
+			sb.delete(sb.length()-1, sb.length());
+
+		System.out.println("JIT Compiled: "+func.getName()+"("+sb.toString()+")=" + func);
 
 		Map<MathFunc, Integer> refsMap = getFuncRefsMap(func);
 		

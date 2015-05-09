@@ -12,12 +12,9 @@ import edu.uta.futureye.function.intf.MathFunc;
  *
  */
 public abstract class AbstractMathFunc extends MathFuncBasic {
+	protected String fName = "";
 	protected String[] varNames;
 	protected int[] argIdx;
-	protected String fName;
-	
-	public AbstractMathFunc() {
-	}
 	
 	public AbstractMathFunc(List<String> varNames) {
 		this.varNames = varNames.toArray(new String[0]);
@@ -49,15 +46,19 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 	@Override
 	public MathFunc setVarNames(List<String> varNames) {
 		this.varNames = varNames.toArray(new String[0]);
-		this.argIdx = new int[this.varNames.length];
+		//TODO Set 
+		this.argIdx = null;
 		return this;
 	}
 	
 	@Override
 	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+		//Allocate new array each time due to the "copy on change"
+		int[] idx = new int[varNames.length];
 		for(int i=0; i<varNames.length; i++) {
-			this.argIdx[i] = argsMap.get(varNames[i]);
+			idx[i] = argsMap.get(varNames[i]);
 		}
+		this.argIdx = idx;
 		return this;
 	}
 	
@@ -84,19 +85,5 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 	@Override
 	public boolean isConstant() {
 		return false;
-	}
-	
-	@Override
-	public String getExpr() {
-		String varList = getVarNames().toString();
-		String displayVarList = "("+varList.substring(1, varList.length()-1)+")";
-		
-//		Class<?> enclosingClass = getClass().getEnclosingClass();
-//		if (enclosingClass != null) {
-//			return enclosingClass.getSimpleName() + displayVarList;
-//		} else {
-//			return getClass().getSimpleName() + displayVarList;
-//		}
-		return getName() + displayVarList;
 	}
 }

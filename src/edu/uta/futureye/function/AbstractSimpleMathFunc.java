@@ -12,9 +12,9 @@ import edu.uta.futureye.function.intf.MathFunc;
  *
  */
 public abstract class AbstractSimpleMathFunc extends MathFuncBasic {
+	protected String fName = "";
 	protected String varName;
 	protected int argIdx;
-	protected String fName;
 	
 	public AbstractSimpleMathFunc(String funcName, String varName) {
 		this.fName = funcName;
@@ -70,10 +70,5 @@ public abstract class AbstractSimpleMathFunc extends MathFuncBasic {
 	@Override
 	public boolean isConstant() {
 		return false;
-	}
-	
-	@Override
-	public String getExpr() {
-		return fName + "(" + varName + ")";
 	}
 }

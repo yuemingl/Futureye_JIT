@@ -344,6 +344,16 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	
 	/////////////////////////////////////////////////////////////
 	@Override
+	public String getName() {
+		return "";
+	}
+	
+	@Override
+	public String getExpr() {
+		return "";
+	}
+	
+	@Override
 	public int getOpOrder() {
 		return OP_ORDER0;
 	}
@@ -355,7 +365,22 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	
 	@Override
 	public String toString() {
-		return getExpr();
+		List<String> vars = this.getVarNames();
+		if(vars.size() == 0) {
+			if(getName().length() == 0)
+				return getExpr();
+			else
+				return getName() + " = " + getExpr();
+		} else {
+			StringBuilder sb = new  StringBuilder();
+			sb.append("(");
+			for(String arg : vars) {
+				sb.append(arg).append(",");
+			}
+			sb.delete(sb.length()-1, sb.length());
+			sb.append(")");
+			return getName() + sb.toString() + getExpr();
+		}
 	}
 	
 	@Override

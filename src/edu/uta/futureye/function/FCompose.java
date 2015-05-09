@@ -209,19 +209,19 @@ public class FCompose extends AbstractMathFunc {
 		Constants.INVOKESTATIC));
 	}
 	
-	@Override
-	public Map<String, Integer> getArgIdxMap() {
-		Map<String, Integer> ret = new HashMap<String, Integer>();
-		for(int i=0; i<varNames.length; i++) {
-			ret.put(varNames[i], argIdx[i]);
-		}
-		return ret;
-	}
-	
-	@Override
-	public MathFunc copy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Map<String, Integer> getArgIdxMap() {
+//		Map<String, Integer> ret = new HashMap<String, Integer>();
+//		for(int i=0; i<varNames.length; i++) {
+//			ret.put(varNames[i], argIdx[i]);
+//		}
+//		return ret;
+//	}
+//	
+//	@Override
+//	public MathFunc copy() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }
