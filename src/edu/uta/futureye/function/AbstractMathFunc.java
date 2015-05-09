@@ -16,25 +16,6 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 	protected String[] varNames;
 	protected int[] argIdx;
 	
-	public AbstractMathFunc(List<String> varNames) {
-		this.varNames = varNames.toArray(new String[0]);
-		this.argIdx = new int[this.varNames.length];
-	}
-	
-	public AbstractMathFunc(String[] varNames) {
-		this.varNames = varNames;
-		this.argIdx = new int[this.varNames.length];
-	}
-	
-	public AbstractMathFunc(String varName, String ...aryVarNames) {
-		List<String> list = new ArrayList<String>();
-		list.add(varName);
-		for(String s : aryVarNames)
-			list.add(s);
-		this.varNames = list.toArray(new String[0]);
-		this.argIdx = new int[this.varNames.length];
-	}
-	
 	@Override
 	public List<String> getVarNames() {
 		List<String> list = new ArrayList<String>();
@@ -46,8 +27,8 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 	@Override
 	public MathFunc setVarNames(List<String> varNames) {
 		this.varNames = varNames.toArray(new String[0]);
-		//TODO Set 
-		this.argIdx = null;
+		//TODO Set argIdx according varNames as defaults? How to deal with only the change of variable name?
+		//this.argIdx = null;
 		return this;
 	}
 	
