@@ -184,7 +184,10 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	
 	@Override
 	public CompiledFunc compile() {
-		String clsName = getName() + java.util.UUID.randomUUID().toString().replaceAll("-", "");
+		String clsName="";
+		if(getName() == null || getName().length() == 0)
+			clsName = this.getClass().getSimpleName();
+		clsName = clsName + java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
 		ClassGen genClass = BytecodeUtils.genClass(this, null, clsName, true, false);
@@ -199,7 +202,10 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	
 	@Override
 	public CompiledFunc compile(String[] varNames) {
-		String clsName = getName() + java.util.UUID.randomUUID().toString().replaceAll("-", "");
+		String clsName="";
+		if(getName() == null || getName().length() == 0)
+			clsName = this.getClass().getSimpleName();
+		clsName = clsName + java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
 		ClassGen genClass = BytecodeUtils.genClass(this, varNames, clsName, true, false);

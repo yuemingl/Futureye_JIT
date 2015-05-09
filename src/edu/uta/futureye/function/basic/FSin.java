@@ -10,7 +10,6 @@ import edu.uta.futureye.util.Constant;
  *
  */
 public class FSin extends AbstractSimpleMathFunc {
-	
 	public FSin() {
 		super("sin", Constant.x);
 	}
