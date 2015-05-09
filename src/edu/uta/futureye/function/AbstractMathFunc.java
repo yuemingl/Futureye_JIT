@@ -16,6 +16,10 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 	protected String[] varNames;
 	protected int[] argIdx;
 	
+	public AbstractMathFunc(String ...varNames) {
+		this.varNames = varNames;
+	}
+	
 	@Override
 	public List<String> getVarNames() {
 		List<String> list = new ArrayList<String>();
