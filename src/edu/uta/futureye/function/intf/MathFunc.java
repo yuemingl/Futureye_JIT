@@ -23,12 +23,10 @@ import edu.uta.futureye.function.VariableArray;
 /**
  * Mathematical function interface
  * 
- * @author liuyueming
- *
  */
 public interface MathFunc {
 	/**
-	 * Get the function name if a name is assigned
+	 * Get the function name
 	 * 
 	 * @return
 	 */
@@ -36,10 +34,6 @@ public interface MathFunc {
 	
 	/**
 	 * Set a name for the function
-	 * <p>
-	 * It is suggested to implement toString method that return this
-	 * name for the function. If the function name is not specified the 
-	 * expression of the function should be returned by toString method.
 	 * 
 	 * @param name
 	 * @return
@@ -48,13 +42,9 @@ public interface MathFunc {
 	
 	/**
 	 * Set free variable names of the function
-	 * <p>
-	 * 设置函数自变量名称，对于复合函数，只设置外层自变量名称
-	 * <p>
-	 * 关于复合函数的构造 @see compose()
 	 * 
 	 * @param varNames
-	 * @return TODO
+	 * @return
 	 */
 	MathFunc setVarNames(List<String> varNames);
 	
@@ -121,71 +111,48 @@ public interface MathFunc {
 	Map<String, Integer> getArgIdxMap();
 	
 	/**
-	 * Add
-	 * 
-	 * @param g
-	 * @return f+g, f==this
+	 * Add: this + g
 	 */
 	MathFunc A(MathFunc g);
 	
 	/**
-	 * Add
-	 * 
-	 * @param g
-	 * @return f+g, f==this
+	 * Add: this + g
 	 */
 	MathFunc A(double g);
 	
 	/**
-	 * Subtract
-	 * 
-	 * @param g
-	 * @return f-g, f==this
+	 * Subtract: this - g
 	 */
 	MathFunc S(MathFunc g);
 	
 	/**
-	 * Subtract
-	 * 
-	 * @param g
-	 * @return f-g, f==this
+	 * Subtract: this - g
 	 */
 	MathFunc S(double g);
 	
 	/**
-	 * Multiply
-	 * 
-	 * @param g
-	 * @return f*g, f==this
+	 * Multiply: this*g
 	 */
 	MathFunc M(MathFunc g);
 	
 	/**
-	 * Multiply
-	 * 
-	 * @param g
-	 * @return f*g, f==this
+	 * Multiply: this*g
 	 */
 	MathFunc M(double g);
 	
 	/**
-	 * Divide
-	 * 
-	 * @param g
-	 * @return f/g, f==this
+	 * Divide: this/g
 	 */
 	MathFunc D(MathFunc g);
 	
 	/**
-	 * Divide
-	 * 
-	 * @param g
-	 * @return f/g, f==this
+	 * Divide: this/g
 	 */	
 	MathFunc D(double g);
 	
 	/**
-	 * Composition function (复合函数)
+	 * Composition function 
+	 * 复合函数
 	 * <p><blockquote><pre>
 	 * e.g.
 	 * Function fx = FX.fx;
@@ -228,7 +195,7 @@ public interface MathFunc {
 	boolean isConstant();
 	
 	/**
-	 * Deep copy
+	 * Shallow copy
 	 * 
 	 * @return
 	 */
@@ -273,6 +240,7 @@ public interface MathFunc {
 	void setOpOrder(int order);
 	
 	/**
+	 * Implement this function for your own compilation
 	 * 
 	 * @param clsName
 	 * @param mg
@@ -307,7 +275,9 @@ public interface MathFunc {
 	//////////////Operator overloading support through Java-OO//////////////////
 	/**
 	 * Operator overloading support:
+	 * 
 	 * MathFunc a = 5;
+	 * 
 	 */
 	MathFunc valueOf(int v);
 	MathFunc valueOf(long v);
