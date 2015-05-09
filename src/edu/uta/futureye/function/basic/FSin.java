@@ -36,7 +36,7 @@ public class FSin extends AbstractSimpleMathFunc {
 		else
 			return FC.C0;
 	}
-
+	
 	@Override
 	public String getExpr() {
 		return "sin("+varName+")";

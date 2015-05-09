@@ -45,6 +45,8 @@ public class BytecodeTest {
 		MathFunc xy2 = xy.compose(map);
 		System.out.println(xy2);
 		
+		System.out.println(FX.r.A(FX.s).M(FX.r.S(FX.s)));
+		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
 		ClassGen genClass = BytecodeUtils.genClass(xy2, null, "add2", true, false);
 		CompiledFunc fxy2 = fcl.newInstance(genClass);

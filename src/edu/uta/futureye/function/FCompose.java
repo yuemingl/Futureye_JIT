@@ -148,11 +148,13 @@ public class FCompose extends AbstractMathFunc {
 	public String getExpr() {
 		String rlt = fOuter.toString();
 		for(Entry<String,MathFunc> map : fInners.entrySet()) {
-			String names = map.getValue().getVarNames().toString();
+//			String names = map.getValue().getVarNames().toString();
 //			rlt = rlt.replace(map.getKey(), 
 //					map.getKey()+"("+names.substring(1,names.length()-1)+")");
-			rlt = rlt.replace(map.getKey(), 
-					map.getKey()+"=>"+map.getValue().toString());
+			if(map.getValue().getOpOrder() == OP_ORDER0)
+				rlt = rlt.replace(map.getKey(), map.getValue().getExpr());
+			else
+				rlt = rlt.replace(map.getKey(), "("+map.getValue().getExpr()+")");
 		}
 		return rlt;
 	}
@@ -208,20 +210,5 @@ public class FCompose extends AbstractMathFunc {
 				}, 
 		Constants.INVOKESTATIC));
 	}
-	
-//	@Override
-//	public Map<String, Integer> getArgIdxMap() {
-//		Map<String, Integer> ret = new HashMap<String, Integer>();
-//		for(int i=0; i<varNames.length; i++) {
-//			ret.put(varNames[i], argIdx[i]);
-//		}
-//		return ret;
-//	}
-//	
-//	@Override
-//	public MathFunc copy() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 
 }
