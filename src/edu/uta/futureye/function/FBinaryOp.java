@@ -1,5 +1,6 @@
 package edu.uta.futureye.function;
 
+import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.function.intf.MathFunc;
@@ -12,6 +13,10 @@ public abstract class FBinaryOp extends AbstractMathFunc {
 	public FBinaryOp(MathFunc arg1, MathFunc arg2) {
 		this.arg1 = arg1;
 		this.arg2 = arg2;
+		List<String> list = Utils.mergeList(arg1.getVarNames(), arg2.getVarNames());
+		Map<String, Integer> map = Utils.getIndexMap(list);
+		setVarNames(list);
+		setArgIdx(map);
 	}
 	
 	public MathFunc[] args() {
@@ -28,9 +33,12 @@ public abstract class FBinaryOp extends AbstractMathFunc {
 	
 	@Override
 	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+		//Allocate new array each time due to the "copy on change"
+		int[] idx = new int[varNames.length];
 		for(int i=0; i<varNames.length; i++) {
-			this.argIdx[i] = argsMap.get(varNames[i]);
+			idx[i] = argsMap.get(varNames[i]);
 		}
+		this.argIdx = idx;
 		
 		//Copy on change
 		if(!Utils.isContained(argsMap, this.arg1.getArgIdxMap()))
