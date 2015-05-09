@@ -50,11 +50,6 @@ public class FX extends MathFuncBasic {
 	}
 
 	@Override
-	public double apply(Variable v) {
-		return v.get(varName);
-	}
-
-	@Override
 	public double apply(Element e, Node n, double... args) {
 		return args[argIdx];
 	}
@@ -62,16 +57,6 @@ public class FX extends MathFuncBasic {
 	@Override
 	public double apply(double... args) {
 		return apply(null, null, args);
-	}
-	
-	@Override
-	public double apply(Variable v, Map<Object,Object> cache) {
-		return v.get(varName);
-	}
-	
-	@Override
-	public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
-		return v.get(varName);
 	}
 
 	@Override
