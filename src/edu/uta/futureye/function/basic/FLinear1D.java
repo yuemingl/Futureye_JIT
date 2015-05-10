@@ -16,7 +16,7 @@ public class FLinear1D  extends AbstractMathFunc{
 	
 	public FLinear1D(double x1, double y1, 
 			double x2, double y2) {
-		varNames.add(Constant.x);
+		super(Constant.x);
 		this.x1 = x1;
 		this.y1 = y1;
 

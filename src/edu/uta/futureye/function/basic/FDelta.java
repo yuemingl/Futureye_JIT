@@ -6,6 +6,10 @@ import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 
+/**
+ * Delta function
+ *
+ */
 public class FDelta extends AbstractMathFunc {
 	Variable x0;
 	double eps;
@@ -22,14 +26,11 @@ public class FDelta extends AbstractMathFunc {
 	 */
 	public FDelta(Variable x0,double eps,double amp) {
 		if(x0.getNameValuePairs().size() == 1) {
-			varNames.add("x");
+			varNames = new String[]{"x"};
 		} else if(x0.getNameValuePairs().size() == 2) {
-			varNames.add("x");
-			varNames.add("y");
+			varNames = new String[]{"x","y"};
 		} else if(x0.getNameValuePairs().size() == 3) {
-			varNames.add("x");
-			varNames.add("y");		
-			varNames.add("z");		
+			varNames = new String[]{"x","y","z"};
 		}
 		this.x0 = x0;
 		this.eps = eps;

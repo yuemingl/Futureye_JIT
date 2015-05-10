@@ -25,7 +25,7 @@ public class FPolynomial1D extends AbstractMathFunc {
 	 * an = coefList.get(coefList.size()-1)
 	 */
 	public FPolynomial1D(List<Double> coefList) {
-		varNames.add(Constant.x);
+		super(Constant.x);
 		this.coefList = coefList;
 	}
 	
