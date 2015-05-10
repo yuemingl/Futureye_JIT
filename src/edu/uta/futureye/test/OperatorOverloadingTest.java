@@ -18,7 +18,7 @@ public class OperatorOverloadingTest {
 		MathFunc add = x - y + 1;
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
-		ClassGen genClass = BytecodeUtils.genClass(add, "add", true, false);
+		ClassGen genClass = BytecodeUtils.genClass(add, null, "add", true, false);
 		CompiledFunc fadd = fcl.newInstance(genClass);
 		System.out.println(fadd.apply(1.0, 2.0));
 	}
@@ -35,13 +35,28 @@ public class OperatorOverloadingTest {
 		System.out.println(add2);
 		
 		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
-		ClassGen genClass = BytecodeUtils.genClass(add2, "add2", true, false);
+		ClassGen genClass = BytecodeUtils.genClass(add2, null, "add2", true, false);
 		CompiledFunc fadd2 = fcl.newInstance(genClass);
 		System.out.println(fadd2.apply(4.0, 2.0));
+	}
+	
+	public static void test3() {
+		MathFunc a = new FX("a");
+		MathFunc b = new FX("b");
+		MathFunc c = new FX("c");
+		MathFunc x = new FX("x");
+		MathFunc y = new FX("y");
+		MathFunc z = new FX("z");
+		MathFunc f = a*x + b*y + c*z;
+		
+		System.out.println(f);
+		System.out.println(f.compile().apply(1,2,3,4,5,6));
+		System.out.println(f.compile(new String[]{"a","b","c","x","y","z"}).apply(1,2,3,4,5,6));
 	}
 	
 	public static void main(String[] args) {
 		test1();
 		test2();
+		test3();
 	}
 }
