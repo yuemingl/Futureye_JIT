@@ -51,7 +51,8 @@ public class Utils {
 		return map;
 	}
 	
-	public static boolean isContained(Map<String, Integer> container, Map<String, Integer> target) {
+	public static boolean isMapContain(Map<String, Integer> container, Map<String, Integer> target) {
+		if(target == null) return false;
 		if(container.size() < target.size()) return false;
 		for(Entry<String, Integer> e : target.entrySet()) {
 			if(container.get(e.getKey()) != e.getValue())

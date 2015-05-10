@@ -42,10 +42,10 @@ public abstract class FBinaryOp extends AbstractMathFunc {
 		this.argIdx = idx;
 		
 		//Copy on change
-		if(!Utils.isContained(argsMap, this.arg1.getArgIdxMap()))
+		if(!Utils.isMapContain(argsMap, this.arg1.getArgIdxMap()))
 			this.arg1 = this.arg1.copy().setArgIdx(argsMap);
 		
-		if(!Utils.isContained(argsMap, this.arg2.getArgIdxMap()))
+		if(!Utils.isMapContain(argsMap, this.arg2.getArgIdxMap()))
 			this.arg2 = this.arg2.copy().setArgIdx(argsMap);
 		
 		return this;

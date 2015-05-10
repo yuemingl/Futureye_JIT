@@ -11,7 +11,6 @@ import edu.uta.futureye.util.Constant;
 
 /**
  * f(x) = an*x^n + an_1*x^(n-1) + ... + a1*x + a0
- * @author liuyueming
  *
  */
 public class FPolynomial1D extends AbstractMathFunc {

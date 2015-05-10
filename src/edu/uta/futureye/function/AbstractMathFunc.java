@@ -53,6 +53,7 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 	
 	@Override
 	public Map<String, Integer> getArgIdxMap() {
+		if(this.argIdx == null) return null;
 		Map<String, Integer> ret = new HashMap<String, Integer>();
 		for(int i=0; i<varNames.length; i++) {
 			ret.put(varNames[i], argIdx[i]);

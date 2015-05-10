@@ -32,7 +32,7 @@ public abstract class FUniaryOp extends AbstractMathFunc {
 		this.argIdx = idx;
 		
 		//Copy on change
-		if(!Utils.isContained(argsMap, this.arg.getArgIdxMap()))
+		if(!Utils.isMapContain(argsMap, this.arg.getArgIdxMap()))
 			this.arg = this.arg.copy().setArgIdx(argsMap);
 		
 		return this;
