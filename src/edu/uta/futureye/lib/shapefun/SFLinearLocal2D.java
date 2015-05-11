@@ -203,8 +203,8 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 	}
 	@Override
 	public double apply(double... args) {
-		// TODO Auto-generated method stub
-		return 0;
+		this.funCompose.setActiveVarNames(this.getVarNames());
+		return this.funCompose.apply(args);
 	}
 	
 }

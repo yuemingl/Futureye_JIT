@@ -228,6 +228,7 @@ from the above four equations, we have:
 
 	@Override
 	public double apply(double... args) {
-		return funCompose.apply(args);
+		this.funCompose.setActiveVarNames(this.getVarNames());
+		return this.funCompose.apply(args);
 	}
 }

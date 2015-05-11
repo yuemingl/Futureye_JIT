@@ -1,5 +1,8 @@
 package edu.uta.futureye.test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
@@ -65,6 +68,7 @@ public class ShapeFunctionTest {
 	}
 	
 	public static void testSFBilinearLocal2D() {
+		System.out.println("testSFBilinearLocal2D");
 		NodeList nodes = new NodeList();
 		nodes.add(new Node(1, -1.0,-1.0));
 		nodes.add(new Node(2, 1.0,-1.0));
@@ -78,10 +82,21 @@ public class ShapeFunctionTest {
 		shapeFun[1] = new SFBilinearLocal2D(2);
 		shapeFun[2] = new SFBilinearLocal2D(3);
 		shapeFun[3] = new SFBilinearLocal2D(4);
+		System.out.println(shapeFun[0]);
+		System.out.println(shapeFun[1]);
+		System.out.println(shapeFun[2]);
+		System.out.println(shapeFun[3]);
+		
+		double[] args = new double[]{0.1, 0.1};
 		Variable v0 = new Variable();
-		v0.set("r", 1.0);
-		v0.set("s", 0.0);
+		v0.set("r", args[0]);
+		v0.set("s", args[1]);
 		System.out.println(shapeFun[0].apply(v0));
+		System.out.println(shapeFun[0].apply(args));
+		System.out.println(shapeFun[0].compile().apply(args));
+		
+
+		
 		
 		//Asign degree of freedom to nodes
 		for(int j=1;j<=e.nodes.size();j++) {

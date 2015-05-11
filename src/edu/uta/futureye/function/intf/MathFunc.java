@@ -49,6 +49,15 @@ public interface MathFunc {
 	MathFunc setVarNames(List<String> varNames);
 	
 	/**
+	 * Set 'active' variable names for composed function
+	 * when performing evaluation.
+	 *  
+	 * @param varNames
+	 * @return
+	 */
+	MathFunc setActiveVarNames(List<String> varNames);
+	
+	/**
 	 * Return all free variable names of the function
 	 * <p>
 	 * 返回所有自变量名称

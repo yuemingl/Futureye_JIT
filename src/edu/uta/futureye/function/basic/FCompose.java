@@ -32,23 +32,42 @@ import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
+import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
 public class FCompose extends AbstractMathFunc {
 	public MathFunc fOuter;
 	public Map<String,MathFunc> fInners;
+	boolean isOuterVariablesActive = true;
 	
 	public FCompose(MathFunc fOuter, Map<String,MathFunc> fInners) {
 		this.fOuter = fOuter;
-		this.fInners = fInners;
+		
+		//Extends variable names in fInners (copy on change)
+		List<String> list = new ArrayList<String>();
+		for(Entry<String, MathFunc> e : fInners.entrySet()) {
+			list = Utils.mergeList(list, e.getValue().getVarNames());
+		}
+		Map<String,MathFunc> fInners2 = new HashMap<String,MathFunc>();
+		Map<String, Integer> argsMap = Utils.getIndexMap(list);
+		for(Entry<String, MathFunc> e : fInners.entrySet()) {
+			if(!Utils.isMapContain(argsMap, e.getValue().getArgIdxMap())) {
+				MathFunc f = e.getValue().copy().setArgIdx(argsMap);
+				fInners2.put(e.getKey(), f);
+			} else {
+				fInners2.put(e.getKey(), e.getValue());
+			}
+		}
+		this.fInners = fInners2;
 		
 		//TODO Use fOuter.varNames or fInners.varNames?
+		
+		//default
 		this.setVarNames(fOuter.getVarNames());
-//		List<String> list = new ArrayList<String>();
-//		for(Entry<String, MathFunc> e : fInners.entrySet()) {
-//			list = Utils.mergeList(list, e.getValue().getVarNames());
-//		}
-//		setVarNames(list);
+		this.setArgIdx(Utils.getIndexMap(fOuter.getVarNames()));
+		
+//		this.setVarNames(list);
+//		this.setArgIdx(Utils.getIndexMap(list));
 	}
 
 	@Override
@@ -63,16 +82,17 @@ public class FCompose extends AbstractMathFunc {
 
 	@Override
 	public double apply(Element e, Node n, double... args) {
-		//TODO how to evaluate fOuter function?
-		return fOuter.apply(e, n, args);
-		
-//		List<String> vn = fOuter.getVarNames();
-//		double[] newArgs = new double[vn.size()];
-//		for(int i=0; i<vn.size(); i++) {
-//			MathFunc fInner = fInners.get(vn.get(i));
-//			newArgs[i] = fInner.apply(e, n, args);
-//		}
-//		return fOuter.apply(newArgs);
+		if(this.isOuterVariablesActive) {
+			return fOuter.apply(e, n, args);
+		} else {
+			List<String> vn = fOuter.getVarNames();
+			double[] newArgs = new double[vn.size()];
+			for(int i=0; i<vn.size(); i++) {
+				MathFunc fInner = fInners.get(vn.get(i));
+				newArgs[i] = fInner.apply(e, n, args);
+			}
+			return fOuter.apply(newArgs);
+		}
 	}
 	
 	@Override
@@ -184,51 +204,80 @@ public class FCompose extends AbstractMathFunc {
 			ConstantPoolGen cp, InstructionFactory factory,
 			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
 			Map<MathFunc, Integer> funcRefsMap) {
-		String outerName  = "fun_outer_"+java.util.UUID.randomUUID().toString().replaceAll("-", "");
-		// Generate the outer function
-		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
-		ClassGen genClass = BytecodeUtils.genClass(fOuter, null, outerName, true, true);
-		fcl.newInstance(genClass);
-
-		// Prepare arguments for calling the outer function
-		LocalVariableGen lg;
-		//double[] arg = null;
-		lg = mg.addLocalVariable("arg_"+outerName,
-			new ArrayType(Type.DOUBLE, 1), null, null);
-		int idxArg = lg.getIndex();
-		il.append(InstructionConstants.ACONST_NULL);
-		lg.setStart(il.append(new ASTORE(idxArg))); // "idxArg" valid from here
-		//arg = new double[size]
-		il.append(new PUSH(cp, fInners.size()));
-		il.append(new NEWARRAY(Type.DOUBLE));
-		il.append(new ASTORE(idxArg));
-		
-		int index = 0;
-		for(String name : fOuter.getVarNames()) {
-			il.append(new ALOAD(idxArg));
-			il.append(new PUSH(cp, index++));
-			MathFunc f = fInners.get(name);
-			HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
-			List<String> args = f.getVarNames();
-			for(int i=0; i<args.size(); i++) {
-				fArgsMap.put(args[i], i);
+		if(this.isOuterVariablesActive) {
+			return fOuter.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
+		} else {
+			String outerName  = "fun_outer_"+java.util.UUID.randomUUID().toString().replaceAll("-", "");
+			// Generate the outer function
+			FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+			ClassGen genClass = BytecodeUtils.genClass(fOuter, null, outerName, true, true);
+			fcl.newInstance(genClass);
+	
+			// Prepare arguments for calling the outer function
+			LocalVariableGen lg;
+			//double[] arg = null;
+			lg = mg.addLocalVariable("arg_"+outerName,
+				new ArrayType(Type.DOUBLE, 1), null, null);
+			int idxArg = lg.getIndex();
+			il.append(InstructionConstants.ACONST_NULL);
+			lg.setStart(il.append(new ASTORE(idxArg))); // "idxArg" valid from here
+			//arg = new double[size]
+			il.append(new PUSH(cp, fInners.size()));
+			il.append(new NEWARRAY(Type.DOUBLE));
+			il.append(new ASTORE(idxArg));
+			
+			int index = 0;
+			for(String name : fOuter.getVarNames()) {
+				il.append(new ALOAD(idxArg));
+				il.append(new PUSH(cp, index++));
+				MathFunc f = fInners.get(name);
+				HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
+				List<String> args = f.getVarNames();
+				for(int i=0; i<args.size(); i++) {
+					fArgsMap.put(args[i], argsMap.get(args[i]));
+				}
+				f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
+				il.append(new DASTORE());
 			}
-			f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
-			il.append(new DASTORE());
+			
+			// Call the outer function
+			il.append(InstructionConstants.ACONST_NULL);
+			il.append(InstructionConstants.ACONST_NULL);
+			il.append(new ALOAD(idxArg));
+			return  il.append(factory.createInvoke("edu.uta.futureye.bytecode."+outerName, "apply",
+					Type.DOUBLE, 
+					new Type[] { 
+						Type.getType(Element.class),
+						Type.getType(Node.class),
+						new ArrayType(Type.DOUBLE, 1)
+					}, 
+			Constants.INVOKESTATIC));
 		}
-		
-		// Call the outer function
-		il.append(InstructionConstants.ACONST_NULL);
-		il.append(InstructionConstants.ACONST_NULL);
-		il.append(new ALOAD(idxArg));
-		return  il.append(factory.createInvoke("edu.uta.futureye.bytecode."+outerName, "apply",
-				Type.DOUBLE, 
-				new Type[] { 
-					Type.getType(Element.class),
-					Type.getType(Node.class),
-					new ArrayType(Type.DOUBLE, 1)
-				}, 
-		Constants.INVOKESTATIC));
 	}
-
+	
+	@Override
+	public MathFunc setActiveVarNames(List<String> varNames) {
+		if(Utils.isListEqual(fOuter.getVarNames(),  varNames)) {
+			this.isOuterVariablesActive = true;
+			this.setVarNames(varNames);
+			this.setArgIdx(Utils.getIndexMap(varNames));
+			return this;
+		} else {
+			List<String> list = new ArrayList<String>();
+			for(Entry<String, MathFunc> e : fInners.entrySet()) {
+				list = Utils.mergeList(list, e.getValue().getVarNames());
+			}
+			if(Utils.isListEqual(list, varNames)){
+				this.isOuterVariablesActive = false;
+				this.setVarNames(varNames);
+				Map<String, Integer> argsMap = Utils.getIndexMap(list);
+				for(Entry<String, MathFunc> e : fInners.entrySet()) {
+					e.getValue().setArgIdx(argsMap);
+				}
+				this.setArgIdx(Utils.getIndexMap(list));
+				return this;
+			}
+		}
+		throw new FutureyeException("Active variable names are different from all existing variable names!");
+	}
 }

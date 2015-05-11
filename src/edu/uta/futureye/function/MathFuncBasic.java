@@ -409,4 +409,11 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		}
 		return null;
 	}
+	
+	@Override
+	public MathFunc setActiveVarNames(List<String> varNames) {
+		//Do nothing
+		return this;
+	}
+
 }
