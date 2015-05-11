@@ -1,5 +1,7 @@
 package edu.uta.futureye.util;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -40,6 +42,13 @@ public class Utils {
 			set.addAll(b);
 		List<String> rlt = new LinkedList<String>();
 		rlt.addAll(set);
+		Collections.sort(rlt, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+			
+		});
 		return rlt;
 	}
 	
@@ -56,6 +65,15 @@ public class Utils {
 		if(container.size() < target.size()) return false;
 		for(Entry<String, Integer> e : target.entrySet()) {
 			if(container.get(e.getKey()) != e.getValue())
+				return false;
+		}
+		return true;
+	}
+	
+	public static boolean isListEqual(List<String> l1, List<String> l2) {
+		if(l1.size() != l2.size()) return false;
+		for(int i = 0; i<l1.size(); i++) {
+			if(!l1.get(i).equals(l2.get(i)))
 				return false;
 		}
 		return true;
