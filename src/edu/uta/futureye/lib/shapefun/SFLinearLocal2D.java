@@ -1,8 +1,10 @@
 package edu.uta.futureye.lib.shapefun;
 
-import java.util.ArrayList;
+import static edu.uta.futureye.function.operator.FMath.C0;
+import static edu.uta.futureye.function.operator.FMath.C1;
+import static edu.uta.futureye.function.operator.FMath.Cm1;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
@@ -15,7 +17,6 @@ import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
-import static edu.uta.futureye.function.operator.FMath.*;
 
 /**
  * 三角形局部坐标，线性型函数
@@ -89,11 +90,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 			throw new FutureyeException("ERROR: funID should be 1,2 or 3.");
 		}
 		
-		List<String> nameList = new ArrayList<String>();
-		nameList.add("r");
-		nameList.add("s");
-		nameList.add("t");
-		this.setVarNames(nameList);
+		this.varNames = new String[]{"r","s","t"};
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
@@ -127,12 +124,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 				}
 				return null;
 			}
-
-			@Override
-			public double apply(Variable v) {
-				// TODO Auto-generated method stub
-				return 0;
-			}
+			
 			@Override
 			public double apply(double... args) {
 				// TODO Auto-generated method stub

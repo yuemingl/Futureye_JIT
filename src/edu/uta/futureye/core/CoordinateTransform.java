@@ -440,6 +440,10 @@ public class CoordinateTransform {
 			return detJ;
 		}
 		
+		public String getExpr() {
+			return "Jacobian2D";
+		}
+		
 		public String toString() {
 			return "Jacobian2D";
 		}
@@ -520,6 +524,10 @@ public class CoordinateTransform {
 				}
 			}
 			return detJ;
+		}
+		
+		public String getExpr() {
+			return "Jacobian2DFrom3D";
 		}
 		
 		public String toString() {
@@ -648,6 +656,10 @@ public class CoordinateTransform {
 				}
 			}
 			return detJ;
+		}
+		
+		public String getExpr() {
+			return "Jacobian3D";
 		}
 		
 		public String toString() {

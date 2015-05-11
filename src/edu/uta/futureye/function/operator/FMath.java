@@ -204,6 +204,7 @@ public class FMath {
 				list = Utils.mergeList(list, fi[i].getVarNames());
 			}
 			this.setVarNames(list);
+			this.setArgIdx(Utils.getIndexMap(list));
 		}
 		
 		@Override
@@ -255,27 +256,26 @@ public class FMath {
 		}
 		
 		@Override
-		public String toString() {
+		public String getExpr() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(ci[0]);
 			sb.append("*");
-			sb.append(fi[0].toString());
+			sb.append(fi[0].getExpr());
 			for(int i=1;i<fi.length;i++) {
 				sb.append(" + ");
 				sb.append(ci[i]);
 				sb.append("*");
 				if(OP_ORDER2 < fi[i].getOpOrder())
-					sb.append("(").append(fi[i].toString()).append(")");
+					sb.append("(").append(fi[i].getExpr()).append(")");
 				else
-					sb.append(fi[i].toString());
+					sb.append(fi[i].getExpr());
 			}
 			return sb.toString();
 		}
-
+		
 		@Override
-		public MathFunc copy() {
-			// TODO Auto-generated method stub
-			return null;
+		public String toString() {
+			return getExpr();
 		}
 
 		@Override

@@ -62,8 +62,7 @@ public class SFBilinearLocal2D extends AbstractMathFunc implements ScalarShapeFu
 			return;
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
+		varNames = new String[]{"r", "s"};
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
@@ -111,12 +110,25 @@ from the above four equations, we have:
 					}
 					return null;
 				}
-
-@Override
-public double apply(Variable v) {
-	// TODO Auto-generated method stub
-	return 0;
-}
+				
+				@Override
+				public String getExpr() {
+					if(varName.equals("r"))
+						return "r(x,y)";
+					else
+						return "s(x,y)";
+				}
+				
+				@Override
+				public String toString() {
+					return getExpr();
+				}
+				
+				@Override
+				public double apply(double... args) {
+					// TODO Auto-generated method stub
+					return 0;
+				}
 			});
 		}
 		
@@ -190,12 +202,15 @@ public double apply(Variable v) {
 		jac = FC.c(area);
 	}
 
-	public String toString() {
-		if(this.coef < 1.0)
+	public String getExpr() {
+		if(this.coef != 1.0)
 			return "N"+(funIndex+1)+": "+this.coef+"*"+funOuter.toString();
 		else
 			return "N"+(funIndex+1)+": "+funOuter.toString();
-			
+	}
+	
+	public String toString() {
+		return getExpr();
 	}
 
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
@@ -209,5 +224,10 @@ public double apply(Variable v) {
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public double apply(double... args) {
+		return funCompose.apply(args);
 	}
 }

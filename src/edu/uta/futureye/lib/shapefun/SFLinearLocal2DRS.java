@@ -1,8 +1,10 @@
 package edu.uta.futureye.lib.shapefun;
 
-import java.util.ArrayList;
+import static edu.uta.futureye.function.operator.FMath.C1;
+import static edu.uta.futureye.function.operator.FMath.R;
+import static edu.uta.futureye.function.operator.FMath.S;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
@@ -14,7 +16,6 @@ import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
-import static edu.uta.futureye.function.operator.FMath.*;
 
 /**
  * 三角形局部坐标，线性型函数
@@ -53,13 +54,7 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 			throw new FutureyeException("ERROR: funID should be 1,2 or 3.");
 		}
 		
-		List<String> nameList = new ArrayList<String>();
-		nameList.add("r");
-		nameList.add("s");
-		//nameList.add("t"); //DONOT add this name! It's not a free variable
-		this.setVarNames(nameList);
-		
-		
+		this.varNames = new String[]{"r","s"};
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数 

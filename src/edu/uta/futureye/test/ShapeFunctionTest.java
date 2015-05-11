@@ -44,23 +44,23 @@ public class ShapeFunctionTest {
 		MathFunc SF0dx = shapeFun[0].diff("x");
 		MathFunc SF0dy = shapeFun[0].diff("y");
 		System.out.println(SF0dx);
-		System.out.println(SF0dx.apply(null));
+		System.out.println(SF0dx.apply());
 		System.out.println(SF0dy);
-		System.out.println(SF0dy.apply(null));
+		System.out.println(SF0dy.apply());
 		
 		shapeFun[1].assignElement(e);
 		System.out.println(shapeFun[1]);
 		MathFunc SF1dx = shapeFun[1].diff("x");
 		MathFunc SF1dy = shapeFun[1].diff("y");
-		System.out.println(SF1dx.apply(null));
-		System.out.println(SF1dy.apply(null));
+		System.out.println(SF1dx.apply());
+		System.out.println(SF1dy.apply());
 		
 		shapeFun[2].assignElement(e);
 		System.out.println(shapeFun[2]);
 		MathFunc SF2dx = shapeFun[2].diff("x");
 		MathFunc SF2dy = shapeFun[2].diff("y");
-		System.out.println(SF2dx.apply(null));
-		System.out.println(SF2dy.apply(null));		
+		System.out.println(SF2dx.apply());
+		System.out.println(SF2dy.apply());		
 		
 	}
 	
@@ -106,6 +106,7 @@ public class ShapeFunctionTest {
 		System.out.println("jac="+jac.apply(v));
 		
 		//Test the derivatives of shape function
+		e.updateJacobin();
 		
 		shapeFun[0].assignElement(e);
 		MathFunc SF0dx = shapeFun[0].diff("x");
@@ -131,7 +132,7 @@ public class ShapeFunctionTest {
 		MathFunc SF3dx = shapeFun[3].diff("x");
 		MathFunc SF3dy = shapeFun[3].diff("y");
 		System.out.println(SF3dx);
-		System.out.println(SF3dy);		
+		System.out.println(SF3dy);
 	}
 
 }

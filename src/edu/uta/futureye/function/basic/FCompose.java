@@ -41,11 +41,14 @@ public class FCompose extends AbstractMathFunc {
 	public FCompose(MathFunc fOuter, Map<String,MathFunc> fInners) {
 		this.fOuter = fOuter;
 		this.fInners = fInners;
-		List<String> list = new ArrayList<String>();
-		for(Entry<String, MathFunc> e : fInners.entrySet()) {
-			list = Utils.mergeList(list, e.getValue().getVarNames());
-		}
-		setVarNames(list);
+		
+		//TODO Use fOuter.varNames or fInners.varNames?
+		this.setVarNames(fOuter.getVarNames());
+//		List<String> list = new ArrayList<String>();
+//		for(Entry<String, MathFunc> e : fInners.entrySet()) {
+//			list = Utils.mergeList(list, e.getValue().getVarNames());
+//		}
+//		setVarNames(list);
 	}
 
 	@Override
@@ -60,7 +63,16 @@ public class FCompose extends AbstractMathFunc {
 
 	@Override
 	public double apply(Element e, Node n, double... args) {
-		throw new UnsupportedOperationException();
+		//TODO how to evaluate fOuter function?
+		return fOuter.apply(e, n, args);
+		
+//		List<String> vn = fOuter.getVarNames();
+//		double[] newArgs = new double[vn.size()];
+//		for(int i=0; i<vn.size(); i++) {
+//			MathFunc fInner = fInners.get(vn.get(i));
+//			newArgs[i] = fInner.apply(e, n, args);
+//		}
+//		return fOuter.apply(newArgs);
 	}
 	
 	@Override
@@ -154,7 +166,7 @@ public class FCompose extends AbstractMathFunc {
 	
 	@Override
 	public String getExpr() {
-		String rlt = fOuter.toString();
+		String rlt = fOuter.getExpr();
 		for(Entry<String,MathFunc> map : fInners.entrySet()) {
 //			String names = map.getValue().getVarNames().toString();
 //			rlt = rlt.replace(map.getKey(), 
