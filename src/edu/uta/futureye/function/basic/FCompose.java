@@ -38,7 +38,7 @@ import edu.uta.futureye.util.Utils;
 public class FCompose extends AbstractMathFunc {
 	public MathFunc fOuter;
 	public Map<String,MathFunc> fInners;
-	boolean isOuterVariablesActive = true;
+	boolean isOuterVariablesActive;
 	
 	public FCompose(MathFunc fOuter, Map<String,MathFunc> fInners) {
 		this.fOuter = fOuter;
@@ -60,14 +60,12 @@ public class FCompose extends AbstractMathFunc {
 		}
 		this.fInners = fInners2;
 		
-		//TODO Use fOuter.varNames or fInners.varNames?
-		
-		//default
-		this.setVarNames(fOuter.getVarNames());
-		this.setArgIdx(Utils.getIndexMap(fOuter.getVarNames()));
-		
-//		this.setVarNames(list);
-//		this.setArgIdx(Utils.getIndexMap(list));
+		// Default to use free variables in fInners
+		this.setVarNames(list);
+		this.setArgIdx(Utils.getIndexMap(list));
+		isOuterVariablesActive = false;
+		//this.setVarNames(fOuter.getVarNames());
+		//this.setArgIdx(Utils.getIndexMap(fOuter.getVarNames()));
 	}
 
 	@Override

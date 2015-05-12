@@ -23,8 +23,8 @@ public class TestFCompose {
 		System.out.println(fc.compile().apply(args));
 		
 		List<String> varNames = new ArrayList<String>();
-		varNames.add("x");
-		varNames.add("y");
+		varNames.add("r");
+		varNames.add("s");
 		
 		fc.setActiveVarNames(varNames);
 		System.out.println(fc.apply(args));
