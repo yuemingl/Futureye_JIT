@@ -127,8 +127,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 			
 			@Override
 			public double apply(double... args) {
-				// TODO Auto-generated method stub
-				return 0;
+				throw new UnsupportedOperationException();
 			}
 		});
 		
@@ -205,6 +204,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
 	}
+	
 	@Override
 	public double apply(double... args) {
 		this.funCompose.setActiveVarNames(this.getVarNames());

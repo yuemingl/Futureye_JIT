@@ -70,10 +70,14 @@ public class ShapeFunctionTest {
 	public static void testSFBilinearLocal2D() {
 		System.out.println("testSFBilinearLocal2D");
 		NodeList nodes = new NodeList();
-		nodes.add(new Node(1, -1.0,-1.0));
-		nodes.add(new Node(2, 1.0,-1.0));
-		nodes.add(new Node(3, 1.0,1.0));
-		nodes.add(new Node(4, -1.0,1.0));
+//		nodes.add(new Node(1, -1.0,-1.0));
+//		nodes.add(new Node(2, 1.0,-1.0));
+//		nodes.add(new Node(3, 1.0,1.0));
+//		nodes.add(new Node(4, -1.0,1.0));
+		nodes.add(new Node(1, -2.0,-2.0));
+		nodes.add(new Node(2, 2.0,-2.0));
+		nodes.add(new Node(3, 2.0,2.0));
+		nodes.add(new Node(4, -2.0,2.0));
 		
 		Element e = new Element(nodes);
 
