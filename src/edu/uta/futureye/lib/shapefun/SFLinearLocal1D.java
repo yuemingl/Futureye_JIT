@@ -77,23 +77,9 @@ public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFun
 				}
 				return null;
 			}
-
-			@Override
-			public double apply(Variable v) {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public MathFunc copy() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
 			@Override
 			public double apply(double... args) {
-				// TODO Auto-generated method stub
-				return 0;
+				throw new UnsupportedOperationException();
 			}
 		});
 		
@@ -120,14 +106,17 @@ public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFun
 		return funCompose.apply(v);
 	}
 
-	public String toString() {
+	public String getExpr() {
 		return "N"+(funIndex+1)+": "+funOuter.toString();
+	}
+	
+	public String toString() {
+		return getExpr();
 	}
 
 	@Override
 	public ScalarShapeFunction restrictTo(int funIndex) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -136,15 +125,9 @@ public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFun
 	}
 
 	@Override
-	public MathFunc copy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public double apply(double... args) {
-		// TODO Auto-generated method stub
-		return 0;
+		this.funCompose.setActiveVarNames(this.getVarNames());
+		return this.funCompose.apply(args);
 	}
 
 }

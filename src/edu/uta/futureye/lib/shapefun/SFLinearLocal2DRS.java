@@ -79,13 +79,8 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 					return null;
 				}
 				@Override
-				public double apply(Variable v) {
-					throw new FutureyeException("\nERROR:\n Not supported evaluate: "+v);
-				}
-				@Override
 				public double apply(double... args) {
-					// TODO Auto-generated method stub
-					return 0;
+					throw new UnsupportedOperationException();
 				}
 			});
 		}
@@ -136,8 +131,12 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 		jac = (x[0]-x[2])*(y[1]-y[2])-(x[1]-x[2])*(y[0]-y[2]);
 	}
 
-	public String toString() {
+	public String getExpr() {
 		return "N"+(funIndex+1)+"(r,s)="+funOuter.toString();
+	}
+	
+	public String toString() {
+		return getExpr();
 	}
 	
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
@@ -155,8 +154,8 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 
 	@Override
 	public double apply(double... args) {
-		// TODO Auto-generated method stub
-		return 0;
+		this.funCompose.setActiveVarNames(this.getVarNames());
+		return this.funCompose.apply(args);
 	}
 	
 }
