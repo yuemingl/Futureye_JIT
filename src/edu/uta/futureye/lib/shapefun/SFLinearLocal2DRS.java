@@ -87,14 +87,16 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 		
 		//Construct shape functions: 
 		//r,s are free variables, t = 1 - r - s
-		if(funIndex == 0)
+		if(funIndex == 0) {
 			funOuter = R; //N1 = r
-		else if(funIndex == 1)
+			this.setVarNames(R.getVarNames());
+		} else if(funIndex == 1) {
 			funOuter = S; //N2 = s
-		else 
+			this.setVarNames(S.getVarNames());
+		} else { 
 			funOuter = C1.S(R).S(S); //N3 = t = 1 - r - s
-		funOuter.setVarNames(getVarNames());
-		
+		}
+		//funOuter.setVarNames(getVarNames());
 		this.coef = coef;
 		funCompose = funOuter.compose(fInners).M(FC.c(this.coef));
 		//funCompose.value(new Variable("x",0).set("y",0));
