@@ -1,6 +1,6 @@
 package edu.uta.futureye.tutorial;
 
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class T01Start {
 		
 		//f(x)=2.0*x+3.0
 		System.out.println("\nDifferent ways of creating functions: ");
-		MathFunc f = C(2.0).M(X).A(C(3.0));
+		MathFunc f = C(2.0).M(x).A(C(3.0));
 		System.out.println("f(x)="+f);
 		//Evaluate function f(x) at variable v (x=2.0)
 		System.out.println("Evaluate: f("+v.get()+")="+f.apply(v));
@@ -47,9 +47,9 @@ public class T01Start {
 		
 		//Composite functions
 		System.out.println("\nComposite functions:");
-		MathFunc fOut = X.M(X).S(C1); //fOut(x)=x*x-1
+		MathFunc fOut = x.M(x).S(C1); //fOut(x)=x*x-1
 		System.out.println("fOut(x)="+fOut);
-		MathFunc fIn = R.M(R).A(C1); //fIn(r)=r*r+1
+		MathFunc fIn = r.M(r).A(C1); //fIn(r)=r*r+1
 		System.out.println("fIn(r)="+fIn);
 		
 		Map<String,MathFunc> map = new HashMap<String,MathFunc>();

@@ -1,8 +1,8 @@
 package edu.uta.futureye.lib.shapefun;
 
-import static edu.uta.futureye.function.operator.FMath.C1;
-import static edu.uta.futureye.function.operator.FMath.R;
-import static edu.uta.futureye.function.operator.FMath.S;
+import static edu.uta.futureye.function.FMath.C1;
+import static edu.uta.futureye.function.FMath.r;
+import static edu.uta.futureye.function.FMath.s;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -88,13 +88,13 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 		//Construct shape functions: 
 		//r,s are free variables, t = 1 - r - s
 		if(funIndex == 0) {
-			funOuter = R; //N1 = r
-			this.setVarNames(R.getVarNames());
+			funOuter = r; //N1 = r
+			this.setVarNames(r.getVarNames());
 		} else if(funIndex == 1) {
-			funOuter = S; //N2 = s
-			this.setVarNames(S.getVarNames());
+			funOuter = s; //N2 = s
+			this.setVarNames(s.getVarNames());
 		} else { 
-			funOuter = C1.S(R).S(S); //N3 = t = 1 - r - s
+			funOuter = C1.S(r).S(s); //N3 = t = 1 - r - s
 		}
 		//funOuter.setVarNames(getVarNames());
 		this.coef = coef;

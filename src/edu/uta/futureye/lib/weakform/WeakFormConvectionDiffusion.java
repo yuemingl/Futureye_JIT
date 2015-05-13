@@ -1,11 +1,11 @@
 package edu.uta.futureye.lib.weakform;
 
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.Utils;
 
 /**

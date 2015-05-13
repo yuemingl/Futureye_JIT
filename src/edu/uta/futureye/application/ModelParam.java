@@ -4,7 +4,7 @@ import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.FutureyeException;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 public class ModelParam {
 	static double bk = 0.1; //Background of mu_a = 0.1

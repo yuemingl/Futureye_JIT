@@ -127,7 +127,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 			return new FC(f1.apply() * f2.apply());
 		} else if( (f1.isConstant() && Math.abs(f1.apply()) < Constant.eps) ||
 				f2.isConstant() && Math.abs(f2.apply()) < Constant.eps)
-			return FC.C0;
+			return FMath.C0;
 		else if(f1.isConstant() && Math.abs(f1.apply()-1.0) < Constant.eps)
 			return f2;
 		else if(f2.isConstant() && Math.abs(f2.apply()-1.0) < Constant.eps)
@@ -148,7 +148,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 			return new FC(f1.apply() / f2.apply());
 		} else if(f1.isConstant() && Double.compare(f1.apply(),0.0)==0) {
 			//Math.abs(f1.value())<Constant.eps will not work properly
-			return FC.C0;
+			return FMath.C0;
 		} else if(f2.isConstant() && Double.compare(f2.apply(),0.0)==0) {
 			return FC.c(Double.POSITIVE_INFINITY);
 		}  else if(f2.isConstant() && Math.abs(f2.apply()-1.0) < Constant.eps) {
@@ -353,7 +353,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	}
 	
 	public MathFunc negate() {
-		return new FSub(FC.C0, this);
+		return new FSub(FMath.C0, this);
 	};
 	
 	/////////////////////////////////////////////////////////////

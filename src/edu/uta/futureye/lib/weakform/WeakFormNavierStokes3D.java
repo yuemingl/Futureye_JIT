@@ -4,14 +4,14 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Face;
 import edu.uta.futureye.core.Node;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.lib.shapefun.SFConstant0;
 import edu.uta.futureye.util.MathEx;
 import edu.uta.futureye.util.Utils;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 /**
  * <blockquote><pre>

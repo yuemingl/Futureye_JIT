@@ -16,19 +16,13 @@ import edu.uta.futureye.function.MathFuncBasic;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
+import static edu.uta.futureye.function.FMath.C0;
 
 /**
  * Constant function: f = c
  * 
  */
 public class FC extends MathFuncBasic {
-	//Predefined constant
-	public static FC C0 = new FC(0.0);
-	public static FC C1 = new FC(1.0);
-	public static FC Cm1 = new FC(-1.0);
-	public static FC PI = new FC(Math.PI);
-	public static FC E = new FC(Math.E);
-	
 	protected double val;
 	
 	//Constants cache
@@ -83,7 +77,6 @@ public class FC extends MathFuncBasic {
 	public MathFunc diff(String varName) {
 		return C0;
 	}
-
 	
 	@Override
 	public MathFunc copy() {

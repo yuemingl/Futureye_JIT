@@ -3,6 +3,7 @@ package edu.uta.futureye.function.basic;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractSimpleMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
@@ -29,7 +30,7 @@ public class FAx extends AbstractSimpleMathFunc {
 		if(this.getVarNames().contains(varName))
 			return new FC(a);
 		else
-			return FC.C0;
+			return FMath.C0;
 	}
 
 	@Override

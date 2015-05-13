@@ -7,7 +7,7 @@ import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.FMath;
 
 /**
  * <blockquote><pre>

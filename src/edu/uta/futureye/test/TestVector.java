@@ -4,12 +4,12 @@ import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.SparseBlockVector;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.SparseVector;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.VarPair;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.operator.FMath;
 
 public class TestVector {
 

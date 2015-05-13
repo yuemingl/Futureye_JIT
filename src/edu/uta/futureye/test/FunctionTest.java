@@ -11,6 +11,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.AbstractVectorFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.DuDx;
@@ -24,12 +25,11 @@ import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 public class FunctionTest {
 	
@@ -274,7 +274,7 @@ public class FunctionTest {
 	
 	public static void testForScala() {
 	    //f1 = x^2 + 2x + 2
-	    MathFunc f1 = X.M(X).A( X.A(1.0).M(2.0) );
+	    MathFunc f1 = x.M(x).A( x.A(1.0).M(2.0) );
 	    System.out.println(f1);
 	    System.out.println(f1.apply(new Variable(2.0)));
 	    System.out.println(f1.diff("x"));
@@ -290,7 +290,7 @@ public class FunctionTest {
 	    	}
 	    	@Override
 	    	public MathFunc diff(String vn) {
-	    		if (vn == "x") return C(6).M(X);
+	    		if (vn == "x") return C(6).M(x);
 	    		else if(vn == "y") return C(4);
 	    		else throw new FutureyeException("variable name="+vn);
 	    	}
@@ -312,7 +312,7 @@ public class FunctionTest {
 	    		          return v.get("x") + v.get("y"); 
 	    	    	}
 	    	    }.setName("x+y"),
-	    	    X.M(Y),
+	    	    x.M(y),
 	    	    C1
 	        );
 	    System.out.println(f3);

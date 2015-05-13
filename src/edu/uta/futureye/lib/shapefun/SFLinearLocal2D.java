@@ -1,8 +1,8 @@
 package edu.uta.futureye.lib.shapefun;
 
-import static edu.uta.futureye.function.operator.FMath.C0;
-import static edu.uta.futureye.function.operator.FMath.C1;
-import static edu.uta.futureye.function.operator.FMath.Cm1;
+import static edu.uta.futureye.function.FMath.C0;
+import static edu.uta.futureye.function.FMath.C1;
+import static edu.uta.futureye.function.FMath.Cm1;
 
 import java.util.HashMap;
 import java.util.Map;

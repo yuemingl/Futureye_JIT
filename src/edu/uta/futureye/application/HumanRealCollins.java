@@ -1,7 +1,7 @@
 package edu.uta.futureye.application;
 
-import static edu.uta.futureye.function.operator.FMath.C;
-import static edu.uta.futureye.function.operator.FMath.C0;
+import static edu.uta.futureye.function.FMath.C;
+import static edu.uta.futureye.function.FMath.C0;
 
 import java.util.HashMap;
 

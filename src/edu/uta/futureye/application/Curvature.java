@@ -9,7 +9,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 public class Curvature {
 	String outputFolder = "Curvature";

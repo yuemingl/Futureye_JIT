@@ -5,7 +5,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.application.HumanReal.Part;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.util.DoubleRange;
 import edu.uta.futureye.util.container.NodeList;

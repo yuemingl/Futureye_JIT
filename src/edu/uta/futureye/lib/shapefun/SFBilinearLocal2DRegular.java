@@ -15,7 +15,7 @@ import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 /**
  * For rectangle elements the edges of which are parallel to the axis

@@ -3,6 +3,7 @@ package edu.uta.futureye.function.basic;
 import java.util.Map;
 
 import edu.uta.futureye.function.AbstractSimpleMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -32,7 +33,7 @@ public class FAxpb extends AbstractSimpleMathFunc {
 		if(this.varName.equals(varName))
 			return new FC(a);
 		else
-			return FC.C0;
+			return FMath.C0;
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package edu.uta.futureye.core;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.geometry.GeoEntity1D;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ObjList;

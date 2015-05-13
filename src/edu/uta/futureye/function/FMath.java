@@ -1,4 +1,4 @@
-package edu.uta.futureye.function.operator;
+package edu.uta.futureye.function;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.function.AbstractMathFunc;
-import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FPow;
 import edu.uta.futureye.function.basic.FSqrt;
@@ -33,13 +30,13 @@ public class FMath {
 	public final static FC PI = new FC(Math.PI);
 	public final static FC E = new FC(Math.E);
 	
-	public final static FX X = new FX(Constant.x); 
-	public final static FX Y = new FX(Constant.y); 
-	public final static FX Z = new FX(Constant.z); 
+	public final static FX x = new FX(Constant.x); 
+	public final static FX y = new FX(Constant.y); 
+	public final static FX z = new FX(Constant.z); 
 	
-	public final static FX R = new FX(Constant.r); 
-	public final static FX S = new FX(Constant.s); 
-	public final static FX T = new FX(Constant.t); 
+	public final static FX r = new FX(Constant.r); 
+	public final static FX s = new FX(Constant.s); 
+	public final static FX t = new FX(Constant.t); 
 	
 	public static MathFunc C(double v) {
 		return FC.c(v);
@@ -362,7 +359,7 @@ public class FMath {
 	 */
 	public static MathFunc div(VectorFunction vFun) {
 		int dim = vFun.getDim();
-		MathFunc rlt = FC.C0;
+		MathFunc rlt = C0;
 		for(int i=1; i<=dim; i++) {
 			MathFunc fd = (MathFunc)vFun.get(i);
 			rlt = rlt.A(fd.diff(vFun.varNames().get(i-1)));

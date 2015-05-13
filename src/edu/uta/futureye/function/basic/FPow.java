@@ -1,6 +1,7 @@
 package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.function.AbstractSimpleMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
@@ -22,9 +23,9 @@ public class FPow extends AbstractSimpleMathFunc {
 	public MathFunc diff(String varName) {
 		if(varName.equals(this.varName)) {
 			if(exponent == 0.0)
-				return FC.C0;
+				return FMath.C0;
 			else if(exponent == 1.0)
-				return FC.C1;
+				return FMath.C1;
 			else {
 				FPow ret = new FPow(this.varName, this.exponent-1);
 				ret.argIdx = this.argIdx;
@@ -32,7 +33,7 @@ public class FPow extends AbstractSimpleMathFunc {
 				return ret.M(exponent);
 			}
 		} else {
-			return FC.C0;
+			return FMath.C0;
 		}
 	}
 	

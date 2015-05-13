@@ -1,6 +1,6 @@
 package edu.uta.futureye.tutorial;
 
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 import java.util.HashMap;
 
@@ -67,7 +67,7 @@ public class T03RawLaplace {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side(RHS): f = -2*(x^2+y^2)+36
-        weakForm.setF(X.M(X).A(Y.M(Y)).M(-2.0).A(36.0));
+        weakForm.setF(x.M(x).A(y.M(y)).M(-2.0).A(36.0));
 		
 		//Assemble
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);

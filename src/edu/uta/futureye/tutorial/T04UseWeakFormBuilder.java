@@ -1,6 +1,6 @@
 package edu.uta.futureye.tutorial;
 
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 import java.util.HashMap;
 
@@ -12,10 +12,10 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -89,7 +89,7 @@ public class T04UseWeakFormBuilder {
 			}
 		};
         //Right hand side(RHS): f = -2*(x^2+y^2)+36
-        wfb.addParam("f",X.M(X).A(Y.M(Y)).M(-2.0).A(36.0));
+        wfb.addParam("f",x.M(x).A(y.M(y)).M(-2.0).A(36.0));
 		
         //5.Assembly process
         AssemblerScalar assembler =
@@ -194,7 +194,7 @@ public class T04UseWeakFormBuilder {
 		};
         wfb.addParam("k", C(2.0));
         //Right hand side(RHS): f = -4*(x^2+y^2)+72
-        wfb.addParam("f",X.M(X).A(Y.M(Y)).M(-4.0).A(72.0));
+        wfb.addParam("f",x.M(x).A(y.M(y)).M(-4.0).A(72.0));
 		
         //5.Assembly process
         AssemblerScalar assembler =
@@ -298,11 +298,11 @@ public class T04UseWeakFormBuilder {
 			}
 		};
 		//-2*(x^2+y^2)+36
-        wfBuilder.addParam("f",X.M(X).A(Y.M(Y)).M(-2.0).A(36.0));
+        wfBuilder.addParam("f",x.M(x).A(y.M(y)).M(-2.0).A(36.0));
         wfBuilder.addParam("k",C(0.1));
         wfBuilder.addParam("c",C1);
         wfBuilder.addParam("d",C1);
-        wfBuilder.addParam("g",X.M(X).A(Y.M(Y)));
+        wfBuilder.addParam("g",x.M(x).A(y.M(y)));
 		WeakForm weakForm = wfBuilder.getScalarWeakForm();
 		
         //5.Assembly process

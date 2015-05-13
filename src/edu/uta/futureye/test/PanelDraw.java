@@ -4,9 +4,9 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
 
 public class PanelDraw extends JPanel{

@@ -22,7 +22,7 @@ import edu.uta.futureye.tutorial.Tools;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 public class Driver {
 	
@@ -84,7 +84,7 @@ public class Driver {
         //   With T(0) = 1000, T(0.4) = 400
         //       Tx(0) = 0
         
-        MathFunc XX = X.M(X);
+        MathFunc XX = x.M(x);
         MathFunc q = C(3750.0).M(C(4300.0).D(C(-3750.0).M(XX).A(C(1020))).A(2.1))
         		.A(C(8600.0).M(14062500.0).M(XX).D(C(-3750.0).M(XX).A(C(1200.0)).M(C(-3750.0).M(XX).A(C(1200.0)))));
         System.out.println(q); //Print your expression

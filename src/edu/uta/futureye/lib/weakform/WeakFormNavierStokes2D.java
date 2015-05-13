@@ -9,7 +9,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.MathEx;
 import edu.uta.futureye.util.Utils;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 /**
  * <blockquote><pre>

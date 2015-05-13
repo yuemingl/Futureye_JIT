@@ -19,7 +19,7 @@ import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.tutorial.Tools;
 import edu.uta.futureye.util.container.ElementList;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 public class Hand {
 	public Mesh mesh;

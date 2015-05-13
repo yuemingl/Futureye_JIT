@@ -17,7 +17,7 @@ import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 public class SFBilinearLocal2D extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;

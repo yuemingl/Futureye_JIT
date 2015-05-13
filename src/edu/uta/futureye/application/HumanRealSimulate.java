@@ -22,12 +22,12 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.geometry.GeoEntity3D;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -39,7 +39,7 @@ import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 import edu.uta.futureye.util.container.ObjList;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 public class HumanRealSimulate {
 	String workFolder = "HumanReal/Simulate";

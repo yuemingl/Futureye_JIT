@@ -1,5 +1,10 @@
 package edu.uta.futureye.tutorial;
 
+import static edu.uta.futureye.function.FMath.C0;
+import static edu.uta.futureye.function.FMath.C1;
+import static edu.uta.futureye.function.FMath.x;
+import static edu.uta.futureye.function.FMath.y;
+
 import java.util.HashMap;
 
 import edu.uta.futureye.algebra.intf.Matrix;
@@ -9,22 +14,13 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.AbstractMathFunc;
-import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTriangle;
-import edu.uta.futureye.lib.weakform.SymWeakFormLaplace2D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.container.ElementList;
-import static edu.uta.futureye.function.operator.FMath.*;
-import static symjava.symbolic.Symbol.C0;
-import static symjava.symbolic.Symbol.C1;
-import static symjava.symbolic.Symbol.x;
-import static symjava.symbolic.Symbol.y;
-
 
 /**
  * <blockquote><pre>
@@ -55,8 +51,8 @@ public class T04Lapcace2 {
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y"){
 			@Override
-			public double apply(Variable v) {
-				if(3.0-v.get("x")<0.01)
+			public double apply(double... args) {
+				if(3.0-args[0]<0.01)
 					return 1.0;
 				else
 					return -1.0;
@@ -91,11 +87,10 @@ public class T04Lapcace2 {
 //		weakForm.setParam(C1, sqrt(X.M(X).A(Y.M(Y))), C1, C1);
 		
         //4.Weak form
-        SymWeakFormLaplace2D weakForm = new SymWeakFormLaplace2D();
+        WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
         //Right hand side(RHS): f = -2*(x^2+y^2)+36
         weakForm.setF(-2*(x*x+y*y)+36);
         weakForm.setParam(C1, C0, C0, C0);
-        weakForm.generateOrLoadBytecode();
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");

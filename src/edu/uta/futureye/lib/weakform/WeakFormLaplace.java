@@ -3,7 +3,7 @@ package edu.uta.futureye.lib.weakform;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Utils;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 /**
  * <blockquote><pre>

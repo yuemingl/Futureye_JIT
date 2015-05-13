@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.sun.org.apache.bcel.internal.generic.ClassGen;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.basic.FAx;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FCos;
@@ -13,7 +14,6 @@ import edu.uta.futureye.function.basic.FSqrt;
 import edu.uta.futureye.function.basic.FTan;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.function.operator.FSin2;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;

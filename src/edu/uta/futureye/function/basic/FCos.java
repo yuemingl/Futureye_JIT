@@ -1,7 +1,7 @@
 package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.function.AbstractSimpleMathFunc;
-import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
@@ -29,7 +29,7 @@ public class FCos extends AbstractSimpleMathFunc{
 		if(varName.equals(this.varName))
 			return (new FSin(this.varName)).M(-1);
 		else
-			return FC.C0;
+			return FMath.C0;
 	}
 
 	@Override

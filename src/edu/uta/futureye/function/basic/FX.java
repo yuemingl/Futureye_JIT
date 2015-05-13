@@ -17,9 +17,8 @@ import com.sun.org.apache.bcel.internal.generic.PUSH;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MathFuncBasic;
-import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
@@ -62,9 +61,9 @@ public class FX extends MathFuncBasic {
 	@Override
 	public MathFunc diff(String varName) {
 		if(this.varName.equals(varName))
-			return FC.C1;
+			return FMath.C1;
 		else
-			return FC.C0;
+			return FMath.C0;
 	}
 	
 	@Override

@@ -9,12 +9,12 @@ import java.util.Map.Entry;
 
 import edu.uta.futureye.core.geometry.topology.TetrahedronTp;
 import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal1D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;

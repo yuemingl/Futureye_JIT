@@ -12,7 +12,7 @@ import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 /**
  * Problem:

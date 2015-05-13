@@ -25,7 +25,7 @@ import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.ObjIndex;
 import edu.uta.futureye.util.container.ObjList;
-import static edu.uta.futureye.function.operator.FMath.*;
+import static edu.uta.futureye.function.FMath.*;
 
 
 
