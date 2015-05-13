@@ -73,6 +73,12 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 	
 	@Override 
 	public void preProcess(Element e) {
+		//Instead of interpolation, we can use coordinate transformation such as 
+		//x=x1*r+x2*s+x3*t, y=y1*r+y2*s+y3*t to replace x,y in RHS (e.g. g_f)
+		//This will results faster evaluation
+		//Another possible way is interpolating RHS when doing integration,
+		//this only requires the value of function on the grid points
+		//no need to interpolate.
 		if(e.dim() == 2) {
 			if(g_k != null) fk = Utils.interpolateOnElement(g_k, e);
 			if(g_c != null) fc = Utils.interpolateOnElement(g_c, e);
