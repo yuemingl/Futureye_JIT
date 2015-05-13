@@ -7,6 +7,8 @@ import static edu.uta.futureye.function.operator.FMath.Cm1;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
+
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
@@ -15,6 +17,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
@@ -48,6 +51,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 	class SF123 extends AbstractMathFunc {
 		public SF123() {
 			super(SFLinearLocal2D.this.varNames);
+			this.setArgIdx(Utils.getIndexMap(this.getVarNames()));
 		}
 		@Override
 		public MathFunc diff(String var) {
@@ -71,8 +75,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 		}
 		@Override
 		public double apply(double... args) {
-			// TODO Auto-generated method stub
-			return 0;
+			return args[argIdx[funIndex]];
 		}
  	}
 	

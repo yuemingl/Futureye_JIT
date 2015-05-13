@@ -159,7 +159,7 @@ public class CoordinateTransform {
 			mapVS.put(vl.at(1), sfb2d1);
 			mapVS.put(vl.at(2), sfb2d2);
 			mapVS.put(vl.at(3), sfb2d3);
-			mapVS.put(vl.at(4), sfb2d4);			
+			mapVS.put(vl.at(4), sfb2d4);
 		} else if(vl.size() == 5) {
 			//TODO
 			throw new FutureyeException(

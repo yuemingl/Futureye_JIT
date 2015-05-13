@@ -68,7 +68,16 @@ public class T02Laplace {
                 new AssemblerScalar(mesh, weakForm);
         assembler.assemble();
         Matrix stiff = assembler.getStiffnessMatrix();
+        for(int i=1; i<=stiff.getRowDim(); i++) {
+        	for(int j=1; j<=stiff.getRowDim(); j++) {
+        		System.out.print(stiff.get(i,j)+" ");
+        	}
+        	System.out.println();
+        }
         Vector load = assembler.getLoadVector();
+        for(int i=1; i<=load.getDim(); i++) {
+        	System.out.print(load.get(i)+" ");
+        } 
         //Boundary condition
         assembler.imposeDirichletCondition(C0);
 
@@ -77,7 +86,7 @@ public class T02Laplace {
         Vector u = solver.solveDGESV(stiff, load);
         System.out.println("u=");
         for(int i=1;i<=u.getDim();i++)
-            System.out.println(String.format("%.3f", u.get(i)));
+            System.out.print(String.format("%.3f ", u.get(i)));
 
         //7.Output results to an Techplot format file
         MeshWriter writer = new MeshWriter(mesh);
