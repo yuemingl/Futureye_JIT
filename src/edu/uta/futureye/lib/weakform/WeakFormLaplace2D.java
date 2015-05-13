@@ -15,6 +15,7 @@ import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
+import static edu.uta.futureye.function.FMath.*;
 
 /**
  * <blockquote><pre>
@@ -82,7 +83,21 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 		if(e.dim() == 2) {
 			if(g_k != null) fk = Utils.interpolateOnElement(g_k, e);
 			if(g_c != null) fc = Utils.interpolateOnElement(g_c, e);
-			if(g_f != null) ff = Utils.interpolateOnElement(g_f, e);
+			//if(g_f != null) ff = Utils.interpolateOnElement(g_f, e); //T02Laplace 80.824
+			if(g_f != null) { //T02Laplace 80.839
+				Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
+				fInners.put("x", 
+						r.M(e.nodes.at(1).coord(1))+
+						s.M(e.nodes.at(2).coord(1))+
+						t.M(e.nodes.at(3).coord(1))
+						);
+				fInners.put("y", 
+						r.M(e.nodes.at(1).coord(2))+
+						s.M(e.nodes.at(2).coord(2))+
+						t.M(e.nodes.at(3).coord(2))
+						);
+				ff = g_f.compose(fInners);
+			}
 		} else if(e.dim() == 1) {
 			if(g_d != null) fd = Utils.interpolateOnElement(g_d, e);
 			if(g_g != null) fg = Utils.interpolateOnElement(g_g, e);
