@@ -6,7 +6,6 @@ import java.util.Map;
 
 import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
@@ -168,7 +167,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 			e.printStackTrace();
 			return null;
 		}
-		MathFunc rlt = FC.C0;
+		MathFunc rlt = FMath.C0;
 		for(int i=1;i<=dim;i++) {
 			rlt = rlt.A(this.get(i).M(b.get(i)));
 		}
@@ -177,7 +176,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 
 	@Override
 	public MathFunc dot(Vector b) {
-		MathFunc rlt = FC.C0;
+		MathFunc rlt = FMath.C0;
 		for(int i=1;i<=dim;i++) {
 			rlt = rlt.A(this.get(i).M(b.get(i)));
 		}
