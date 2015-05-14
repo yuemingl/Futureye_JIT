@@ -83,14 +83,19 @@ public class BytecodeUtils {
 			for(int i=0; i<args.size(); i++) {
 				argsMap.put(args[i], i);
 			}
+			System.out.println("JIT Compiled: "+func);
 		} else {
+			StringBuilder sb = new StringBuilder();
+			sb.append("(");
 			for(int i=0; i<varNames.length; i++) {
 				argsMap.put(varNames[i], i);
+				sb.append(varNames[i]).append(",");
 			}
-			func.setArgIdx(argsMap);
+			sb.delete(sb.length()-1, sb.length());
+			sb.append(")");
+			//func.setArgIdx(argsMap);
+			System.out.println("JIT Compiled: "+func.getName()+sb.toString()+" = "+func.getExpr());
 		}
-
-		System.out.println("JIT Compiled: "+func);
 
 		Map<MathFunc, Integer> refsMap = getFuncRefsMap(func);
 		
