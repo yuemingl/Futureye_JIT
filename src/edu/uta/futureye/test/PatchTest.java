@@ -71,7 +71,7 @@ public class PatchTest {
 			double pv3 = integrand.apply(params);
 			rlt = 0.333333333333333 * (pv1+pv2+pv3);
 		}
-		return rlt;
+		return 0.5 * rlt;
 //		} else if(order == 4) {
 //			double w123 = 25.0/48.0;
 //			double w4 = -27.0/48.0;
