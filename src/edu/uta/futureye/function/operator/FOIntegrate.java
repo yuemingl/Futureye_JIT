@@ -108,7 +108,7 @@ public class FOIntegrate{
 			v.set(VN.r, 0.333333333333333);
 			v.set(VN.s, 0.333333333333333);
 			v.set(VN.t, 0.333333333333333);
-			rlt = integrand.apply(v);
+			rlt = 0.5*integrand.apply(v);
 		} else if(order == 3) {
 			
 			Variable v1 = new Variable();
@@ -121,8 +121,7 @@ public class FOIntegrate{
 			double pv1 = integrand.apply(v1);
 			double pv2 = integrand.apply(v2);
 			double pv3 = integrand.apply(v3);
-			
-			rlt = 0.333333333333333 * (pv1+pv2+pv3);
+			rlt = 0.5*0.333333333333333 * (pv1+pv2+pv3);
 		} else if(order == 4) {
 			double w123 = 25.0/48.0;
 			double w4 = -27.0/48.0;
@@ -137,12 +136,8 @@ public class FOIntegrate{
 			v3.set(VN.r, 0.2); v3.set(VN.s, 0.2); v3.set(VN.t, 0.6);
 			v4.set(VN.r, 0.333333333333333); v4.set(VN.s, 0.333333333333333); v4.set(VN.t, 0.333333333333333);
 			
-			rlt = w123 * (
-					integrand.apply(v1)+
-					integrand.apply(v2)+
-					integrand.apply(v3)
-					) + w4*integrand.apply(v4);
-
+			rlt = w123*(integrand.apply(v1)+integrand.apply(v2)+integrand.apply(v3)) + w4*integrand.apply(v4);
+			rlt /= 2;
 		} else if(order == 5) {
 			Variable v = new Variable();
 			for(int i=0;i<7;i++) {
@@ -152,7 +147,7 @@ public class FOIntegrate{
 				rlt += triW[i]*integrand.apply(v);
 			}
 		}
-		return 0.5*rlt; //??? 0.5 ???
+		return rlt;
 	}
 	
 	

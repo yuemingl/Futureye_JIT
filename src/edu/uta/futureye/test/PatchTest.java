@@ -6,12 +6,32 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FOIntegrate;
+import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2DRS;
 import edu.uta.futureye.util.container.NodeList;
 import static edu.uta.futureye.function.FMath.*;
 
 public class PatchTest {
 
+	public static void shapeFuncTest1() {
+		SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
+		shapeFun[0] = new SFLinearLocal2D(1);
+		shapeFun[1] = new SFLinearLocal2D(2);
+		shapeFun[2] = new SFLinearLocal2D(3);
+		System.out.println(shapeFun[0]);
+		System.out.println(shapeFun[1]);
+		System.out.println(shapeFun[2]);
+	}
+	public static void shapeFuncTest2() {
+		SFLinearLocal2DRS[] shapeFun = new SFLinearLocal2DRS[3];
+		shapeFun[0] = new SFLinearLocal2DRS(1);
+		shapeFun[1] = new SFLinearLocal2DRS(2);
+		shapeFun[2] = new SFLinearLocal2DRS(3);
+		System.out.println(shapeFun[0]);
+		System.out.println(shapeFun[1]);
+		System.out.println(shapeFun[2]);
+	}
+	
 	public static void main(String[] args) {
 		NodeList nodes = new NodeList();
 		/**
@@ -42,17 +62,10 @@ public class PatchTest {
 		MathFunc fy2 = coords[3]*r + coords[4]*s + coords[5]*t;
 		MathFunc f2 = fx2 + fy2;
 		
-		System.out.println(intOnTriangleRefElement(cf, params, coords.length, 2));
-		System.out.println(FOIntegrate.intOnTriangleRefElement(f2, 2));
-		
-//		SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
-//		shapeFun[0] = new SFLinearLocal2D(1);
-//		shapeFun[1] = new SFLinearLocal2D(2);
-//		shapeFun[2] = new SFLinearLocal2D(3);
-		SFLinearLocal2DRS[] shapeFun = new SFLinearLocal2DRS[3];
-		shapeFun[0] = new SFLinearLocal2DRS(1);
-		shapeFun[1] = new SFLinearLocal2DRS(2);
-		shapeFun[2] = new SFLinearLocal2DRS(3);
+		for(int order=2; order<=5; order++) {
+		System.out.println(intOnTriangleRefElement(cf, params, coords.length, order));
+		System.out.println(FOIntegrate.intOnTriangleRefElement(f2, order));
+		}
 	}
 	
 	public static double intOnTriangleRefElement(CompiledFunc integrand, double[] params, int endPos, int order) {
@@ -61,7 +74,7 @@ public class PatchTest {
 			params[endPos] = 0.333333333333333;
 			params[endPos+1] = 0.333333333333333;
 			params[endPos+2] = 0.333333333333333;
-			rlt = integrand.apply(params);
+			rlt = 0.5*integrand.apply(params);
 		} else if(order == 3) {
 			params[endPos] = 0.5; params[endPos+1] = 0.5; params[endPos+2] = 0.0; 
 			double pv1 = integrand.apply(params);
@@ -69,38 +82,56 @@ public class PatchTest {
 			double pv2 = integrand.apply(params);
 			params[endPos] = 0.5; params[endPos+1] = 0.0; params[endPos+2] = 0.5; 
 			double pv3 = integrand.apply(params);
-			rlt = 0.333333333333333 * (pv1+pv2+pv3);
+			rlt = 0.5*0.333333333333333*(pv1 + pv2 + pv3);
+		} else if(order == 4) {
+			double w123 = 25.0/48.0;
+			double w4 = -27.0/48.0;
+			
+			params[endPos] = 0.6; params[endPos+1] = 0.2; params[endPos+2] = 0.2; 
+			double pv1 = integrand.apply(params);
+			params[endPos] = 0.2; params[endPos+1] = 0.6; params[endPos+2] = 0.2; 
+			double pv2 = integrand.apply(params);
+			params[endPos] = 0.2; params[endPos+1] = 0.2; params[endPos+2] = 0.6; 
+			double pv3 = integrand.apply(params);
+			params[endPos] = 0.333333333333333; params[endPos+1] = 0.333333333333333; params[endPos+2] = 0.333333333333333; 
+			double pv4 = 0.5*integrand.apply(params);
+			
+			rlt = 0.5*w123*(pv1 + pv2 + pv3) + w4*pv4;
+		} else if(order == 5) {
+			for(int i=0;i<7;i++) {
+				params[endPos]   = triR[i]; 
+				params[endPos+1] = triS[i]; 
+				params[endPos+2] = 1.0-triR[i]-triS[i];
+				rlt += triW[i]*integrand.apply(params);
+			}
 		}
-		return 0.5 * rlt;
-//		} else if(order == 4) {
-//			double w123 = 25.0/48.0;
-//			double w4 = -27.0/48.0;
-//			
-//			Variable v1 = new Variable();
-//			Variable v2 = new Variable();
-//			Variable v3 = new Variable();
-//			Variable v4 = new Variable();
-//			
-//			v1.set(VN.r, 0.6); v1.set(VN.s, 0.2); v1.set(VN.t, 0.2);
-//			v2.set(VN.r, 0.2); v2.set(VN.s, 0.6); v2.set(VN.t, 0.2);
-//			v3.set(VN.r, 0.2); v3.set(VN.s, 0.2); v3.set(VN.t, 0.6);
-//			v4.set(VN.r, 0.333333333333333); v4.set(VN.s, 0.333333333333333); v4.set(VN.t, 0.333333333333333);
-//			
-//			rlt = w123 * (
-//					integrand.apply(v1)+
-//					integrand.apply(v2)+
-//					integrand.apply(v3)
-//					) + w4*integrand.apply(v4);
-//
-//		} else if(order == 5) {
-//			Variable v = new Variable();
-//			for(int i=0;i<7;i++) {
-//				v.set(VN.r, triR[i]); 
-//				v.set(VN.s, triS[i]); 
-//				v.set(VN.t, 1.0-triR[i]-triS[i]);
-//				rlt += triW[i]*integrand.apply(v);
-//			}
-//		}
-//		return 0.5*rlt; //??? 0.5 ???
+		return rlt;
 	}
+	static double[] triW = {
+		0.06296959,
+	    0.06619708,
+	    0.06296959,
+	    0.06619708,
+	    0.06296959,
+	    0.06619708,
+	    0.11250000
+	};
+	static double[] triR = {
+	        0.10128651,
+	        0.47014206,
+	        0.79742699,
+	        0.47014206,
+	        0.10128651,
+	        0.05971587,
+	        0.33333333
+	    };
+	static double[] triS = {
+			0.10128651,
+			0.05971587,
+			0.10128651,
+			0.47014206,
+			0.79742699,
+			0.47014206,
+			0.33333333
+	    };
 }

@@ -134,11 +134,11 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 	}
 
 	public String getExpr() {
-		return "N"+(funIndex+1)+"(r,s)="+funOuter.toString();
+		return "N"+(funIndex+1)+"(r,s)";
 	}
 	
 	public String toString() {
-		return getExpr();
+		return "N"+(funIndex+1)+"(r,s)="+funOuter.getExpr();
 	}
 	
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
