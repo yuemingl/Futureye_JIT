@@ -1656,7 +1656,7 @@ public class Element {
 
 	/**
 	 * Return the coordinates of all nodes
-	 * @return
+	 * in way like [x1,x2,x3,y1,y2,y3]
 	 */
 	public double[] getNodeCoords() {
 		double[] rlt = new double[nodes.size()*eleDim];

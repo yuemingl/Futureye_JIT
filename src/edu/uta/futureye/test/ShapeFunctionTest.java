@@ -1,8 +1,5 @@
 package edu.uta.futureye.test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
