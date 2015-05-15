@@ -12,7 +12,15 @@ import edu.uta.futureye.util.container.NodeList;
 import static edu.uta.futureye.function.FMath.*;
 
 public class PatchTest {
-
+	public static double eps = 1e-5;
+	public static void check(String info, double d1, double d2) {
+		if(Math.abs(d1-d2) < eps) {
+			System.out.println("pass");
+		} else {
+			System.out.println("fail: "+info);
+		}
+	}
+	
 	public static void shapeFuncTest1() {
 		SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
 		shapeFun[0] = new SFLinearLocal2D(1);
@@ -33,6 +41,12 @@ public class PatchTest {
 	}
 	
 	public static void main(String[] args) {
+		shapeFuncTest1();
+		shapeFuncTest2();
+		testIntegration();
+	}
+	
+	public static void testIntegration() {
 		NodeList nodes = new NodeList();
 		/**
 		 * |\
@@ -63,8 +77,8 @@ public class PatchTest {
 		MathFunc f2 = fx2 + fy2;
 		
 		for(int order=2; order<=5; order++) {
-		System.out.println(intOnTriangleRefElement(cf, params, coords.length, order));
-		System.out.println(FOIntegrate.intOnTriangleRefElement(f2, order));
+			check("CompiledFunc: order="+order, intOnTriangleRefElement(cf, params, coords.length, order),0.06666666);
+			check("MathFunc: order="+order, FOIntegrate.intOnTriangleRefElement(f2, order),0.06666666);
 		}
 	}
 	
