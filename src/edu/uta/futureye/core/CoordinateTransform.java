@@ -24,6 +24,16 @@ import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.VertexList;
 
+/**
+Example:
+	Element e = ...;
+	CoordinateTransform trans = new CoordinateTransform(2);
+	trans.transformLinear2D(e); //2D linear transform
+	trans.computeJacobianMatrix();
+	trans.computeJacobian2D();
+	MathFunc jac = trans.getJacobian();
+
+ */
 public class CoordinateTransform {
 	protected List<String> fromVarNames = null;
 	protected List<String> toVarNames = null;

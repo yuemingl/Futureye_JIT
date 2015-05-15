@@ -66,14 +66,14 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 				public MathFunc diff(String var) {
 					if(varName.equals("r")) { //r对应三角形高h的负倒数
 						if(var.equals("x"))
-							return new FC( (y[1]-y[2]) / jac);
+							return FC.c( (y[1]-y[2]) / jac);
 						if(var.equals("y"))
-							return new FC( (x[2]-x[1]) / jac);
+							return FC.c( (x[2]-x[1]) / jac);
 					} else if(varName.equals("s")) { //s对应三角形高h的负倒数
 						if(var.equals("x"))
-							return new FC( (y[2]-y[0]) / jac);
+							return FC.c( (y[2]-y[0]) / jac);
 						if(var.equals("y"))
-							return new FC( (x[0]-x[2]) / jac);
+							return FC.c( (x[0]-x[2]) / jac);
 					} else
 						throw new FutureyeException("\nERROR:\n varName="+varName);
 					return null;
@@ -82,6 +82,16 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 				public double apply(double... args) {
 					throw new UnsupportedOperationException();
 				}
+				
+				@Override
+				public String getExpr() {
+					return varName;
+				}
+				@Override
+				public String toString() {
+					return varName+"(x,y)";
+				}
+				
 			});
 		}
 		
@@ -112,6 +122,9 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 	
 	@Override
 	public MathFunc diff(String varName) {
+		if(e == null) {
+			throw new FutureyeException("Call assignElement first before calling diff(\""+varName+"\")!");
+		}
 		return funCompose.diff(varName);
 	}
 
@@ -138,7 +151,7 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 	}
 	
 	public String toString() {
-		return "N"+(funIndex+1)+"(r,s)="+funOuter.getExpr();
+		return "N"+(funIndex+1)+"(r,s) = "+funOuter.getExpr();
 	}
 	
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);

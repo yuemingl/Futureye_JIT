@@ -193,11 +193,11 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 	}
 
 	public String getExpr() {
-		return funOuter.getExpr();
+		return "N"+(funIndex+1)+"(r,s,t)";
 	}
 	
 	public String toString() {
-		return "N"+(funIndex+1)+"(r,s,t)="+funOuter.getExpr();
+		return "N"+(funIndex+1)+"(r,s,t) = "+funOuter.getExpr();
 	}
 	
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);

@@ -190,8 +190,10 @@ from the above four equations, we have:
 //		x_s = fx._d("s");
 //		y_r = fy._d("r");
 //		y_s = fy._d("s");
-		
-		MathFunc [] funs = e.getCoordTrans().getJacobianMatrix();
+		CoordinateTransform trans = e.getCoordTrans();
+		if(trans == null) 
+			throw new FutureyeException("call Element.updateJacobin() before calling assignElement()");
+		MathFunc [] funs = trans.getJacobianMatrix();
 		x_r = funs[0];
 		x_s = funs[1];
 		y_r = funs[2];
@@ -204,13 +206,16 @@ from the above four equations, we have:
 
 	public String getExpr() {
 		if(this.coef != 1.0)
-			return "N"+(funIndex+1)+": "+this.coef+"*"+funOuter.toString();
+			return "N"+(funIndex+1)+"(r,s)";
 		else
-			return "N"+(funIndex+1)+": "+funOuter.toString();
+			return "N"+(funIndex+1)+"(r,s)";
 	}
 	
 	public String toString() {
-		return getExpr();
+		if(this.coef != 1.0)
+			return "N"+(funIndex+1)+"(r,s) = "+this.coef+"*"+funOuter.getExpr();
+		else
+			return "N"+(funIndex+1)+"(r,s) = "+funOuter.getExpr();
 	}
 
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);

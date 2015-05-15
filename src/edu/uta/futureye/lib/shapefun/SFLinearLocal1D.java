@@ -107,11 +107,11 @@ public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFun
 	}
 
 	public String getExpr() {
-		return "N"+(funIndex+1)+": "+funOuter.toString();
+		return "N"+(funIndex+1)+"(r)";
 	}
 	
 	public String toString() {
-		return getExpr();
+		return "N"+(funIndex+1)+": "+funOuter.toString();
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class PatchTest {
 		if(Math.abs(d1-d2) < eps) {
 			System.out.println("pass");
 		} else {
-			System.out.println("fail: "+info);
+			System.out.println("!!!FAIL!!!   "+d1+"!="+d2+" "+info);
 		}
 	}
 	

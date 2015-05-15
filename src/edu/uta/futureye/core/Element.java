@@ -1475,7 +1475,7 @@ public class Element {
 			String st = "";
 			ObjVector<NodeType> nodeTypes = nodes.at(i).nodeTypes;
 			if(nodeTypes==null || nodeTypes.size()==0)
-				st="_";
+				st="U"; //Undefined
 			else {
 				for(int j=1;j<=nodeTypes.size();j++) {
 					NodeType nodeType = nodeTypes.at(j);
@@ -1488,7 +1488,7 @@ public class Element {
 					else if(nodeType == NodeType.Robin)
 						st += "R";
 					else
-						st += "_";
+						st += "U"; //Undefined
 				}
 			}
 			s += nodes.at(i).globalIndex + st + " ";
