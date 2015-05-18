@@ -1,7 +1,9 @@
 package edu.uta.futureye.test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.uta.futureye.core.CoordinateTransform;
-import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
@@ -141,6 +143,11 @@ public class ShapeFunctionTest {
 		System.out.println(N2);
 		System.out.println(N3);
 		System.out.println(N1+1);
+		List<String> varNames = new ArrayList<String>();
+		varNames.add("r");
+		varNames.add("s");
+		System.out.println((N1+1).setActiveVarNames(varNames).compile().apply(new double[]{1.0,1.0}));
+		
 		
 		N1 = new SFLinearLocal2D(1);
 		N2 = new SFLinearLocal2D(2);

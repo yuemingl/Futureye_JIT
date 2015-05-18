@@ -1,6 +1,5 @@
 package edu.uta.futureye.lib.shapefun;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,10 +42,7 @@ public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFun
 			throw new FutureyeException("ERROR: funID should be 1 or 2.");
 		}
 		
-		List<String> nameList = new ArrayList<String>();
-		nameList.add("r");
-		this.setVarNames(nameList);
-
+		this.varNames = new String[]{"r"};
 		innerVarNames = new ObjList<String>("x");
 		
 		//复合函数
@@ -89,6 +85,7 @@ public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFun
 		else
 			funOuter = new FAxpb("r",0.5,0.5);
 		funCompose = funOuter.compose(fInners);
+		funCompose.setActiveVarNames(funOuter.getVarNames());
 	}
 	
 	@Override
@@ -126,7 +123,6 @@ public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFun
 
 	@Override
 	public double apply(double... args) {
-		this.funCompose.setActiveVarNames(this.getVarNames());
 		return this.funCompose.apply(args);
 	}
 

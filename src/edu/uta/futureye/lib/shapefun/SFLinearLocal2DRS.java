@@ -57,10 +57,8 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 		this.varNames = new String[]{"r","s"};
 		innerVarNames = new ObjList<String>("x","y");
 		
-		//复合函数 
+		//Compose function: r=r(x,y), s=s(x,y)
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
-		//r=r(x,y) 
-		//s=s(x,y)
 		for(final String varName : varNames) {
 			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {	
 				public MathFunc diff(String var) {
@@ -95,21 +93,17 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 			});
 		}
 		
-		//Construct shape functions: 
-		//r,s are free variables, t = 1 - r - s
+		//Construct shape functions: r,s are free variables, t = 1 - r - s
 		if(funIndex == 0) {
 			funOuter = r; //N1 = r
-			this.setVarNames(r.getVarNames());
 		} else if(funIndex == 1) {
 			funOuter = s; //N2 = s
-			this.setVarNames(s.getVarNames());
 		} else { 
 			funOuter = C1.S(r).S(s); //N3 = t = 1 - r - s
 		}
-		//funOuter.setVarNames(getVarNames());
 		this.coef = coef;
 		funCompose = funOuter.compose(fInners).M(FC.c(this.coef));
-		//funCompose.value(new Variable("x",0).set("y",0));
+		funCompose.setActiveVarNames(funOuter.getVarNames());
 	}
 	
 	public SFLinearLocal2DRS(int funID) {
@@ -169,7 +163,6 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 
 	@Override
 	public double apply(double... args) {
-		this.funCompose.setActiveVarNames(this.getVarNames());
 		return this.funCompose.apply(args);
 	}
 	

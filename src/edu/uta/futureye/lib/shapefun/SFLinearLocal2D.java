@@ -7,8 +7,6 @@ import static edu.uta.futureye.function.FMath.Cm1;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
-
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
@@ -102,13 +100,9 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 		this.varNames = new String[]{"r","s","t"};
 		innerVarNames = new ObjList<String>("x","y");
 		
-		//复合函数
+		//Compose function: r = r(x,y), s = s(x,y), t = t(x,y)
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
-		
 		final String varName = varNames[funIndex];
-		//r = r(x,y)
-		//s = s(x,y)
-		//t = t(x,y)
 		fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {	
 			public MathFunc diff(String var) {
 				if(area < 0.0) {
@@ -145,7 +139,8 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 		this.coef = coef;
 		funCompose = FC.c(this.coef).M(
 				funOuter.compose(fInners)
-				); 
+				);
+		funCompose.setActiveVarNames(funOuter.getVarNames());
 	}
 	
 	public SFLinearLocal2D(int funID) {
@@ -215,7 +210,6 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 	
 	@Override
 	public double apply(double... args) {
-		this.funCompose.setActiveVarNames(this.getVarNames());
 		return this.funCompose.apply(args);
 	}
 	
