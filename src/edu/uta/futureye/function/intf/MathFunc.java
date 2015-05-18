@@ -49,8 +49,7 @@ public interface MathFunc {
 	MathFunc setVarNames(List<String> varNames);
 	
 	/**
-	 * Set 'active' variable names for composed function
-	 * when performing evaluation.
+	 * Set 'active' variable names of composite function for evaluation.
 	 *  
 	 * @param varNames
 	 * @return
@@ -59,8 +58,6 @@ public interface MathFunc {
 	
 	/**
 	 * Return all free variable names of the function
-	 * <p>
-	 * 返回所有自变量名称
 	 * 
 	 * @return
 	 */
@@ -160,27 +157,17 @@ public interface MathFunc {
 	MathFunc D(double g);
 	
 	/**
-	 * Composition function 
-	 * 复合函数
+	 * Construct composite function
 	 * <p><blockquote><pre>
-	 * e.g.
-	 * Function fx = FX.fx;
-	 * Function fr = new FX("r");
-	 * Function fOut = fx.M(fx).S(FC.c1);
-	 * System.out.println(fOut); //x*x - 1.0
-	 * 
-	 * Function fIn = fr.M(fr).A(FC.c1);
-	 * System.out.println(fIn); //r*r + 1.0
-	 * 
-	 * //Construct a map to define variable mapping
-	 * Map<String,Function> map = new HashMap<String,Function>();
-	 * map.put("x", fIn); //x=r*r + 1.0
-	 * Function fComp = fOut.compose(map);
-	 * System.out.println(fComp); //x(r)*x(r) - 1.0, where x=r*r + 1.0
+	 * For example:
+	 *  MathFunc f = r*s + 1;
+	 *  Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
+	 *  fInners.put("r", x*x);
+	 *  fInners.put("s", y+1);
+	 *  MathFunc fc = f.compose(fInners);
+	 *  System.out.println(fc); //f(x,y) = (x*x)*(y + 1.0) + 1.0
 	 * </pre></blockquote>
 	 * 
-	 * @param fInners: Variable map e.g.[ x = x(r,s), y = y(r,s) ]
-	 * @return composed function e.g. f = f(x,y) = f( x(r,s),y(r,s) )
 	 */
 	MathFunc compose(Map<String,MathFunc> fInners);
 	

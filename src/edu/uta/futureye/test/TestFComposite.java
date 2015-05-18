@@ -7,8 +7,9 @@ import java.util.Map;
 
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
+import static edu.uta.futureye.function.FMath.*;
 
-public class TestFCompose {
+public class TestFComposite {
 	public static void test1() {
 		MathFunc f = FX.r.A(FX.s);
 		System.out.println(f);
@@ -30,9 +31,19 @@ public class TestFCompose {
 		System.out.println(fc.apply(args));
 		System.out.println(fc.compile().apply(args));
 	}
+	
+	public static void test2() {
+		MathFunc f = r*s + 1;
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
+		fInners.put("r", x*x);
+		fInners.put("s", y+1);
+		MathFunc fc = f.compose(fInners);
+		System.out.println(fc); //
+	}
 
 	public static void main(String[] args) {
 		test1();
+		test2();
 	}
 
 

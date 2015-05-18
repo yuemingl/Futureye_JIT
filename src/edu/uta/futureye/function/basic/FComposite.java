@@ -35,6 +35,18 @@ import edu.uta.futureye.util.FuncClassLoader;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
+/**
+ * Composite function
+ * <p><blockquote><pre>
+ * For example:
+ *  MathFunc f = r*s + 1;
+ *  Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
+ *  fInners.put("r", x*x);
+ *  fInners.put("s", y+1);
+ *  MathFunc fc = f.compose(fInners);
+ *  System.out.println(fc); //f(x,y) = (x*x)*(y + 1.0) + 1.0
+ * </pre></blockquote>
+ */
 public class FComposite extends AbstractMathFunc {
 	public MathFunc fOuter;
 	public Map<String,MathFunc> fInners;
