@@ -24,6 +24,13 @@ public class ShapeFunctionTest {
 		}
 	}
 	
+	public static void check(String a, String b) {
+		if(a.equals(b))
+			System.out.println("pass");
+		else 
+			System.out.println("!!!FAIL!!!   " + a + " != " + b);
+	}
+	
 	/**
 	 * @param args
 	 */
@@ -139,33 +146,33 @@ public class ShapeFunctionTest {
 		N1 = new SFLinearLocal2DRS(1);
 		N2 = new SFLinearLocal2DRS(2);
 		N3 = new SFLinearLocal2DRS(3);
-		System.out.println(N1);
-		System.out.println(N2);
-		System.out.println(N3);
-		System.out.println(N1+1);
+		check(N1.toString(), "N1(r,s) = r");
+		check(N2.toString(), "N2(r,s) = s");
+		check(N3.toString(), "N3(r,s) = 1.0 - r - s");
+		check((N1+1).toString(), "f(r,s) = N1(r,s) + 1.0");
 		List<String> varNames = new ArrayList<String>();
 		varNames.add("r");
 		varNames.add("s");
-		System.out.println((N1+1).setActiveVarNames(varNames).compile().apply(new double[]{1.0,1.0}));
+		check("(N1+1).compile()", (N1+1).compile().apply(new double[]{1.0,2.0}), 2.0);
 		
 		
 		N1 = new SFLinearLocal2D(1);
 		N2 = new SFLinearLocal2D(2);
 		N3 = new SFLinearLocal2D(3);
-		System.out.println(N1);
-		System.out.println(N2);
-		System.out.println(N3);
-		System.out.println(N1+1);
+		check(N1.toString(), "N1(r,s,t) = r");
+		check(N2.toString(), "N2(r,s,t) = s");
+		check(N3.toString(), "N3(r,s,t) = t");
+		check((N1+1).toString(), "f(r,s,t) = N1(r,s,t) + 1.0");
 		
 		N1 = new SFBilinearLocal2D(1);
 		N2  = new SFBilinearLocal2D(2);
 		N3 = new SFBilinearLocal2D(3);
 		N4 = new SFBilinearLocal2D(4);
-		System.out.println(N1);
-		System.out.println(N2);
-		System.out.println(N3);
-		System.out.println(N4);
-		System.out.println(N1+1);
+		check(N1.toString(), "N1(r,s) = (-0.5*r+0.5)*(-0.5*s+0.5)");
+		check(N2.toString(), "N2(r,s) = (0.5*r+0.5)*(-0.5*s+0.5)");
+		check(N3.toString(), "N3(r,s) = (0.5*r+0.5)*(0.5*s+0.5)");
+		check(N4.toString(), "N4(r,s) = (-0.5*r+0.5)*(0.5*s+0.5)");
+		check((N1+1).toString(), "f(r,s) = N1(r,s) + 1.0");
 		
 	}
 
