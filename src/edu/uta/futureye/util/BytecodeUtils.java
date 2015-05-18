@@ -22,7 +22,7 @@ import com.sun.org.apache.xpath.internal.operations.Variable;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.basic.FCompose;
+import edu.uta.futureye.function.basic.FComposite;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FBinaryOp;
 
@@ -31,8 +31,8 @@ public class BytecodeUtils {
 		if(func instanceof FBinaryOp) {
 			postOrder(((FBinaryOp) func).arg1, list);
 			postOrder(((FBinaryOp) func).arg2, list);
-		} else if(func instanceof FCompose) {
-			FCompose fc = (FCompose)func;
+		} else if(func instanceof FComposite) {
+			FComposite fc = (FComposite)func;
 			for(Entry<String, MathFunc> e : fc.fInners.entrySet()) {
 				postOrder(e.getValue(), list);
 			}

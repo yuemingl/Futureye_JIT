@@ -25,7 +25,7 @@ import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.FCompose;
+import edu.uta.futureye.function.basic.FComposite;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FAdd;
 import edu.uta.futureye.function.operator.FDiv;
@@ -78,7 +78,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		if(!find) 
 			return this; //No compose
 		else
-			return new FCompose(this, fInners);
+			return new FComposite(this, fInners);
 	}
 	
 	////////////////////////Basic Math Operations/////////////////////////////

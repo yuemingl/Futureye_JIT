@@ -20,14 +20,16 @@ import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
 /**
- * 三角形局部坐标，线性型函数
- *   Ni = N(r,s,t) = N( r(x,y), s(x,y), t(x,y) ), i=1,2,3
+ * Linear shape function in triangle local coordinate system (area coordinate system)
+ * 
+ * Ni = Ni(r,s,t) = Ni( r(x,y), s(x,y), t(x,y) ), i=1,2,3
+ * 
+ * where
  *     N1 = r
  *     N2 = s
  *     N3 = t
- * where 
+ * and 
  *   r + s + t = 1
- * @author liuyueming
  *
  */
 public class SFLinearLocal2D  extends AbstractMathFunc 

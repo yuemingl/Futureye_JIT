@@ -18,13 +18,14 @@ import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
 /**
- * 三角形局部坐标，线性型函数
- *   Ni = N(r,s,t) = N( r(x,y), s(x,y), t(x,y) ), i=1,2,3
+ * Linear shape function in triangle local coordinate system (area coordinate system)
+ * 
+ *   Ni = Ni(r,s) = Ni( r(x,y), s(x,y) ), i=1,2,3
+ *   
+ * where
  *     N1 = r
  *     N2 = s
  *     N3 = 1 - r - s
- * @author liuyueming
- *
  */
 public class SFLinearLocal2DRS  extends AbstractMathFunc 
 							  implements ScalarShapeFunction {
@@ -103,6 +104,10 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 		}
 		this.coef = coef;
 		funCompose = funOuter.compose(fInners).M(FC.c(this.coef));
+		/**
+		 * The default active variable names of a composite function is the inner variable names.
+		 * Shape function needs the outer variable names as the active variable names.
+		 */
 		funCompose.setActiveVarNames(funOuter.getVarNames());
 	}
 	

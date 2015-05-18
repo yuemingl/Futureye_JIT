@@ -35,12 +35,12 @@ import edu.uta.futureye.util.FuncClassLoader;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
-public class FCompose extends AbstractMathFunc {
+public class FComposite extends AbstractMathFunc {
 	public MathFunc fOuter;
 	public Map<String,MathFunc> fInners;
 	boolean isOuterVariablesActive;
 	
-	public FCompose(MathFunc fOuter, Map<String,MathFunc> fInners) {
+	public FComposite(MathFunc fOuter, Map<String,MathFunc> fInners) {
 		this.fOuter = fOuter;
 		
 		//Extends variable names in fInners (copy on change)

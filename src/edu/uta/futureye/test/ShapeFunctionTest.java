@@ -155,7 +155,6 @@ public class ShapeFunctionTest {
 		varNames.add("s");
 		check("(N1+1).compile()", (N1+1).compile().apply(new double[]{1.0,2.0}), 2.0);
 		
-		
 		N1 = new SFLinearLocal2D(1);
 		N2 = new SFLinearLocal2D(2);
 		N3 = new SFLinearLocal2D(3);
