@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+
 import edu.uta.futureye.core.geometry.topology.TetrahedronTp;
 import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.FMath;
@@ -466,6 +472,22 @@ public class CoordinateTransform {
 			double J22 = funs[3].apply(args);
 			return J11*J22-J12*J21;
 		}
+		
+//		@Override
+//		public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+//				ConstantPoolGen cp, InstructionFactory factory,
+//				InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
+//				Map<MathFunc, Integer> funcRefsMap) {
+//			MathFunc ret = funs[0]*funs[3]-funs[1]*funs[2];
+//			ret.setArgIdx(this.getArgIdxMap());
+//			return ret.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
+//		}
+//		
+//		@Override
+//		public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+//			super.setArgIdx(argsMap);
+//			return this;
+//		}		
 	}
 	
 	/**

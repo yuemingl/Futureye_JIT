@@ -93,7 +93,7 @@ public class BytecodeUtils {
 			}
 			sb.delete(sb.length()-1, sb.length());
 			sb.append(")");
-			//func.setArgIdx(argsMap);
+			func.setArgIdx(argsMap);
 			System.out.println("JIT Compiled: "+func.getName()+sb.toString()+" = "+func.getExpr());
 		}
 

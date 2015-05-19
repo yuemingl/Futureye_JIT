@@ -7,13 +7,21 @@ import static edu.uta.futureye.function.FMath.s;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
@@ -109,6 +117,7 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 		 * Shape function needs the outer variable names as the active variable names.
 		 */
 		funCompose.setActiveVarNames(funOuter.getVarNames());
+		funCompose.setArgIdx(Utils.getIndexMap(this.getVarNames()));
 	}
 	
 	public SFLinearLocal2DRS(int funID) {
@@ -131,7 +140,27 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 	public double apply(Variable v) {
 		return funCompose.apply(v);
 	}
-
+	
+	@Override
+	public double apply(Element e, Node n, double ...args) {
+		return funCompose.apply(e, n, args);
+	}
+	
+	@Override
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+			ConstantPoolGen cp, InstructionFactory factory,
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
+			Map<MathFunc, Integer> funcRefsMap) {
+		return funCompose.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
+	}
+	
+	@Override
+	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+		super.setArgIdx(argsMap);
+		this.funCompose.setArgIdx(argsMap);
+		return this;
+	}
+	
 	@Override
 	public void assignElement(Element e) {
 		this.e = e;

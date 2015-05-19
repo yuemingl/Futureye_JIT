@@ -1,6 +1,10 @@
 package edu.uta.futureye.test;
 
 import static edu.uta.futureye.function.FMath.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
@@ -178,7 +182,14 @@ public class PatchTest {
 		FX y3 = new FX("y3");
 		MathFunc fx = x1*r + x2*s + x3*t;
 		MathFunc fy = y1*r + y2*s + y3*t;
-		MathFunc f = fx*fy;
+		
+//		MathFunc ff = fx*fy;
+		MathFunc f = x*y; 
+		Map<String, MathFunc> map = new HashMap<String, MathFunc>();
+		map.put("x", fx);
+		map.put("y", fy);
+		MathFunc ff = f.compose(map);
+		
 		MathFunc[][] lhs = new MathFunc[3][3];
 		MathFunc[] rhs = new MathFunc[3];
 		for(int j=0; j<3; j++) {
@@ -188,7 +199,8 @@ public class PatchTest {
 				//lhs[j][i] = (u.diff("x")*v.diff("x")+u.diff("y")*v.diff("y") + u*v)*jac;
 				lhs[j][i] = (grad(u,"x","y").dot(grad(v,"x","y")) + u*v)*jac;
 			}
-			rhs[j] = v*f*jac;
+			rhs[j] = v*ff*jac;
+			rhs[j].setName("RHS"+j);
 		}
 		
 		CompiledFunc[][] clhs = new CompiledFunc[3][3];
@@ -206,12 +218,16 @@ public class PatchTest {
 		double[] coords = e.getNodeCoords();
 		System.arraycopy(coords, 0, params, 0, coords.length);
 
-		for(int j=0; j<3; j++) {
-			for(int i=0; i<3; i++) {
-				A[j][i] = intOnTriangleRefElement(clhs[j][i], params, coords.length, 3);
+		long start = System.currentTimeMillis();
+		for(int k=0; k<1000000; k++) {
+			for(int j=0; j<3; j++) {
+				for(int i=0; i<3; i++) {
+					A[j][i] = intOnTriangleRefElement(clhs[j][i], params, coords.length, 3);
+				}
+				b[j] = intOnTriangleRefElement(crhs[j], params, coords.length, 3);
 			}
-			b[j] = intOnTriangleRefElement(crhs[j], params, coords.length, 3);
 		}
+		System.out.println(System.currentTimeMillis()-start);
 		
 		for(int j=0; j<3; j++) {
 			for(int i=0; i<3; i++) {
@@ -222,7 +238,22 @@ public class PatchTest {
 		for(int j=0; j<3; j++) {
 			System.out.println(b[j]);
 		}
-		
+		/*
+		 * 
+		 * 1.4999999999999984 0.0 -1.4999999999999984 
+			0.0 0.9999999999999989 -0.9999999999999989 
+			-1.4999999999999984 -0.9999999999999989 2.4999999999999973 
+			0.8749999999999991
+			0.8749999999999991
+			-1.7499999999999982
+			Correct: (add setArgIdx() in FComposite)
+			1.0833333333333321 -0.45833333333333287 -0.45833333333333287 
+			-0.45833333333333287 0.5833333333333327 0.04166666666666662 
+			-0.45833333333333287 0.04166666666666662 0.5833333333333327 
+			0.24999999999999972
+			0.31249999999999967
+			0.31249999999999967			
+		 */
 	}
 
 	public static void main(String[] args) {

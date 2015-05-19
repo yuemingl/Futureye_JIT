@@ -210,8 +210,8 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	
 	@Override
 	public CompiledFunc compile(String[] varNames) {
-		String clsName="";
-		if(getName() == null || getName().length() == 0)
+		String clsName = getName();
+		if(clsName == null || clsName.length() == 0)
 			clsName = this.getClass().getSimpleName();
 		clsName = clsName + java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		

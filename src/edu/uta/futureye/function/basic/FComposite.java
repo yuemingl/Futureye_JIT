@@ -217,6 +217,43 @@ public class FComposite extends AbstractMathFunc {
 		if(this.isOuterVariablesActive) {
 			return fOuter.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		} else {
+			// Prepare arguments for calling the outer function
+			LocalVariableGen lg;
+			//double[] arg = null;
+			lg = mg.addLocalVariable("arg_outer",
+				new ArrayType(Type.DOUBLE, 1), null, null);
+			int idxArg = lg.getIndex();
+			il.append(InstructionConstants.ACONST_NULL);
+			lg.setStart(il.append(new ASTORE(idxArg))); // "idxArg" valid from here
+			//arg = new double[size]
+			il.append(new PUSH(cp, fInners.size()));
+			il.append(new NEWARRAY(Type.DOUBLE));
+			il.append(new ASTORE(idxArg));
+			
+			int index = 0;
+			for(String name : fOuter.getVarNames()) {
+				il.append(new ALOAD(idxArg));
+				il.append(new PUSH(cp, index++));
+				MathFunc f = fInners.get(name);
+				HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
+				List<String> args = f.getVarNames();
+				for(int i=0; i<args.size(); i++) {
+					fArgsMap.put(args[i], argsMap.get(args[i]));
+				}
+				f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
+				il.append(new DASTORE());
+			}
+			return fOuter.bytecodeGen(clsName, mg, cp, factory, il, fOuter.getArgIdxMap(), idxArg, funcRefsMap);
+		}
+	}
+	
+	public InstructionHandle bytecodeGenSlow(String clsName, MethodGen mg,
+			ConstantPoolGen cp, InstructionFactory factory,
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
+			Map<MathFunc, Integer> funcRefsMap) {
+		if(this.isOuterVariablesActive) {
+			return fOuter.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
+		} else {
 			String outerName  = "fun_outer_"+java.util.UUID.randomUUID().toString().replaceAll("-", "");
 			// Generate the outer function
 			FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
@@ -263,6 +300,16 @@ public class FComposite extends AbstractMathFunc {
 					}, 
 			Constants.INVOKESTATIC));
 		}
+	}
+	
+	@Override
+	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+		super.setArgIdx(argsMap);
+		if(this.isOuterVariablesActive) {
+			this.fOuter.setArgIdx(argsMap);
+		} else {
+		}
+		return this;
 	}
 	
 	@Override
