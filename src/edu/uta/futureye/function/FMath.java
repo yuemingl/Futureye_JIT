@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FPow;
@@ -13,6 +19,7 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
@@ -283,6 +290,27 @@ public class FMath {
 			}
 			return rlt;
 		}
+		
+		@Override
+		public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+				ConstantPoolGen cp, InstructionFactory factory,
+				InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
+				Map<MathFunc, Integer> funcRefsMap) {
+			MathFunc ret = C0;
+			for(int i=0;i<fi.length;i++) {
+				ret = ret + ci[i]*fi[i];
+			}
+			Map<MathFunc, Integer> refsMap2 = BytecodeUtils.getFuncRefsMap(ret);
+			funcRefsMap.putAll(refsMap2);
+			ret.setArgIdx(this.getArgIdxMap());
+			return ret.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
+		}
+		
+		@Override
+		public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+			super.setArgIdx(argsMap);
+			return this;
+		}				
 	}
 	
 	/**

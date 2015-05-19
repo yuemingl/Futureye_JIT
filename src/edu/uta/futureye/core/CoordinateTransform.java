@@ -26,6 +26,7 @@ import edu.uta.futureye.lib.shapefun.SFLinearLocal1D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal3D;
 import edu.uta.futureye.lib.shapefun.SFTrilinearLocal3D;
+import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.VertexList;
@@ -407,6 +408,7 @@ public class CoordinateTransform {
 				list = Utils.mergeList(list, fun.getVarNames());
 			}
 			this.setVarNames(list);
+			this.setArgIdx(Utils.getIndexMap(this.getVarNames()));
 		}
 		
 		@Override
@@ -473,21 +475,23 @@ public class CoordinateTransform {
 			return J11*J22-J12*J21;
 		}
 		
-//		@Override
-//		public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
-//				ConstantPoolGen cp, InstructionFactory factory,
-//				InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
-//				Map<MathFunc, Integer> funcRefsMap) {
-//			MathFunc ret = funs[0]*funs[3]-funs[1]*funs[2];
-//			ret.setArgIdx(this.getArgIdxMap());
-//			return ret.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
-//		}
-//		
-//		@Override
-//		public MathFunc setArgIdx(Map<String, Integer> argsMap) {
-//			super.setArgIdx(argsMap);
-//			return this;
-//		}		
+		@Override
+		public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+				ConstantPoolGen cp, InstructionFactory factory,
+				InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
+				Map<MathFunc, Integer> funcRefsMap) {
+			MathFunc ret = funs[0]*funs[3]-funs[1]*funs[2];
+			Map<MathFunc, Integer> refsMap2 = BytecodeUtils.getFuncRefsMap(ret);
+			funcRefsMap.putAll(refsMap2);
+			ret.setArgIdx(this.getArgIdxMap());
+			return ret.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
+		}
+		
+		@Override
+		public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+			super.setArgIdx(argsMap);
+			return this;
+		}		
 	}
 	
 	/**

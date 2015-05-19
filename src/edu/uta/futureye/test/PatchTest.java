@@ -163,6 +163,7 @@ public class PatchTest {
 
 		e.updateJacobin();
 		MathFunc jac = e.getJacobin();
+		System.out.println(jac.compile().apply());
 		System.out.println(jac.apply());
 		
 		SFLinearLocal2DRS[] sf = new SFLinearLocal2DRS[3];
