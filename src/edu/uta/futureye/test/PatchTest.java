@@ -1,8 +1,6 @@
 package edu.uta.futureye.test;
 
-import static edu.uta.futureye.function.FMath.r;
-import static edu.uta.futureye.function.FMath.s;
-import static edu.uta.futureye.function.FMath.t;
+import static edu.uta.futureye.function.FMath.*;
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
@@ -167,6 +165,8 @@ public class PatchTest {
 		sf[0] = new SFLinearLocal2DRS(1);
 		sf[1] = new SFLinearLocal2DRS(2);
 		sf[2] = new SFLinearLocal2DRS(3);
+		for(int i=0; i<3; i++)
+			sf[i].assignElement(e);
 
 		//Construct a function with coordinate of points as parameters
 		String[] argsOrder = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
@@ -179,14 +179,14 @@ public class PatchTest {
 		MathFunc fx = x1*r + x2*s + x3*t;
 		MathFunc fy = y1*r + y2*s + y3*t;
 		MathFunc f = fx*fy;
-		
 		MathFunc[][] lhs = new MathFunc[3][3];
 		MathFunc[] rhs = new MathFunc[3];
 		for(int j=0; j<3; j++) {
 			MathFunc v = sf[j];
 			for(int i=0; i<3; i++) {
 				MathFunc u = sf[i];
-				lhs[j][i] = u*v*jac;
+				//lhs[j][i] = (u.diff("x")*v.diff("x")+u.diff("y")*v.diff("y") + u*v)*jac;
+				lhs[j][i] = (grad(u,"x","y").dot(grad(v,"x","y")) + u*v)*jac;
 			}
 			rhs[j] = v*f*jac;
 		}

@@ -308,6 +308,12 @@ public class FMath {
 		return new FLinearCombination(ci,fi);
 	}	
 	
+	
+	public static MathFunc dot(VectorFunction f, VectorFunction g) {
+		return f.dot(g);
+	}
+	
+	
 	/**
 	 * Compute gradient of <code>fun</code>
 	 * 
