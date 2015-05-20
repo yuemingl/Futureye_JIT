@@ -314,7 +314,7 @@ public class FComposite extends AbstractMathFunc {
 	
 	@Override
 	public MathFunc setActiveVarNames(List<String> varNames) {
-		if(Utils.isListEqual(fOuter.getVarNames(),  varNames)) {
+		if(Utils.isListEqualIgnoreOrder(fOuter.getVarNames(),  varNames)) {
 			this.isOuterVariablesActive = true;
 			this.setVarNames(varNames);
 			this.setArgIdx(Utils.getIndexMap(varNames));
@@ -324,7 +324,7 @@ public class FComposite extends AbstractMathFunc {
 			for(Entry<String, MathFunc> e : fInners.entrySet()) {
 				list = Utils.mergeList(list, e.getValue().getVarNames());
 			}
-			if(Utils.isListEqual(list, varNames)){
+			if(Utils.isListEqualIgnoreOrder(list, varNames)){
 				this.isOuterVariablesActive = false;
 				this.setVarNames(varNames);
 				Map<String, Integer> argsMap = Utils.getIndexMap(list);

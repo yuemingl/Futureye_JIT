@@ -1,5 +1,6 @@
 package edu.uta.futureye.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -70,13 +71,26 @@ public class Utils {
 		return true;
 	}
 	
-	public static boolean isListEqual(List<String> l1, List<String> l2) {
+	public static boolean isListEqualIgnoreOrder(List<String> l1, List<String> l2) {
 		if(l1.size() != l2.size()) return false;
-		for(int i = 0; i<l1.size(); i++) {
-			if(!l1.get(i).equals(l2.get(i)))
-				return false;
-		}
-		return true;
+		List<String> t1 = new ArrayList<String>();
+		t1.addAll(l1);
+		List<String> t2 = new ArrayList<String>();
+		t2.addAll(l2);
+		Collections.sort(t1, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		Collections.sort(t2, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		
+		return t1.equals(t2); //
 	}
 	
 	/**
