@@ -196,17 +196,21 @@ public class FComposite extends AbstractMathFunc {
 	
 	@Override
 	public String getExpr() {
-		String rlt = fOuter.getExpr();
-		for(Entry<String,MathFunc> map : fInners.entrySet()) {
-//			String names = map.getValue().getVarNames().toString();
-//			rlt = rlt.replace(map.getKey(), 
-//					map.getKey()+"("+names.substring(1,names.length()-1)+")");
-			if(map.getValue().getOpOrder() == OP_ORDER0)
-				rlt = rlt.replace(map.getKey(), map.getValue().getExpr());
-			else
-				rlt = rlt.replace(map.getKey(), "("+map.getValue().getExpr()+")");
+		if(this.isOuterVariablesActive) {
+			return fOuter.getExpr();
+		} else {
+			String rlt = fOuter.getExpr();
+			for(Entry<String,MathFunc> map : fInners.entrySet()) {
+	//			String names = map.getValue().getVarNames().toString();
+	//			rlt = rlt.replace(map.getKey(), 
+	//					map.getKey()+"("+names.substring(1,names.length()-1)+")");
+				if(map.getValue().getOpOrder() == OP_ORDER0)
+					rlt = rlt.replace(map.getKey(), map.getValue().getExpr());
+				else
+					rlt = rlt.replace(map.getKey(), "("+map.getValue().getExpr()+")");
+			}
+			return rlt;
 		}
-		return rlt;
 	}
 
 	@Override
