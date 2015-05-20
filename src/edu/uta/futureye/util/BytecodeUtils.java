@@ -93,7 +93,7 @@ public class BytecodeUtils {
 			}
 			sb.delete(sb.length()-1, sb.length());
 			sb.append(")");
-			func.setArgIdx(argsMap);
+			//func.setArgIdx(argsMap); //No need, this is for user defined apply() method not for compile()
 			System.out.println("JIT Compiled: "+func.getName()+sb.toString()+" = "+func.getExpr());
 		}
 

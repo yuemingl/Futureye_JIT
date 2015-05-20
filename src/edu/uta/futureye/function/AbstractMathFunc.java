@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.util.FutureyeException;
 
 /**
  * Template to implement multiple variables MathFunc 
@@ -45,7 +46,10 @@ public abstract class AbstractMathFunc extends MathFuncBasic {
 		//Allocate new array each time due to the "copy on change"
 		int[] idx = new int[varNames.length];
 		for(int i=0; i<varNames.length; i++) {
-			idx[i] = argsMap.get(varNames[i]);
+			Integer idx2 = argsMap.get(varNames[i]);
+			if(idx2 == null)
+				throw new FutureyeException("Cann't find index for variable "+varNames[i]);
+			idx[i] = idx2;
 		}
 		this.argIdx = idx;
 		return this;

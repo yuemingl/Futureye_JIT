@@ -22,6 +22,7 @@ public class TestFComposite {
 		double[] args = new double[]{2.0, 3.0};
 		System.out.println(fc.apply(args));
 		System.out.println(fc.compile().apply(args)); //13.0
+		System.out.println(fc.compile(new String[]{"a","b","x","y"}).apply(new double[]{1.0,2.0,2.0,3.0}));
 		
 		List<String> varNames = new ArrayList<String>();
 		varNames.add("r");
@@ -30,6 +31,7 @@ public class TestFComposite {
 		fc.setActiveVarNames(varNames);
 		System.out.println(fc.apply(args));
 		System.out.println(fc.compile().apply(args)); //5.0
+		System.out.println(fc.compile(new String[]{"a","b","r","s"}).apply(new double[]{1.0,2.0,2.0,3.0}));
 	}
 	
 	public static void test2() {
@@ -40,6 +42,7 @@ public class TestFComposite {
 		MathFunc fc = f.compose(fInners);
 		System.out.println(fc); //f(x,y) = (x*x)*(y + 1.0) + (x*x) + (y + 1.0) + 1.0
 		System.out.println(fc.compile().apply(new double[]{2,3})); //25.0
+		System.out.println(fc.compile(new String[]{"a","b","x","y"}).apply(new double[]{1.0,2.0,2.0,3.0}));
 	}
 
 	public static void main(String[] args) {
