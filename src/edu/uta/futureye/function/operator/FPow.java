@@ -11,7 +11,6 @@ import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.PUSH;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
-import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public class FPow extends FBinaryOp {
@@ -28,6 +27,23 @@ public class FPow extends FBinaryOp {
 	@Override
 	public double apply(double... args) {
 		return Math.pow(arg1.apply(args), arg2.apply(args));
+	}
+	
+	@Override
+	public MathFunc diff(String varName) {
+		if(arg2.isReal()) {
+			MathFunc ret = arg2.M(new FPow(arg1, arg2.S(1))).M(arg1.diff(varName));
+			return ret.setArgIdx(this.getArgIdxMap());
+		} else {
+			MathFunc b = arg1;
+			MathFunc e = arg2;
+			MathFunc y = this;
+			MathFunc log_b = new FLog(b);
+			MathFunc term1 = e.diff(varName).multiply(log_b);
+			MathFunc term2 = e.multiply(b.diff(varName)).divide(b);
+			MathFunc ret = y.multiply(term1.add(term2));
+			return ret.setArgIdx(this.getArgIdxMap());
+		}
 	}
 	
 	@Override

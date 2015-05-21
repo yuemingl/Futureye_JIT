@@ -10,6 +10,7 @@ import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
+import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public class FSin extends FUniaryOp {
@@ -25,6 +26,12 @@ public class FSin extends FUniaryOp {
 	@Override
 	public double apply(double... args) {
 		return Math.sin(arg.apply(args));
+	}
+	
+	@Override
+	public MathFunc diff(String varName) {
+		MathFunc ret = new FCos(arg).M(arg.diff(varName));
+		return ret.setArgIdx(this.getArgIdxMap());
 	}
 	
 	@Override

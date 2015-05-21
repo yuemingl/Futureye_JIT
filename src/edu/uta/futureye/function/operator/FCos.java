@@ -10,6 +10,7 @@ import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public class FCos extends FUniaryOp {
@@ -25,6 +26,12 @@ public class FCos extends FUniaryOp {
 	@Override
 	public double apply(double... args) {
 		return Math.cos(arg.apply(args));
+	}
+	
+	@Override
+	public MathFunc diff(String varName) {
+		MathFunc ret = FMath.Cm1.M(new FSin(arg)).M(arg.diff(varName));
+		return ret.setArgIdx(this.getArgIdxMap());
 	}
 	
 	@Override
