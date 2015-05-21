@@ -15,7 +15,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 
 public class FSin2 extends FUniaryOp {
 	/**
-	 * f(...) = sin(g(...))
+	 * Construct function : sin(g(x))
 	 * 
 	 * @param g
 	 */

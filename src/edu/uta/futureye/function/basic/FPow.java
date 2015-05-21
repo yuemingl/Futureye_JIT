@@ -1,5 +1,16 @@
 package edu.uta.futureye.function.basic;
 
+import java.util.Map;
+
+import com.sun.org.apache.bcel.internal.Constants;
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
+import com.sun.org.apache.bcel.internal.generic.Type;
+
 import edu.uta.futureye.function.AbstractSimpleMathFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
@@ -64,5 +75,4 @@ public class FPow extends AbstractSimpleMathFunc {
 	public String toString() {
 		return fName + "(" + varName + ", "+this.exponent+")";
 	}
-
 }

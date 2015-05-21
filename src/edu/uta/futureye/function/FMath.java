@@ -19,6 +19,8 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.operator.FPow2;
+import edu.uta.futureye.function.operator.FSin2;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
@@ -51,6 +53,15 @@ public class FMath {
 	
 	
 	//--- Basic operations ------------------------
+	public static MathFunc sin(MathFunc f) {
+		return new FSin2(f);
+	}
+//	public static MathFunc cos(MathFunc f) {
+//		return new FCos2(f);
+//	}
+//	public static MathFunc tan(MathFunc f) {
+//		return new FTan2(f);
+//	}
 	
 	public static MathFunc sqrt(final MathFunc f) {
 		FSqrt sqrt = new FSqrt();
@@ -77,6 +88,14 @@ public class FMath {
 		};*/
 	}
 	
+	public static MathFunc pow(MathFunc base, int exp) {
+//		FPow pow = new FPow(p);
+//		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
+//		fInners.put(pow.getVarName(), f);
+//		return pow.compose(fInners);
+		return new FPow2(base, FC.c(exp));
+	}
+	
 	/**
 	 * f^p
 	 * 
@@ -84,11 +103,12 @@ public class FMath {
 	 * @param p
 	 * @return
 	 */
-	public static MathFunc pow(final MathFunc f, final double p) {
-		FPow pow = new FPow(p);
-		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
-		fInners.put(pow.getVarName(), f);
-		return pow.compose(fInners);
+	public static MathFunc pow(MathFunc base, double exp) {
+//		FPow pow = new FPow(p);
+//		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
+//		fInners.put(pow.getVarName(), f);
+//		return pow.compose(fInners);
+		return new FPow2(base, FC.c(exp));
 		
 		
 //		return new AbstractMathFunc(f.getVarNames()) {
@@ -112,35 +132,39 @@ public class FMath {
 //			}
 //		};
 	}
-
-	/**
-	 * f1^f2
-	 * @param f1
-	 * @param f2
-	 * @return
-	 */
-	public static MathFunc pow(final MathFunc f1, final MathFunc f2) {
-		return new AbstractMathFunc(Utils.mergeList(f1.getVarNames(), f2.getVarNames())) {
-			@Override
-			public double apply(Variable v) {
-				return Math.pow(f1.apply(v),f2.apply(v));
-			}
-			@Override
-			public int getOpOrder() {
-				return OP_ORDER1;
-			}
-			@Override
-			public String toString() {
-				if( (f1.isConstant() && Math.abs(f1.apply()) < Constant.eps))
-					return "~0.0";
-				return "("+f1.toString()+")^("+f2.toString()+")";
-			}
-			@Override
-			public double apply(double... args) {
-				return Math.pow(f1.apply(args),f2.apply(args));
-			}
-		};
-	}	
+	
+	public static MathFunc pow(MathFunc base, MathFunc exp) {
+		return new FPow2(base, exp);
+	}
+	
+//	/**
+//	 * f1^f2
+//	 * @param f1
+//	 * @param f2
+//	 * @return
+//	 */
+//	public static MathFunc pow(final MathFunc f1, final MathFunc f2) {
+//		return new AbstractMathFunc(Utils.mergeList(f1.getVarNames(), f2.getVarNames())) {
+//			@Override
+//			public double apply(Variable v) {
+//				return Math.pow(f1.apply(v),f2.apply(v));
+//			}
+//			@Override
+//			public int getOpOrder() {
+//				return OP_ORDER1;
+//			}
+//			@Override
+//			public String toString() {
+//				if( (f1.isConstant() && Math.abs(f1.apply()) < Constant.eps))
+//					return "~0.0";
+//				return "("+f1.toString()+")^("+f2.toString()+")";
+//			}
+//			@Override
+//			public double apply(double... args) {
+//				return Math.pow(f1.apply(args),f2.apply(args));
+//			}
+//		};
+//	}	
 	
 	public static MathFunc abs(final MathFunc f) {
 		return new AbstractMathFunc(f.getVarNames()) {

@@ -185,7 +185,10 @@ public class PatchTest {
 		MathFunc fy = y1*r + y2*s + y3*t;
 		
 //		MathFunc ff = fx*fy;
-		MathFunc f = x*y; 
+//		MathFunc f = sin(PI*x)*sin(PI*y)*pow(E, -0.2); 
+		MathFunc f = 4*pow(x,4)*pow(y,4);
+//		MathFunc f = 4*(x*x*x*x + y*y*y*y);
+		
 		Map<String, MathFunc> map = new HashMap<String, MathFunc>();
 		map.put("x", fx);
 		map.put("y", fy);
@@ -223,9 +226,9 @@ public class PatchTest {
 		for(int k=0; k<1000000; k++) {
 			for(int j=0; j<3; j++) {
 				for(int i=0; i<3; i++) {
-					A[j][i] = intOnTriangleRefElement(clhs[j][i], params, coords.length, 3);
+					A[j][i] += intOnTriangleRefElement(clhs[j][i], params, coords.length, 3);
 				}
-				b[j] = intOnTriangleRefElement(crhs[j], params, coords.length, 3);
+				b[j] += intOnTriangleRefElement(crhs[j], params, coords.length, 3);
 			}
 		}
 		System.out.println(System.currentTimeMillis()-start);
