@@ -19,8 +19,8 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.function.operator.FPow2;
-import edu.uta.futureye.function.operator.FSin2;
+import edu.uta.futureye.function.operator.FPow;
+import edu.uta.futureye.function.operator.FSin;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
@@ -54,7 +54,7 @@ public class FMath {
 	
 	//--- Basic operations ------------------------
 	public static MathFunc sin(MathFunc f) {
-		return new FSin2(f);
+		return new FSin(f);
 	}
 //	public static MathFunc cos(MathFunc f) {
 //		return new FCos2(f);
@@ -93,7 +93,7 @@ public class FMath {
 //		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 //		fInners.put(pow.getVarName(), f);
 //		return pow.compose(fInners);
-		return new FPow2(base, FC.c(exp));
+		return new FPow(base, FC.c(exp));
 	}
 	
 	/**
@@ -108,7 +108,7 @@ public class FMath {
 //		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 //		fInners.put(pow.getVarName(), f);
 //		return pow.compose(fInners);
-		return new FPow2(base, FC.c(exp));
+		return new FPow(base, FC.c(exp));
 		
 		
 //		return new AbstractMathFunc(f.getVarNames()) {
@@ -134,7 +134,7 @@ public class FMath {
 	}
 	
 	public static MathFunc pow(MathFunc base, MathFunc exp) {
-		return new FPow2(base, exp);
+		return new FPow(base, exp);
 	}
 	
 //	/**

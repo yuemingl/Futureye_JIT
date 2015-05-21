@@ -14,7 +14,7 @@ import edu.uta.futureye.function.basic.FSqrt;
 import edu.uta.futureye.function.basic.FTan;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.operator.FSin2;
+import edu.uta.futureye.function.operator.FSin;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
 
@@ -115,7 +115,7 @@ public class BytecodeTest {
 	}
 	
 	public static void test8() {
-		FSin2 sin = new FSin2(FX.x.A(FX.y));
+		FSin sin = new FSin(FX.x.A(FX.y));
 		System.out.println(sin);
 		System.out.println(sin.compile().apply(Math.PI/8, 3*Math.PI/8));
 	}

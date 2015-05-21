@@ -14,25 +14,30 @@ import com.sun.org.apache.bcel.internal.generic.Type;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 
-public class FPow2 extends FBinaryOp {
+public class FPow extends FBinaryOp {
 	/**
-	 * 
 	 * Construct function: pow(base(x), exp(y))
 	 * 
 	 * @param base
 	 * @param exp
 	 */
-	public FPow2(MathFunc base, MathFunc exp) {
+	public FPow(MathFunc base, MathFunc exp) {
 		super(base, exp);
 	}
 	
-	public FPow2(MathFunc base, int exp) {
+	/**
+	 * Construct function: pow(base(x), exp)
+	 * 
+	 * @param base
+	 * @param exp an integer
+	 */
+	public FPow(MathFunc base, int exp) {
 		super(base, FC.c(exp));
 	}
 	
 	@Override
 	public double apply(double... args) {
-		throw new UnsupportedOperationException();
+		return Math.pow(arg1.apply(args), arg2.apply(args));
 	}
 	
 	@Override

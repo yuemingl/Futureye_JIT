@@ -10,22 +10,21 @@ import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
-import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 
-public class FSin2 extends FUniaryOp {
+public class FSqrt extends FUniaryOp {
 	/**
-	 * Construct function : sin(g(x))
+	 * Construct function : sqrt(g(x))
 	 * 
 	 * @param g
 	 */
-	public FSin2(MathFunc g) {
+	public FSqrt(MathFunc g) {
 		super(g);
 	}
 
 	@Override
 	public double apply(double... args) {
-		throw new UnsupportedOperationException();
+		return Math.sqrt(arg.apply(args));
 	}
 	
 	@Override
@@ -34,7 +33,7 @@ public class FSin2 extends FUniaryOp {
 			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
 			Map<MathFunc, Integer> funcRefsMap) {
 		arg.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
-		return  il.append(factory.createInvoke("java.lang.Math", "sin",
+		return  il.append(factory.createInvoke("java.lang.Math", "sqrt",
 				Type.DOUBLE, 
 				new Type[] { Type.DOUBLE },
 		Constants.INVOKESTATIC));
@@ -42,6 +41,6 @@ public class FSin2 extends FUniaryOp {
 	
 	@Override
 	public String getExpr() {
-		return "sin("+arg.getExpr()+")";
+		return "sqrt("+arg.getExpr()+")";
 	}
 }
