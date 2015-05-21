@@ -25,16 +25,6 @@ public class FPow extends FBinaryOp {
 		super(base, exp);
 	}
 	
-	/**
-	 * Construct function: pow(base(x), exp)
-	 * 
-	 * @param base
-	 * @param exp an integer
-	 */
-	public FPow(MathFunc base, int exp) {
-		super(base, FC.c(exp));
-	}
-	
 	@Override
 	public double apply(double... args) {
 		return Math.pow(arg1.apply(args), arg2.apply(args));
@@ -48,7 +38,7 @@ public class FPow extends FBinaryOp {
 		arg1.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		if(arg2 instanceof FC) {
 			il.append(new PUSH(cp, (int)arg2.apply()));
-			return  il.append(factory.createInvoke("edu.uta.futureye.function.operator.FPow2", "powi",
+			return  il.append(factory.createInvoke("edu.uta.futureye.function.operator.FPow", "powi",
 					Type.DOUBLE, 
 					new Type[] { Type.DOUBLE, Type.INT },
 			Constants.INVOKESTATIC));
