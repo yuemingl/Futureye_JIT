@@ -36,6 +36,7 @@ public class BytecodeUtils {
 			for(Entry<String, MathFunc> e : fc.fInners.entrySet()) {
 				postOrder(e.getValue(), list);
 			}
+			postOrder(fc.fOuter, list);
 		}
 		list.add(func);
 	}
