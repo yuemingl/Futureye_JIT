@@ -93,7 +93,22 @@ public class FC extends MathFuncBasic {
 	public boolean isConstant() {
 		return true;
 	}
-
+	
+	@Override
+	public boolean isInteger() {
+		return Math.floor(val)==val;
+	}
+	
+	@Override
+	public boolean isZero() {
+		return val==0.0;
+	}
+	
+	@Override
+	public boolean isReal() {
+		return true;
+	}
+	
 	@Override
 	public String getName() {
 		return String.valueOf(val);

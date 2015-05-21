@@ -36,7 +36,7 @@ public class FPow extends FBinaryOp {
 			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
 			Map<MathFunc, Integer> funcRefsMap) {
 		arg1.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
-		if(arg2 instanceof FC) {
+		if(arg2.isInteger()) {
 			il.append(new PUSH(cp, (int)arg2.apply()));
 			return  il.append(factory.createInvoke("edu.uta.futureye.function.operator.FPow", "powi",
 					Type.DOUBLE, 

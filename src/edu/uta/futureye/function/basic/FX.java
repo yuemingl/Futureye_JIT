@@ -130,4 +130,19 @@ public class FX extends MathFuncBasic {
 	public boolean isConstant() {
 		return false;
 	}
+	
+	@Override
+	public boolean isInteger() {
+		return false;
+	}
+	
+	@Override
+	public boolean isZero() {
+		return false;
+	}
+	
+	@Override
+	public boolean isReal() {
+		return false;
+	}
 }

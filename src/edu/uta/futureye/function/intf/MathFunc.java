@@ -191,6 +191,24 @@ public interface MathFunc {
 	boolean isConstant();
 	
 	/**
+	 * Returns true if it is an integer
+	 * @return
+	 */
+	boolean isInteger();
+	
+	/**
+	 * Return true if it is a zero
+	 * @return
+	 */
+	boolean isZero();
+	
+	/**
+	 * Return true if it is a real number
+	 * @return
+	 */
+	boolean isReal();
+	
+	/**
 	 * Shallow copy
 	 * 
 	 * @return
