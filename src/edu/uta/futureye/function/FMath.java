@@ -1,5 +1,13 @@
 package edu.uta.futureye.function;
 
+import static edu.uta.futureye.function.FMath.exp;
+import static edu.uta.futureye.function.FMath.log;
+import static edu.uta.futureye.function.FMath.log10;
+import static edu.uta.futureye.function.FMath.max;
+import static edu.uta.futureye.function.FMath.min;
+import static edu.uta.futureye.function.FMath.x;
+import static edu.uta.futureye.function.FMath.y;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,11 +26,22 @@ import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.operator.FAbs;
+import edu.uta.futureye.function.operator.FAcos;
+import edu.uta.futureye.function.operator.FAsin;
 import edu.uta.futureye.function.operator.FCos;
+import edu.uta.futureye.function.operator.FCosh;
+import edu.uta.futureye.function.operator.FExp;
+import edu.uta.futureye.function.operator.FLog;
+import edu.uta.futureye.function.operator.FLog10;
+import edu.uta.futureye.function.operator.FMax;
+import edu.uta.futureye.function.operator.FMin;
 import edu.uta.futureye.function.operator.FPow;
+import edu.uta.futureye.function.operator.FSignum;
 import edu.uta.futureye.function.operator.FSin;
+import edu.uta.futureye.function.operator.FSinh;
 import edu.uta.futureye.function.operator.FSqrt;
 import edu.uta.futureye.function.operator.FTan;
+import edu.uta.futureye.function.operator.FTanh;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
@@ -81,6 +100,50 @@ public class FMath {
 	
 	public static MathFunc abs(MathFunc f) {
 		return new FAbs(f);
+	}
+	
+	public static MathFunc signum(MathFunc f) {
+		return new FSignum(f);
+	}
+	
+	public static MathFunc sinh(MathFunc f) {
+		return new FSinh(f);
+	}
+
+	public static MathFunc cosh(MathFunc f) {
+		return new FCosh(f);
+	}
+
+	public static MathFunc tanh(MathFunc f) {
+		return new FTanh(f);
+	}
+
+	public static MathFunc asin(MathFunc f) {
+		return new FAsin(f);
+	}
+
+	public static MathFunc acos(MathFunc f) {
+		return new FAcos(f);
+	}
+
+	public static MathFunc log(MathFunc f) {
+		return new FLog(f);
+	}
+
+	public static MathFunc log10(MathFunc f) {
+		return new FLog10(f);
+	}
+
+	public static MathFunc max(MathFunc f,MathFunc g) {
+		return new FMax(f,g);
+	}
+
+	public static MathFunc min(MathFunc f,MathFunc g) {
+		return new FMin(f,g);
+	}
+
+	public static MathFunc exp(MathFunc f) {
+		return new FExp(f);
 	}
 	
 	/**

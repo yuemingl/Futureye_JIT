@@ -24,7 +24,7 @@ public class FAsin extends FUniaryOp {
 
 	@Override
 	public double apply(double... args) {
-		return Math.acos(arg.apply(args));
+		return Math.asin(arg.apply(args));
 	}
 	
 	@Override

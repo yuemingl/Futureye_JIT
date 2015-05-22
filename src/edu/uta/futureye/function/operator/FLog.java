@@ -35,7 +35,7 @@ public class FLog extends FUniaryOp {
 
 	@Override
 	public MathFunc diff(String varName) {
-		MathFunc ret = FMath.C1.D(this).M(arg.diff(varName));
+		MathFunc ret = FMath.C1.D(arg).M(arg.diff(varName));
 		return ret.setArgIdx(this.getArgIdxMap());
 	}
 	
