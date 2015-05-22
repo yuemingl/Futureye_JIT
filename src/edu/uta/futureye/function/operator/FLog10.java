@@ -10,6 +10,7 @@ import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public class FLog10 extends FUniaryOp {
@@ -26,6 +27,12 @@ public class FLog10 extends FUniaryOp {
 	@Override
 	public double apply(double... args) {
 		return Math.log10(arg.apply(args));
+	}
+
+	@Override
+	public MathFunc diff(String varName) {
+		MathFunc ret = FMath.C1.D(this.M(Math.log(10))).M(arg.diff(varName));
+		return ret.setArgIdx(this.getArgIdxMap());
 	}
 	
 	@Override

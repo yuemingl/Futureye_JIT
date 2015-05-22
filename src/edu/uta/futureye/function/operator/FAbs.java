@@ -27,6 +27,16 @@ public class FAbs extends FUniaryOp {
 		return Math.abs(arg.apply(args));
 	}
 	
+	/**
+	 * Recall that |f(x)| = sqrt(f(x)*f(x)), so
+	 * |f(x)|' = f(x)*f'(x)/|f(x)|
+	 */
+	@Override
+	public MathFunc diff(String varName) {
+		MathFunc ret = arg.M(arg.diff(varName)).D(this);
+		return ret.setArgIdx(this.getArgIdxMap());
+	}
+	
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
 			ConstantPoolGen cp, InstructionFactory factory,

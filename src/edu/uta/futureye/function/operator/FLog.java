@@ -10,8 +10,13 @@ import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import com.sun.org.apache.bcel.internal.generic.MethodGen;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.intf.MathFunc;
 
+/**
+ * The natural logarithm (base e) of an instance of MathFunc
+ *
+ */
 public class FLog extends FUniaryOp {
 	/**
 	 * Construct function: log(g(x))
@@ -30,7 +35,7 @@ public class FLog extends FUniaryOp {
 
 	@Override
 	public MathFunc diff(String varName) {
-		MathFunc ret = this.M(arg.diff(varName));
+		MathFunc ret = FMath.C1.D(this).M(arg.diff(varName));
 		return ret.setArgIdx(this.getArgIdxMap());
 	}
 	

@@ -26,6 +26,12 @@ public class FExp extends FUniaryOp {
 	public double apply(double... args) {
 		return Math.exp(arg.apply(args));
 	}
+
+	@Override
+	public MathFunc diff(String varName) {
+		MathFunc ret = this.M(arg.diff(varName));
+		return ret.setArgIdx(this.getArgIdxMap());
+	}
 	
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
