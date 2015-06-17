@@ -36,7 +36,7 @@ public class TestMathematicalFunctions {
 		check(sin(x).toString(), sin(x).apply(0.1), sin(0.1));
 		check(cos(x).toString(), cos(x).apply(0.1), cos(0.1));
 		check(tan(x).toString(), tan(x).apply(0.1), tan(0.1));
-		check(abs(x).toString(), abs(x).apply(0.1), abs(0.1));
+		check(abs(x).toString(), abs(x).apply(-0.1), abs(-0.1));
 		check(signum(x).toString(), signum(x).apply(0.1), signum(0.1));
 		check(sinh(x).toString(), sinh(x).apply(0.1), sinh(0.1));
 		check(cosh(x).toString(), cosh(x).apply(0.1), cosh(0.1));

@@ -247,6 +247,7 @@ public class FComposite extends AbstractMathFunc {
 				f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
 				il.append(new DASTORE());
 			}
+			// Pass a double array to fOuter
 			return fOuter.bytecodeGen(clsName, mg, cp, factory, il, fOuter.getArgIdxMap(), idxArg, funcRefsMap);
 		}
 	}

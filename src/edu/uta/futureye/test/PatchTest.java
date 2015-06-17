@@ -173,7 +173,7 @@ public class PatchTest {
 		for(int i=0; i<3; i++)
 			sf[i].assignElement(e);
 
-		//Construct a function with coordinate of points as parameters
+		//Construct a function with the coordinate of points in an element as parameters
 		String[] argsOrder = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
 		FX x1 = new FX("x1");
 		FX x2 = new FX("x2");
