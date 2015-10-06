@@ -52,40 +52,40 @@ public class PatchTest {
 			System.out.println("!!!FAIL!!!   "+d1+"!="+d2+" "+info);
 		}
 	}
-	public static double intOnTriangleRefElement(CompiledFunc integrand, double[] params, int paramPos, int order) {
+	public static double intOnTriangleRefElement(CompiledFunc integrand, double[] params, int paramsStart, int order) {
 		double rlt = 0.0;
 		if(order == 2) {
-			params[paramPos] = 0.333333333333333;
-			params[paramPos+1] = 0.333333333333333;
-			params[paramPos+2] = 0.333333333333333;
+			params[paramsStart] = 0.333333333333333;
+			params[paramsStart+1] = 0.333333333333333;
+			params[paramsStart+2] = 0.333333333333333;
 			rlt = 0.5*integrand.apply(params);
 		} else if(order == 3) {
-			params[paramPos] = 0.5; params[paramPos+1] = 0.5; params[paramPos+2] = 0.0; 
+			params[paramsStart] = 0.5; params[paramsStart+1] = 0.5; params[paramsStart+2] = 0.0; 
 			double pv1 = integrand.apply(params);
-			params[paramPos] = 0.0; params[paramPos+1] = 0.5; params[paramPos+2] = 0.5; 
+			params[paramsStart] = 0.0; params[paramsStart+1] = 0.5; params[paramsStart+2] = 0.5; 
 			double pv2 = integrand.apply(params);
-			params[paramPos] = 0.5; params[paramPos+1] = 0.0; params[paramPos+2] = 0.5; 
+			params[paramsStart] = 0.5; params[paramsStart+1] = 0.0; params[paramsStart+2] = 0.5; 
 			double pv3 = integrand.apply(params);
 			rlt = 0.5*0.333333333333333*(pv1 + pv2 + pv3);
 		} else if(order == 4) {
 			double w123 = 25.0/48.0;
 			double w4 = -27.0/48.0;
 			
-			params[paramPos] = 0.6; params[paramPos+1] = 0.2; params[paramPos+2] = 0.2; 
+			params[paramsStart] = 0.6; params[paramsStart+1] = 0.2; params[paramsStart+2] = 0.2; 
 			double pv1 = integrand.apply(params);
-			params[paramPos] = 0.2; params[paramPos+1] = 0.6; params[paramPos+2] = 0.2; 
+			params[paramsStart] = 0.2; params[paramsStart+1] = 0.6; params[paramsStart+2] = 0.2; 
 			double pv2 = integrand.apply(params);
-			params[paramPos] = 0.2; params[paramPos+1] = 0.2; params[paramPos+2] = 0.6; 
+			params[paramsStart] = 0.2; params[paramsStart+1] = 0.2; params[paramsStart+2] = 0.6; 
 			double pv3 = integrand.apply(params);
-			params[paramPos] = 0.333333333333333; params[paramPos+1] = 0.333333333333333; params[paramPos+2] = 0.333333333333333; 
+			params[paramsStart] = 0.333333333333333; params[paramsStart+1] = 0.333333333333333; params[paramsStart+2] = 0.333333333333333; 
 			double pv4 = 0.5*integrand.apply(params);
 			
 			rlt = 0.5*w123*(pv1 + pv2 + pv3) + w4*pv4;
 		} else if(order == 5) {
 			for(int i=0;i<7;i++) {
-				params[paramPos]   = triR[i]; 
-				params[paramPos+1] = triS[i]; 
-				params[paramPos+2] = 1.0-triR[i]-triS[i];
+				params[paramsStart]   = triR[i]; 
+				params[paramsStart+1] = triS[i]; 
+				params[paramsStart+2] = 1.0-triR[i]-triS[i];
 				rlt += triW[i]*integrand.apply(params);
 			}
 		}
