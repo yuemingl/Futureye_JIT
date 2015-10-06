@@ -23,6 +23,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
+ * Identity function
  * f(x) = x
  * 
  */

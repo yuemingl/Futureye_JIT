@@ -163,6 +163,7 @@ public class PatchTest {
 
 		e.updateJacobin();
 		MathFunc jac = e.getJacobin();
+		System.out.println("jac="+jac);
 		System.out.println(jac.compile().apply());
 		System.out.println(jac.apply());
 		
@@ -201,6 +202,8 @@ public class PatchTest {
 			for(int i=0; i<3; i++) {
 				MathFunc u = sf[i];
 				//lhs[j][i] = (u.diff("x")*v.diff("x")+u.diff("y")*v.diff("y") + u*v)*jac;
+				
+				//TODO: jac changes with element, how to compile once for all different elements?
 				lhs[j][i] = (grad(u,"x","y").dot(grad(v,"x","y")) + u*v)*jac;
 			}
 			rhs[j] = v*ff*jac;

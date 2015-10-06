@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 *.pydevproject
 .metadata
 .gradle
@@ -35,6 +34,5 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
-=======
-/bin
->>>>>>> Stashed changes
+
+*.dat
