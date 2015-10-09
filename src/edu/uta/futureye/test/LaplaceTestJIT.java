@@ -200,34 +200,29 @@ public class LaplaceTestJIT {
 			rhs[j].setName("RHS"+j);
 		}
 		
-//		public MathFunc diff(String var) {
-//			if(varName.equals("r")) { //r对应三角形高h的负倒数
-//				if(var.equals("x"))
-//					return FC.c( (y[1]-y[2]) / jac);
-//				if(var.equals("y"))
-//					return FC.c( (x[2]-x[1]) / jac);
-//			} else if(varName.equals("s")) { //s对应三角形高h的负倒数
-//				if(var.equals("x"))
-//					return FC.c( (y[2]-y[0]) / jac);
-//				if(var.equals("y"))
-//					return FC.c( (x[0]-x[2]) / jac);
-//			} else
-//				throw new FutureyeException("\nERROR:\n varName="+varName);
-//			return null;
-//		}
-
+//		r_x = (y2-y3)/jac;
+//		r_y = (x3-x2)/jac;
+//		s_x = (y3-y1)/jac;
+//		s_y = (x1-x3)/jac;
+//		double[][] lhs = { //SymJava Example6
+//				{rx*rx + ry*ry, rx*sx + ry*sy, rx*tx+ry*ty},
+//				{sx*rx + sy*ry, sx*sx + sy*sy, sx*tx+sy*ty},
+//				{tx*rx + ty*ry, tx*sx + ty*sy, tx*tx+ty*ty},
+//		};
+		
 //		lhs[0][0] = ((y2-y3)/jac*(y2-y3)/jac             + (x3-x2)/jac*(x3-x2)/jac)*jac; --simplify-->
+		
 		lhs[0][0] = ((y2-y3)*(y2-y3)             + (x3-x2)*(x3-x2))/jac;
 		lhs[0][1] = ((y2-y3)*(y3-y1)             + (x3-x2)*(x1-x3))/jac;
-		lhs[0][2] = ((y2-y3)*(-(y2-y3)-(y3-y1)) + (x3-x2)*(-(x3-x2)-(x1-x3)))/jac;
+		lhs[0][2] = ((y2-y3)*(-(y2-y3)-(y3-y1))  + (x3-x2)*(-(x3-x2)-(x1-x3)))/jac;
 
 		lhs[1][0] = ((y3-y1)*(y2-y3)             + (x1-x3)*(x3-x2))/jac;
 		lhs[1][1] = ((y3-y1)*(y3-y1)             + (x1-x3)*(x1-x3))/jac;
-		lhs[1][2] = ((y3-y1)*(-(y2-y3)-(y3-y1)) + (x1-x3)*(-(x3-x2)-(x1-x3)))/jac;
+		lhs[1][2] = ((y3-y1)*(-(y2-y3)-(y3-y1))  + (x1-x3)*(-(x3-x2)-(x1-x3)))/jac;
 		
 		lhs[2][0] = ((-(y2-y3)-(y3-y1))*(y2-y3)             + (-(x3-x2)-(x1-x3))*(x3-x2))/jac;
 		lhs[2][1] = ((-(y2-y3)-(y3-y1))*(y3-y1)             + (-(x3-x2)-(x1-x3))*(x1-x3))/jac;
-		lhs[2][2] = ((-(y2-y3)-(y3-y1))*(-(y2-y3)-(y3-y1)) + (-(x3-x2)-(x1-x3))*(-(x3-x2)-(x1-x3)))/jac;
+		lhs[2][2] = ((-(y2-y3)-(y3-y1))*(-(y2-y3)-(y3-y1))  + (-(x3-x2)-(x1-x3))*(-(x3-x2)-(x1-x3)))/jac;
 		for(int j=0; j<nDOFs; j++) {
 			for(int i=0; i<nDOFs; i++) {
 				lhs[j][i].setName("LHS"+i+""+j);
