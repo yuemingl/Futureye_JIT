@@ -49,15 +49,15 @@ public class T04Lapcace2 {
 		mesh.computeNodeBelongsToElements();
 		
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y"){
-			@Override
-			public double apply(double... args) {
-				if(3.0-args[0]<0.01)
-					return 1.0;
-				else
-					return -1.0;
-			}
-		});
+//		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y"){
+//			@Override
+//			public double apply(double... args) {
+//				if(3.0-args[0]<0.01)
+//					return 1.0;
+//				else
+//					return -1.0;
+//			}
+//		});
 		mapNTF.put(NodeType.Dirichlet, null);		
 		mesh.markBorderNode(mapNTF);
 
