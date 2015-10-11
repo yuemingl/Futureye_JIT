@@ -164,6 +164,9 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	
 	///////////////////////////Compilation///////////////////////////////
 	
+	/**
+	 * Call the 'apply' method by default if a sub-class does not override this method to generate the bytecode
+	 */
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
 			ConstantPoolGen cp, InstructionFactory factory, 
