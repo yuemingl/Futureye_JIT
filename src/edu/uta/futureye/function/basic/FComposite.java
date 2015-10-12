@@ -253,7 +253,7 @@ public class FComposite extends AbstractMathFunc {
 					}
 					f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
 				} else {
-					il.append(new PUSH(cp, 0.0)); //pad 0.0
+					il.append(new PUSH(cp, 0.0)); //pad 0.0 for undefined variables in fInners map
 				}
 				il.append(new DASTORE());
 			}
