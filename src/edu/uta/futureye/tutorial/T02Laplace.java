@@ -85,7 +85,7 @@ public class T02Laplace {
         Vector u = solver.solveDGESV(stiff, load);
         System.out.println("u=");
         for(int i=1;i<=u.getDim();i++)
-            System.out.print(String.format("%.3f ", u.get(i)));
+            System.out.println(String.format("%.3f ", u.get(i)));
 
         //7.Output results to an Techplot format file
         MeshWriter writer = new MeshWriter(mesh);

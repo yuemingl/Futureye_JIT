@@ -46,6 +46,7 @@ import edu.uta.futureye.util.container.VertexList;
 
 
 /**
+ * This file express LHS explicitly by symbolic expression
  * <blockquote><pre>
  * Problem:
  *   -\Delta{u} = f

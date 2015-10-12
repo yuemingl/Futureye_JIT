@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
 import static edu.uta.futureye.function.FMath.*;
@@ -51,9 +52,35 @@ public class TestFComposite {
 		System.out.println(fc.apply(new double[]{1.0,2.0,3.0})); //6.0
 	}
 
+	public static void test1() {
+		MathFunc f = y - x;
+		Map<String,Integer> argMap = new HashMap<String, Integer>();
+		argMap.put("x", 1);
+		argMap.put("y", 0);
+		f.setArgIdx(argMap);
+		System.out.println(f);
+		System.out.println(f.getVarNames());
+		System.out.println(f.getArgIdxMap());
+
+		MathFunc fx = r;
+		MathFunc fy = s;
+		Map<String, MathFunc> map = new HashMap<String, MathFunc>();
+		map.put("x", fx);
+		map.put("y", fy);
+		MathFunc cf = f.compose(map);
+		System.out.println(cf);
+		System.out.println(cf.getVarNames());
+		System.out.println(cf.getArgIdxMap());
+		
+		CompiledFunc ccf = cf.compile(new String[]{"s","r"});
+		System.out.println(ccf.apply(5.5,2));
+
+	}
+	
 	public static void main(String[] args) {
-		test0();
-		test_setArgIdx();
+		//test0();
+		//test_setArgIdx();
+		test1();
 	}
 
 

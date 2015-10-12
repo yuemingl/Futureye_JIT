@@ -221,34 +221,44 @@ public class FComposite extends AbstractMathFunc {
 		if(this.isOuterVariablesActive) {
 			return fOuter.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		} else {
-			// Prepare arguments for calling the outer function
+			// Prepare a double array as the arguments for the fOuter function
+			// which is equal to call the outer function
 			LocalVariableGen lg;
-			//double[] arg = null;
-			lg = mg.addLocalVariable("arg_outer",
-				new ArrayType(Type.DOUBLE, 1), null, null);
-			int idxArg = lg.getIndex();
-			il.append(InstructionConstants.ACONST_NULL);
-			lg.setStart(il.append(new ASTORE(idxArg))); // "idxArg" valid from here
-			//arg = new double[size]
-			il.append(new PUSH(cp, fInners.size()));
-			il.append(new NEWARRAY(Type.DOUBLE));
-			il.append(new ASTORE(idxArg));
 			
-			int index = 0;
+			//double[] arg = null;
+			lg = mg.addLocalVariable("aryArgOuter",
+				new ArrayType(Type.DOUBLE, 1), null, null);
+			int aryArgOuter = lg.getIndex();
+			il.append(InstructionConstants.ACONST_NULL);
+			lg.setStart(il.append(new ASTORE(aryArgOuter))); // "idxArg" valid from here
+			
+			//arg = new double[size]
+			//il.append(new PUSH(cp, fInners.size()));
+			il.append(new PUSH(cp, fOuter.getVarNames().size()));
+			il.append(new NEWARRAY(Type.DOUBLE));
+			il.append(new ASTORE(aryArgOuter));
+			
+			//int index = 0;
+			Map<String, Integer> argMap = fOuter.getArgIdxMap();
 			for(String name : fOuter.getVarNames()) {
-				il.append(new ALOAD(idxArg));
-				il.append(new PUSH(cp, index++));
 				MathFunc f = fInners.get(name);
-				HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
-				List<String> args = f.getVarNames();
-				for(int i=0; i<args.size(); i++) {
-					fArgsMap.put(args[i], argsMap.get(args[i]));
+				//aryArgOuter[argIdx] = {value of the argument}
+				il.append(new ALOAD(aryArgOuter));
+				il.append(new PUSH(cp, argMap.get(name))); //index++
+				if(f != null) {
+					List<String> args = f.getVarNames();
+					HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
+					for(int i=0; i<args.size(); i++) {
+						fArgsMap.put(args[i], argsMap.get(args[i]));
+					}
+					f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
+				} else {
+					il.append(new PUSH(cp, 0.0)); //pad 0.0
 				}
-				f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
 				il.append(new DASTORE());
 			}
 			// Pass a double array to fOuter
-			return fOuter.bytecodeGen(clsName, mg, cp, factory, il, fOuter.getArgIdxMap(), idxArg, funcRefsMap);
+			return fOuter.bytecodeGen(clsName, mg, cp, factory, il, fOuter.getArgIdxMap(), aryArgOuter, funcRefsMap);
 		}
 	}
 	
