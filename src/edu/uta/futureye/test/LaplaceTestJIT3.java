@@ -333,6 +333,20 @@ public class LaplaceTestJIT3 {
         MathFunc f = -2*(x*x+y*y)+36;
 
 		//4.Weak form
+        //The direct implementation of the weak form requires a user write the expression of the weak form inside loops. 
+        //Users must responsible to the correctness of loops. 
+        //In order to avoid writing the loops by the users, the idea of a template expression of the weak form can be adopted. 
+        //By providing by users just the template expression of the weak form, the trial and test functions in the expression 
+        //can be replaced to concrete shape functions in the loops of the library code.
+        //There are several ways in the implementation of the replacement of the trial and test functions.
+        //(1) A straight forward way is using the replace method for symbolic expression to replace the symbol of trial and 
+        //test functions by the symbol of shape functions. This way has two drawbacks. First, it is slow since the replacement operation 
+        //is actually a string match. Second, symbols could be replace by wrong ones during the string matching without resulting any error messages.
+        //(2) Let the users define a weak form function with trial and test functions as parameters. This way provide fast speed and better error checking. 
+        //However, the user interface is cumbersome since the users have to define functions for the weak forms.
+        //(3) Follow the idea from (2), but using the new feature lambda expression provided by Java 8, the expression of the weak form can be define concisely 
+        //with all the advantages of method (2). Specifically, we define two functional interfaces of the weak form builder to accept 
+        //the left hand side and right hand side of a weak form by providing two lambda expression by the users.
 		fet.makeWeakForm(
 				(u,v) -> grad(u,"x","y").dot(grad(v,"x","y")), 
 				v -> f*v
