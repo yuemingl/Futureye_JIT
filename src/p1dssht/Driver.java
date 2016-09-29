@@ -93,9 +93,17 @@ public class Driver {
         HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Dirichlet boundary of u
 		mapNTF.put(NodeType.Dirichlet, new AbstractMathFunc("x") {
+//			@Override
+//			public double apply(Variable v) {
+//				double x = v.get("x");
+//				//I think the problem is here, you should use absolute value of (x-0.4)
+//				if(Math.abs(x-L) < Constant.meshEps) return 1;
+//				else return 0;
+//			}
+
 			@Override
-			public double apply(Variable v) {
-				double x = v.get("x");
+			public double apply(double... args) {
+				double x = args[0];
 				//I think the problem is here, you should use absolute value of (x-0.4)
 				if(Math.abs(x-L) < Constant.meshEps) return 1;
 				else return 0;
@@ -151,6 +159,12 @@ public class Driver {
     			public double apply(Variable v) {
     				return 1.05 + 2150.0/(funU.apply(v) + 200.0);
     			}
+
+				@Override
+				public double apply(double... args) {
+					// TODO Auto-generated method stub
+					return 0;
+				}
     		};
     		//output intermediate results into the folder "ssht", you can use tecplot to open it
     		Tools.plotFunction(mesh, "ssht", String.format("k_iter%d.dat",i), k);
