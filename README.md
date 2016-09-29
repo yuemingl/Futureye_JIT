@@ -1,4 +1,4 @@
-See http://code.google.com/p/futureye/
+This is the version of Futureye with operator overloading and JIT support.
 
 FuturEye is a Finite Element Methods Toolkit written in Java. It provides a concise, natural, easily understandable and mathematically appealing programming interface. It is also designed to solve inverse problems based on FEM. FuturEye, comes from the application in optical tomography achieved by solving inverse problems of the differential equation.
 
