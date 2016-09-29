@@ -2,16 +2,15 @@ package edu.uta.futureye.test;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.application.ModelDOT;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -29,7 +28,7 @@ public class DescreteDerivativeTest {
 		MeshReader reader = new MeshReader("rectangle.grd");
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);		
 
 		mesh.markBorderNode(mapNTF);
@@ -47,14 +46,14 @@ public class DescreteDerivativeTest {
 		//u=(x^2-9)*(y^2-9)
 		//f=-2*(x^2+y^2)+36
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		
 		weakForm.setParam(
 				null,
 				null,
-				new FC(0.05),null //Robin: d*u + k*u_n = q
+				new FC(0.05),null //Robin: d*u + k*u_n = g
 				); 	
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);

@@ -1,21 +1,37 @@
 package edu.uta.futureye.algebra;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import edu.uta.futureye.algebra.intf.BlockMatrix;
 import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.MatrixEntry;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.Sequence;
 
-public class SparseBlockMatrix implements BlockMatrix {
+/**
+ * Sparse block matrix, row-major sparse storage
+ * <p>
+ * 该类实现了SparseMatrix接口，既可以当作一个整体的稀疏矩阵，又可以当作一个分块矩阵
+ * 一般用来存储向量值问题的刚度矩阵
+ * <p>
+ * 块结构不是稀疏的，“零”块需要一个具有维度，但没有数据的SparseMatrix
+ * 
+ * @author liuyueming
+ *
+ */
+public class SparseBlockMatrix implements BlockMatrix<SparseMatrix>,SparseMatrix {
 	protected int rowBlockDim;
 	protected int colBlockDim;
 	protected double defaultValue = 0.0;
-	protected Map<Integer,Map<Integer,Matrix>> m = 
-		new LinkedHashMap<Integer,Map<Integer,Matrix>>();
-	protected String name="";
+	//块结构不是稀疏的，可以采用二维数组？
+	protected Map<Integer,Map<Integer,SparseMatrix>> m = 
+		new LinkedHashMap<Integer,Map<Integer,SparseMatrix>>();
+	protected String name = this.getClass().getSimpleName()+Sequence.getInstance().nextSeq();
 
 	/**
 	 * Construct a rowBlockDim*colBlockDim block matrix
@@ -53,12 +69,12 @@ public class SparseBlockMatrix implements BlockMatrix {
 	}
 
 	@Override
-	public Matrix getBlock(int rowBlocl, int colBlock) {
-		Map<Integer,Matrix> arow = m.get(rowBlocl);
+	public SparseMatrix getBlock(int rowBlocl, int colBlock) {
+		Map<Integer,SparseMatrix> arow = m.get(rowBlocl);
 		if(arow == null) {
 			return null;
 		} else {
-			Matrix v = arow.get(colBlock);
+			SparseMatrix v = arow.get(colBlock);
 			if(v == null) {
 				return null;
 			} else {
@@ -68,17 +84,17 @@ public class SparseBlockMatrix implements BlockMatrix {
 	}
 	
 	@Override
-	public void setBlock(int row, int col, Matrix subMat) {
-		Map<Integer,Matrix> arow = m.get(row);
+	public void setBlock(int row, int col, SparseMatrix subMat) {
+		Map<Integer,SparseMatrix> arow = m.get(row);
 		if(arow == null) {
-			arow = new LinkedHashMap<Integer,Matrix>();
+			arow = new LinkedHashMap<Integer,SparseMatrix>();
 			m.put(row, arow);
 		}
 		arow.put(col, subMat);
 	}
 
 	@Override
-	public Map<Integer, Map<Integer, Matrix>> getAllBlock() {
+	public Map<Integer, Map<Integer, SparseMatrix>> getAllBlock() {
 		return m;
 	}
 
@@ -95,8 +111,8 @@ public class SparseBlockMatrix implements BlockMatrix {
 	@Override
 	public int getColDim() {
 		int rlt = 0;
-		Map<Integer,Matrix> row = m.get(1);
-		for(Entry<Integer,Matrix> mat : row.entrySet())
+		Map<Integer,SparseMatrix> row = m.get(1);
+		for(Entry<Integer,SparseMatrix> mat : row.entrySet())
 			rlt += mat.getValue().getColDim();
 		return rlt;
 	}
@@ -104,7 +120,7 @@ public class SparseBlockMatrix implements BlockMatrix {
 	@Override
 	public int getRowDim() {
 		int rlt = 0;
-		for(Entry<Integer,Map<Integer,Matrix>> row : m.entrySet())
+		for(Entry<Integer,Map<Integer,SparseMatrix>> row : m.entrySet())
 			rlt += row.getValue().get(1).getRowDim();
 		return rlt;
 	}
@@ -112,7 +128,7 @@ public class SparseBlockMatrix implements BlockMatrix {
 	@Override
 	public void set(int row, int col, double value) {
 		int rBase = 0;
-		Map<Integer, Matrix> rMats = null;
+		Map<Integer, SparseMatrix> rMats = null;
 		boolean find = false;
 		for(int r=1;r<=this.rowBlockDim;r++) {
 			rMats = m.get(r);
@@ -154,7 +170,7 @@ public class SparseBlockMatrix implements BlockMatrix {
 	@Override
 	public double get(int row, int col) {
 		int rBase = 0;
-		Map<Integer, Matrix> rMats = null;
+		Map<Integer, SparseMatrix> rMats = null;
 		boolean find = false;
 		for(int r=1;r<=this.rowBlockDim;r++) {
 			rMats = m.get(r);
@@ -199,11 +215,15 @@ public class SparseBlockMatrix implements BlockMatrix {
 			return 0.0;
 	}
 
+	/**
+	 * Return a map of the data in this block matrix.
+	 * The data are copied from the matrix
+	 */
 	@Override
 	public Map<Integer, Map<Integer, Double>> getAll() {
 		int rBlkBase = 0;
-		Matrix mat = null;
-		SparseMatrix sm = new SparseMatrix(this.getRowDim(),this.getColDim());
+		SparseMatrix mat = null;
+		SparseMatrixRowMajor sm = new SparseMatrixRowMajor(this.getRowDim(),this.getColDim());
 		for(int i=1;i<=this.rowBlockDim;i++) {
 			int cBlkBase = 0;
 			for(int j=1;j<=this.colBlockDim;j++) {
@@ -272,18 +292,38 @@ public class SparseBlockMatrix implements BlockMatrix {
 	}
 	
 	@Override
-	public Matrix trans() {
+	public SparseMatrix trans() {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-	public Matrix copy() {
+	public SparseMatrix copy() {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-	public void clear() {
-		throw new UnsupportedOperationException();
+	public void clearAll() {
+		this.rowBlockDim = 0;
+		this.colBlockDim = 0;
+		this.defaultValue = 0.0;
+		//this.name = null;
+		for(Entry<Integer,Map<Integer,SparseMatrix>> e1 : m.entrySet()) {
+			Map<Integer,SparseMatrix> row = e1.getValue();
+			for(Entry<Integer,SparseMatrix> e2 : row.entrySet()) {
+				e2.getValue().clearData();
+			}
+		}
+		this.m.clear();
+	}
+	
+	@Override
+	public void clearData() {
+		for(Entry<Integer,Map<Integer,SparseMatrix>> e1 : m.entrySet()) {
+			Map<Integer,SparseMatrix> row = e1.getValue();
+			for(Entry<Integer,SparseMatrix> e2 : row.entrySet()) {
+				e2.getValue().clearData();
+			}
+		}
 	}
 	
 	@Override
@@ -292,9 +332,44 @@ public class SparseBlockMatrix implements BlockMatrix {
 	}
 
 	@Override
-	public Matrix setName(String name) {
+	public SparseBlockMatrix setName(String name) {
 		this.name = name;
 		return this;
 	}
+	
+	public int getNonZeroNumber() {
+		int rlt = 0;
+		for(Entry<Integer,Map<Integer,SparseMatrix>> e1 : m.entrySet()) {
+			Map<Integer,SparseMatrix> row = e1.getValue();
+			for(Entry<Integer,SparseMatrix> e2 : row.entrySet()) {
+				rlt += e2.getValue().getNonZeroNumber();
+			}
+		}
+		return rlt;
+	}
 
+	@Override
+	public Iterator<MatrixEntry> iterator() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void writeMatFile(String fileName) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void writeSimpleFile(String fileName) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public double apply(int row, int col) {
+		return this.get(row, col);
+	}	
+	
+	@Override
+	public void update(int row, int col, double value) {
+		this.set(row, col, value);
+	}	
 }

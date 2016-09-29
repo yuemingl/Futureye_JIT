@@ -35,4 +35,7 @@ public class GeoEntity1D<TNode extends Point> extends GeoEntity0D {
 		if(this.edgeNodes != null)
 			this.edgeNodes.clear();
 	}
+	public String toString() {
+		return "GeoEntity1D:"+this.vertices.toString();
+	}	
 }

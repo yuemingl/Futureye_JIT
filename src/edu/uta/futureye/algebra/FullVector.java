@@ -3,28 +3,51 @@ package edu.uta.futureye.algebra;
 import edu.uta.futureye.algebra.intf.AlgebraVector;
 import edu.uta.futureye.algebra.intf.Vector;
 
+/**
+ * Full(dense) vector. Data is stored in a double array.
+ * 
+ * @author liuyueming
+ *
+ */
 public class FullVector implements AlgebraVector {
+	/**
+	 * Vector dimension(length)
+	 */
 	protected int dim = 0;
+	
+	/**
+	 * Vector data stored in a double array.
+	 */
 	protected double[] data = null;
 
 	public FullVector(int dim) {
 		this.dim = dim;
 		this.data = new double[this.dim];
-		for(int i=0;i<dim;i++)
+		for(int i=dim; --i>=0;)
 			data[i] = 0.0;
+	}
+	
+	public FullVector(double[] data, boolean bCopy) {
+		this.dim = data.length;
+		if(bCopy) {
+			this.data = new double[this.dim];
+			System.arraycopy(data, 0, this.data, 0, this.dim);
+		} else {
+			this.data = data;
+		}
 	}
 	
 	public FullVector(int dim, double defaultValue) {
 		this.dim = dim;
 		this.data = new double[this.dim];
-		for(int i=0;i<dim;i++)
+		for(int i=dim; --i>=0;)
 			data[i] = defaultValue;
 	}
 	
 	public FullVector(Vector v) {
 		this.dim = v.getDim();
 		this.data = new double[this.dim];
-		for(int i=0;i<dim;i++)
+		for(int i=dim; --i>=0;)
 			data[i] = v.get(i+1);
 	}
 	
@@ -35,7 +58,7 @@ public class FullVector implements AlgebraVector {
 	 * @param shift
 	 */
 	public void setRandom(double scale,double shift) {
-		for(int i=0;i<dim;i++)
+		for(int i=dim; --i>=0;)
 			data[i] = scale*Math.random()+shift;
 	}
 	
@@ -50,52 +73,52 @@ public class FullVector implements AlgebraVector {
 	}
 	
 	@Override
-	public AlgebraVector set(AlgebraVector v) {
+	public FullVector set(AlgebraVector v) {
 		double[] yData = v.getData();
-		for(int i=0;i<this.dim;i++) {
+		for(int i=dim; --i>=0;) {
 			this.data[i] = yData[i];
 		}
 		return this;
 	}
 
 	@Override
-	public AlgebraVector set(double a, AlgebraVector v) {
+	public FullVector set(double a, AlgebraVector v) {
 		double[] yData = v.getData();
-		for(int i=0;i<this.dim;i++) {
+		for(int i=dim; --i>=0;) {
 			this.data[i] = a*yData[i];
 		}
 		return this;
 	}
 
 	@Override
-	public AlgebraVector scale(double a) {
-		for(int i=0;i<this.dim;i++)
+	public FullVector scale(double a) {
+		for(int i=dim; --i>=0;)
 			this.data[i] *= a;
 		return this;
 	}
 	
 	@Override
-	public AlgebraVector add(AlgebraVector v) {
+	public FullVector add(AlgebraVector v) {
 		double[] yData = v.getData();
-		for(int i=0;i<this.dim;i++) {
+		for(int i=dim; --i>=0;) {
 			this.data[i] += yData[i];
 		}
 		return this;
 	}
 	
 	@Override
-	public AlgebraVector subtract(AlgebraVector v) {
+	public FullVector subtract(AlgebraVector v) {
 		double[] yData = v.getData();
-		for(int i=0;i<this.dim;i++) {
+		for(int i=dim; --i>=0;) {
 			this.data[i] -= yData[i];
 		}
 		return this;
 	}
 	
 	@Override
-	public AlgebraVector add(double a, AlgebraVector v) {
+	public FullVector add(double a, AlgebraVector v) {
 		double[] yData = v.getData();
-		for(int i=0;i<this.dim;i++) {
+		for(int i=dim; --i>=0;) {
 			this.data[i] = this.data[i] + a*yData[i];
 		}
 		return this;
@@ -105,37 +128,45 @@ public class FullVector implements AlgebraVector {
 	public double dot(AlgebraVector y) {
 		double[] yData = y.getData();
 		double rlt = 0.0;
-		for(int i=0; i<dim; i++) {
+		for(int i=dim; --i>=0;) {
 			rlt += this.data[i]*yData[i];
 		}
 		return rlt;
 	}
 
 	@Override
-	public AlgebraVector ax(double a) {
-		for(int i=0;i<this.dim;i++)
+	public FullVector ax(double a) {
+		for(int i=dim; --i>=0;)
 			this.data[i] *= a;
 		return this;
 	}
 
 	@Override
-	public AlgebraVector axpy(double a, AlgebraVector y) {
+	public FullVector axpy(double a, AlgebraVector y) {
 		double[] yData = y.getData();
-		for(int i=0;i<this.dim;i++) {
+		for(int i=dim; --i>=0;) {
 			this.data[i] = a*this.data[i] + yData[i];
 		}
 		return this;
 	}
 	
 	@Override
-	public AlgebraVector axmy(double a, AlgebraVector y) {
+	public FullVector axmy(double a, AlgebraVector y) {
 		double[] yData = y.getData();
-		for(int i=0;i<this.dim;i++) {
+		for(int i=dim; --i>=0;) {
 			this.data[i] = a*this.data[i] * yData[i];
 		}
 		return this;
 	}
 
+	@Override
+	public double norm1() {
+		double rlt = 0.0;
+		for(int i=dim; --i>=0;)
+			rlt += Math.abs(this.data[i]);
+		return rlt;
+	}	
+	
 	@Override
 	public double norm2() {
 		return Math.sqrt(this.dot(this));
@@ -144,8 +175,9 @@ public class FullVector implements AlgebraVector {
 	@Override
 	public double normInf() {
 		Double max = Double.MIN_VALUE;
-		for(double d : data) {
-			if(d > max) max = d;
+		for(int i=dim; --i>=0;) {
+			double abs = Math.abs(data[i]);
+			if(abs > max) max = abs;
 		}
 		return max;
 	}
@@ -183,11 +215,29 @@ public class FullVector implements AlgebraVector {
 		return sd;
 	}
 	
-	public SparseVector getSparseVector() {
-		SparseVector rlt = new SparseVector(this.dim);
-		for(int i=0;i<this.dim;i++)
+	public SparseVectorHashMap getSparseVector() {
+		SparseVectorHashMap rlt = new SparseVectorHashMap(this.dim);
+		for(int i=dim; --i>=0;)
 			rlt.set(i+1, this.data[i]);
 		return rlt;
+	}
+
+	public FullVector copy() {
+		int dim = this.dim;
+		FullVector rlt = new FullVector(dim);
+		for(int i=dim; --i>=0;) {
+			rlt.data[i] = this.data[i];
+		}
+		return rlt;
+	}
+	
+	/**
+	 * 考虑该函数是否有必要
+	 * @param index
+	 * @return
+	 */
+	public double get(int index) {
+		return data[index-1];
 	}
 
 }

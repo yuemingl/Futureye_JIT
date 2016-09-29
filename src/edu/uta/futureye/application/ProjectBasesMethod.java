@@ -1,7 +1,6 @@
 package edu.uta.futureye.application;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,23 +10,23 @@ import java.util.List;
 import edu.uta.futureye.algebra.CompressedColMatrix;
 import edu.uta.futureye.algebra.CompressedRowMatrix;
 import edu.uta.futureye.algebra.FullVector;
-import edu.uta.futureye.algebra.Solver;
-import edu.uta.futureye.algebra.SparseMatrix;
-import edu.uta.futureye.algebra.SparseVector;
+import edu.uta.futureye.algebra.SparseMatrixRowMajor;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.AlgebraMatrix;
-import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
+import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.Solver;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.util.Constant;
-import edu.uta.futureye.util.PairDoubleInteger;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 
@@ -48,17 +47,17 @@ public class ProjectBasesMethod {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
 	}
 
-	public static void plotFunction(Mesh mesh, Function fun, String fileName) {
+	public static void plotFunction(Mesh mesh, MathFunc fun, String fileName) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
-		Vector v = new SparseVector(nNode);
+		Vector v = new SparseVectorHashMap(nNode);
 	    for(int i=1;i<=nNode;i++) {
 	    	Node node = list.at(i);
 	    	var.setIndex(node.globalIndex);
 	    	var.set("x", node.coord(1));
 	    	var.set("y", node.coord(2));
-	    	v.set(i, fun.value(var));
+	    	v.set(i, fun.apply(var));
 	    }
 	    plotVector(mesh,v,fileName);
 	}	
@@ -76,8 +75,8 @@ public class ProjectBasesMethod {
         mesh.computeNeighborNodes();
 
         //2.Mark border types
-        HashMap<NodeType, Function> mapNTF =
-                new HashMap<NodeType, Function>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
         
@@ -102,7 +101,7 @@ public class ProjectBasesMethod {
 		NodeList upSideNodes = getUpsideNodes(mesh);
 		
 		ModelDOT model = new ModelDOT();
-		model.setDelta(2.0, 3.5);
+		model.setLightPosition(2.0, 3.5);
 		
 		//Generate bases on upside
 		double h = 0.2;
@@ -110,8 +109,8 @@ public class ProjectBasesMethod {
 		for(int xi=1;xi<=100;xi++) {
 			double x = 1.0+(xi-1)*h;
 			if(x>4.0) break;
-			model.setMu_a(x, 2.8, 0.3, 1.0, 1);
-			plotFunction(meshBig, model.mu_a, String.format("mu_a%02d.dat",xi));
+			model.setMu_a(ModelParam.getMu_a(x, 2.8, 0.3, 1.0, 1));
+			plotFunction(meshBig, model.getMu_a(), String.format("mu_a%02d.dat",xi));
 			Vector u = model.solveNeumann(meshBig);
 			plotVector(meshBig, u, String.format("u_big%02d.dat",xi));
 			//截取meshBig的部分解到mesh上
@@ -121,8 +120,8 @@ public class ProjectBasesMethod {
 		}
 		
 		//Generate measurement data on upside
-		model.setMu_a(3.1, 2.8, 0.3, 1.0, 1);
-		plotFunction(meshBig, model.mu_a, String.format("mu_a.dat"));
+		model.setMu_a(ModelParam.getMu_a(3.1, 2.8, 0.3, 1.0, 1));
+		plotFunction(meshBig, model.getMu_a(), String.format("mu_a.dat"));
 		Vector ua = model.solveNeumann(meshBig);
 		plotVector(meshBig, ua, String.format("u_big.dat"));
 		//截取meshBig的部分解到mesh上
@@ -132,8 +131,8 @@ public class ProjectBasesMethod {
 		int nRow = upSideNodes.size();
 		int nCol = uSmalls.size();
 		
-		SparseMatrix A = new SparseMatrix(nRow,nCol);
-		SparseVector f = new SparseVector(nRow);
+		SparseMatrix A = new SparseMatrixRowMajor(nRow,nCol);
+		SparseVector f = new SparseVectorHashMap(nRow);
 		for(int c=1;c<=nCol;c++) {
 			Vector base = uSmalls.get(c-1);
 			for(int r=1;r<=nRow;r++) {
@@ -148,7 +147,7 @@ public class ProjectBasesMethod {
 		//A.print();
 		//f.print();
 		
-		SparseVector x0 = new SparseVector(nCol);
+		SparseVector x0 = new SparseVectorHashMap(nCol);
 		x0.set(10, 1.0);
 		x0.set(11, 1.0);
 		x0.set(12, 1.0);
@@ -161,7 +160,7 @@ public class ProjectBasesMethod {
 		FullVector g  = new FullVector(nCol);
 		AAT.mult(ff, g);
 		
-		SparseMatrix diagLmd = new SparseMatrix(nRow,nRow);
+		SparseMatrix diagLmd = new SparseMatrixRowMajor(nRow,nRow);
 		for(int i=1;i<=nRow;i++)
 			diagLmd.set(i, i, 1.5/4.0);
 		C.axpy(1.0, new CompressedRowMatrix(diagLmd, false));
@@ -183,7 +182,7 @@ public class ProjectBasesMethod {
 		NodeList upSideNodes = getUpsideNodes(mesh);
 		
 		ModelDOT model = new ModelDOT();
-		model.setDelta(2.0, 3.5);
+		model.setLightPosition(2.0, 3.5);
 		
 		//Generate bases on upside
 		List<Vector> uSmalls = new ArrayList<Vector>();
@@ -192,8 +191,8 @@ public class ProjectBasesMethod {
 		for(int i=0;i<xx.length;i++) {
 			for(int j=0;j<yy.length;j++) {
 				int cnt = i*yy.length + j;
-				model.setMu_a(xx[i], yy[j], 0.2, 1.0, 1);
-				plotFunction(meshBig, model.mu_a, String.format("mu_a%02d.dat",cnt));
+				model.setMu_a(ModelParam.getMu_a(xx[i], yy[j], 0.2, 1.0, 1));
+				plotFunction(meshBig, model.getMu_a(), String.format("mu_a%02d.dat",cnt));
 				Vector u = model.solveNeumann(meshBig);
 				plotVector(meshBig, u, String.format("u_big%02d.dat",cnt));
 				//截取meshBig的部分解到mesh上
@@ -204,8 +203,8 @@ public class ProjectBasesMethod {
 		}
 		
 		//Generate measurement data on upside
-		model.setMu_a(2.83, 2.63, 0.3, 1.0, 1);
-		plotFunction(meshBig, model.mu_a, String.format("mu_a.dat"));
+		model.setMu_a(ModelParam.getMu_a(2.83, 2.63, 0.3, 1.0, 1));
+		plotFunction(meshBig, model.getMu_a(), String.format("mu_a.dat"));
 		Vector ua = model.solveNeumann(meshBig);
 		plotVector(meshBig, ua, String.format("u_big.dat"));
 		//截取meshBig的部分解到mesh上
@@ -215,8 +214,8 @@ public class ProjectBasesMethod {
 		int nRow = upSideNodes.size();
 		int nCol = uSmalls.size();
 		
-		SparseMatrix A = new SparseMatrix(nRow,nCol);
-		SparseVector f = new SparseVector(nRow);
+		SparseMatrix A = new SparseMatrixRowMajor(nRow,nCol);
+		SparseVector f = new SparseVectorHashMap(nRow);
 		for(int c=1;c<=nCol;c++) {
 			Vector base = uSmalls.get(c-1);
 			for(int r=1;r<=nRow;r++) {
@@ -231,7 +230,7 @@ public class ProjectBasesMethod {
 		//A.print();
 		//f.print();
 		
-		SparseVector x0 = new SparseVector(nCol);
+		SparseVector x0 = new SparseVectorHashMap(nCol);
 		x0.set(1, 1.0);
 		
 		CompressedColMatrix AA = new CompressedColMatrix(A, false);
@@ -242,7 +241,7 @@ public class ProjectBasesMethod {
 		FullVector g  = new FullVector(nCol);
 		AAT.mult(ff, g);
 		
-		SparseMatrix diagLmd = new SparseMatrix(nRow,nRow);
+		SparseMatrix diagLmd = new SparseMatrixRowMajor(nRow,nRow);
 		for(int i=1;i<=nRow;i++)
 			diagLmd.set(i, i,10.0/4.0);
 		C.axpy(1.0, new CompressedRowMatrix(diagLmd, false));
@@ -257,13 +256,13 @@ public class ProjectBasesMethod {
 		x.print();
 		
 		
-		Function rlt_mu_a = FC.c0;
+		MathFunc rlt_mu_a = FC.C0;
 		double[] coef = x.getData();
 		for(int i=0;i<xx.length;i++) {
 			for(int j=0;j<yy.length;j++) {
 				int cnt = i*yy.length + j;
-				model.setMu_a(xx[i], yy[j], 0.2, 1.0, 1);
-				rlt_mu_a = rlt_mu_a.A(model.mu_a.M(coef[cnt]));
+				model.setMu_a(ModelParam.getMu_a(xx[i], yy[j], 0.2, 1.0, 1));
+				rlt_mu_a = rlt_mu_a.A(model.getMu_a().M(coef[cnt]));
 			}
 		}
 		plotFunction(meshBig, rlt_mu_a, String.format("mu_a_rlt.dat"));

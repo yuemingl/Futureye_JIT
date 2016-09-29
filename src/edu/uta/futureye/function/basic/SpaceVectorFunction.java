@@ -3,53 +3,53 @@ package edu.uta.futureye.function.basic;
 import java.util.LinkedList;
 
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.function.AbstractVectorFunction;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.AbstractVectorFunc;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
-public class SpaceVectorFunction extends AbstractVectorFunction {
-	protected Function[] data = null;
+public class SpaceVectorFunction extends AbstractVectorFunc {
+	protected MathFunc[] data = null;
 	
 	public SpaceVectorFunction(int dim) {
 		this.dim = dim;
-		data = new Function[dim];
+		data = new MathFunc[dim];
 	}
 	
-	public SpaceVectorFunction(Function ...f) {
+	public SpaceVectorFunction(MathFunc ...f) {
 		if(f == null || f.length ==0) {
 			Exception e = new FutureyeException("Dim of SpaceVectorFunction should be > 0!");
 			e.printStackTrace();
 			return;
 		} else {
 			dim = f.length;
-			data = new Function[dim];
+			data = new MathFunc[dim];
 			varNames = new LinkedList<String>();
 			for(int i=0; i<f.length; i++) {
 				data[i] = f[i];
-				varNames = Utils.mergeList(varNames, f[i].varNames());
+				varNames = Utils.mergeList(varNames, f[i].getVarNames());
 			}
 		}
 	}
 	
 	public SpaceVectorFunction(Vector v) {
 		this.dim = v.getDim();
-		data = new Function[dim];
+		data = new MathFunc[dim];
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = new FC(v.get(i));
 		}
 	}
 	
 	@Override
-	public Function get(int index) {
+	public MathFunc get(int index) {
 		return data[index-1];
 	}
 
 	@Override
-	public void set(int index, Function value) {
+	public void set(int index, MathFunc value) {
 		data[index-1] = value;
-		varNames = Utils.mergeList(varNames, value.varNames());
+		varNames = Utils.mergeList(varNames, value.getVarNames());
 	}
 	
 	/////////////////////////////////////////////////////
@@ -123,18 +123,13 @@ public class SpaceVectorFunction extends AbstractVectorFunction {
 		varNames = new LinkedList<String>();
 		for(int i=0; i<=dim; i++) {
 			rlt.data[i] = this.data[i].copy();
-			varNames = Utils.mergeList(varNames, this.data[i].varNames());
+			varNames = Utils.mergeList(varNames, this.data[i].getVarNames());
 		}
 		return rlt;
 	}
 
 	@Override
-	public void print() {
-		System.out.println(this.toString());
-	}
-	
-	@Override
-	public String toString() {
+	public String getExpression() {
 		String rlt = "[";
 		for(int i=0;i<dim;i++) {
 			rlt += data[i].toString();

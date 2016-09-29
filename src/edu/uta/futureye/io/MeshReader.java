@@ -10,6 +10,12 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 
+/**
+ * Read .grd file generated from Gridgen
+ * 
+ * @author yuemingl
+ *
+ */
 public class MeshReader {
 	
 	Mesh mesh = new Mesh();
@@ -124,7 +130,19 @@ public class MeshReader {
 							list.add(mesh.getNodeList().at(Integer.valueOf(line[5])));
 							list.add(mesh.getNodeList().at(Integer.valueOf(line[6])));
 							Element ele = new Element(list);
-							mesh.addElement(ele);						
+							mesh.addElement(ele);
+						} else if(type.equalsIgnoreCase("hex")) {
+							NodeList list = new NodeList();
+							list.add(mesh.getNodeList().at(Integer.valueOf(line[3])));
+							list.add(mesh.getNodeList().at(Integer.valueOf(line[4])));
+							list.add(mesh.getNodeList().at(Integer.valueOf(line[5])));
+							list.add(mesh.getNodeList().at(Integer.valueOf(line[6])));
+							list.add(mesh.getNodeList().at(Integer.valueOf(line[7])));
+							list.add(mesh.getNodeList().at(Integer.valueOf(line[8])));
+							list.add(mesh.getNodeList().at(Integer.valueOf(line[9])));
+							list.add(mesh.getNodeList().at(Integer.valueOf(line[10])));
+							Element ele = new Element(list);
+							mesh.addElement(ele);	
 						}
 					}
 				}
@@ -132,6 +150,13 @@ public class MeshReader {
 			br.close();
 			in.close();
 			
+			//add bufix
+			ElementList nEList = mesh.getElementList();
+			int nE = nEList.size();
+			for(int i=1;i<=nE;i++) {
+				Element e = nEList.at(i);
+				e.adjustVerticeToCounterClockwise();
+			}
 			return mesh;
 		
 		} catch (Exception e) {
@@ -156,6 +181,5 @@ public class MeshReader {
 		Mesh m = r1.read3DMesh();
 		System.out.println("nodes read: "+m.getNodeList().size());
 		System.out.println("elements read: "+m.getElementList().size());
-		
 	}
 }

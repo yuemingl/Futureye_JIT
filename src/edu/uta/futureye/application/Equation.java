@@ -1,9 +1,15 @@
 package edu.uta.futureye.application;
 
-import edu.uta.futureye.algebra.intf.Matrix;
-import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
+import edu.uta.futureye.algebra.intf.SparseVector;
 
+/**
+ * Contain matrix and RHS of equation A*x=f
+ * 
+ * @author liuyueming
+ *
+ */
 public class Equation {
-	public Matrix A;
-	public Vector f;
+	public SparseMatrix A;
+	public SparseVector f;
 }

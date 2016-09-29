@@ -2,6 +2,7 @@ package edu.uta.futureye.lib.element;
 
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2DVector;
 import edu.uta.futureye.util.FutureyeException;
 
@@ -33,14 +34,14 @@ public class FEBilinearRectangleVector implements FiniteElementType {
 					e.nodes.at(j).globalIndex,
 					shapeFun[j-1]//Shape function 
 					         );
-			dof_u1.setVvfIndex(1);
+			dof_u1.setVVFComponent(1);
 			DOF dof_u2 = new DOF(
 					nNode+j,//Local DOF index
 					//Global DOF index, take this.nTotalNodes + global node index
 					this.nTotalNodes+e.nodes.at(j).globalIndex,
 					shapeFun[nNode+j-1]//Shape function 
 					         );
-			dof_u2.setVvfIndex(2);
+			dof_u2.setVVFComponent(2);
 			e.addNodeDOF(j, dof_u1);
 			e.addNodeDOF(j, dof_u2);
 		}
@@ -55,5 +56,15 @@ public class FEBilinearRectangleVector implements FiniteElementType {
 	public int getVectorShapeFunctionDim() {
 		return 2;
 	}
+	
+	@Override
+	public int getDOFNumOnMesh(Mesh mesh, int vsfDim) {
+		return mesh.getNodeList().size();
+	}
 
+	@Override
+	public void initDOFIndexGenerator(Mesh mesh) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -2,10 +2,10 @@ package edu.uta.futureye.test;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.SolverJBLAS;
-import edu.uta.futureye.algebra.SparseVector;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
@@ -13,10 +13,10 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Refiner;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -41,7 +41,7 @@ public class TestAdaptive {
 		mesh.computeGlobalEdge();
 		mesh.computeNeighborElements();
 		
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 		mesh.markBorderNode(mapNTF);
 		
@@ -67,8 +67,8 @@ public class TestAdaptive {
 		//\Omega = [0,10]*[0,10]
 		//u=[(x-5)^2-25]*[(y-5)^2-25]
 		//f=-2*( (x-5)^2 + (y-5)^2 ) + 100
-		Function fxm5 = new FAxpb("x",1.0,-5.0);
-		Function fym5 = new FAxpb("y",1.0,-5.0);
+		MathFunc fxm5 = new FAxpb("x",1.0,-5.0);
+		MathFunc fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
 				FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
 						FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )
@@ -256,7 +256,17 @@ public class TestAdaptive {
 //		MeshReader reader = new MeshReader("patch_rectangle_refine.grd");
 	
 		Mesh mesh = reader.read2DMesh();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+//验证边界结点加密后是自由的，而不是hanging node		
+//		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y"){
+//			@Override
+//			public double value(Variable v) {
+//				if(Math.abs(v.get("x"))<0.01)
+//					return 1.0;
+//				else
+//					return -1.0;
+//			}
+//		});	
 		mapNTF.put(NodeType.Dirichlet, null);	
 
 		mesh.computeNodeBelongsToElements();
@@ -276,7 +286,7 @@ public class TestAdaptive {
 		mesh.markBorderNode(mapNTF);
 		
 		mesh.printMeshInfo();
-		Tools.plotFunction(mesh, "", "patch_rectangle_test1.dat", FC.c0);
+		Tools.plotFunction(mesh, "", "patch_rectangle_test1.dat", FC.C0);
 		
 		//二次加密
 		eToRefine.clear();
@@ -288,7 +298,7 @@ public class TestAdaptive {
 		mesh.markBorderNode(mapNTF);
 		
 		mesh.printMeshInfo();
-		Tools.plotFunction(mesh, "", "patch_rectangle_test2.dat", FC.c0);
+		Tools.plotFunction(mesh, "", "patch_rectangle_test2.dat", FC.C0);
 
 		SFBilinearLocal2D[] shapeFun = new SFBilinearLocal2D[4];
 		for(int i=0;i<4;i++)
@@ -335,8 +345,8 @@ public class TestAdaptive {
 		//\Omega = [0,10]*[0,10]
 		//u=[(x-5)^2-25]*[(y-5)^2-25]
 		//f=-2*( (x-5)^2 + (y-5)^2 ) + 100
-		Function fxm5 = new FAxpb("x",1.0,-5.0);
-		Function fym5 = new FAxpb("y",1.0,-5.0);
+		MathFunc fxm5 = new FAxpb("x",1.0,-5.0);
+		MathFunc fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
 				FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
 						FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )
@@ -381,7 +391,7 @@ public class TestAdaptive {
 	    MeshWriter writer = new MeshWriter(mesh);
 	    writer.writeTechplot("patch_rectangle.dat", u);	
 	    
-	    Vector res = new SparseVector(u.getDim());
+	    Vector res = new SparseVectorHashMap(u.getDim());
 	    stiff.mult(u, res);
 	    res.add(-1.0, load);
 	    writer.writeTechplot("patch_rectangle_res.dat", res);	
@@ -404,7 +414,7 @@ public class TestAdaptive {
 		mesh.computeGlobalEdge();
 		mesh.computeNeighborElements();
 		
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);	
 		mesh.markBorderNode(mapNTF);
 
@@ -468,8 +478,8 @@ public class TestAdaptive {
 		//\Omega = [0,10]*[0,10]
 		//u=[(x-5)^2-25]*[(y-5)^2-25]
 		//f=-2*( (x-5)^2 + (y-5)^2 ) + 100
-		Function fxm5 = new FAxpb("x",1.0,-5.0);
-		Function fym5 = new FAxpb("y",1.0,-5.0);
+		MathFunc fxm5 = new FAxpb("x",1.0,-5.0);
+		MathFunc fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
 						FC.c(-2.0).M(FMath.pow(fxm5, new FC(2.0)) ).A(
 						FC.c(-2.0).M(FMath.pow(fym5, new FC(2.0)) )

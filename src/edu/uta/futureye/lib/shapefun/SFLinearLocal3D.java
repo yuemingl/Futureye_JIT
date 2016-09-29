@@ -1,10 +1,10 @@
 package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
@@ -35,7 +35,7 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFLinearLocal3D extends AbstractFunction 
+public class SFLinearLocal3D extends AbstractMathFunc 
 							 implements ScalarShapeFunction {
 	private int funIndex;
 	private ObjList<String> innerVarNames = null;
@@ -74,7 +74,7 @@ public class SFLinearLocal3D extends AbstractFunction
 	}
 	
 	@Override
-	public void asignElement(Element e) {
+	public void assignElement(Element e) {
 		this.e = e;
 		
 		x1 = e.nodes.at(1).coord(1);
@@ -125,12 +125,12 @@ public class SFLinearLocal3D extends AbstractFunction
 		};
 	
 	@Override
-	public ShapeFunction restrictTo(int funIndex) {
-		return faceSF[funIndex-1];
+	public ShapeFunction restrictTo(int funID) {
+		return faceSF[funID-1];
 	}
 
 	@Override
-	public Function _d(String var) {
+	public MathFunc diff(String var) {
 		if(this.volume < 0.0)
 			throw new FutureyeException("SFLinearLocal3D: volume < 0.0");
 		
@@ -186,7 +186,7 @@ public class SFLinearLocal3D extends AbstractFunction
 	}
 
 	@Override
-	public double value(Variable v) {
+	public double apply(Variable v) {
 		if(funIndex == 0)
 			return v.get("r");
 		else if(funIndex == 1)

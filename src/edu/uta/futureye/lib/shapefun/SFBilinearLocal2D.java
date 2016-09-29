@@ -1,30 +1,38 @@
 package edu.uta.futureye.lib.shapefun;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
+import edu.uta.futureye.util.Constant;
+import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
+import static edu.uta.futureye.function.FMath.*;
 
-public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFunction {
+public class SFBilinearLocal2D extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
-	private Function funCompose = null;
-	private Function funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 	private double coef = 1.0;
 
-	private Element e;
-	private double jacFast = 0.0;
+	Element e;
+	CoordinateTransform trans = new CoordinateTransform(2);
+	MathFunc jac = null;
+	MathFunc x_r = null;
+	MathFunc x_s = null;
+	MathFunc y_r = null;
+	MathFunc y_s = null;
 	
 	
 	/**
@@ -54,49 +62,72 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 			return;
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
+		varNames = new String[]{"r", "s"};
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
-		Map<String, Function> fInners = new HashMap<String, Function>(4);
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(3);
 		
+		//r = r(x,y)
+		//s = s(x,y)
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractFunction(innerVarNames.toList()) {
+			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {
 				
-				protected CoordinateTransform trans = new CoordinateTransform(2);
-				
-				public Function _d(String var) {
-					//Coordinate transform and Jacbian on element e
-					List<Function> funs = trans.getTransformFunction(
-							trans.getTransformLinear2DShapeFunction(e)
-							);
-					trans.setTransformFunction(funs);
-					
-					Function fx = funs.get(0);
-					Function fy = funs.get(1);
-					
-					Function x_r = fx._d("r");
-					Function x_s = fx._d("s");
-					Function y_r = fy._d("r");
-					Function y_s = fy._d("s");
-					
-					//Function jac = trans.getJacobian2D();
-					//Faster 快一倍
-					Function jac = FC.c(jacFast);
-					
+/**
+How to get derivative r_x, r_y, s_x, s_y:
+
+f(x,y) = g(r,s)
+f_x = g_r*r_x + g_s*s_x  ---(1)
+f_y = g_r*r_y + g_s*s_y  ---(2)
+
+for (1), let f=x and f=y we get tow equations, solve them:
+(x_r x_s)   (r_x)   (1)
+(y_r y_s) * (s_x) = (0)
+
+similarly, for (2):
+(x_r x_s)   (r_y)   (0)
+(y_r y_s) * (s_y) = (1)
+
+        (x_r x_s)
+Let J = (y_r y_s)
+
+from the above four equations, we have:
+ (r_x r_y)
+ (s_x s_y) = inv(J)
+ */				
+				//Derivatives: r_x, r_y, s_x, s_y
+				public MathFunc diff(String var) {
 					if(varName.equals("r")) {
-						if(var.equals("x"))
+						if(var.equals("x")) //r_x
 							return y_s.D(jac);
-						if(var.equals("y"))
-							return FC.c0.S(x_s.D(jac));
+						else //r_y
+							return C0.S(x_s.D(jac));
 					} else if(varName.equals("s")) {
-						if(var.equals("x"))
-							return FC.c0.S(y_r.D(jac));
-						if(var.equals("y"))
+						if(var.equals("x")) //s_x
+							return C0.S(y_r.D(jac));
+						else //s_y
 							return x_r.D(jac);
 					}
 					return null;
+				}
+				
+				@Override
+				public String getExpr() {
+					if(varName.equals("r"))
+						return "r(x,y)";
+					else
+						return "s(x,y)";
+				}
+				
+				@Override
+				public String toString() {
+					return getExpr();
+				}
+				
+				@Override
+				public double apply(double... args) {
+					// TODO Auto-generated method stub
+					return 0;
 				}
 			});
 		}
@@ -129,29 +160,62 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 		Create(funID,1.0);
 	}
 
-	public Function _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
-	public double value(Variable v) {
-		return funCompose.value(v);
+	public double apply(Variable v) {
+		return funCompose.apply(v);
+	}
+	
+	@Override
+	public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
+		return funCompose.applyAll(v,cache);
 	}
 
 	@Override
-	public void asignElement(Element e) {
+	public void assignElement(Element e) {
 		this.e = e;
 		VertexList vList = e.vertices();
-		//用面积计算Jacobin
-		jacFast = Utils.getRectangleArea(vList)/4.0;
-		
+	
+//		//从_d()移动到这里，速度又快一倍
+//		//Coordinate transform and Jacbian on element e
+//		List<Function> funs = trans.getTransformFunction(
+//				trans.getTransformLinear2DShapeFunction(e)
+//				);
+//		trans.setTransformFunction(funs);
+//		Function fx = funs.get(0); //x=x(r,s)
+//		Function fy = funs.get(1); //y=y(r,s)
+//		x_r = fx._d("r");
+//		x_s = fx._d("s");
+//		y_r = fy._d("r");
+//		y_s = fy._d("s");
+		CoordinateTransform trans = e.getCoordTrans();
+		if(trans == null) 
+			throw new FutureyeException("call Element.updateJacobin() before calling assignElement()");
+		MathFunc [] funs = trans.getJacobianMatrix();
+		x_r = funs[0];
+		x_s = funs[1];
+		y_r = funs[2];
+		y_s = funs[3];
+		//用面积计算Jacobin，速度要快一倍
+		double area = Utils.getRectangleArea(vList)/4.0;
+		if(Math.abs(area)<Constant.eps) throw new FutureyeException();
+		jac = FC.c(area);
 	}
 
-	public String toString() {
-		if(this.coef < 1.0)
-			return "N"+(funIndex+1)+": "+this.coef+"*"+funOuter.toString();
+	public String getExpr() {
+		if(this.coef != 1.0)
+			return "N"+(funIndex+1)+"(r,s)";
 		else
-			return "N"+(funIndex+1)+": "+funOuter.toString();
-			
+			return "N"+(funIndex+1)+"(r,s)";
+	}
+	
+	public String toString() {
+		if(this.coef != 1.0)
+			return "N"+(funIndex+1)+"(r,s) = "+this.coef+"*"+funOuter.getExpr();
+		else
+			return "N"+(funIndex+1)+"(r,s) = "+funOuter.getExpr();
 	}
 
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
@@ -165,5 +229,11 @@ public class SFBilinearLocal2D extends AbstractFunction implements ScalarShapeFu
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public double apply(double... args) {
+		this.funCompose.setActiveVarNames(this.getVarNames());
+		return this.funCompose.apply(args);
 	}
 }

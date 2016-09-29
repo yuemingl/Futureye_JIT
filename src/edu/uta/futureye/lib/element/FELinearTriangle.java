@@ -2,8 +2,10 @@ package edu.uta.futureye.lib.element;
 
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.lib.shapefun.SFLinearLocal2DTest;
+import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
+import edu.uta.futureye.lib.shapefun.SFLinearLocal2DRS;
 import edu.uta.futureye.util.container.VertexList;
 
 /**
@@ -15,15 +17,15 @@ import edu.uta.futureye.util.container.VertexList;
  */
 public class FELinearTriangle implements FiniteElementType {
 	//protected static SFLinearLocal2D[] shapeFun = new SFLinearLocal2D[3];
-	protected static SFLinearLocal2DTest[] shapeFun = new SFLinearLocal2DTest[3];
+	protected static SFLinearLocal2DRS[] shapeFun = new SFLinearLocal2DRS[3];
 	
 	public FELinearTriangle() {
 //		shapeFun[0] = new SFLinearLocal2D(1);
 //		shapeFun[1] = new SFLinearLocal2D(2);
 //		shapeFun[2] = new SFLinearLocal2D(3);
-		shapeFun[0] = new SFLinearLocal2DTest(1);
-		shapeFun[1] = new SFLinearLocal2DTest(2);
-		shapeFun[2] = new SFLinearLocal2DTest(3);
+		shapeFun[0] = new SFLinearLocal2DRS(1);
+		shapeFun[1] = new SFLinearLocal2DRS(2);
+		shapeFun[2] = new SFLinearLocal2DRS(3);
 	}
 	
 	/**
@@ -54,4 +56,14 @@ public class FELinearTriangle implements FiniteElementType {
 		throw new UnsupportedOperationException();
 	}
 	
+	@Override
+	public int getDOFNumOnMesh(Mesh mesh, int vsfDim) {
+		return mesh.getNodeList().size();
+	}
+
+	@Override
+	public void initDOFIndexGenerator(Mesh mesh) {
+		// TODO Auto-generated method stub
+		
+	}	
 }

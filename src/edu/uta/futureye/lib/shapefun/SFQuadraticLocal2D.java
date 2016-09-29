@@ -6,14 +6,14 @@ import java.util.Map;
 
 import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 
@@ -39,10 +39,10 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeFunction {
+public class SFQuadraticLocal2D extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
-	private Function funCompose = null;
-	private Function funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 
 	private Element e = null;
@@ -61,24 +61,24 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
-		Map<String, Function> fInners = new HashMap<String, Function>(4);
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractFunction(innerVarNames.toList()) {
+			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
-				public Function _d(String var) {
+				public MathFunc diff(String var) {
 					//Coordinate transform and Jacbian on element e
-					List<Function> funs = trans.getTransformFunction(
+					List<MathFunc> funs = trans.getTransformFunction(
 							//两种变换都可以，二次的要慢一些
 							//trans.getTransformShapeFunctionByElement(e)
 							trans.getTransformLinear2DShapeFunction(e)
 								);
 					trans.setTransformFunction(funs);
 					
-					Function fx = funs.get(0);
-					Function fy = funs.get(1);
+					MathFunc fx = funs.get(0);
+					MathFunc fy = funs.get(1);
 					
 //					Function fr = new FX("r");
 //					Function fs = new FX("s");
@@ -96,22 +96,22 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 //					fxCompose.setVarNames(independentVarNames);
 //					fyCompose.setVarNames(independentVarNames);
 
-					Function x_r = fx._d("r");
-					Function x_s = fx._d("s");
-					Function y_r = fy._d("r");
-					Function y_s = fy._d("s");
+					MathFunc x_r = fx.diff("r");
+					MathFunc x_s = fx.diff("s");
+					MathFunc y_r = fy.diff("r");
+					MathFunc y_s = fy.diff("s");
 					
 					//Function jac = (Function) trans.getJacobian2D();
-					Function jac = (Function) e.getJacobin();
+					MathFunc jac = (MathFunc) e.getJacobin();
 					
 					if(varName.equals("r")) {
 						if(var.equals("x"))
 							return y_s.D(jac);
 						if(var.equals("y"))
-							return FC.c0.S(x_s.D(jac));
+							return FC.C0.S(x_s.D(jac));
 					} else if(varName.equals("s")) {
 						if(var.equals("x"))
-							return FC.c0.S(y_r.D(jac));
+							return FC.C0.S(y_r.D(jac));
 						if(var.equals("y"))
 							return x_r.D(jac);
 					} 
@@ -130,19 +130,25 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 //					}
 					return null;
 				}
+
+				@Override
+				public double apply(Variable v) {
+					// TODO Auto-generated method stub
+					return 0;
+				}
 			});
 		}
 		
-		Function fr = new FX("r");
-		Function fs = new FX("s");
-		Function ft = //new FX("t");
-				FC.c1.S(fr.A(fs));
+		MathFunc fr = new FX("r");
+		MathFunc fs = new FX("s");
+		MathFunc ft = //new FX("t");
+				FC.C1.S(fr.A(fs));
 				
 				
-		Function f2rm1 = new FAxpb("r",2.0,-1.0);
-		Function f2sm1 = new FAxpb("s",2.0,-1.0);
-		Function f2tm1 = //new FAxpb("t",2.0,-1.0);
-				FC.c1.S(FMath.linearCombination(2.0, fr, 2.0, fs));
+		MathFunc f2rm1 = new FAxpb("r",2.0,-1.0);
+		MathFunc f2sm1 = new FAxpb("s",2.0,-1.0);
+		MathFunc f2tm1 = //new FAxpb("t",2.0,-1.0);
+				FC.C1.S(FMath.linearCombination(2.0, fr, 2.0, fs));
 
 
 //		Map<String, Function> fInner_t = new HashMap<String, Function>(4);
@@ -152,8 +158,8 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 //				));
 //		Function ftCompose = FOBasicDerivable.Compose(ft, fInner_t);
 //		Function f2tm1Compose = FOBasicDerivable.Compose(f2tm1, fInner_t);
-		Function ftCompose = ft;
-		Function f2tm1Compose = f2tm1;
+		MathFunc ftCompose = ft;
+		MathFunc f2tm1Compose = f2tm1;
 		
 		if(funIndex == 0)
 			funOuter = f2rm1.M(fr);
@@ -180,7 +186,7 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 	}
 
 	@Override
-	public void asignElement(Element e) {
+	public void assignElement(Element e) {
 		this.e = e;
 	}
 
@@ -194,13 +200,13 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 	}
 
 	@Override
-	public Function _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override
-	public double value(Variable v) {
-		return funCompose.value(v);
+	public double apply(Variable v) {
+		return funCompose.apply(v);
 	}
 
 	public String toString() {
@@ -214,7 +220,7 @@ public class SFQuadraticLocal2D extends AbstractFunction implements ScalarShapeF
 		for(int i=1;i<=6;i++) {
 			SFQuadraticLocal2D s = new SFQuadraticLocal2D(i);
 			System.out.println(s);
-			System.out.println(s._d("r"));
+			System.out.println(s.diff("r"));
 		}
 	}
 

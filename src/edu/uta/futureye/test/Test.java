@@ -9,6 +9,7 @@ import java.util.Set;
 
 import edu.uta.futureye.util.MultiKey;
 import edu.uta.futureye.util.Utils;
+import edu.uta.futureye.util.container.ElementList;
 
 public class Test  extends Number implements Comparable<Double> {
     public static Double valueOf(double d) {
@@ -102,9 +103,13 @@ public class Test  extends Number implements Comparable<Double> {
 		System.out.println(map2.get(new MultiKey(true,2,1)));
 		System.out.println("-------------");
 		
+		ElementList lt = new ElementList();
+		ElementList lt2 = new ElementList();
+		lt.addAll(lt2);
 		
-		
-		
+		double aaa = 63.9799*100+65.9999*70+71.4299*50+70.3599*50;
+		aaa/=270;
+		System.out.println(aaa);
 		
 	}
 

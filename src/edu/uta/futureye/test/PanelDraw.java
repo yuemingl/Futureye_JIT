@@ -4,9 +4,9 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
 
 public class PanelDraw extends JPanel{
@@ -15,8 +15,8 @@ public class PanelDraw extends JPanel{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public Function fx;
-	public Function fy;
+	public MathFunc fx;
+	public MathFunc fy;
 	
 	public double[] convert(int[] iArray) {
 		double[] dArray = new double[iArray.length];
@@ -47,8 +47,8 @@ public class PanelDraw extends JPanel{
 		p2.set("r", -1); p2.set("s", 1);
 		p3.set("r", 1); p3.set("s", 1);
 		p4.set("r", 1); p4.set("s", -1);
-		int xs2[] = {(int)fx.value(p1),(int)fx.value(p2),(int)fx.value(p3),(int)fx.value(p4)};
-		int ys2[] = {(int)fy.value(p1),(int)fy.value(p2),(int)fy.value(p3),(int)fy.value(p4)};
+		int xs2[] = {(int)fx.apply(p1),(int)fx.apply(p2),(int)fx.apply(p3),(int)fx.apply(p4)};
+		int ys2[] = {(int)fy.apply(p1),(int)fy.apply(p2),(int)fy.apply(p3),(int)fy.apply(p4)};
 		
 		//Should be the same :)
 		g.drawPolygon(xs, ys, 4);

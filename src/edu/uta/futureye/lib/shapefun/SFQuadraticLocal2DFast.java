@@ -1,13 +1,13 @@
 package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 
@@ -33,9 +33,9 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarShapeFunction {
+public class SFQuadraticLocal2DFast extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
-	private Function funOuter = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 
 	private double area = -1.0;
@@ -50,22 +50,22 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 	 * @author liuyueming
 	 *
 	 */
-	protected class SF123456 extends AbstractFunction {
+	protected class SF123456 extends AbstractMathFunc {
 		int funIndex;
 		public SF123456(int funIndex) {
 			super(SFQuadraticLocal2DFast.this.varNames);
 			this.funIndex = funIndex;
 		}
 		@Override
-		public Function _d(String var) {
+		public MathFunc diff(String var) {
 			if(area < 0.0) {
 				FutureyeException e = new FutureyeException("SFLinearLocal2D: area < 0.0");
 				e.printStackTrace();
 				return null;
 			}
-			Function fr = new FX("r");
-			Function fs = new FX("s");
-			Function ft = new FX("t");
+			MathFunc fr = new FX("r");
+			MathFunc fs = new FX("s");
+			MathFunc ft = new FX("t");
 			if(var.equals("x")) {
 				if(funIndex == 0)
 					return new FAxpb("r",dlx[0]*4.0,-dlx[0]);
@@ -116,7 +116,7 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 		 * N6 = 4*r*t
 		 */
 		@Override
-		public double value(Variable v) {
+		public double apply(Variable v) {
 			double r = v.get("r");
 			double s = v.get("s");
 			double t = v.get("t");
@@ -170,7 +170,7 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 	}
 
 	@Override
-	public void asignElement(Element e) {
+	public void assignElement(Element e) {
 		
 		double x1 = e.nodes.at(1).coord(1) , y1 =  e.nodes.at(1).coord(2) ;
 		double x2 = e.nodes.at(2).coord(1) , y2 =  e.nodes.at(2).coord(2) ;
@@ -207,13 +207,13 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 	}
 
 	@Override
-	public Function _d(String varName) {
-		return funOuter._d(varName);
+	public MathFunc diff(String varName) {
+		return funOuter.diff(varName);
 	}
 
 	@Override
-	public double value(Variable v) {
-		return funOuter.value(v);
+	public double apply(Variable v) {
+		return funOuter.apply(v);
 	}
 
 	public String toString() {
@@ -231,8 +231,8 @@ public class SFQuadraticLocal2DFast extends AbstractFunction implements ScalarSh
 			System.out.println(s);
 			Variable var = new Variable();
 			var.set("r", 0.6); var.set("s", 0.2); var.set("t", 0.2);
-			System.out.println(sf.value(var));
-			System.out.println(s.value(var));
+			System.out.println(sf.apply(var));
+			System.out.println(s.apply(var));
 			//DerivativeIndicator di = new DerivativeIndicator();
 			//di.set("x", 1);
 			//System.out.println(s.derivative(di));			

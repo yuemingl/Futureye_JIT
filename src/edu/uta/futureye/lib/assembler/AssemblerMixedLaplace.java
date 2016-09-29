@@ -2,24 +2,20 @@ package edu.uta.futureye.lib.assembler;
 
 import edu.uta.futureye.algebra.SparseBlockMatrix;
 import edu.uta.futureye.algebra.SparseBlockVector;
-import edu.uta.futureye.algebra.SparseMatrix;
-import edu.uta.futureye.algebra.SparseVector;
-import edu.uta.futureye.algebra.intf.BlockMatrix;
-import edu.uta.futureye.algebra.intf.BlockVector;
-import edu.uta.futureye.algebra.intf.Matrix;
-import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.SparseMatrixRowMajor;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.core.intf.WeakForm;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.container.ElementList;
 
 public class AssemblerMixedLaplace implements Assembler {
 	protected Mesh mesh;
 	protected WeakForm weakForm;
-	protected BlockMatrix globalStiff;
-	protected BlockVector globalLoad;
+	protected SparseBlockMatrix globalStiff;
+	protected SparseBlockVector globalLoad;
 
 	public AssemblerMixedLaplace(Mesh mesh, WeakForm weakForm) {
 		this.mesh = mesh;
@@ -29,14 +25,18 @@ public class AssemblerMixedLaplace implements Assembler {
 		int elementDOF = mesh.getEdgeList().size();
 		
 		globalStiff = new SparseBlockMatrix(2,2);
-		globalStiff.setBlock(1, 1, new SparseMatrix(edgeDOF,edgeDOF));
-		globalStiff.setBlock(1, 2, new SparseMatrix(edgeDOF,elementDOF));
-		globalStiff.setBlock(2, 1, new SparseMatrix(elementDOF,edgeDOF));
-		globalStiff.setBlock(2, 2, new SparseMatrix(elementDOF,elementDOF));
+		globalStiff.setBlock(1, 1, 
+				new SparseMatrixRowMajor(edgeDOF,edgeDOF));
+		globalStiff.setBlock(1, 2, 
+				new SparseMatrixRowMajor(edgeDOF,elementDOF));
+		globalStiff.setBlock(2, 1, 
+				new SparseMatrixRowMajor(elementDOF,edgeDOF));
+		globalStiff.setBlock(2, 2, 
+				new SparseMatrixRowMajor(elementDOF,elementDOF));
 		
 		globalLoad = new SparseBlockVector(2);
-		globalLoad.setBlock(1, new SparseVector(edgeDOF));
-		globalLoad.setBlock(2, new SparseVector(elementDOF));
+		globalLoad.setBlock(1, new SparseVectorHashMap(edgeDOF));
+		globalLoad.setBlock(2, new SparseVectorHashMap(elementDOF));
 		
 	}
 
@@ -56,17 +56,17 @@ public class AssemblerMixedLaplace implements Assembler {
 	}
 	
 	@Override
-	public Vector getLoadVector() {
+	public SparseBlockVector getLoadVector() {
 		return globalLoad;
 	}
 
 	@Override
-	public Matrix getStiffnessMatrix() {
+	public SparseBlockMatrix getStiffnessMatrix() {
 		return globalStiff;
 	}
 
 	@Override
-	public void imposeDirichletCondition(Function diri) {
+	public void imposeDirichletCondition(MathFunc diri) {
 		//不需要任何处理
 		throw new UnsupportedOperationException();
 	}

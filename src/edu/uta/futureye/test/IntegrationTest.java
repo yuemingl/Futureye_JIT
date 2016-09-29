@@ -1,6 +1,6 @@
 package edu.uta.futureye.test;
 
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
@@ -13,7 +13,7 @@ public class IntegrationTest {
 		ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
 		ScalarShapeFunction sf1d2 = new SFLinearLocal1D(2);
 		
-		Function integrand = sf1d1.A(sf1d2);
+		MathFunc integrand = sf1d1.A(sf1d2);
 		
 		double val;
 
@@ -37,7 +37,7 @@ public class IntegrationTest {
 		shapeFun[1] = new SFLinearLocal2D(2);
 		shapeFun[2] = new SFLinearLocal2D(3);
 		
-		Function integrand = shapeFun[0].A(shapeFun[1]);
+		MathFunc integrand = shapeFun[0].A(shapeFun[1]);
 		integrand = integrand.A(shapeFun[2]);
 		
 		double val;
@@ -67,7 +67,7 @@ public class IntegrationTest {
 		shapeFun[2] = new SFBilinearLocal2D(3);
 		shapeFun[3] = new SFBilinearLocal2D(3);
 		
-		Function integrand = shapeFun[0].A(shapeFun[1]);
+		MathFunc integrand = shapeFun[0].A(shapeFun[1]);
 		integrand = integrand.A(shapeFun[2]);
 		integrand = integrand.A(shapeFun[3]);
 		

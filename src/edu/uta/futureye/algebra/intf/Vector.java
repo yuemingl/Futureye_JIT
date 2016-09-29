@@ -1,12 +1,16 @@
 package edu.uta.futureye.algebra.intf;
 
+import edu.uta.futureye.io.MatlabMatFileWriter;
+
 /**
+ * <blockquote><pre>
  * General vector interface
  * 一般向量接口，不适用于求解代数方程组（求解代数方程组的向量接口参见AlgebraVector）
  * 用途：
  * 1. 二维、三维“空间向量”，用于向量函数
  * 2. 用来保存右端向量合成步骤中的局部和全局向量
  * 3. 矩阵稀疏存贮的“解向量”，用于打印输出
+ * </blockquote></pre>
  * 
  * @author liuyueming
  * 
@@ -36,7 +40,16 @@ public interface Vector {
 	 * @return <code>x(index)</code>
 	 */
 	double get(int index);
-
+	
+	/**
+	 * Alias of get(int index), used in ScalaFEM as syntactic sugar: 
+	 * <code>val a = x(index)</code>
+	 * 
+	 * @param index
+	 * @return <code>x(index)</code>
+	 */
+	double apply(int index);
+	
 	/**
 	 * <code>x(index) = value</code>
 	 * 将分量<tt>index</tt>的值设置为<tt>value</tt>
@@ -45,6 +58,24 @@ public interface Vector {
 	 * @param value
 	 */
 	void set(int index, double value);
+	
+	/**
+	 * Alias of set(int index, double value), used in ScalaFEM as syntactic sugar: 
+	 * <code>x(index)=value</code>
+	 * 
+	 * @param index
+	 * @param value
+	 */
+	void update(int index, double value);
+	
+	/**
+	 * Set all the values of vector to a single value <tt>value</tt>
+	 * <p>
+	 * 将向量的所有值置为<tt>value</tt>
+	 * 
+	 * @param value
+	 */
+	void setAll(double value);
 	
 	/**
 	 * <code>x(index) += value</code>
@@ -175,22 +206,49 @@ public interface Vector {
 	///////////////////////////////////////////////////////
 	
 	/**
-	 * Deep copy
+	 * Deep copy of the vector
+	 * <p>
 	 * 深拷贝
 	 * 
 	 * @return
 	 */
 	Vector copy();
-
-	/**
-	 * Set vector dimension to zero. (SparseVector only?) 
-	 * 清空向量的所有元素（是否定义稀疏向量接口？）
-	 */
-	void clear();
 	
 	/**
 	 * Print the component values of the vector
+	 * <p>
 	 * 打印向量元素
 	 */
 	void print();
+	
+	/**
+	 * Set vector name for printing purpose or using in Matlab as variable name
+	 * 
+	 * @param name Vector name
+	 * @return <tt>this</tt> for convenience only
+	 */
+	Vector setName(String name);
+	
+	/**
+	 * Get vector name
+	 * 
+	 * @return Vector name
+	 */
+	String getName();
+	
+	/**
+	 * Write this vector to a file with Matlab mat file format.
+	 * The variable name in matlab workspace is specified by <tt>setName()</tt>.
+	 * <p>
+	 * If more than one vector need to be written in a single mat file use <tt>MatlabMatFileWriter</tt> instead.
+	 * 
+	 * @param fileName
+	 */
+	void writeMatFile(String fileName);
+	
+	/**
+	 * Write this vector to file <tt>fileName</tt> with simple text file format
+	 * @param fileName
+	 */
+	void writeSimpleFile(String fileName);
 }

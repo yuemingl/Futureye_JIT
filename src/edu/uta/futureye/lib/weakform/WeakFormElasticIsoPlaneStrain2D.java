@@ -1,35 +1,35 @@
 package edu.uta.futureye.lib.weakform;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.util.Utils;
 
-public class WeakFormElasticIsoPlaneStrain2D extends AbstractVectorWeakform {
+public class WeakFormElasticIsoPlaneStrain2D extends AbstractVectorWeakForm {
 	double E = 1000; //Young's modulus
 	double gamma = 0.25; //Poisson ratio
 	VectorFunction g_b; //Body force
 	VectorFunction g_t; //Distributed external loading on boundary
 	
 	@Override
-	public Function leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			Function u1 = u.get(1);
-			Function u2 = u.get(2);
-			Function v1 = v.get(1);
-			Function v2 = v.get(2);
-			Function u1x = u1._d("x");
-			Function u1y = u1._d("y");
-			Function u2x = u2._d("x");
-			Function u2y = u2._d("y");
-			Function v1x = v1._d("x");
-			Function v1y = v1._d("y");
-			Function v2x = v2._d("x");
-			Function v2y = v2._d("y");
+			MathFunc u1 = u.get(1);
+			MathFunc u2 = u.get(2);
+			MathFunc v1 = v.get(1);
+			MathFunc v2 = v.get(2);
+			MathFunc u1x = u1.diff("x");
+			MathFunc u1y = u1.diff("y");
+			MathFunc u2x = u2.diff("x");
+			MathFunc u2y = u2.diff("y");
+			MathFunc v1x = v1.diff("x");
+			MathFunc v1y = v1.diff("y");
+			MathFunc v2x = v2.diff("x");
+			MathFunc v2y = v2.diff("y");
 			
 			double coef1 = E/((1+gamma)*(1-2.0*gamma));
 			double coef2 = (1-2.0*gamma)/2.0;
-			Function integrand = null;
+			MathFunc integrand = null;
 			
 			//自由度双循环的表达规则
 			//e.g. \vec{u}=(u v)
@@ -58,14 +58,14 @@ public class WeakFormElasticIsoPlaneStrain2D extends AbstractVectorWeakform {
 	}
 
 	@Override
-	public Function rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			VectorFunction fb = Utils.interpolateFunctionOnElement(g_b, e);
+			VectorFunction fb = Utils.interpolateOnElement(g_b, e);
 			return v.dot(fb);
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
-			VectorFunction ft = Utils.interpolateFunctionOnElement(g_t, be);
-			Function borderIntegrand = v.dot(ft);
+			VectorFunction ft = Utils.interpolateOnElement(g_t, be);
+			MathFunc borderIntegrand = v.dot(ft);
 			return borderIntegrand;
 		}
 		return null;

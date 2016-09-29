@@ -25,6 +25,7 @@ public class ObjVector<T> {
 		objs.setSize(size);
 	}
 	
+//	@SafeVarargs
 	public ObjVector(T ...es) {
 		for(T e : es) this.add(e);
 	}
@@ -146,5 +147,9 @@ public class ObjVector<T> {
 	
 	public String toString() {
 		return objs.toString();
+	}
+	
+	public boolean contains(T o) {
+		return objs.contains(o);
 	}
 }

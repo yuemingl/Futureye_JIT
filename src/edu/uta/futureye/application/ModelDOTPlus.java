@@ -2,24 +2,22 @@ package edu.uta.futureye.application;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.Solver;
-import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
-import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
@@ -39,15 +37,15 @@ import edu.uta.futureye.util.container.NodeList;
  */
 public class ModelDOTPlus {
 	//Light source
-	public Function delta = null;
+	public MathFunc delta = null;
 	public Variable lightPosition = null; //light source position
 	public int lightNum = -1;
 	
 	//Inclusion mu_a
-	public Function mu_a = null;
+	public MathFunc mu_a = null;
 	
 	//mu_s'
-	public Function mu_s = new FC(50.0/3);
+	public MathFunc mu_s = new FC(50.0/3);
 	
 	/**
 	 * type=1: one inclusion
@@ -66,9 +64,9 @@ public class ModelDOTPlus {
 		final double fmu_a = maxMu_a;
 		final double distance = 0.8;
 		if(type == 1) {
-			mu_a = new AbstractFunction("x","y"){
+			mu_a = new AbstractMathFunc("x","y"){
 				@Override
-				public double value(Variable v) {
+				public double apply(Variable v) {
 					double bk = 0.1;
 					double dx = v.get("x")-fcx;
 					double dy = v.get("y")-fcy;
@@ -81,9 +79,9 @@ public class ModelDOTPlus {
 				}
 			};
 		} else if(type == 2) {
-			mu_a = new AbstractFunction("x","y"){
+			mu_a = new AbstractMathFunc("x","y"){
 				@Override
-				public double value(Variable v) {
+				public double apply(Variable v) {
 					double bk = 0.1;
 					double dx = v.get("x")-fcx;
 					double dy = v.get("y")-fcy;
@@ -129,10 +127,10 @@ public class ModelDOTPlus {
 	 * @param diri: the values of Dirichlet condition
 	 * @return
 	 */
-	public Vector solveMixedBorder(Mesh mesh, Function diriBoundaryMark, 
-			Function diri, Function robinQ, Function robinD) {
+	public Vector solveMixedBorder(Mesh mesh, MathFunc diriBoundaryMark, 
+			MathFunc diri, MathFunc robinQ, MathFunc robinD) {
 		//Mark border type
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		if(diriBoundaryMark == null && diri == null) {
 			mapNTF.put(NodeType.Robin, null);
 		} else if(diriBoundaryMark == null && diri != null) {
@@ -151,7 +149,7 @@ public class ModelDOTPlus {
 
 		//Model: \nabla{1/(3*mu_s'+3*mu_a)*\nabla{u}} + mu_a*u = \delta
 		weakForm.setParam(
-				FC.c1.D(mu_s.A(mu_a).M(3.0)), 
+				FC.C1.D(mu_s.A(mu_a).M(3.0)), 
 				this.mu_a, 
 				robinQ, 
 				robinD //FC.c1.D(mu_s.A(mu_a).M(3.0)) : d==k,q=0 (即：u_n + u =0)
@@ -180,10 +178,10 @@ public class ModelDOTPlus {
 	}
 	
 	public Vector solveNeumann(Mesh mesh) {
-		return solveMixedBorder(mesh,null,null,null, FC.c1.D(mu_s.A(mu_a).M(3.0)));
+		return solveMixedBorder(mesh,null,null,null, FC.C1.D(mu_s.A(mu_a).M(3.0)));
 	}
 	
-	public Vector solveDirichlet(Mesh mesh, Function diri) {
+	public Vector solveDirichlet(Mesh mesh, MathFunc diri) {
 		return solveMixedBorder(mesh,null,diri,null,null);
 	}	
 	
@@ -282,9 +280,9 @@ public class ModelDOTPlus {
 				FMath.axpy(-1.0, uSmallApproximate, uSmallGuess));
 		
 		//TEST 3. Only up side of the domain is Dirichlet boundary
-		Function diriBoundaryMark = new AbstractFunction("x","y"){
+		MathFunc diriBoundaryMark = new AbstractMathFunc("x","y"){
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				//double x = v.get("x");
 				double y = v.get("y");
 				if(Math.abs(y - 3.0) < Constant.eps)
@@ -294,7 +292,7 @@ public class ModelDOTPlus {
 			}
 		};
 		Vector uMix = model.solveMixedBorder(meshSmall, diriBoundaryMark, 
-				new Vector2Function(uSmallExtract), null, FC.c1.D(model.mu_s.A(model.mu_a).M(3.0)));
+				new Vector2Function(uSmallExtract), null, FC.C1.D(model.mu_s.A(model.mu_a).M(3.0)));
 		Tools.plotVector(meshSmall, outputFolder, "u_mix.dat", uMix);
 	}
 

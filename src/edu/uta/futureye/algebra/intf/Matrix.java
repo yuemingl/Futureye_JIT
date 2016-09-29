@@ -1,22 +1,24 @@
 package edu.uta.futureye.algebra.intf;
 
-import java.util.Map;
+
 
 /**
+ * <blockquote><pre>
  * General matrix interface
  * 一般矩阵接口，不适用于求解代数方程组（求解代数方程组的矩阵接口参见AlgebraMatrix）
  * 用途：
  * 1. 用来保存刚度矩阵合成步骤中的局部和全局矩阵
  * 2. 打印输出矩阵
+ * </blockquote></pre>
  * 
  * @author liuyueming
  *
  */
 public interface Matrix {
 	/**
-	 * 零元素阈值
+	 * 矩阵零元素阈值
 	 */
-	public static double zeroEps = 1e-10;
+	public static double zeroEps = 1e-15;
 	
 	/**
 	 * 设置矩阵行数
@@ -43,21 +45,41 @@ public interface Matrix {
 	int getColDim();
 	
 	/**
+	 * 获取row行col列元素的值
+	 * @param row
+	 * @param col
+	 * @return <tt>m(row,col)</tt>
+	 */
+	double get(int row, int col);
+	
+	/**
+	 * Alias of get(int row, int col), used in ScalaFEM as syntactic sugar: 
+	 * <code>val a = m(row,col)</code>
+	 * 
+	 * @param row
+	 * @param col
+	 * @return <tt>m(row,col)</tt>
+	 */
+	double apply(int row, int col);
+
+	/**
 	 * 设置row行col列元素的值
 	 * @param row
 	 * @param col
 	 * @param value
 	 */
-	void set(int row, int col,double value);
+	void set(int row, int col, double value);
 	
 	/**
-	 * 获取row行col列元素的值
+	 * Alias of set(int row, int col, double value), used in ScalaFEM as syntactic sugar: 
+	 * <code>m(row,col)=value</code>
+	 * 
 	 * @param row
 	 * @param col
-	 * @return
+	 * @param value
 	 */
-	double get(int row, int col);
-	
+	void update(int row, int col, double value);
+
 	/**
 	 * m(row,col) += value
 	 * @param row
@@ -65,23 +87,6 @@ public interface Matrix {
 	 * @param value
 	 */
 	void add(int row, int col,double value);
-	
-	/**
-	 * get all non-zero element, instead of iterator
-	 * 获取所有非零元素，不使用迭代子
-	 * @return
-	 */
-	Map<Integer,Map<Integer,Double>> getAll();
-	
-	/**
-	 * M(nRowBase + row, nColBase + col) = values in map
-	 * 将参数map中的所有元素值赋值到本矩阵，其中map中所有的行号都加上nRowBase，
-	 * 所有的列号都加上nColBase
-	 * @param nRowBase
-	 * @param nColBase
-	 * @param map
-	 */
-	void setAll(int nRowBase, int nColBase, Map<Integer,Map<Integer,Double>> map);
 	
 	/**
 	 * y = M*x
@@ -105,15 +110,40 @@ public interface Matrix {
 	Matrix copy();
 	
 	/**
-	 * 清空矩阵中的所有元素
-	 */
-	void clear();
-	
-	/**
+	 * Print matrix information
+	 * <p>
 	 * 打印矩阵元素
 	 */
 	void print();
 	
+	/**
+	 * Set matrix name for printing purpose or using in Matlab as variable name
+	 * 
+	 * @param name Matrix name
+	 * @return <tt>this</tt> for convenience only
+	 */
 	Matrix setName(String name);
+	
+	/**
+	 * Get matrix name
+	 * 
+	 * @return Matrix name
+	 */
 	String getName();
+	
+	/**
+	 * Write this matrix to file <tt>fileName</tt> with Matlab mat file format
+	 * <p>
+	 * If more than one matrix need to be written in a single mat file use <tt>MatlabMatFileWriter</tt> instead.
+	 * @param fileName
+	 */
+	void writeMatFile(String fileName);
+	
+	/**
+	 * Write this matrix to file <tt>fileName</tt> with simple text file format
+	 * @param fileName
+	 */
+	void writeSimpleFile(String fileName);
+	
+	//writeMatrixMarketFile(String fileName);
 }

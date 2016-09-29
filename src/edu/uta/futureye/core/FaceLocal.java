@@ -56,19 +56,21 @@ public class FaceLocal extends GeoEntity2D<EdgeLocal,NodeLocal> {
     }
     
 	/**
+	 * For vector valued problems, return boundary type of component <tt>nVVFComponent</tt>
+	 * <p>
 	 * 对于向量值问题，每个分量在同一边界上的类型不一定相同，
-	 * 该函数返回分量<tt>vvfIndex</tt>对应的边界类型
-	 * Vector valued function (vvf)
-	 * @param vvfIndex
+	 * 该函数返回分量<tt>nVVFComponent</tt>对应的边界类型
+	 * 
+	 * @param nVVFComponent
 	 * @return
 	 */
-    public NodeType getBorderType(int vvfIndex) {
-    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType(vvfIndex);
+    public NodeType getBorderType(int nVVFComponent) {
+    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType(nVVFComponent);
     	for(int i=2;i<this.vertices.size();i++) {
-    		NodeType nt2 = this.vertices.at(2).globalNode().getNodeType(vvfIndex);
+    		NodeType nt2 = this.vertices.at(2).globalNode().getNodeType(nVVFComponent);
     	   	if(nt1 != nt2) return null;                  
     	}
-    	return nt1;                  
+    	return nt1;
     }
 	
 	public boolean isBorderFace() {
@@ -124,7 +126,7 @@ public class FaceLocal extends GeoEntity2D<EdgeLocal,NodeLocal> {
 		
 		Element be = new Element(this.buildFace());
 		
-		//Node DOFs
+		//赋予 Node DOFs
 		VertexList beVertices = be.vertices();
 		int localDOFIndex = 1;
 		for(int i=1;i<=beVertices.size();i++) {
@@ -133,15 +135,16 @@ public class FaceLocal extends GeoEntity2D<EdgeLocal,NodeLocal> {
 				DOF dof = new DOF(
 							localDOFIndex,
 							eDOFList.at(j).globalIndex,
-							eDOFList.at(j).getSSF().restrictTo(localDOFIndex)
+							eDOFList.at(j).getSF().restrictTo(localDOFIndex)
 						);
-				be.addNodeDOF(localDOFIndex, dof);
+				dof.setVVFComponent(eDOFList.at(j).getVVFComponent());
+				be.addNodeDOF(i, dof);
 				localDOFIndex++;
 			}
 			
 		}
-		//TODO Edge DOFs?
-		//TODO Face DOFs?
+		//TODO 赋予 Edge DOFs?
+		//TODO 赋予 Face DOFs?
 		
 		return be;		
 		

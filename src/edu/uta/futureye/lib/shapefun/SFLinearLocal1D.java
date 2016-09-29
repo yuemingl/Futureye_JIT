@@ -6,20 +6,20 @@ import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
-public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFunction {
+public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFunction {
 	private int funIndex;
-	private Function funCompose = null;
-	private Function funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 
 	private Element e = null;
@@ -32,6 +32,7 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 	 * 
 	 * N1 = (1-r)/2
 	 * N2 = (1+r)/2
+	 * 
 	 * @param funID = 1,2
 	 * 
 	 */
@@ -41,11 +42,11 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 			throw new FutureyeException("ERROR: funID should be 1 or 2.");
 		}
 		
-		varNames.add("r");
+		this.varNames = new String[]{"r"};
 		innerVarNames = new ObjList<String>("x");
 		
 		//复合函数
-		Map<String, Function> fInners = new HashMap<String, Function>();
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		List<String> varNamesInner = new LinkedList<String>();
 		varNamesInner.add("x");
 		
@@ -57,8 +58,8 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 		 *  r = [2*x - (x1+x2)]/(x2-x1) 
 		 *  r_x = 2/(x2-x1)  
 		 */
-		fInners.put("r", new AbstractFunction(varNamesInner) {	
-			public Function _d(String var) {
+		fInners.put("r", new AbstractMathFunc(varNamesInner) {	
+			public MathFunc diff(String var) {
 				if(var.equals("x")) {
 					VertexList vl = e.vertices();
 					if(vl.size() == 2) {
@@ -72,6 +73,10 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 				}
 				return null;
 			}
+			@Override
+			public double apply(double... args) {
+				throw new UnsupportedOperationException();
+			}
 		});
 		
 		//使用复合函数构造形函数
@@ -80,36 +85,45 @@ public class SFLinearLocal1D extends AbstractFunction  implements ScalarShapeFun
 		else
 			funOuter = new FAxpb("r",0.5,0.5);
 		funCompose = funOuter.compose(fInners);
+		funCompose.setActiveVarNames(funOuter.getVarNames());
 	}
 	
 	@Override
-	public void asignElement(Element e) {
+	public void assignElement(Element e) {
 		this.e = e;
 	}
 
 	@Override
-	public Function _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override
-	public double value(Variable v) {
-		return funCompose.value(v);
+	public double apply(Variable v) {
+		return funCompose.apply(v);
 	}
 
+	public String getExpr() {
+		return "N"+(funIndex+1)+"(r)";
+	}
+	
 	public String toString() {
 		return "N"+(funIndex+1)+": "+funOuter.toString();
 	}
 
 	@Override
 	public ScalarShapeFunction restrictTo(int funIndex) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public double apply(double... args) {
+		return this.funCompose.apply(args);
 	}
 
 }

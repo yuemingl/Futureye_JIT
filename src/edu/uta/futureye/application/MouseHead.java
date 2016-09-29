@@ -7,29 +7,29 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.Solver;
-import edu.uta.futureye.algebra.SolverJBLAS;
-import edu.uta.futureye.algebra.SparseVector;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
+import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.Solver;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.DiscreteIndexFunction;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.assembler.AssemblerScalarFast;
-import edu.uta.futureye.lib.element.FEBilinearRectangle;
+import edu.uta.futureye.lib.element.FEBilinearRectangleRegular;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakFormL22D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
@@ -44,21 +44,24 @@ import edu.uta.futureye.util.container.ObjList;
 public class MouseHead {
 	public enum TailType {top,bottom,left,right};
 	
-	public static String outputFolder = "MouseHead";
+	public String outputFolder = "MouseHead";
 	public String borderDataPath = null;
 	
 	//Light source
-	public Function delta = null;
+	public MathFunc delta = null;
 	public Variable lightSource = null; //light source position
 	
 	//Inclusion mu_a
-	public Function mu_a = null;
+	public MathFunc mu_a = null;
 	public double mu_a_bk = 0.1;
 
 	//Inclusion 1/(3*mu_s') = 1.0/30.0 ?
-	public Function k = new FC(1.0/50.0);
+	public MathFunc k = new FC(1.0/50.0);
 	
 	public double factor = 10000;
+	public double baseline = 0.0;
+	public double[] factors = null;
+	public double[] baselines = null;
 	
 	//第一种构造tail的方式：分别计算两个反问题，结果相加
 	ObjList<Vector> tails = new ObjList<Vector>();
@@ -71,6 +74,14 @@ public class MouseHead {
 	
 	public static boolean debug = false;
 	public static boolean outputMiddleData = false;
+	public boolean bSimulate = false;
+	public MathFunc mu_aSimulate = null;
+
+	//=true 使用base line测量数据做为背景（通过求解一个外问题）
+	//=false 使用计算出来的背景解
+	public boolean bUseBaseLineBackground = false;
+	
+	protected int currentTimeId;
 	
 	public void setDelta(double x,double y) {
 		this.lightSource = new Variable();
@@ -79,47 +90,70 @@ public class MouseHead {
 		delta = new FDelta(this.lightSource,0.01,2e5);
 	}
 	
-	public void setMu_a_Band(double incX, double incBand, double maxMu_a) {
+	/**
+	 * 给定x坐标位置，构造一个带状的mu_a
+	 * 
+	 * @param incX
+	 * @param incBand
+	 * @param maxMu_a
+	 * @param bkMu_a
+	 */
+	public MathFunc makeBandMu_a(double incX, double incBand, double maxMu_a, double bkMu_a) {
+		MathFunc rltMu_a = null;
 		final double fcx = incX;
 		final double fcr = incBand;
-		final double fmu_a = maxMu_a;
-		mu_a = new AbstractFunction("x","y"){
+		final double fMaxMu_a = maxMu_a;
+		final double fBkMu_a = bkMu_a;
+		mu_a = new AbstractMathFunc("x","y"){
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;
 				if(Math.sqrt(dx*dx) < fcr) {
-					double r = fmu_a*Math.cos((Math.PI/2)*Math.sqrt(dx*dx)/fcr); 
-					return r<mu_a_bk?mu_a_bk:r;
+					double r = fMaxMu_a*Math.cos((Math.PI/2)*Math.sqrt(dx*dx)/fcr); 
+					return r<fBkMu_a?fBkMu_a:r;
 				}
 				else
-					return mu_a_bk;
+					return fBkMu_a;
 			}
 		};
+		return rltMu_a;
 	}
 
-	public void setMu_a(double incX, double incY, double incR, double maxMu_a) {
+	/**
+	 * 构造一个圆形mu_a
+	 * 
+	 * @param incX
+	 * @param incY
+	 * @param incR
+	 * @param maxMu_a
+	 * @return
+	 */
+	public MathFunc makeMu_a(double incX, double incY, double incR, double maxMu_a, double bkMu_a) {
+		MathFunc rltMu_a = null;
 		final double fcx = incX;
 		final double fcy = incY;
 		final double fcr = incR;
-		final double fmu_a = maxMu_a;
-		mu_a = new AbstractFunction("x","y"){
+		final double fMaxMu_a = maxMu_a;
+		final double fBkMu_a = bkMu_a;
+		rltMu_a = new AbstractMathFunc("x","y"){
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;
 				double dy = v.get("y")-fcy;
 				if(Math.sqrt(dx*dx+dy*dy) < fcr) {
-					double r = fmu_a*Math.cos((Math.PI/2)*Math.sqrt(dx*dx+dy*dy)/fcr); 
-					return r<mu_a_bk?mu_a_bk:r;
+					double r = fMaxMu_a*Math.cos((Math.PI/2)*Math.sqrt(dx*dx+dy*dy)/fcr); 
+					return r<fBkMu_a?fBkMu_a:r;
 				}
 				else
-					return mu_a_bk;
+					return fBkMu_a;
 			}
 		};
+		return rltMu_a;
 	}
 	
 	public Vector solveForwardNeumann(Mesh mesh) {
 		//Mark border type
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.clearBorderNodeMark();
@@ -132,15 +166,15 @@ public class MouseHead {
 		
 		// *** u + u_n = 0, on boundary ***
 		weakForm.setParam(
-				this.k, this.mu_a, FC.c0, this.k //d==k,q=0 (即：u_n + u =0)
+				this.k, this.mu_a, FC.C0, this.k //d==k,q=0 (即：u_n + u =0)
 			);
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveForwardNeumann");
 		assembler.assemble();
-		Matrix stiff = assembler.getStiffnessMatrix();
-		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new FC(0.0));
+		SparseMatrix stiff = assembler.getStiffnessMatrix();
+		SparseVector load = assembler.getLoadVector();
+		//assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 
 		Solver solver = new Solver();
@@ -148,21 +182,23 @@ public class MouseHead {
 		return u;
 	}	
 	
-	public Vector solveForwardDirichlet(Mesh mesh, Function diri) {
+	public Vector solveForwardDirichlet(Mesh mesh, MathFunc diri) {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side
 		weakForm.setF(this.delta);
 
 		weakForm.setParam(
-				this.k, this.mu_a, null, this.k //d==k,q=0 (即：u_n + u =0)
+				this.k, this.mu_a, FC.C0, this.k //d==k,q=0 (即：u_n + u =0)
 			);
 		
-		Assembler assembler = new AssemblerScalarFast(mesh, weakForm);
+		//!!!AssemblerScalar与AssemblerScalarFast有很大区别，问题？？？ 20110921
+		//Assembler assembler = new AssemblerScalarFast(mesh, weakForm);
+		Assembler assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveForwardDirichlet");
 		assembler.assemble();
-		Matrix stiff = assembler.getStiffnessMatrix();
-		Vector load = assembler.getLoadVector();
+		SparseMatrix stiff = assembler.getStiffnessMatrix();
+		SparseVector load = assembler.getLoadVector();
 		//Dirichlet condition
 		assembler.imposeDirichletCondition(diri);
 		
@@ -175,11 +211,11 @@ public class MouseHead {
 	
 	//public Vector solveParamInverse(Mesh mesh, Vector U, final TailType type) {
 	public Vector solveParamInverse(Mesh mesh, Vector U) {
-		HashMap<NodeType, Function> mapNTF2 = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF2 = new HashMap<NodeType, MathFunc>();
 		
-		mapNTF2.put(NodeType.Dirichlet, new AbstractFunction("x","y") {
+		mapNTF2.put(NodeType.Dirichlet, new AbstractMathFunc("x","y") {
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				//应该全是Dirichlet条件，否则在非Dirichlet条件处会产生大变化
 //				double x = v.get("x");
 //				double y = v.get("y");
@@ -227,7 +263,7 @@ public class MouseHead {
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new FC(0.1));
+		assembler.imposeDirichletCondition(new FC(this.mu_a_bk));
 		System.out.println("Assemble done!");
 		
 		SolverJBLAS solver = new SolverJBLAS();
@@ -245,9 +281,9 @@ public class MouseHead {
 	public Vector extractData(Mesh meshFrom, Mesh meshTo, Vector u) {
 		NodeList nodeTo = meshTo.getNodeList();
 		int dimTo = nodeTo.size();
-		Vector rlt = new SparseVector(dimTo);
+		Vector rlt = new SparseVectorHashMap(dimTo);
 		for(int i=1;i<=nodeTo.size();i++) {
-			Node node = meshFrom.containNode(nodeTo.at(i));
+			Node node = meshFrom.findNode(nodeTo.at(i));
 			if(node != null) {
 				rlt.set(nodeTo.at(i).globalIndex, u.get(node.globalIndex));
 			}
@@ -256,8 +292,8 @@ public class MouseHead {
 	}
 	
 	/**
-	 * 提取meshOmega1边界点的参数坐标，提供给matlab程序的
-	 * “插值结点参数坐标(0->r1->r2->r3->r4(0))”
+	 * 提取网格Omega1（外问题）内边界点的参数坐标，提供给matlab程序的
+	 * “插值结点的参数坐标(0->r1->r2->r3->r4(0))”
 	 * 
 	 *  S1            S6
 	 * (r4)0---->----r1
@@ -267,7 +303,9 @@ public class MouseHead {
 	 *  /                \
 	 * r3-------<--------r2
 	 * S4                S9
-	 */
+	 * 
+	 * 在标准输出打印结点编号、参数坐标对列表，以参数坐标值顺序排序
+	 */	
 	public void extractBorderParamData(Mesh omega) {
 		ObjList<PairDoubleInteger> rs = new ObjList<PairDoubleInteger>();
 		NodeList nodes = omega.getNodeList();
@@ -337,7 +375,7 @@ public class MouseHead {
 		FileInputStream in;
 		try {
 			in = new FileInputStream(
-					String.format(".\\"+outputFolder+"\\"+borderDataPath+"\\InterpOut%d_%d.txt", 
+					String.format("./"+outputFolder+"/"+borderDataPath+"/InterpOut%d_%d.txt", 
 							srcId,timeId));
 
 			InputStreamReader reader = new InputStreamReader(in);
@@ -351,7 +389,10 @@ public class MouseHead {
 				String[] line = str.split("(\\s)+");
 				PairDoubleInteger pair = new PairDoubleInteger();
 				pair.i = Integer.parseInt(line[0]);
-				pair.d = Double .parseDouble(line[2])*factor;
+				if(factors != null)
+					pair.d = Double .parseDouble(line[2])*factors[srcId] + baselines[srcId];
+				else
+					pair.d = Double .parseDouble(line[2])*factor + baseline;
 				vs.add(pair);
 			}
 			br.close();
@@ -375,6 +416,7 @@ public class MouseHead {
 	public ObjList<Node> getBorderNodes_Omega2(TailType type, Mesh omega2) {
 		NodeList nodes2 = omega2.getNodeList(); 
 		ObjList<Node> borderNodes = new ObjList<Node>();
+		double x,y;
 		if(type == TailType.left) {
 			for(int i=1;i<=nodes2.size();i++) {
 				if( //y=[-0.5,0.9]
@@ -389,10 +431,12 @@ public class MouseHead {
 			}
 		} else if(type == TailType.bottom) {
 			for(int i=1;i<=nodes2.size();i++) {
+				x = nodes2.at(i).coord(1);
+				y = nodes2.at(i).coord(2);
 				if( //x:[-1.6,1.6]
-					nodes2.at(i).coord(1)-(-1.6)>-Constant.meshEps && 1.6-nodes2.at(i).coord(1)>-Constant.meshEps &&
+					x>-1.6-Constant.meshEps && x<1.6+Constant.meshEps &&
 					//y:-0.5
-					Math.abs(nodes2.at(i).coord(2)-(-0.5))<Constant.meshEps
+					Math.abs(y-(-0.5))<Constant.meshEps
 				) {
 					borderNodes.add(nodes2.at(i));
 					if(debug)
@@ -434,7 +478,7 @@ public class MouseHead {
 	 */	
 	public Vector computeTailLeft(Mesh omega2,Vector u2_bk,
 			Mesh omega1,Vector u1) {
-		Vector tail = new SparseVector(u2_bk.getDim());
+		Vector tail = new SparseVectorHashMap(u2_bk.getDim());
 		NodeList nodes2 = omega2.getNodeList(); 
 		ObjList<Node> u2LeftNodes = this.getBorderNodes_Omega2(TailType.left, omega2);
 		ObjList<Node> u1LeftNodes = this.getBorderNodes_Omega2(TailType.left, omega1);
@@ -499,7 +543,7 @@ public class MouseHead {
 				}
 			}
 		}
-		Tools.plotVector(omega2, outputFolder, "left_tail1.dat", tail);
+		Tools.plotVector(omega2, outputFolder, String.format("left_tail1_%03d.dat",currentTimeId), tail);
 		tails2.add(tail.copy());
 //		tail = Utils.gaussSmooth(omega2, tail, 2, 0.5);
 //		tail = Utils.gaussSmooth(omega2, tail, 2, 0.4);
@@ -522,7 +566,7 @@ public class MouseHead {
 	
 	public Vector computeTailRight(Mesh omega2,Vector u2_bk,
 			Mesh omega1,Vector u1) {
-		Vector tail = new SparseVector(u2_bk.getDim());
+		Vector tail = new SparseVectorHashMap(u2_bk.getDim());
 		NodeList nodes2 = omega2.getNodeList(); 
 		ObjList<Node> u2RightNodes = this.getBorderNodes_Omega2(TailType.right, omega2);
 		ObjList<Node> u1RightNodes = this.getBorderNodes_Omega2(TailType.right, omega1);
@@ -587,7 +631,7 @@ public class MouseHead {
 				}
 			}
 		}
-		Tools.plotVector(omega2, outputFolder, "right_tail1.dat", tail);
+		Tools.plotVector(omega2, outputFolder, String.format("right_tail1_%03d.dat",currentTimeId), tail);
 		tails2.add(tail.copy());
 		
 		
@@ -605,7 +649,7 @@ public class MouseHead {
 	 */
 	public Vector computeTailBottom(Mesh omega2,Vector u2_bk,
 			Mesh omega1,Vector u1) {
-		Vector tail = new SparseVector(u2_bk.getDim());
+		Vector tail = new SparseVectorHashMap(u2_bk.getDim());
 		NodeList nodes2 = omega2.getNodeList(); 
 		ObjList<Node> u2BottomNodes = this.getBorderNodes_Omega2(TailType.bottom, omega2);
 		ObjList<Node> u1BottomNodes = this.getBorderNodes_Omega2(TailType.bottom, omega1);
@@ -671,7 +715,7 @@ public class MouseHead {
 				}
 			}
 		}
-		Tools.plotVector(omega2, outputFolder, "bottom_tail1.dat", tail);
+		Tools.plotVector(omega2, outputFolder, String.format("bottom_tail1_%03d.dat",currentTimeId), tail);
 		tails2.add(tail.copy());
 //		tail = Utils.gaussSmooth(omega2, tail, 2, 0.5);
 //		tail = Utils.gaussSmooth(omega2, tail, 2, 0.4);
@@ -695,7 +739,7 @@ public class MouseHead {
 	 */
 	public Vector computeTailTop(Mesh omega2,Vector u2_bk,
 			Mesh omega1,Vector u1) {
-		Vector tail = new SparseVector(u2_bk.getDim());
+		Vector tail = new SparseVectorHashMap(u2_bk.getDim());
 		NodeList nodes2 = omega2.getNodeList(); 
 		ObjList<Node> u2TopNodes = this.getBorderNodes_Omega2(TailType.top, omega2);
 		ObjList<Node> u1TopNodes = this.getBorderNodes_Omega2(TailType.top, omega1);
@@ -761,7 +805,7 @@ public class MouseHead {
 				}
 			}
 		}
-		Tools.plotVector(omega2, outputFolder, "top_tail1.dat", tail);
+		Tools.plotVector(omega2, outputFolder, String.format("top_tail1_%03d.dat",currentTimeId), tail);
 		tails2.add(tail.copy());
 		
 		for(int i=1;i<=nodes2.size();i++) {
@@ -930,8 +974,88 @@ public class MouseHead {
 		}
 	}
 
+	/**
+	 * 根据不同的tail标记不同的边界类型
+	 * @param mesh
+	 * @param fTailType
+	 */
+	public void markExteriorBorder(Mesh mesh, final TailType fTailType) {
+		//外问题 Solve exterior problem
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y") {
+			@Override
+			public double apply(Variable v) {
+				double x = v.get("x");
+				double y = v.get("y");
+				//Omega1
+//				if(Math.abs(x-1.6)<Constant.meshEps ||
+//						Math.abs(x+1.6)<Constant.meshEps ||
+//						Math.abs(y-0.9)<Constant.meshEps ||
+//						Math.abs(y+0.5)<Constant.meshEps)
+				//Omega11 外问题区域的外边界
+				if(Math.abs(x-2.1)<Constant.meshEps ||
+						Math.abs(x+2.1)<Constant.meshEps ||
+						Math.abs(y-1.4)<Constant.meshEps ||
+						Math.abs(y+1.0)<Constant.meshEps)
+					return 1;
+				//bottom tail: 外问题上边界不要Dirichlet条件，改为Robin
+				if(fTailType==TailType.bottom && Math.abs(y-0.8)<Constant.meshEps)
+					return 1;
+				//top tail: 外问题右边界不要Dirichlet条件，改为Robin
+				if(fTailType==TailType.top && Math.abs(y-(-0.4))<Constant.meshEps)
+					return 1;
+				//最后处理left tail和right tail，两条边界是斜线，只能指定一个范围：
+				//left tail: 外问题右边界不要Dirichlet条件，改为Robin
+				if(fTailType==TailType.left && Math.abs(x-1.6)<Constant.meshEps) //应该改为：x>0.9-Constant.meshEps
+					return 1;
+				//right tail: 外问题右边界不要Dirichlet条件，改为Robin
+				if(fTailType==TailType.right && Math.abs(x-(-1.6))<Constant.meshEps) //应该改为：x<-0.9+Constant.meshEps
+					return 1;
+				
+				return 0;
+			}
+		});
+		
+		mapNTF.put(NodeType.Dirichlet, null);
+		mesh.clearBorderNodeMark();
+		mesh.markBorderNode(mapNTF);		
+	}
+	
+	public boolean isOnTopBorderOmega(Node node) {
+		double x = node.coord(1);
+		double y = node.coord(2);
+		if(Math.abs(y-0.8)<Constant.meshEps &&
+				x>=-0.9-Constant.meshEps && x<=0.9+Constant.meshEps)
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean isOnBottomBorderOmega(Node node) {
+		double x = node.coord(1);
+		double y = node.coord(2);
+		if(Math.abs(y-(-0.4))<Constant.meshEps &&
+				x>=-1.5-Constant.meshEps && x<=1.5+Constant.meshEps)
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean isOnLeftBorderOmega(Node node) {
+		Node S25 = new Node(0,-0.9,0.8);
+		Node S28 = new Node(0,-1.5,-0.4);
+		return Utils.isPointOnLineSegment(S25, S28, node);
+	}
+	
+	public boolean isOnRightBorderOmega(Node node) {
+		Node S1 = new Node(0,0.9,0.8);
+		Node S4 = new Node(0,1.5,-0.4);
+		return Utils.isPointOnLineSegment(S1, S4, node);
+	}	
 	
 	public void run(int srcLightId, int timeId, TailType tailType) {
+		currentTimeId = timeId;
+		
 		//Read a triangle mesh from an input file
 		//老鼠头，梯形区域
 		MeshReader reader = new MeshReader(gridName+"_omega.grd");
@@ -962,7 +1086,8 @@ public class MouseHead {
 		
 		//Use element library to assign degree of freedom (DOF) to element
 		FELinearTriangle triEle = new FELinearTriangle();
-		FEBilinearRectangle rectEle = new FEBilinearRectangle();
+		//FEBilinearRectangle rectEle = new FEBilinearRectangle();
+		FEBilinearRectangleRegular rectEle = new FEBilinearRectangleRegular();
 		ElementList eList0 = meshOmega0.getElementList();
 		for(int i=1;i<=eList0.size();i++) {
 			if(eList0.at(i).nodes.size() == 3)
@@ -985,61 +1110,92 @@ public class MouseHead {
 				rectEle.assignTo(eList1.at(i));
 		}
 		
+		Tools.plotFunction(meshOmega0, outputFolder, "_delta.dat", this.delta);
+
 		//大区域背景解，用于Calibration
-		Vector u0_bk = solveForwardNeumann(meshOmega0);
+		//抽取到Omega上
+		Vector u0_bk=null,u_bk=null,u1_bk=null,u2_bk=null;
+		//this.mu_a = this.makeMu_a(-0.5, 0.25, 0.3, 0.6, 0.2);
+		u0_bk = solveForwardNeumann(meshOmega0);
 		Tools.plotVector(meshOmega0, outputFolder, tailType+"_u0_bk.dat", u0_bk);
+		//Vector alphaBk0 = this.solveParamInverse(meshOmega0, u0_bk);
+		//Tools.plotVector(meshOmega0, outputFolder, "alphaBk0.dat", alphaBk0);
 		
-		//抽取“大区域背景解”到Omega上
-		Vector u_bk = this.extractData(meshOmega0, meshOmega, u0_bk);
-		Tools.plotVector(meshOmega, outputFolder, tailType+"_u_bk.dat", u_bk);
-		
-		//抽取“大区域背景解”到Omega2上
-		Vector u2_bk = this.extractData(meshOmega0, meshOmega2, u0_bk);
-		Tools.plotVector(meshOmega2, outputFolder, tailType+"_u2_bk.dat", u2_bk);
-		
-		
-		//外问题 Solve exterior problem
-		final TailType fTailType = tailType;
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
-		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y") {
-			@Override
-			public double value(Variable v) {
-				double x = v.get("x");
-				double y = v.get("y");
-				//Omega1
-//				if(Math.abs(x-1.6)<Constant.meshEps ||
-//						Math.abs(x+1.6)<Constant.meshEps ||
-//						Math.abs(y-0.9)<Constant.meshEps ||
-//						Math.abs(y+0.5)<Constant.meshEps)
-				//Omega11 外问题区域的外边界
-				if(Math.abs(x-2.1)<Constant.meshEps ||
-						Math.abs(x+2.1)<Constant.meshEps ||
-						Math.abs(y-1.4)<Constant.meshEps ||
-						Math.abs(y+1.0)<Constant.meshEps)
-					return 1;
-				//bottom tail: 外问题上边界不要Dirichlet条件，改为Robin
-				if(fTailType==TailType.bottom && Math.abs(y-0.8)<Constant.meshEps)
-					return 1;
-				//left tail: 外问题右边界不要Dirichlet条件，改为Robin
-				//斜线
-				if(fTailType==TailType.left && Math.abs(x-1.6)<Constant.meshEps)
-					return 1;
-				//right tail: 外问题右边界不要Dirichlet条件，改为Robin
-				//斜线
-				if(fTailType==TailType.right && Math.abs(x-(-1.6))<Constant.meshEps)
-					return 1;
-				//top tail: 外问题右边界不要Dirichlet条件，改为Robin
-				if(fTailType==TailType.top && Math.abs(x-(-0.4))<Constant.meshEps)
-					return 1;
-				
-				return 0;
+		Vector alphaBk =  null;
+		if(bUseBaseLineBackground) {
+			//-------------求解外问题(Solve exterior problem)-----------
+			markExteriorBorder(meshOmega1,tailType);
+			//读取测量边界条件，光源编号为srcLightId，时间编号为timeId
+			MathFunc diri = null;
+			//取timeId=1作为背景
+			ObjList<PairDoubleInteger> measBorderValues = readInterpData(srcLightId,1);
+			//外问题Omega1的"内外边界"都采用Dirichlet条件
+			Vector vDiri = this.extractData(meshOmega0, meshOmega1, u0_bk);
+			for(int i=1;i<=measBorderValues.size();i++) {
+				PairDoubleInteger di = measBorderValues.at(i);
+				vDiri.set(di.i,di.d);
 			}
-		});
+			diri = new Vector2Function(vDiri);
+			u1_bk = solveForwardDirichlet(meshOmega1,diri);
+			Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1_bk.dat", u1_bk);
+			
+
+			u_bk=null;//没有用到，不计算
+			
+			//注意：由于是求解外问题，Omega2的内部区域（=Omega）没有函数值，
+			//不过，后面构造tail的时候，只用到了Omega2的边界值
+			u2_bk = this.extractData(meshOmega1, meshOmega2, u1_bk);
+			Tools.plotVector(meshOmega2, outputFolder, tailType+"_u2_bk_extract.dat", u2_bk);
 		
-		mapNTF.put(NodeType.Dirichlet, null);
-		meshOmega1.clearBorderNodeMark();
-		meshOmega1.markBorderNode(mapNTF);
+			//u2_bk通过在Omega2上指定边界条件为测量值，计算获得内部光强值
+			HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+			mapNTF.put(NodeType.Dirichlet, null);
+			meshOmega2.clearBorderNodeMark();
+			meshOmega2.markBorderNode(mapNTF);
+			diri = new Vector2Function(u2_bk);
+			//diri = new Vector2Function(this.extractData(meshOmega0, meshOmega2, u0_bk));//for test
+			
+			u2_bk = solveForwardDirichlet(meshOmega2,diri);
+			Tools.plotVector(meshOmega2, outputFolder, tailType+"_u2_bk.dat", u2_bk);
+			//求解系数反问题
+			alphaBk = this.solveParamInverse(meshOmega2, u2_bk);
+			Tools.plotVector(meshOmega2, outputFolder, "alphaBk.dat", alphaBk);
+	
+		} else { //从计算出来的u0_bk提取
+			//抽取到Omega上
+			u_bk = this.extractData(meshOmega0, meshOmega, u0_bk);
+			Tools.plotVector(meshOmega, outputFolder, tailType+"_u_bk.dat", u_bk);
+			//抽取到Omega1上
+			u1_bk = this.extractData(meshOmega0, meshOmega1, u0_bk);
+			Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1_bk.dat", u1_bk);
+			//抽取到Omega2上
+			u2_bk = this.extractData(meshOmega0, meshOmega2, u0_bk);
+			Tools.plotVector(meshOmega2, outputFolder, tailType+"_u2_bk.dat", u2_bk);
+		}
 		
+		Vector u1_sim = null;
+		if(bSimulate) {
+			MathFunc tmp_mu_a = this.mu_a;
+			this.mu_a = mu_aSimulate;
+			Tools.plotFunction(meshOmega0, outputFolder, tailType+"_mu_a_sim.dat", this.mu_a);
+			//大区域模拟Inclusion解，用于观察对比
+			Vector u0_sim = solveForwardNeumann(meshOmega0);
+			Tools.plotVector(meshOmega0, outputFolder, tailType+"_u0_sim.dat", u0_sim);
+			//抽取到Omega上
+			Vector u_sim = this.extractData(meshOmega0, meshOmega, u0_sim);
+			Tools.plotVector(meshOmega, outputFolder, tailType+"_u_sim.dat", u_sim);
+			//抽取到Omega1上
+			u1_sim = this.extractData(meshOmega0, meshOmega1, u0_sim);
+			Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1_sim.dat", u1_sim);
+			//抽取到Omega2上
+			Vector u2_sim = this.extractData(meshOmega0, meshOmega2, u0_sim);
+			Tools.plotVector(meshOmega2, outputFolder, tailType+"_u2_sim.dat", u2_sim);
+			this.mu_a = tmp_mu_a;
+		}
+		
+		
+		//------------求解外问题(Solve exterior problem)-------------
+		markExteriorBorder(meshOmega1,tailType);
 		if(debug) {
 			//打印Robin边界条件，检查是否标记正确
 			NodeList o1_nodes = meshOmega1.getNodeList();
@@ -1047,70 +1203,116 @@ public class MouseHead {
 				if(o1_nodes.at(i).getNodeType()==NodeType.Robin)
 					System.out.println(o1_nodes.at(i));
 			}
-			//打印Dirichlet边界条件，检查是否标记正确	
+			//打印Dirichlet边界条件，检查是否标记正确
 			for(int i=1;i<=o1_nodes.size();i++) {
 				if(o1_nodes.at(i).getNodeType()==NodeType.Dirichlet)
 					System.out.println(o1_nodes.at(i));
 			}
 		}
-		
 		//读取测量边界条件，光源编号为srcLightId，时间编号为timeId
-		Function diri = new DiscreteIndexFunction(readInterpData(srcLightId,timeId));
+		MathFunc diri = null;
+		if(bSimulate)
+			diri = new Vector2Function(u1_sim);
+		else {
+			//diri = new DiscreteIndexFunction(readInterpData(srcLightId,timeId));
+			ObjList<PairDoubleInteger> measBorderValues = readInterpData(srcLightId,timeId);
+			
+			//外问题Omega1的"内外边界"都采用Dirichlet条件
+			Vector vDiri = u1_bk.copy();
+			for(int i=1;i<=measBorderValues.size();i++) {
+				PairDoubleInteger di = measBorderValues.at(i);
+				vDiri.set(di.i,di.d);
+			}
+			diri = new Vector2Function(vDiri);
+		}
 		Vector u1 = solveForwardDirichlet(meshOmega1,diri);
 		Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1.dat", u1);
 		
+		
 		//输出Omega1的Dirichlet边界数据
 		if(outputMiddleData) {
-			Vector u1Border = new SparseVector(meshOmega1.getNodeList().size());
-			NodeList o1_nodes = meshOmega1.getNodeList();
-			for(int i=1;i<=o1_nodes.size();i++) {
-				if(o1_nodes.at(i).getNodeType()==NodeType.Dirichlet) {
-					Variable v = new Variable();
-					v.setIndex(i);
-					u1Border.set(i,diri.value(v));
+			NodeList nodesOmega1 = meshOmega1.getNodeList();
+			Vector u1Border = new SparseVectorHashMap(u1.getDim());
+			for(int i=1;i<=nodesOmega1.size();i++) {
+				Node node = nodesOmega1.at(i);
+				//if(o1_nodes.at(i).getNodeType()==NodeType.Dirichlet) {
+				Variable v = new Variable();
+				v.setIndex(i);
+				if(tailType == TailType.bottom && isOnBottomBorderOmega(node)) {
+					u1Border.set(i,diri.apply(v));
+				} else if(tailType == TailType.left && isOnLeftBorderOmega(node)) {
+					u1Border.set(i,diri.apply(v));					
+				} else if(tailType == TailType.right && isOnRightBorderOmega(node)) {
+					u1Border.set(i,diri.apply(v));						
+				} else if(tailType == TailType.top && isOnTopBorderOmega(node)) {
+					u1Border.set(i,diri.apply(v));						
 				}
 			}
-			Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1Border.dat", u1Border);
+			Tools.plotVector(meshOmega1, outputFolder, 
+					String.format("%s_u1Border%03d.dat", tailType,timeId), u1Border);
 		}
+
+		//在规则矩形区域Omega2上，输出用来构造tail的边界上的光强度，测量值延拓后和背景光强
+		ObjList<Node> u2BorderNodes = this.getBorderNodes_Omega2(tailType, meshOmega2);
+		ObjList<Node> u1BorderNodes = this.getBorderNodes_Omega2(tailType, meshOmega1);
+		Vector u2Border = new SparseVectorHashMap(u2_bk.getDim());
+		Vector u1Border = new SparseVectorHashMap(u1.getDim());
+		for(int i=1;i<=u2BorderNodes.size();i++) {
+			int idx = u2BorderNodes.at(i).globalIndex;
+			u2Border.set(idx,u2_bk.get(idx));
+		}
+		for(int i=1;i<=u1BorderNodes.size();i++) {
+			int idx = u1BorderNodes.at(i).globalIndex;
+			u1Border.set(idx,u1.get(idx));
+		}
+		Tools.plotVector(meshOmega2, outputFolder, 
+				String.format("%s_u2Border_bk%03d.dat", tailType,timeId), u2Border);
+		Tools.plotVector(meshOmega1, outputFolder, 
+				String.format("%s_u2Border%03d.dat", tailType,timeId), u1Border);
+		
+		//////////////////////////////////////////////////////////////////////////
 	
 		//构造tail bottom
 		if(tailType==TailType.bottom) {
 			Vector tailBottom = computeTailBottom(meshOmega2,u2_bk,meshOmega1,u1);
 			//求解系数反问题
 			Vector alphaBottom = this.solveParamInverse(meshOmega2, tailBottom);
+			if(bUseBaseLineBackground)
+				alphaBottom = FMath.axpy(-1.0, alphaBk, alphaBottom);
 			Tools.plotVector(meshOmega2, outputFolder, "alphaBottom"+timeId+".dat", alphaBottom);
+			
 			alphaBottom = Utils.gaussMax(meshOmega2, alphaBottom);
-
-			Tools.plotVector(meshOmega2, outputFolder, "alphaBottom_smooth"+timeId+".dat", alphaBottom);
+			alphaBottom = Utils.gaussMax(meshOmega2, alphaBottom);
+			Tools.plotVector(meshOmega2, outputFolder, "alphaBottom_gaussMax"+timeId+".dat", alphaBottom);
+			
 			extendAlphaFromBottom(meshOmega2,alphaBottom);
 			for(int i=1;i<=alphaBottom.getDim();i++) {
 				double v = alphaBottom.get(i);
 				if(v<0) alphaBottom.set(i,0);
 			}
-			Tools.plotVector(meshOmega2, outputFolder, "alphaBottom_smooth_extend"+timeId+".dat", alphaBottom);
+			Tools.plotVector(meshOmega2, outputFolder, "alphaBottom_gaussMax_extend"+timeId+".dat", alphaBottom);
 			tails.add(alphaBottom);
 			tailTypes.add("B");
 		}
 		
-		//构造tail bottom
+		//构造tail top
 		if(tailType==TailType.top) {
 			Vector tailTop = computeTailTop(meshOmega2,u2_bk,meshOmega1,u1);
 			//求解系数反问题
 			Vector alphaTop = this.solveParamInverse(meshOmega2, tailTop);
+			if(bUseBaseLineBackground)
+				alphaTop = FMath.axpy(-1.0, alphaBk, alphaTop);
 			Tools.plotVector(meshOmega2, outputFolder, "alphaTop"+timeId+".dat", alphaTop);
-			alphaTop = Utils.gaussSmooth(meshOmega2, alphaTop, 2, 0.5);
-			alphaTop = Utils.gaussSmooth(meshOmega2, alphaTop, 2, 0.4);
-			alphaTop = Utils.gaussSmooth(meshOmega2, alphaTop, 2, 0.3);
-			alphaTop = Utils.gaussSmooth(meshOmega2, alphaTop, 2, 0.3);
-			alphaTop = Utils.gaussSmooth(meshOmega2, alphaTop, 2, 0.3);
-			alphaTop = Utils.gaussSmooth(meshOmega2, alphaTop, 2, 0.3);
-			Tools.plotVector(meshOmega2, outputFolder, "alphaTop_smooth"+timeId+".dat", alphaTop);
+			
+			alphaTop = Utils.gaussMax(meshOmega2, alphaTop);
+			Tools.plotVector(meshOmega2, outputFolder, "alphaTop_gaussMax"+timeId+".dat", alphaTop);
+			
 			extendAlphaFromBottom(meshOmega2,alphaTop);
 			for(int i=1;i<=alphaTop.getDim();i++) {
 				double v = alphaTop.get(i);
 				if(v<0) alphaTop.set(i,0);
 			}
-			Tools.plotVector(meshOmega2, outputFolder, "alphaTop_smooth_extend"+timeId+".dat", alphaTop);
+			Tools.plotVector(meshOmega2, outputFolder, "alphaTop_gaussMax_extend"+timeId+".dat", alphaTop);
 			tails.add(alphaTop);
 			tailTypes.add("T");
 		}
@@ -1120,16 +1322,19 @@ public class MouseHead {
 			Vector tailLeft = computeTailLeft(meshOmega2,u2_bk,meshOmega1,u1);
 			//求解系数反问题
 			Vector alphaLeft = this.solveParamInverse(meshOmega2, tailLeft);
+			if(bUseBaseLineBackground)
+				alphaLeft = FMath.axpy(-1.0, alphaBk, alphaLeft);
 			Tools.plotVector(meshOmega2, outputFolder, "alphaLeft"+timeId+".dat", alphaLeft);
-			alphaLeft = Utils.gaussMax(meshOmega2, alphaLeft);
 			
-			Tools.plotVector(meshOmega2, outputFolder, "alphaLeft_smooth"+timeId+".dat", alphaLeft);
+			alphaLeft = Utils.gaussMax(meshOmega2, alphaLeft);
+			Tools.plotVector(meshOmega2, outputFolder, "alphaLeft_gaussMax"+timeId+".dat", alphaLeft);
+			
 			extendAlphaFromLeft(meshOmega2,alphaLeft);
 			for(int i=1;i<=alphaLeft.getDim();i++) {
 				double v = alphaLeft.get(i);
 				if(v<0) alphaLeft.set(i,0);
 			}
-			Tools.plotVector(meshOmega2, outputFolder, "alphaLeft_smooth_extend"+timeId+".dat", alphaLeft);
+			Tools.plotVector(meshOmega2, outputFolder, "alphaLeft_gaussMax_extend"+timeId+".dat", alphaLeft);
 			tails.add(alphaLeft);
 			tailTypes.add("L");
 		}
@@ -1139,20 +1344,19 @@ public class MouseHead {
 			Vector tailRight = computeTailRight(meshOmega2,u2_bk,meshOmega1,u1);
 			//求解系数反问题
 			Vector alphaRight = this.solveParamInverse(meshOmega2, tailRight);
+			if(bUseBaseLineBackground)
+				alphaRight = FMath.axpy(-1.0, alphaBk, alphaRight);
 			Tools.plotVector(meshOmega2, outputFolder, "alphaRight"+timeId+".dat", alphaRight);
-			alphaRight = Utils.gaussSmooth(meshOmega2, alphaRight, 2, 0.5);
-			alphaRight = Utils.gaussSmooth(meshOmega2, alphaRight, 2, 0.4);
-			alphaRight = Utils.gaussSmooth(meshOmega2, alphaRight, 2, 0.3);
-			alphaRight = Utils.gaussSmooth(meshOmega2, alphaRight, 2, 0.3);
-			alphaRight = Utils.gaussSmooth(meshOmega2, alphaRight, 2, 0.3);
-			alphaRight = Utils.gaussSmooth(meshOmega2, alphaRight, 2, 0.3);
-			Tools.plotVector(meshOmega2, outputFolder, "alphaRight_smooth"+timeId+".dat", alphaRight);
+			
+			alphaRight = Utils.gaussMax(meshOmega2, alphaRight);
+			Tools.plotVector(meshOmega2, outputFolder, "alphaRight_gaussMax"+timeId+".dat", alphaRight);
+			
 			extendAlphaFromLeft(meshOmega2,alphaRight);
 			for(int i=1;i<=alphaRight.getDim();i++) {
 				double v = alphaRight.get(i);
 				if(v<0) alphaRight.set(i,0);
 			}
-			Tools.plotVector(meshOmega2, outputFolder, "alphaRight_smooth_extend"+timeId+".dat", alphaRight);
+			Tools.plotVector(meshOmega2, outputFolder, "alphaRight_gaussMax_extend"+timeId+".dat", alphaRight);
 			tails.add(alphaRight);
 			tailTypes.add("R");
 		}
@@ -1162,7 +1366,7 @@ public class MouseHead {
 			NodeList nodes2 = meshOmega2.getNodeList();
 			//Cut 四周数据
 			for(int i=1;i<=v1.getDim();i++) {
-				if(nodes2.at(i).coord(1)<-1.0 || nodes2.at(i).coord(1)>1.0) {
+				if(nodes2.at(i).coord(1)<-0.75 || nodes2.at(i).coord(1)>0.75) {
 					v1.set(i,0);
 					v2.set(i,0);
 				}
@@ -1184,7 +1388,7 @@ public class MouseHead {
 				v2.set(i,min+(max-min)*(v2.get(i)-min2)/(max2-min2));
 			}
 			
-			String sTailTypeTime = String.format("_%s%s%02d", 
+			String sTailTypeTime = String.format("_%s%s%03d", 
 					tailTypes.at(1),tailTypes.at(2),timeId);
 
 			if(outputMiddleData) {
@@ -1256,12 +1460,12 @@ public class MouseHead {
 //			Tools.plotVector(meshOmega, outputFolder, "alpha2_smooth_omega"+sType+".dat",
 //					extractData(meshOmega2, meshOmega, alpha2));
 			///////////////////////////////////////////////////////////////
-			
+		
 			tails.clear();
 			tails2.clear();
 			tailTypes.clear();
 		}
-		
+
 	}
 	
 	public void test() {
@@ -1292,7 +1496,7 @@ public class MouseHead {
 		Vector u2_bk = solveForwardNeumann(meshOmega2);
 		Tools.plotVector(meshOmega2, outputFolder, "test_u2_bk.dat", u2_bk);
 		
-		setMu_a_Band(-0.5,0.1,1);
+		mu_a = makeBandMu_a(-0.5,0.1,1,0.1);
 		Vector u2 = solveForwardNeumann(meshOmega2);
 		Tools.plotVector(meshOmega2, outputFolder, "test_u2.dat", u2);
 		Vector u20 = solveForwardNeumann(meshOmega0);

@@ -5,23 +5,23 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -37,7 +37,7 @@ public class Test1 {
 		mesh.computeNodeBelongsToElements();
 		
 		//Mark border type
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, null);
 		
 		//mapNTF.put(NodeType.Dirichlet, null);		
@@ -93,9 +93,9 @@ public class Test1 {
 									
 			weakForm.setParam(
 			new FC(0.02), //  1/(3*mu_s') = 0.02
-			new AbstractFunction("x","y"){ //mu_a
+			new AbstractMathFunc("x","y"){ //mu_a
 				@Override
-				public double value(Variable v) {
+				public double apply(Variable v) {
 					double dx = v.get("x")-fcx;
 					double dy = v.get("y")-fcy;
 					if(Math.sqrt(dx*dx+dy*dy)<0.5)
@@ -168,7 +168,7 @@ public class Test1 {
 		mesh.computeNodeBelongsToElements();
 		
 		//Mark border type
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -202,9 +202,9 @@ public class Test1 {
 
 		weakForm.setParam(
 		new FC(0.02), //  1/(3*mu_s') = 0.02
-		new AbstractFunction("x","y"){ //mu_a
+		new AbstractMathFunc("x","y"){ //mu_a
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;
 				double dy = v.get("y")-fcy;
 				if(Math.sqrt(dx*dx+dy*dy)<0.5)
@@ -235,7 +235,7 @@ public class Test1 {
 	    
 	    
 		//User defined weak form of PDE (including bounder conditions)
-		HashMap<NodeType, Function> mapNTF2 = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF2 = new HashMap<NodeType, MathFunc>();
 		mapNTF2.put(NodeType.Dirichlet, null);
 		mesh.clearBorderNodeMark();
 		mesh.markBorderNode(mapNTF2);
@@ -269,7 +269,7 @@ public class Test1 {
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
 		
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);		
 		mesh.markBorderNode(mapNTF);
 
@@ -287,12 +287,12 @@ public class Test1 {
 			}
 		}
 		
-		Function x = new FX("x");
-		Function y = new FX("y");
-		Function x2 = x.M(x);
-		Function y2 = y.M(y);
+		MathFunc x = new FX("x");
+		MathFunc y = new FX("y");
+		MathFunc x2 = x.M(x);
+		MathFunc y2 = y.M(y);
 		
-		Function f =
+		MathFunc f =
 				FMath.sum(
 						FC.c(2.0).M(x2),
 						FC.c(2.0).M(y2),
@@ -534,7 +534,7 @@ public class Test1 {
 	
 	
 	public static void main(String[] args) {
-		paramInverseTest();
+		//paramInverseTest();
 		
 		
 		/**

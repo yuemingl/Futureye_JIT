@@ -2,17 +2,18 @@ package edu.uta.futureye.function.basic;
 
 import java.util.List;
 
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
  * f(x) = an*x^n + an_1*x^(n-1) + ... + a1*x + a0
- * @author liuyueming
  *
  */
-public class FPolynomial1D extends AbstractFunction {
+public class FPolynomial1D extends AbstractMathFunc {
 	List<Double> coefList;
 	
 	/**
@@ -23,13 +24,13 @@ public class FPolynomial1D extends AbstractFunction {
 	 * an = coefList.get(coefList.size()-1)
 	 */
 	public FPolynomial1D(List<Double> coefList) {
-		varNames.add(Constant.x);
+		super(Constant.x);
 		this.coefList = coefList;
 	}
 	
 	@Override
-	public Function _d(String varName) {
-		if(this.varNames().contains(varName))
+	public MathFunc diff(String varName) {
+		if(this.getVarNames().contains(varName))
 			return derivative1(1,1);
 		else 
 			return new FC(0.0);
@@ -52,12 +53,27 @@ public class FPolynomial1D extends AbstractFunction {
 	}
 	
 	@Override
-	public double value(Variable v) {
-		double x = v.get(varNames().get(0));
+	public double apply(Variable v) {
+		double x = v.get(getVarNames().get(0));
 		double f = 0.0;
 		for(int i=0;i<coefList.size();i++) {
 			f += coefList.get(i)*Math.pow(x, i);
 		}
 		return f;
+	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		double x = args[0];
+		double f = 0.0;
+		for(int i=0;i<coefList.size();i++) {
+			f += coefList.get(i)*Math.pow(x, i);
+		}
+		return f;
+	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
 	}
 }

@@ -7,7 +7,7 @@ public class NodeRefined extends Node {
 	
 	public NodeRefined(int dim) {
 		super(dim);
-		this.level = 2;
+		this.refineLevel = 2;
 	}
 	
 	public void addConstrainNode(Node node) {

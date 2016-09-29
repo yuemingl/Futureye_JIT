@@ -1,17 +1,15 @@
 package edu.uta.futureye.lib.shapefun;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.container.ObjList;
 
@@ -22,13 +20,18 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunction {
+public class SFSerendipity2D extends AbstractMathFunc implements ScalarShapeFunction {
 	private int funIndex;
-	private Function funCompose = null;
-	private Function funOuter = null;
+	private MathFunc funCompose = null;
+	private MathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 	
-	private Element e = null;
+	private MathFunc jac = null;
+	private MathFunc x_r = null;
+	private MathFunc x_s = null;
+	private MathFunc y_r = null;
+	private MathFunc y_s = null;
+	
 	/**
 	 * 构造下列形函数中的一个：
 	 *  s
@@ -69,67 +72,40 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
-		Map<String, Function> fInners = new HashMap<String, Function>(4);
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractFunction(innerVarNames.toList()) {
-				
-				protected CoordinateTransform trans = new CoordinateTransform(2);
-				
-				public Function _d(String var) {
-					//Coordinate transform and Jacbian on element e
-					List<Function> funs = trans.getTransformFunction(
-							trans.getTransformLinear2DShapeFunction(e)
-							//TODO 下面的调用有问题
-							//trans.getTransformShapeFunctionByElement(e)
-								);
-					trans.setTransformFunction(funs);
-					
-					Function x_r = funs.get(0)._d("r");
-					Function x_s = funs.get(0)._d("s");
-					Function y_r = funs.get(1)._d("r");
-					Function y_s = funs.get(1)._d("s");
-					Function jac = trans.getJacobian2D();
-					
-					//TODO !!! 数值积分点的选取问题
-//					Variable v = new Variable();
-//					v.set("r", 0.0);
-//					v.set("s", 0.0);
-//					System.out.println(x_r.value(v));
-//					System.out.println(x_s.value(v));
-//					System.out.println(y_r.value(v));
-//					System.out.println(y_s.value(v));
-//					System.out.println(jac.value(v));
-//					0.0
-//					0.33333333349999994
-//					-0.33333333349999994
-//					0.0
-//					0.11111111122222218
-					
+			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {
+				public MathFunc diff(String var) {
 					if(varName.equals("r")) {
 						if(var.equals("x"))
 							return y_s.D(jac);
 						if(var.equals("y"))
-							return FC.c0.S(x_s.D(jac));
+							return FC.C0.S(x_s.D(jac));
 					} else if(varName.equals("s")) {
 						if(var.equals("x"))
-							return FC.c0.S(y_r.D(jac));
+							return FC.C0.S(y_r.D(jac));
 						if(var.equals("y"))
 							return x_r.D(jac);
 					}
-					
 					return null;
+				}
+
+				@Override
+				public double apply(Variable v) {
+					// TODO Auto-generated method stub
+					return 0;
 				}
 			});
 		}
 	
-		Function fx = new FX("r");
-		Function fy = new FX("s");
+		MathFunc fx = new FX("r");
+		MathFunc fy = new FX("s");
 	
-		Function f1mx = new FAxpb("r",-1.0,1.0);
-		Function f1px = new FAxpb("r",1.0,1.0);
-		Function f1my = new FAxpb("s",-1.0,1.0);
-		Function f1py = new FAxpb("s",1.0,1.0);
+		MathFunc f1mx = new FAxpb("r",-1.0,1.0);
+		MathFunc f1px = new FAxpb("r",1.0,1.0);
+		MathFunc f1my = new FAxpb("s",-1.0,1.0);
+		MathFunc f1py = new FAxpb("s",1.0,1.0);
 		
 		if(funIndex == 0)
 			funOuter = FC.c(-0.25).M(f1mx).M(f1my).M(f1px.A(fy));
@@ -140,21 +116,28 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 		else if(funIndex == 3)
 			funOuter = FC.c(-0.25).M(f1mx).M(f1py).M(f1px.S(fy));
 		else if(funIndex == 4)
-			funOuter = FC.c(0.5).M(f1my).M(FC.c1.S(fx.M(fx)));
+			funOuter = FC.c(0.5).M(f1my).M(FC.C1.S(fx.M(fx)));
 		else if(funIndex == 5)
-			funOuter = FC.c(0.5).M(f1px).M(FC.c1.S(fy.M(fy)));
+			funOuter = FC.c(0.5).M(f1px).M(FC.C1.S(fy.M(fy)));
 		else if(funIndex == 6)
-			funOuter = FC.c(0.5).M(f1py).M(FC.c1.S(fx.M(fx)));
+			funOuter = FC.c(0.5).M(f1py).M(FC.C1.S(fx.M(fx)));
 		else if(funIndex == 7)
-			funOuter = FC.c(0.5).M(f1mx).M(FC.c1.S(fy.M(fy)));
+			funOuter = FC.c(0.5).M(f1mx).M(FC.C1.S(fy.M(fy)));
 
 		//使用复合函数构造形函数
 		funCompose = funOuter.compose(fInners);		
 	}
 	
 	@Override
-	public void asignElement(Element e) {
-		this.e = e;
+	public void assignElement(Element e) {
+		MathFunc[] funs = e.getCoordTrans().getJacobianMatrix();
+		
+		x_r = funs[0];
+		x_s = funs[1];
+		y_r = funs[2];
+		y_s = funs[3];
+		jac = e.getCoordTrans().getJacobian();
+		
 	}
 
 	//TODO ??? 应该采用一维二次型函数
@@ -167,13 +150,13 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 	}
 
 	@Override
-	public Function _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override
-	public double value(Variable v) {
-		return funCompose.value(v);
+	public double apply(Variable v) {
+		return funCompose.apply(v);
 	}
 
 	public String toString() {
@@ -184,8 +167,8 @@ public class SFSerendipity2D extends AbstractFunction implements ScalarShapeFunc
 		for(int i=1;i<=8;i++) {
 			SFSerendipity2D s = new SFSerendipity2D(i);
 			System.out.println(s);
-			System.out.println(s._d("r"));
-			System.out.println(s._d("s"));
+			System.out.println(s.diff("r"));
+			System.out.println(s.diff("s"));
 		}
 	}
 

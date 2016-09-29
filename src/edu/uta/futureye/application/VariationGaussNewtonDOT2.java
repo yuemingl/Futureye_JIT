@@ -4,43 +4,24 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import edu.uta.futureye.algebra.SchurComplementLagrangianSolver;
-import edu.uta.futureye.algebra.Solver;
-import edu.uta.futureye.algebra.SolverJBLAS;
-import edu.uta.futureye.algebra.SparseBlockMatrix;
-import edu.uta.futureye.algebra.SparseBlockVector;
-import edu.uta.futureye.algebra.SparseMatrix;
-import edu.uta.futureye.algebra.SparseVector;
-import edu.uta.futureye.algebra.intf.BlockMatrix;
-import edu.uta.futureye.algebra.intf.BlockVector;
+import no.uib.cipr.matrix.sparse.SparseVector;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.core.DOF;
-import edu.uta.futureye.core.DOFOrder;
-import edu.uta.futureye.core.Element;
+import edu.uta.futureye.algebra.solver.Solver;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.geometry.GeoEntity;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
 import edu.uta.futureye.lib.element.FELinearTriangle;
-import edu.uta.futureye.lib.weakform.WeakFormL22D;
-import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
-import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 
@@ -73,7 +54,7 @@ public class VariationGaussNewtonDOT2 {
 	ModelDOT modelGuess = new ModelDOT();
 
 
-    Function diri = null;
+    MathFunc diri = null;
     
     //对应每个光源s_i的参数，包括测量数据
     public static class ParamOfLightSource {
@@ -120,17 +101,17 @@ public class VariationGaussNewtonDOT2 {
 			LS[i] = LS[0] + i*h;
 		
 		//背景mu_a
-		modelBk.setMu_a(0.0, 0.0, 0.0, 
+		modelBk.setMu_a(ModelParam.getMu_a(0.0, 0.0, 0.0, 
 				0.1, //mu_a=0.1 mu_s(=model.k)=0.02 => a(x)=5
-				1);
+				1));
 		//有包含物mu_a，真实模型
-		modelReal.setMu_a(2.91, 2.36, 0.5,
+		modelReal.setMu_a(ModelParam.getMu_a(2.91, 2.36, 0.5,
 				2.0, //peak value of mu_a
-				1); //Number of inclusions
+				1)); //Number of inclusions
 		//有包含物mu_a，猜测模型
-		modelGuess.setMu_a(2.91, 2.36, 0.5,
+		modelGuess.setMu_a(ModelParam.getMu_a(2.91, 2.36, 0.5,
 				1.0, //peak value of mu_a
-				1); //Number of inclusions
+				1)); //Number of inclusions
 
     }
     
@@ -139,12 +120,9 @@ public class VariationGaussNewtonDOT2 {
      * @param s_i：Light source No. (0,1,2...)
      */
     public void reinitModelLight(int s_i) {
-		modelBk.setDelta(LS[s_i], 3.5);
-		modelBk.lightNum = s_i;
-		modelReal.setDelta(LS[s_i], 3.5);
-		modelReal.lightNum = s_i;
-		modelGuess.setDelta(LS[s_i], 3.5);
-		modelGuess.lightNum = s_i;
+		modelBk.setLightPosition(LS[s_i], 3.5);
+		modelReal.setLightPosition(LS[s_i], 3.5);
+		modelGuess.setLightPosition(LS[s_i], 3.5);
     }
     
 	public static void plotVector(Mesh mesh, Vector v, String fileName) {
@@ -158,7 +136,7 @@ public class VariationGaussNewtonDOT2 {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
 	}
 
-	public static void plotFunction(Mesh mesh, Function fun, String fileName) {
+	public static void plotFunction(Mesh mesh, MathFunc fun, String fileName) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
@@ -168,7 +146,7 @@ public class VariationGaussNewtonDOT2 {
 	    	var.setIndex(node.globalIndex);
 	    	var.set("x", node.coord(1));
 	    	var.set("y", node.coord(2));
-	    	v.set(i, fun.value(var));
+	    	v.set(i, fun.apply(var));
 	    }
 	    plotVector(mesh,v,fileName);
 	}	
@@ -187,8 +165,8 @@ public class VariationGaussNewtonDOT2 {
         mesh.computeNeighborNodes();
 
         //2.Mark border types
-        HashMap<NodeType, Function> mapNTF =
-                new HashMap<NodeType, Function>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
         
@@ -221,8 +199,8 @@ public class VariationGaussNewtonDOT2 {
         mesh.computeNeighborNodes();
 
         //2.Mark border types
-        HashMap<NodeType, Function> mapNTF =
-                new HashMap<NodeType, Function>();
+        HashMap<NodeType, MathFunc> mapNTF =
+                new HashMap<NodeType, MathFunc>();
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);
         
@@ -305,25 +283,25 @@ public class VariationGaussNewtonDOT2 {
 			Vector v, Vector z) {
 		Vector v_x = Tools.computeDerivative(mesh, v, "x");
 		Vector v_y = Tools.computeDerivative(mesh, v, "x");
-		Function b1 = new Vector2Function(v_x);
-		Function b2 = new Vector2Function(v_y);
+		MathFunc b1 = new Vector2Function(v_x);
+		MathFunc b2 = new Vector2Function(v_y);
 		WeakFormGCMDual weakForm = new WeakFormGCMDual();
 
 		Vector v_g = FMath.axpy(-1.0, z, v);
-		Function fv_g = new Vector2Function(v_g);
+		MathFunc fv_g = new Vector2Function(v_g);
 		plotFunction(mesh, fv_g, String.format("v_g%02d.dat",s_i));
 
 		weakForm.setF(fv_g.M(FC.c(-1.0)));
 
 		weakForm.setParam(
 				FC.c(-1.0),//注意，有负号!!!
-				FC.c0, 
+				FC.C0, 
 				FC.c(2.0).M(b1),
 				FC.c(2.0).M(b2)
 			);
 		
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -332,7 +310,7 @@ public class VariationGaussNewtonDOT2 {
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(FC.c0);
+		assembler.imposeDirichletCondition(FC.C0);
 		System.out.println("Assemble done!");
 
 		Equation eqn = new Equation();

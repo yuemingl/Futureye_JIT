@@ -4,26 +4,27 @@ import java.util.HashMap;
 
 import edu.uta.futureye.algebra.CompressedRowMatrix;
 import edu.uta.futureye.algebra.FullVector;
-import edu.uta.futureye.algebra.Solver;
-import edu.uta.futureye.algebra.SolverJBLAS;
-import edu.uta.futureye.algebra.SparseMatrix;
-import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.AlgebraMatrix;
 import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
+import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.Solver;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTetrahedron;
+import edu.uta.futureye.lib.element.FETrilinearHexahedron;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal3D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace3D;
@@ -38,10 +39,10 @@ public class Laplace3DTest {
 		Mesh mesh = reader.read3DMesh(); //3D
 		mesh.computeNodeBelongsToElements(); //worked in 3D
 		
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
-		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y","z"){
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y","z"){
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				if(1.0-v.get("x")<0.01)
 					return 1.0;
 				else
@@ -77,10 +78,6 @@ public class Laplace3DTest {
 			fe.assignTo(eList.at(i));
 		
 		//User defined weak form of PDE (including bounder conditions)
-		//-\Delta{u} = f
-		//u(x,y)=0, (x,y)\in\partial{\Omega}
-		//u=(x^2-9)*(y^2-9)
-		//f=-2*(x^2+y^2)+36
 		WeakFormLaplace3D weakForm = new WeakFormLaplace3D();
 		
 		weakForm.setF(new FC(1.0));
@@ -96,8 +93,8 @@ public class Laplace3DTest {
 		System.out.println("Assemble...");
 		long begin = System.currentTimeMillis();
 		assembler.assemble();
-		Matrix stiff = assembler.getStiffnessMatrix();
-		Vector load = assembler.getLoadVector();
+		SparseMatrix stiff = assembler.getStiffnessMatrix();
+		SparseVector load = assembler.getLoadVector();
 		long end = System.currentTimeMillis();
 		System.out.println("Assemble done!");
 		System.out.println("Assemble time:"+(end-begin));
@@ -107,17 +104,17 @@ public class Laplace3DTest {
 		System.out.println("Impose Dirichlet condition done!");
 
 		//Initial value for iteration solvers
-		SparseVector u = new SparseVector(load.getDim(),0.0003);
-		
+		SparseVector u = load.copy();
+		u.setAll(0.0003);
 		
 		Solver solver = new Solver();
 		begin = System.currentTimeMillis();
 		
 		//CG
 		System.out.println("begin construct AlgebraMatrix...");
-		AlgebraMatrix algStiff = new CompressedRowMatrix((SparseMatrix)stiff,true);
+		AlgebraMatrix algStiff = new CompressedRowMatrix(stiff,true);
 		System.out.println("end construct AlgebraMatrix!");
-		FullVector algLoad = new FullVector((SparseVector)load);
+		FullVector algLoad = new FullVector(load);
 		FullVector algU = new FullVector(u);
 		solver.solveCG(algStiff, algLoad, algU);
 		double[] data = algU.getData();
@@ -155,7 +152,7 @@ public class Laplace3DTest {
 		Mesh mesh = reader.read3DMesh(); //3D
 		mesh.computeNodeBelongsToElements(); //worked in 3D
 		
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 		
@@ -180,10 +177,6 @@ public class Laplace3DTest {
 		}
 		
 		//User defined weak form of PDE (including bounder conditions)
-		//-\Delta{u} = f
-		//u(x,y)=0, (x,y)\in\partial{\Omega}
-		//u=(x^2-9)*(y^2-9)
-		//f=-2*(x^2+y^2)+36
 		WeakFormLaplace weakForm = new WeakFormLaplace();
 		
 		weakForm.setF(new FC(1.0));
@@ -218,12 +211,86 @@ public class Laplace3DTest {
 		
 	}
 	
+	public static void hexahedronTest_WeakFormxD() {
+		String meshName = "human_phantom3D";
+		//String meshName = "stokes_cavity3d";
+		//String meshName = "stokes_cavity3d2";
+		MeshReader reader = new MeshReader(meshName+".grd");
+		Mesh mesh = reader.read3DMesh(); //3D
+		mesh.computeNodeBelongsToElements(); //worked in 3D
+		mesh.computeGlobalEdge();
+		
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y","z"){
+			@Override
+			public double apply(Variable v) {
+				if(2.8-v.get("x")<0.01 || 2.8-v.get("z")<0.01)
+					return 1.0;
+				else
+					return -1.0;
+			}
+		});
+		mapNTF.put(NodeType.Dirichlet, null);
+//		mapNTF.put(NodeType.Robin, null);
+
+		mesh.markBorderNode(mapNTF);
+		//mesh.writeNodesInfo(meshName+"_mark.dat");
+		
+		mesh.writeNodesInfo("human_phantom3D_mesh.dat");
+		
+        ElementList eList = mesh.getElementList();
+        FETrilinearHexahedron feTLH = new FETrilinearHexahedron();
+        for(int i=1;i<=eList.size();i++)
+        	feTLH.assignTo(eList.at(i));
+		
+		//User defined weak form of PDE (including bounder conditions)
+		WeakFormLaplace weakForm = new WeakFormLaplace();
+		
+		weakForm.setF(new FC(1.0));
+		
+		weakForm.setParam(
+					new FC(1),//null,
+					new FC(1.0),
+					new FC(0.0),
+					new FC(1)//null //Robin: 6*y^2-54
+				);
+		
+		
+		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
+		System.out.println("Begin Assemble...");
+		long begin = System.currentTimeMillis();
+		assembler.assemble();
+		Matrix stiff = assembler.getStiffnessMatrix();
+		Vector load = assembler.getLoadVector();
+		System.out.println("Assemble done!");
+		long end = System.currentTimeMillis();
+		System.out.println("Time used:"+(end-begin));
+		System.out.println("imposeDirichletCondition()...");
+		begin = System.currentTimeMillis();
+		assembler.imposeDirichletCondition(FC.C0);
+		end = System.currentTimeMillis();
+		System.out.println("imposeDirichletCondition() time used:"+(end-begin));
+		
+		SolverJBLAS solver = new SolverJBLAS();
+		begin = System.currentTimeMillis();
+		Vector u = solver.solveDGESV(stiff, load);
+		end = System.currentTimeMillis();
+	    System.out.println("u=");
+	    for(int i=1;i<=u.getDim();i++)
+	        System.out.println(String.format("%.3f", u.get(i)));	
+		System.out.println("SolverJBLAS time used:"+(end-begin));
+	    
+	    MeshWriter writer = new MeshWriter(mesh);
+	    writer.writeTechplot(meshName+"_out.dat", u);
+		
+	}
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//triangleTest();
-		triangleTest_WeakFormxD();
+		triangleTest();
+		//triangleTest_WeakFormxD();
+		//hexahedronTest_WeakFormxD();
 	}
 
 }

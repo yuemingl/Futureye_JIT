@@ -1,17 +1,19 @@
 package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractVectorFunction;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.AbstractVectorFunc;
+import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.container.ObjList;
 
-public class QuadraticV_LinearP1D extends AbstractVectorFunction implements
+//TODO
+public class QuadraticV_LinearP1D extends AbstractVectorFunc implements
 		VectorShapeFunction {
 
 	@Override
-	public void asignElement(Element e) {
+	public void assignElement(Element e) {
 		// TODO Auto-generated method stub
 
 	}
@@ -29,13 +31,12 @@ public class QuadraticV_LinearP1D extends AbstractVectorFunction implements
 	}
 
 	@Override
-	public Function get(int index) {
-		// TODO Auto-generated method stub
+	public MathFunc get(int index) {
 		return null;
 	}
 
 	@Override
-	public void set(int index, Function value) {
+	public void set(int index, MathFunc value) {
 		// TODO Auto-generated method stub
 		
 	}

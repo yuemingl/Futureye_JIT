@@ -2,9 +2,13 @@ package edu.uta.futureye.test;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.SolverJBLAS;
+import edu.uta.futureye.algebra.FullMatrix;
+import edu.uta.futureye.algebra.FullVector;
 import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.external.SolverColt;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
@@ -14,11 +18,11 @@ import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -42,16 +46,16 @@ public class LaplaceTest {
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
 		
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
-		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y"){
-			@Override
-			public double value(Variable v) {
-				if(3.0-v.get("x")<0.01)
-					return 1.0;
-				else
-					return -1.0;
-			}
-		});
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+//		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y"){
+//			@Override
+//			public double value(Variable v) {
+//				if(3.0-v.get("x")<0.01)
+//					return 1.0;
+//				else
+//					return -1.0;
+//			}
+//		});
 		mapNTF.put(NodeType.Dirichlet, null);		
 		mesh.markBorderNode(mapNTF);
 
@@ -76,14 +80,21 @@ public class LaplaceTest {
 		for(int i=1;i<=eList.size();i++)
 			linearTriangle.assignTo(eList.at(i));
 		
-		//User defined weak form of PDE (including bounder conditions)
-		//-\Delta{u} = f
-		//u(x,y)=0, (x,y)\in\partial{\Omega}
-		//u=(x^2-9)*(y^2-9)
-		//f=-2*(x^2+y^2)+36
+		/**
+		 *User defined weak form of PDE (including bounder conditions)
+		 *Problem
+		 *  -\Delta{u} = f, (x,y) in [-3,3]*[-3,3]
+		 *  u(x,y)=0, (x,y) in \partial{\Omega}
+		 *  
+		 *Where
+		 *  f=-2*(x^2+y^2)+36
+		 *
+		 *Real solution
+		 *  u=(x^2-9)*(y^2-9)
+		 */
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-						FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+						FX.x.M(FX.x).A(FX.y.M(FX.y))
 					).A(FC.c(36.0))
 				);
 //		weakForm.setF(new FConstant(-2.0));
@@ -100,7 +111,7 @@ public class LaplaceTest {
 //					FC.c(2.0).X(FX.fx),//2*x
 					FC.c(0.0),
 					
-					FC.c0 //Robin: 6*y^2-54
+					FC.C0 //Robin: 6*y^2-54
 				);
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
@@ -108,9 +119,9 @@ public class LaplaceTest {
 		long begin = System.currentTimeMillis();
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
-		stiff.print();
+		//stiff.print();
 		Vector load = assembler.getLoadVector();
-		load.print();
+		//load.print();
 		assembler.imposeDirichletCondition(new FC(0.0));
 		long end = System.currentTimeMillis();
 		System.out.println("Assemble done!");
@@ -118,12 +129,19 @@ public class LaplaceTest {
 		
 		SolverJBLAS solver = new SolverJBLAS();
 		Vector u = solver.solveDGESV(stiff, load);
+		
+		SolverColt solver2 = new SolverColt();
+		FullMatrix fm = new FullMatrix((SparseMatrix)stiff);
+		FullVector fl = new FullVector(load);
+		FullVector u2 = solver2.solve(fm, fl);
+		
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.3f", u.get(i)));	
 	    
 	    MeshWriter writer = new MeshWriter(mesh);
 	    writer.writeTechplot(meshName+"_out.dat", u);
+	    writer.writeTechplot(meshName+"_out2.dat", u2.getSparseVector());
 		
 	}
 	
@@ -132,7 +150,7 @@ public class LaplaceTest {
 		MeshReader reader = new MeshReader("rectangle_refine.grd");
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
 //			@Override
 //			public double value(Variable v) {
@@ -165,6 +183,7 @@ public class LaplaceTest {
 */
 		//Use element library
 		ElementList eList = mesh.getElementList();
+//		FEBilinearRectangleRegular bilinearRectangle = new FEBilinearRectangleRegular();
 		FEBilinearRectangle bilinearRectangle = new FEBilinearRectangle();
 		for(int i=1;i<=eList.size();i++)
 			bilinearRectangle.assignTo(eList.at(i));
@@ -172,14 +191,14 @@ public class LaplaceTest {
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		
 		weakForm.setParam(
 				null,
 				null,
-				new FC(0.05),null //Robin: d*u + k*u_n = q
+				new FC(0.05),null //Robin: d*u + k*u_n = g
 				); 	
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
@@ -211,7 +230,7 @@ public class LaplaceTest {
 		MeshReader reader = new MeshReader("mixed.grd");
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
 //			@Override
 //			public double value(Variable v) {
@@ -259,13 +278,13 @@ public class LaplaceTest {
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		weakForm.setParam(
 				null,
 				null,
-				new FC(0.05),null //Robin: d*u + k*u_n = q
+				new FC(0.05),null //Robin: d*u + k*u_n = g
 				);
 		Assembler assembler = new AssemblerScalarFast(mesh, weakForm);
 		System.out.println("Begin Assemble...");
@@ -306,7 +325,7 @@ public class LaplaceTest {
 				double cx = (l.coord(1)+r.coord(1))/2.0;
 				double cy = (l.coord(2)+r.coord(2))/2.0;
 				Node node = new Node(mesh.getNodeList().size()+1, cx,cy);
-				Node findNode = mesh.containNode(node);
+				Node findNode = mesh.findNode(node);
 				if(findNode == null) {
 					edge.addEdgeNode(new NodeLocal(++nNode,node));
 					mesh.addNode(node);
@@ -334,7 +353,7 @@ public class LaplaceTest {
 		}
 		
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -356,14 +375,14 @@ public class LaplaceTest {
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		
 		weakForm.setParam(
 				null,
 				null,
-				new FC(0.05),null //Robin: d*u + k*u_n = q
+				new FC(0.05),null //Robin: d*u + k*u_n = g
 				); 
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
@@ -403,7 +422,7 @@ public class LaplaceTest {
 				double cx = (l.coord(1)+r.coord(1))/2.0;
 				double cy = (l.coord(2)+r.coord(2))/2.0;
 				Node node = new Node(mesh.getNodeList().size()+1, cx,cy);
-				Node findNode = mesh.containNode(node);
+				Node findNode = mesh.findNode(node);
 				if(findNode == null) {
 					edge.addEdgeNode(new NodeLocal(++nNode,node));
 					mesh.addNode(node);
@@ -432,7 +451,7 @@ public class LaplaceTest {
 		}
 		
 		mesh.computeNodeBelongsToElements();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 //		mapNTF.put(NodeType.Robin, new FAbstract("x","y"){
 //									@Override
 //									public double value(Variable v) {
@@ -469,14 +488,14 @@ public class LaplaceTest {
 		//User defined weak form of PDE (including bounder conditions)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		
 		weakForm.setParam(
 				null,
 				null,
-				FC.c(6.0).M(FX.fy.M(FX.fy)).S(FC.c(54.0)),
+				FC.c(6.0).M(FX.y.M(FX.y)).S(FC.c(54.0)),
 				null //Robin: 6*y^2-54
 				); 
 		
@@ -512,7 +531,7 @@ public class LaplaceTest {
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
 		
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);		
 		mesh.markBorderNode(mapNTF);
 
@@ -531,13 +550,14 @@ public class LaplaceTest {
 		}
 		
 		//User defined weak form of PDE (including bounder conditions)
-		//-\Delta{u} = f
-		//u(x,y)=0, (x,y)\in\partial{\Omega}
-		//u=(x^2-9)*(y^2-9)
-		//f=-2*(x^2+y^2)+36
+		// -\Delta{u} = f
+		// u(x,y)=0, (x,y)\in\partial{\Omega}
+		// f=-2*(x^2+y^2)+36
+		//Real solution
+		// u=(x^2-9)*(y^2-9)
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		weakForm.setF(FC.c(-2.0).M(
-				FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+				FX.x.M(FX.x).A(FX.y.M(FX.y))
 			).A(FC.c(36.0))
 		);
 		
@@ -547,9 +567,9 @@ public class LaplaceTest {
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new AbstractFunction("x","y"){
+		assembler.imposeDirichletCondition(new AbstractMathFunc("x","y"){
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				if(3.0-v.get("x")<0.01 && 
 						Math.abs(1.0-v.get("y"))<0.2)
 					return -10.0;
@@ -572,13 +592,13 @@ public class LaplaceTest {
 		
 	}
 	public static void main(String[] args) {
-//		triangleTest();
+		triangleTest();
 		rectangleTest();
 	
 //TODO
-//		mixedTest(); //OK 数值积分的问题fixed
+		mixedTest(); //OK 数值积分的问题fixed
 		
-//		serendipityTest(); // java.lang.ArithmeticException: / by zero
+//		serendipityTest(); //TODO 错误: java.lang.ArithmeticException: / by zero
 //		quadraticLocal2DTest();
 //		triangleBDCTest();
 	}

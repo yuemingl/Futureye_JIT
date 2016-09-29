@@ -1,16 +1,22 @@
 package edu.uta.futureye.algebra;
 
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.io.MatlabMatFileWriter;
 import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.Sequence;
 
 /**
+ * Space vector
+ * <p>
  * 空间向量
+ * 
  * @author liuyueming
  *
  */
 public class SpaceVector implements Vector {
 	protected int dim = 0;
 	protected double[] data = null;
+	protected String name = this.getClass().getSimpleName()+Sequence.getInstance().nextSeq();
 	
 	public SpaceVector() {
 	}
@@ -33,9 +39,13 @@ public class SpaceVector implements Vector {
 		}
 	}
 
+	/**
+	 * After setting dimension of the vector the old data will be lost
+	 */
 	@Override
 	public void setDim(int dim) {
 		this.dim = dim;
+		data = new double[dim];
 	}
 	
 	@Override
@@ -163,8 +173,9 @@ public class SpaceVector implements Vector {
 	@Override
 	public double normInf() {
 		Double max = Double.MIN_VALUE;
-		for(double d : data) {
-			if(d > max) max = d;
+		for(int i=0;i<dim;i++) {
+			double abs = Math.abs(data[i]);
+			if(abs > max) max = abs;
 		}
 		return max;
 	}
@@ -174,12 +185,6 @@ public class SpaceVector implements Vector {
 	@Override
 	public Vector copy() {
 		return new SpaceVector(this.data);
-	}
-	
-	@Override
-	public void clear() {
-		this.dim = 0;
-		this.data = null;
 	}
 	
 	@Override
@@ -223,8 +228,58 @@ public class SpaceVector implements Vector {
 	
 	public String toString() {
 		String rlt = "(";
-		for(int i=0;i<dim;i++)
+		for(int i=0;i<dim-1;i++)
 			rlt += data[i]+"  ";
-		return rlt+")";
+		rlt += data[dim-1]+")";
+		return rlt;
+	}
+	
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public Vector setName(String name) {
+		this.name = name;
+		return this; 
+	}
+
+	@Override
+	public void setAll(double value) {
+		for(int i=dim; --i>=0;)
+			this.data[i] = value;
+	}
+
+	/**
+	 * Write this vector to a file with Matlab mat file format.
+	 * The variable name in matlab workspace is specified by <tt>setName()</tt>.
+	 * Default variable name is <tt>"SpaceVector"+UniqueSequenceNumber</tt>.
+	 * <p>
+	 * If more than one vector need to be written in a single mat file use <tt>MatlabMatFileWriter</tt> instead.
+	 * 
+	 * @param fileName
+	 */
+	public void writeMatFile(String fileName) {
+		MatlabMatFileWriter w = new MatlabMatFileWriter();
+		w.addVector(this);
+		w.writeFile(fileName);
+	}
+
+	@Override
+	public void writeSimpleFile(String fileName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double apply(int index) {
+		return this.get(index);
+	}
+
+	@Override
+	public void update(int index, double value) {
+		this.set(index,value);
 	}
 }

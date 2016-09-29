@@ -1,14 +1,18 @@
 package edu.uta.futureye.algebra.intf;
 
 /**
+ * <blockquote><pre>
+ * Vector interface designed for fast algebra operation
  * 为矩阵向量运算优化的向量接口
+ * 
+ * </blockquote></pre>
  * 
  * @author liuyueming
  *
  */
 public interface AlgebraVector {
 	/**
-	 * Get dimension of the vector
+	 * Get the dimension of the vector
 	 * 获得向量的维度
 	 * 
 	 * @return
@@ -72,6 +76,7 @@ public interface AlgebraVector {
 	/**
 	 * <code>x = a*x</code>
 	 * Alias of <code>scale(double a)</code>
+	 * <p>
 	 * 等价于 <code>scale(double a)</code>
 	 * 
 	 * @param a
@@ -81,7 +86,9 @@ public interface AlgebraVector {
 	
 	/**
 	 * <code>x = a*x+y</code>
+	 * <p>
 	 * Notice: Different from <code>add(double a, AlgebraVector y)</code>
+	 * <p>
 	 * 注意：与<code>add(double a, AlgebraVector y)</code>有区别
 	 * 
 	 * @param a
@@ -100,8 +107,8 @@ public interface AlgebraVector {
 	public AlgebraVector axmy(double a, AlgebraVector y);
 	
 	/**
-	 * <code>x.y</code>
-	 * 
+	 * Inner product <code>x.y</code>
+	 * <p>
 	 * 内积
 	 * 
 	 * @param y
@@ -110,21 +117,28 @@ public interface AlgebraVector {
 	public double dot(AlgebraVector y);
 	
 	/**
-	 * 二范数
+	 * 1 Norm
+	 * 
+	 * @return
+	 */
+	public double norm1();
+	
+	/**
+	 * 2 Norm
 	 * 
 	 * @return
 	 */
 	public double norm2();
 	
 	/**
-	 * 无穷范数
+	 * Infinity norm (Maximum norm)
 	 * 
 	 * @return
 	 */
 	public double normInf();
 	
 	/**
-	 * Print the component values of this vector
+	 * Print vector entries
 	 */
 	public void print();
 

@@ -2,20 +2,22 @@ package edu.uta.futureye.test;
 
 import edu.uta.futureye.algebra.CompressedColMatrix;
 import edu.uta.futureye.algebra.CompressedRowMatrix;
+import edu.uta.futureye.algebra.FullMatrix;
 import edu.uta.futureye.algebra.FullVector;
-import edu.uta.futureye.algebra.Solver;
 import edu.uta.futureye.algebra.SparseBlockMatrix;
-import edu.uta.futureye.algebra.SparseMatrix;
-import edu.uta.futureye.algebra.SparseVector;
+import edu.uta.futureye.algebra.SparseMatrixRowMajor;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.AlgebraMatrix;
 import edu.uta.futureye.algebra.intf.AlgebraVector;
-import edu.uta.futureye.algebra.intf.BlockMatrix;
-import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.MatrixEntry;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
+import edu.uta.futureye.algebra.intf.SparseVector;
+import edu.uta.futureye.algebra.solver.Solver;
 
 public class TestMatrix {
 	public static void testMatrixMult1() {
-		SparseMatrix SA = new SparseMatrix(3,3);
-		SparseMatrix SB = new SparseMatrix(3,3);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(3,3);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(3,3);
 		for(int i=1;i<=3;i++) {
 			for(int j=1;j<=3;j++) {
 				SA.set( j,i, i+3*(j-1));
@@ -34,8 +36,8 @@ public class TestMatrix {
 	}
 	
 	public static void testMatrixMult2() {
-		SparseMatrix SA = new SparseMatrix(2,3);
-		SparseMatrix SB = new SparseMatrix(3,2);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(2,3);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(3,2);
 		for(int i=1;i<=3;i++) {
 			for(int j=1;j<=2;j++) {
 				SA.set( j,i, i+3*(j-1));
@@ -54,8 +56,8 @@ public class TestMatrix {
 	}
 	
 	public static void testMatrixMult3() {
-		SparseMatrix SA = new SparseMatrix(3,4);
-		SparseMatrix SB = new SparseMatrix(4,3);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(3,4);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(4,3);
 		SA.set(1, 1, 1.0);
 		SA.set(2, 2, 1.0);
 		SA.set(3, 3, 1.0);
@@ -78,8 +80,8 @@ public class TestMatrix {
 	}
 	
 	public static void testMatrixMult4() {
-		SparseMatrix SA = new SparseMatrix(5,8);
-		SparseMatrix SB = new SparseMatrix(8,5);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(5,8);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(8,5);
 		for(int i=1;i<=7;i++) {
 			SA.set(1, i, i);
 			SA.set(2, i, i+1.0);
@@ -123,10 +125,56 @@ public class TestMatrix {
 		
 	}
 	
+	public static void testMatrixMult5() {
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(5,8);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(8,5);
+		for(int i=1;i<=7;i++) {
+			SA.set(1, i, i);
+			SA.set(2, i, i+1.0);
+		}
+		SA.set(2, 8, 1.0);
+		SA.set(3, 3, 2.0);
+		SA.set(4, 5, 3.0);
+		SA.set(4, 8, 3.0);
+		SA.set(5, 1, 4.0);
+		SA.set(5, 3, 4.0);
+		SA.set(5, 5, 4.0);
+		
+		for(int i=1;i<=7;i++) {
+			SB.set(i, 1, 2.0);
+			SB.set(i, 5, 2.0);
+		}
+		SB.set(8, 5, 2.0);
+		SB.set(1, 2, 2.0);
+		SB.set(1, 3, 2.0);
+		SB.set(3, 3, 2.0);
+		SB.set(3, 4, 2.0);
+		SB.set(8, 4, 2.0);
+		
+		SA.print();
+		SB.print();
+		
+		CompressedRowMatrix A = new CompressedRowMatrix(SA,false);
+		FullMatrix B = new FullMatrix(SB);
+		CompressedRowMatrix C = new CompressedRowMatrix();
+		A.mult(B, C);
+		C.print();
+		
+		/* results:
+ 56.0000(1)      2.0000(2)      8.0000(3)      6.0000(4)     56.0000(5)    
+ 70.0000(1)      4.0000(2)     12.0000(3)     10.0000(4)     72.0000(5)    
+  4.0000(1)      4.0000(3)      4.0000(4)      4.0000(5)    
+  6.0000(1)      6.0000(4)     12.0000(5)    
+ 24.0000(1)      8.0000(2)     16.0000(3)      8.0000(4)     24.0000(5)
+		 * 
+		 */
+		
+	}
+	
 	
 	public static void testTrans1() {
-		SparseMatrix SA = new SparseMatrix(3,3);
-		SparseMatrix SB = new SparseMatrix(3,3);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(3,3);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(3,3);
 		for(int i=1;i<=3;i++) {
 			for(int j=1;j<=3;j++) {
 				SA.set( j,i, i+3*(j-1));
@@ -143,8 +191,8 @@ public class TestMatrix {
 	}
 	
 	public static void testTrans2() {
-		SparseMatrix SA = new SparseMatrix(5,8);
-		SparseMatrix SB = new SparseMatrix(8,5);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(5,8);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(8,5);
 		for(int i=1;i<=7;i++) {
 			SA.set(1, i, i);
 			SA.set(2, i, i+1.0);
@@ -179,8 +227,8 @@ public class TestMatrix {
 	}
 	
 	public static void testStorage1() {
-		SparseMatrix SA = new SparseMatrix(3,3);
-		SparseMatrix SB = new SparseMatrix(3,3);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(3,3);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(3,3);
 		for(int i=1;i<=3;i++) {
 			for(int j=1;j<=3;j++) {
 				SA.set( j,i, i+3*(j-1));
@@ -192,13 +240,13 @@ public class TestMatrix {
 		
 		CompressedRowMatrix A = new CompressedRowMatrix(SA,false);
 		CompressedColMatrix B = new CompressedColMatrix(SB,false);
-		A.convertToCompressedCol().print();
-		B.convertToCompressedRow().print();
+		A.getCompressedColMatrix().print();
+		B.getCompressedRowMatrix().print();
 	}
 	
 	public static void testStorage2() {
-		SparseMatrix SA = new SparseMatrix(5,8);
-		SparseMatrix SB = new SparseMatrix(8,5);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(5,8);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(8,5);
 		for(int i=1;i<=7;i++) {
 			SA.set(1, i, i);
 			SA.set(2, i, i+1.0);
@@ -227,14 +275,14 @@ public class TestMatrix {
 		
 		CompressedRowMatrix A = new CompressedRowMatrix(SA,false);
 		CompressedColMatrix B = new CompressedColMatrix(SB,false);
-		A.convertToCompressedCol().print();
-		B.convertToCompressedRow().print();
+		A.getCompressedColMatrix().print();
+		B.getCompressedRowMatrix().print();
 		
 	}
 
 	public static void testAxpy() {
-		SparseMatrix SA = new SparseMatrix(4,4);
-		SparseMatrix SB = new SparseMatrix(4,4);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(4,4);
+		SparseMatrixRowMajor SB = new SparseMatrixRowMajor(4,4);
 		SA.set(1, 1, 1.0);
 		SA.set(1, 2, 2.0);
 		SA.set(1, 3, 3.0);
@@ -267,25 +315,41 @@ public class TestMatrix {
 		 */
 		
 	}	
+	
+	public static void testIterator() {
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(3,3);
+		for(int i=1;i<=3;i+=2) {
+			for(int j=1;j<=3;j++) {
+				SA.set( j,i, i+3*(j-1));
+			}
+		}
+		SA.print();
+		for(MatrixEntry e : SA) {
+			System.out.println("("+e.getRow()+","+e.getCol()+")"+e.getValue());
+		}
+	}
+	
 	public static void main(String[] args) {
-		//testMatrixMult1();
-		//testMatrixMult2();
-		//testMatrixMult3();
-		//testMatrixMult4();
+//		testMatrixMult1();
+//		testMatrixMult2();
+//		testMatrixMult3();
+//		testMatrixMult4();
+//		testMatrixMult5();
 		//testTrans1();
 		//testTrans2();
 		//testStorage1();
 		//testStorage2();
 		//testAxpy();
-		testTrans();
+		//testTrans();
+		testIterator();
 	}
 	
 	public static void testMatrixVector() {
-		BlockMatrix bm = new SparseBlockMatrix(2,2);
-		Matrix m11 = new SparseMatrix(3,3);
-		Matrix m12 = new SparseMatrix(3,2);
-		Matrix m21 = new SparseMatrix(2,3);
-		Matrix m22 = new SparseMatrix(2,2);
+		SparseBlockMatrix bm = new SparseBlockMatrix(2,2);
+		SparseMatrix m11 = new SparseMatrixRowMajor(3,3);
+		SparseMatrix m12 = new SparseMatrixRowMajor(3,2);
+		SparseMatrix m21 = new SparseMatrixRowMajor(2,3);
+		SparseMatrix m22 = new SparseMatrixRowMajor(2,2);
 		
 		bm.setBlock(1, 1, m11);
 		bm.setBlock(1, 2, m12);
@@ -297,13 +361,13 @@ public class TestMatrix {
 				bm.set(i, j, i-1+j);
 		bm.print();
 		
-		SparseMatrix sm = new SparseMatrix(bm.getRowDim(),bm.getColDim());
+		SparseMatrixRowMajor sm = new SparseMatrixRowMajor(bm.getRowDim(),bm.getColDim());
 		sm.setAll(0, 0, bm.getAll());
 		sm.print();
 		
-		SparseVector x = new SparseVector(5,3.0);
-		SparseVector y = new SparseVector(5,1.0);
-		SparseVector u = new SparseVector(y.getDim(),1.0);
+		SparseVector x = new SparseVectorHashMap(5,3.0);
+		SparseVector y = new SparseVectorHashMap(5,1.0);
+		SparseVector u = new SparseVectorHashMap(y.getDim(),1.0);
 
 		AlgebraMatrix aMat = new CompressedRowMatrix(sm,false);
 		AlgebraVector ax = new FullVector(x);
@@ -326,7 +390,7 @@ public class TestMatrix {
 	}
 	
 	public static void testTrans() {
-		SparseMatrix SA = new SparseMatrix(3,3);
+		SparseMatrixRowMajor SA = new SparseMatrixRowMajor(3,3);
 		for(int i=1;i<=3;i++) {
 			for(int j=1;j<=3;j++) {
 				SA.set( j,i, i+3*(j-1));

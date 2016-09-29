@@ -2,17 +2,17 @@ package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractVectorFunction;
+import edu.uta.futureye.function.AbstractVectorFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.container.ObjList;
 
-public class SFBilinearLocal2DVector extends AbstractVectorFunction 
+public class SFBilinearLocal2DVector extends AbstractVectorFunc 
 								implements VectorShapeFunction {
 	protected SpaceVectorFunction sf = new SpaceVectorFunction(2);
 	protected int funIndex;
@@ -29,20 +29,20 @@ public class SFBilinearLocal2DVector extends AbstractVectorFunction
 
 		if(funIndex>=0 && funIndex<=3) {
 			sf.set(1, new SFBilinearLocal2D(funIndex+1));
-			sf.set(2, new SF0(innerVarNames));
+			sf.set(2, new SFConstant0(innerVarNames));
 		} else if(funIndex>=4 && funIndex<=7) {
-			sf.set(1, new SF0(innerVarNames));
+			sf.set(1, new SFConstant0(innerVarNames));
 			sf.set(2, new SFBilinearLocal2D(funIndex-3));
 		}
 		
 	}
 	
 	@Override
-	public void asignElement(Element e) {
+	public void assignElement(Element e) {
 		if(funIndex>=0 && funIndex<=3) {
-			((ScalarShapeFunction)sf.get(1)).asignElement(e);
+			((ScalarShapeFunction)sf.get(1)).assignElement(e);
 		} else if(funIndex>=4 && funIndex<=7) {
-			((ScalarShapeFunction)sf.get(2)).asignElement(e);
+			((ScalarShapeFunction)sf.get(2)).assignElement(e);
 		}
 	}
 
@@ -51,7 +51,7 @@ public class SFBilinearLocal2DVector extends AbstractVectorFunction
 		return innerVarNames;
 	}
 
-	public class SFBilinearLocal1DVector extends AbstractVectorFunction 
+	public class SFBilinearLocal1DVector extends AbstractVectorFunc 
 			implements VectorShapeFunction {
 		protected SpaceVectorFunction sf = new SpaceVectorFunction(2);
 		protected int funIndex;
@@ -66,19 +66,19 @@ public class SFBilinearLocal2DVector extends AbstractVectorFunction
 
 			if(funIndex>=0 && funIndex<=1) {
 				sf.set(1, new SFLinearLocal1D(funIndex+1));
-				sf.set(2, new SF0(innerVarNames));
+				sf.set(2, new SFConstant0(innerVarNames));
 			} else if(funIndex>=2 && funIndex<=3) {
-				sf.set(1, new SF0(innerVarNames));
+				sf.set(1, new SFConstant0(innerVarNames));
 				sf.set(2, new SFLinearLocal1D(funIndex-1));
 			}
 		}
 
 		@Override
-		public void asignElement(Element e) {
+		public void assignElement(Element e) {
 			if(funIndex>=0 && funIndex<=1) {
-				((ScalarShapeFunction)sf.get(1)).asignElement(e);
+				((ScalarShapeFunction)sf.get(1)).assignElement(e);
 			} else if(funIndex>=2 && funIndex<=3) {
-				((ScalarShapeFunction)sf.get(2)).asignElement(e);
+				((ScalarShapeFunction)sf.get(2)).assignElement(e);
 			}
 		}
 		@Override
@@ -97,19 +97,19 @@ public class SFBilinearLocal2DVector extends AbstractVectorFunction
 		}
 		
 		@Override
-		public Function get(int index) {
+		public MathFunc get(int index) {
 			return sf.get(index);
 		}
 
 		@Override
-		public void set(int index, Function value) {
+		public void set(int index, MathFunc value) {
 			throw new UnsupportedOperationException();
 		}
 		public String toString() {
 			return sf.toString();
 		}
 		@Override
-		public Function dot(Vector b) {
+		public MathFunc dot(Vector b) {
 			return sf.dot(b);
 		}
 	}
@@ -127,30 +127,25 @@ public class SFBilinearLocal2DVector extends AbstractVectorFunction
 	}
 
 	@Override
-	public Function dot(VectorFunction b) {
+	public MathFunc dot(VectorFunction b) {
 		return sf.dot(b);
 	}
 
 	@Override
-	public Function dot(Vector b) {
+	public MathFunc dot(Vector b) {
 		return sf.dot(b);
 	}
 
 	@Override
-	public Function get(int index) {
+	public MathFunc get(int index) {
 		return sf.get(index);
 	}
 
 	@Override
-	public void set(int index, Function value) {
+	public void set(int index, MathFunc value) {
 		throw new UnsupportedOperationException();
 	}
 	
-	@Override
-	public void print() {
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	public Vector value(Variable v) {
 		return (Vector) this.sf.value(v);

@@ -7,25 +7,27 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.Solver;
-import edu.uta.futureye.algebra.SolverJBLAS;
-import edu.uta.futureye.algebra.SparseVector;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
+import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.Solver;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DiscreteIndexFunction;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.assembler.AssemblerScalarFast;
@@ -46,15 +48,15 @@ public class MouseHeadOld {
 	public static String outputFolder = "MouseHead";
 	
 	//Light source
-	public Function delta = null;
+	public MathFunc delta = null;
 	public Variable lightSource = null; //light source position
 	
 	//Inclusion mu_a
-	public Function mu_a = null;
+	public MathFunc mu_a = null;
 	public double mu_a_bk = 0.1;
 
 	//Inclusion 1/(3*mu_s') = 1.0/30.0 ?
-	public Function k = new FC(1.0/50.0);
+	public MathFunc k = new FC(1.0/50.0);
 	
 	public double factor = 70000;
 	
@@ -72,9 +74,9 @@ public class MouseHeadOld {
 		final double fcx = incX;
 		final double fcr = incBand;
 		final double fmu_a = maxMu_a;
-		mu_a = new AbstractFunction("x","y"){
+		mu_a = new AbstractMathFunc("x","y"){
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;
 				if(Math.sqrt(dx*dx) < fcr) {
 					double r = fmu_a*Math.cos((Math.PI/2)*Math.sqrt(dx*dx)/fcr); 
@@ -91,9 +93,9 @@ public class MouseHeadOld {
 		final double fcy = incY;
 		final double fcr = incR;
 		final double fmu_a = maxMu_a;
-		mu_a = new AbstractFunction("x","y"){
+		mu_a = new AbstractMathFunc("x","y"){
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;
 				double dy = v.get("y")-fcy;
 				if(Math.sqrt(dx*dx+dy*dy) < fcr) {
@@ -108,7 +110,7 @@ public class MouseHeadOld {
 	
 	public Vector solveForwardNeumann(Mesh mesh) {
 		//Mark border type
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.clearBorderNodeMark();
@@ -121,14 +123,14 @@ public class MouseHeadOld {
 		
 		// *** u + u_n = 0, on boundary ***
 		weakForm.setParam(
-				this.k, this.mu_a, FC.c0, this.k //d==k,q=0 (鍗筹細u_n + u =0)
+				this.k, this.mu_a, FC.C0, this.k //d==k,q=0 (鍗筹細u_n + u =0)
 			);
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveForwardNeumann");
 		assembler.assemble();
-		Matrix stiff = assembler.getStiffnessMatrix();
-		Vector load = assembler.getLoadVector();
+		SparseMatrix stiff = assembler.getStiffnessMatrix();
+		SparseVector load = assembler.getLoadVector();
 		assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
 
@@ -137,7 +139,7 @@ public class MouseHeadOld {
 		return u;
 	}	
 	
-	public Vector solveForwardDirichlet(Mesh mesh, Function diri) {
+	public Vector solveForwardDirichlet(Mesh mesh, MathFunc diri) {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
 		
 		//Right hand side
@@ -150,8 +152,8 @@ public class MouseHeadOld {
 		Assembler assembler = new AssemblerScalarFast(mesh, weakForm);
 		System.out.println("Begin Assemble...solveForwardDirichlet");
 		assembler.assemble();
-		Matrix stiff = assembler.getStiffnessMatrix();
-		Vector load = assembler.getLoadVector();
+		SparseMatrix stiff = assembler.getStiffnessMatrix();
+		SparseVector load = assembler.getLoadVector();
 		//Dirichlet condition
 		assembler.imposeDirichletCondition(diri);
 		
@@ -163,7 +165,7 @@ public class MouseHeadOld {
 	}	
 	
 	public Vector solveParamInverse(Mesh mesh, Vector U) {
-		HashMap<NodeType, Function> mapNTF2 = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF2 = new HashMap<NodeType, MathFunc>();
 		mapNTF2.put(NodeType.Dirichlet, null);
 		mesh.clearBorderNodeMark();
 		mesh.markBorderNode(mapNTF2);
@@ -200,9 +202,9 @@ public class MouseHeadOld {
 	public Vector extractData(Mesh meshFrom, Mesh meshTo, Vector u) {
 		NodeList nodeTo = meshTo.getNodeList();
 		int dimTo = nodeTo.size();
-		Vector rlt = new SparseVector(dimTo);
+		Vector rlt = new SparseVectorHashMap(dimTo);
 		for(int i=1;i<=nodeTo.size();i++) {
-			Node node = meshFrom.containNode(nodeTo.at(i));
+			Node node = meshFrom.findNode(nodeTo.at(i));
 			if(node != null) {
 				rlt.set(nodeTo.at(i).globalIndex, u.get(node.globalIndex));
 			}
@@ -384,7 +386,7 @@ public class MouseHeadOld {
 	 */	
 	public Vector computeTailLeft(Mesh omega2,Vector u2_bk,
 			Mesh omega1,Vector u1) {
-		Vector tail = new SparseVector(u2_bk.getDim());
+		Vector tail = new SparseVectorHashMap(u2_bk.getDim());
 		NodeList nodes2 = omega2.getNodeList(); 
 		ObjList<Node> u2LeftNodes = this.getBorderNodes_Omega2(TailType.left, omega2);
 		ObjList<Node> u1LeftNodes = this.getBorderNodes_Omega2(TailType.left, omega1);
@@ -463,7 +465,7 @@ public class MouseHeadOld {
 	
 	public Vector computeTailRight(Mesh omega2,Vector u2_bk,
 			Mesh omega1,Vector u1) {
-		Vector tail = new SparseVector(u2_bk.getDim());
+		Vector tail = new SparseVectorHashMap(u2_bk.getDim());
 		NodeList nodes2 = omega2.getNodeList(); 
 		ObjList<Node> u2RightNodes = this.getBorderNodes_Omega2(TailType.right, omega2);
 		ObjList<Node> u1RightNodes = this.getBorderNodes_Omega2(TailType.right, omega1);
@@ -545,7 +547,7 @@ public class MouseHeadOld {
 	 */
 	public Vector computeTailBottom(Mesh omega2,Vector u2_bk,
 			Mesh omega1,Vector u1) {
-		Vector tail = new SparseVector(u2_bk.getDim());
+		Vector tail = new SparseVectorHashMap(u2_bk.getDim());
 		NodeList nodes2 = omega2.getNodeList(); 
 		ObjList<Node> u2BottomNodes = this.getBorderNodes_Omega2(TailType.bottom, omega2);
 		ObjList<Node> u1BottomNodes = this.getBorderNodes_Omega2(TailType.bottom, omega1);
@@ -628,7 +630,7 @@ public class MouseHeadOld {
 	 */
 	public Vector computeTailTop(Mesh omega2,Vector u2_bk,
 			Mesh omega1,Vector u1) {
-		Vector tail = new SparseVector(u2_bk.getDim());
+		Vector tail = new SparseVectorHashMap(u2_bk.getDim());
 		NodeList nodes2 = omega2.getNodeList(); 
 		ObjList<Node> u2TopNodes = this.getBorderNodes_Omega2(TailType.top, omega2);
 		ObjList<Node> u1TopNodes = this.getBorderNodes_Omega2(TailType.top, omega1);
@@ -919,10 +921,10 @@ public class MouseHeadOld {
 		
 		//澶栭棶棰� Solve exterior problem
 		final TailType fTailType = tailType;
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
-		mapNTF.put(NodeType.Robin, new AbstractFunction("x","y") {
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y") {
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				double x = v.get("x");
 				double y = v.get("y");
 				//Omega1
@@ -971,7 +973,7 @@ public class MouseHeadOld {
 //			System.out.println(o1_ele.at(i));
 		
 		//璇诲彇娴嬮噺杈圭晫鏉′欢锛屽厜婧愮紪鍙蜂负srcLightId锛屾椂闂寸紪鍙蜂负timeId
-		Function diri = new DiscreteIndexFunction(readInterpData(srcLightId,timeId));
+		MathFunc diri = new DiscreteIndexFunction(readInterpData(srcLightId,timeId));
 		Vector u1 = solveForwardDirichlet(meshOmega1,diri);
 		Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1.dat", u1);
 		

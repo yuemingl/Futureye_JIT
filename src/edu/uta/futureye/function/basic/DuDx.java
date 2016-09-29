@@ -1,63 +1,71 @@
 package edu.uta.futureye.function.basic;
 
-import java.lang.reflect.Array;
-
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.application.Tools;
 import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Face;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.core.geometry.Point;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
 /**
  * Compute derivative u_x of a vector u that defined on a mesh
  * There are two types of return values of u_x
+ * 
  * <p>
- * 1. Continuous on the whole mesh</br></br>
- * <code>
- * 	//Assume u is a vector define on a mesh</br>
- *  Function fu = new Vector2Function(u,"x","y"); //Convert to a function class</br>
- *	DuDx dudx = new DuDx(mesh, fu, "x"); //Define derivative dudx of fu</br>
- *  //Evaluate dudx at 'node'</br>
- *	Variable var = new Variable.createFrom(u, node, node.globalIndex);</br>
- *	System.out.println(dudx.value(v));</br>
- * </code></p>
+ * 1. Continuous on the whole mesh
+ * 
+ * <p><blockquote><pre>
+ * //Assume u is a vector defined on a mesh
+ * Function fu = new Vector2Function(u,"x","y"); //Convert to a function class
+ * DuDx dudx = new DuDx(mesh, fu, "x"); //Define derivative dudx of fu
+ * //Evaluate dudx at {@code node}
+ * Variable var = new Variable.createFrom(u, node, node.globalIndex);
+ * System.out.println(dudx.value(v));
+ * </pre></blockquote>
  * <p>
- * 2. Continuous on each element e, but may be discontinuous on the whole mesh.</br>
+ * 2. Continuous on each element e, but may be discontinuous on the whole mesh.
  *    This feature can be used in assembling process for equations with coefficient
- *    that have derivative forms in it.</br></br>
- * <code>
- *  //Assume u is a vector define on a mesh</br>
- *  Function fu = new Vector2Function(u,"x","y"); //Convert to a function class</br>
- *	DuDx dudx = new DuDx(mesh, fu, "x"); //Define derivative dudx of fu</br>
- *  //Evaluate dudx at 'node' which is specified that defined on element e</br>
- *	Variable var = new Variable.createFrom(u, node, node.globalIndex);</br>
- *  v.setElement(e);</br>
- *	System.out.println(dudx.value(v));</br>
- * </code></p>
+ *    that have derivative forms in it.
+ *    
+ * <p><blockquote><pre>
+ * //Assume u is a vector defined on a mesh
+ * Function fu = new Vector2Function(u,"x","y"); //Convert to a function class
+ * DuDx dudx = new DuDx(mesh, fu, "x"); //Define derivative dudx of fu
+ * //Evaluate dudx at {@code node} which is specified that defined on element e
+ * Variable var = new Variable.createFrom(u, node, node.globalIndex);
+ * v.setElement(e);
+ * System.out.println(dudx.value(v));
+ * </pre></blockquote>
  * 
+ * <p>
+ * If higher order derivative is needed, for example u_xx, it can be treated as below
+ * <p><blockquote><pre>
+ * DuDx dudx = new DuDx(mesh, fu, "x");
+ * DuDx d2udx2 = new DuDx(mesh, dudx, "x");
+ * </pre></blockquote>
+ * 
+ * <p> 
  * NOTE:
- *   This function supports 2D bilinear element case only now.
+ * <p> 
+ *   This class now supports the case of 2D bilinear element only.
  * 
+ * @see D2uDx2
  * @author liuyueming
  *
  */
-public class DuDx extends AbstractFunction implements ElementDependentFunction {
+public class DuDx extends AbstractMathFunc implements ElementDependentFunction {
 	protected Element e = null;
 	protected Mesh mesh = null;
 	protected Vector2Function u = null;
 	protected String x = null;
-	protected Function fdu2 = null;
+	protected MathFunc fdu2 = null;
 	
 	/**
 	 * 
@@ -69,8 +77,7 @@ public class DuDx extends AbstractFunction implements ElementDependentFunction {
 		this.mesh = mesh;
 		this.u = u;
 		this.x = x;
-		this.setVarNames(u.varNames());
-		Array a;
+		this.setVarNames(u.getVarNames());
 	}
 	
 	@Override
@@ -79,7 +86,7 @@ public class DuDx extends AbstractFunction implements ElementDependentFunction {
 	}
 
 	@Override
-	public double value(Variable v) {
+	public double apply(Variable v) {
 		Element newEle = v.getElement();
 		if(newEle != null) {
 			Element ve = v.getElement();
@@ -109,12 +116,12 @@ public class DuDx extends AbstractFunction implements ElementDependentFunction {
 			for(int i=1;i<=N;i++) {
 				Node node = e.nodes.at(i);
 				Variable var = Variable.createFrom(u, node, node.globalIndex);
-				f[i-1] = u.value(var);
+				f[i-1] = u.apply(var);
 			}
 			double[] a = Utils.computeBilinearFunctionCoef(e.nodes.toArray(new Point[0]), f);
 			//d(a1 + a2*x + a3*y + a4*x*y)/dx
 			//d(a1 + a2*x + a3*y + a4*x*y)/dy
-			Function du = null;
+			MathFunc du = null;
 			if(x.equals("x")) {
 				du = new FXY(0.0,a[3],a[1]);
 			} else if(x.equals("y")) {
@@ -131,9 +138,9 @@ public class DuDx extends AbstractFunction implements ElementDependentFunction {
 				for(int i=0;i<varNames.size();i++) {
 					vv.set(varNames.get(i),node.coord(i+1));
 				}
-				return du.value(vv);
+				return du.apply(vv);
 			} else {
-				return du.value(v);	
+				return du.apply(v);	
 			}
 			
 		} else {
@@ -141,11 +148,83 @@ public class DuDx extends AbstractFunction implements ElementDependentFunction {
 				Vector du2 = Tools.computeDerivativeFast(mesh, u.u, x);
 				fdu2 = new Vector2Function(du2);
 			}
-			return fdu2.value(v);
+			return fdu2.apply(v);
 		}
 	}
 	
 	public String toString() {
-		return "DuDn";
+		return "DuDx";
+	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		Element newEle = e;
+		if(newEle != null) {
+			Element ve = e;
+			//3D?
+			if(ve.nodes.size()==2 && ve.getGeoEntity() instanceof Edge) {
+				//find the cell that includes this edge
+				Node n1 = ve.nodes.at(1);
+				Node n2 = ve.nodes.at(2);
+				int findIndex = -1;
+				for(int i=1;i<=n1.belongToElements.size();i++) {
+					for(int j=1;j<=n2.belongToElements.size();j++) {
+						int idx1 = n1.belongToElements.at(i).globalIndex;
+						int idx2 = n2.belongToElements.at(j).globalIndex;
+						if(idx1 == idx2) {
+							findIndex = idx1;
+							break;
+						}
+						if(findIndex > 0) break;
+					}
+				}
+				this.setElement(mesh.getElementList().at(findIndex));
+			}
+			
+		
+			int N = e.nodes.size();
+			double[] f = new double[N];
+			for(int i=1;i<=N;i++) {
+				Node node = e.nodes.at(i);
+				Variable var = Variable.createFrom(u, node, node.globalIndex);
+				f[i-1] = u.apply(var);
+			}
+			double[] a = Utils.computeBilinearFunctionCoef(e.nodes.toArray(new Point[0]), f);
+			//d(a1 + a2*x + a3*y + a4*x*y)/dx
+			//d(a1 + a2*x + a3*y + a4*x*y)/dy
+			MathFunc du = null;
+			if(x.equals("x")) {
+				du = new FXY(0.0,a[3],a[1]);
+			} else if(x.equals("y")) {
+				du = new FXY(a[3],0.0,a[2]);
+			} else {
+				throw new FutureyeException("x(="+x+") should be 'x' or 'y'!");
+			}
+			Variable vv = new Variable();
+			if(varNames==null || varNames.size()==0) {
+				throw new FutureyeException("varNames should be specified in parameter 'u'.");
+			}
+			if(n.getIndex() != 0) {
+				Node node = mesh.getNodeList().at(n.getIndex());
+				for(int i=0;i<varNames.size();i++) {
+					vv.set(varNames.get(i),node.coord(i+1));
+				}
+				return du.apply(vv);
+			} else {
+				return du.apply(e, n, args);	
+			}
+			
+		} else {
+			if(this.fdu2 == null) {
+				Vector du2 = Tools.computeDerivativeFast(mesh, u.u, x);
+				fdu2 = new Vector2Function(du2);
+			}
+			return fdu2.apply(e, n, args);
+		}
+	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
 	}
 }

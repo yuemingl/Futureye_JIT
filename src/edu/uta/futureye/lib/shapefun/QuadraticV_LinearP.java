@@ -2,19 +2,24 @@ package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractVectorFunction;
+import edu.uta.futureye.function.AbstractVectorFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
+import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 
 /**
- * Velocity: Quadratic shape function
- * 速度：三角形局部坐标，二次函数
+ * P2/P1
+ * -Continuous quadratic velocity
+ * -Piecewise linear pressure
+ * 
+ * * Velocity: Quadratic shape function
+ * * 速度：三角形局部坐标，二次函数
  * 
  * 3
  * | \
@@ -32,8 +37,8 @@ import edu.uta.futureye.util.container.ObjList;
  * NV5 = 4*s*t
  * NV6 = 4*r*t
  * 
- * Pressure: Linear shape function
- * 压强：三角形局部坐标，线性型函数
+ * * Pressure: Linear shape function
+ * * 压强：三角形局部坐标，线性型函数
  * 3
  * | \
  * |  \
@@ -46,8 +51,8 @@ import edu.uta.futureye.util.container.ObjList;
  * NP2 = s
  * NP3 = t
  *
- * 2D vector valued shape functions
- * 二维单元上的形函数，速度压强共15个自由度：
+ * * 2D vector valued shape functions
+ * * 二维单元上的形函数，速度压强共15个自由度：
  * Ni = (v1,v2,p)', i=1,...,15
  * 
  * N1  =  (NV1, 0, 0)'
@@ -69,10 +74,10 @@ import edu.uta.futureye.util.container.ObjList;
  *
  * @author liuyueming
  */
-public class QuadraticV_LinearP extends AbstractVectorFunction 
+public class QuadraticV_LinearP extends AbstractVectorFunc 
 								implements VectorShapeFunction {
 	//(u1,u2,p)
-	protected SpaceVectorFunction sf = new SpaceVectorFunction(3);
+	protected SpaceVectorFunction sf = null;
 	protected int funIndex;
 	protected ObjList<String> innerVarNames = null;
 	
@@ -81,9 +86,10 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 	 * @param funID
 	 */
 	public QuadraticV_LinearP(int funID) {
-		dim = 3;
 		funIndex = funID - 1;
-
+		dim = 3;
+		sf = new SpaceVectorFunction(dim);
+		
 		varNames.add("r");
 		varNames.add("s");
 		varNames.add("t");
@@ -91,29 +97,31 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 
 		if(funIndex>=0 && funIndex<=5) {
 			sf.set(1, new SFQuadraticLocal2DFast(funIndex+1));
-			sf.set(2, new SF0(innerVarNames));
-			sf.set(3, new SF0(innerVarNames));
+			sf.set(2, new SFConstant0(innerVarNames));
+			sf.set(3, new SFConstant0(innerVarNames));
 		} else if(funIndex>=6 && funIndex<=11) {
-			sf.set(1, new SF0(innerVarNames));
+			sf.set(1, new SFConstant0(innerVarNames));
 			sf.set(2, new SFQuadraticLocal2DFast(funIndex-5));
-			sf.set(3, new SF0(innerVarNames));
+			sf.set(3, new SFConstant0(innerVarNames));
 		} else if(funIndex>=12 && funIndex<=14) {
-			sf.set(1, new SF0(innerVarNames));
-			sf.set(2, new SF0(innerVarNames));
+			sf.set(1, new SFConstant0(innerVarNames));
+			sf.set(2, new SFConstant0(innerVarNames));
 			sf.set(3, new SFLinearLocal2D(funIndex-11));
+		} else {
+			throw new FutureyeException("ERROR: funID should be 1,2,3...,15.");
 		}
 
 
 	}
 	
 	@Override
-	public void asignElement(Element e) {
+	public void assignElement(Element e) {
 		if(funIndex>=0 && funIndex<=5) {
-			((ScalarShapeFunction)sf.get(1)).asignElement(e);
+			((ScalarShapeFunction)sf.get(1)).assignElement(e);
 		} else if(funIndex>=6 && funIndex<=11) {
-			((ScalarShapeFunction)sf.get(2)).asignElement(e);
+			((ScalarShapeFunction)sf.get(2)).assignElement(e);
 		} else if(funIndex>=12 && funIndex<=14) {
-			((ScalarShapeFunction)sf.get(3)).asignElement(e);
+			((ScalarShapeFunction)sf.get(3)).assignElement(e);
 		}
 	}
 
@@ -124,7 +132,8 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 
 	QuadraticV_LinearP1D []sf1D = null;
 	/**
-	 * Restrict to boundary
+	 * Restrict to boundary edge:
+	 * * Velocity:
 	 * | \
 	 * |  \
 	 * |   \
@@ -133,6 +142,7 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 	 * 1--3-- 2
 	 * NV1,NV2,NV3
 	 * 
+	 * * Pressure:
 	 * | \
 	 * |  \
 	 * |   \
@@ -164,7 +174,13 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 		return sf1D[funIndex-1];
 	}
 	
-	public class QuadraticV_LinearP1D extends AbstractVectorFunction 
+	/**
+	 * 需要定义边界单元，因为二维情况，向量值形函数dim=3，如果直接使用一维的，dim=2
+	 * 
+	 * @author liuyueming
+	 *
+	 */
+	public class QuadraticV_LinearP1D extends AbstractVectorFunc 
 						implements VectorShapeFunction {
 		//(u1,u2,p)
 		protected SpaceVectorFunction sf = new SpaceVectorFunction(3);
@@ -180,28 +196,30 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 			
 			if(funIndex>=0 && funIndex<=2) {
 				sf.set(1, new SFQuadraticLocal1D(funIndex+1));
-				sf.set(2, new SF0(innerVarNames));
-				sf.set(3, new SF0(innerVarNames));
+				sf.set(2, new SFConstant0(innerVarNames));
+				sf.set(3, new SFConstant0(innerVarNames));
 			} else if(funIndex>=3 && funIndex<=5) {
-				sf.set(1, new SF0(innerVarNames));
+				sf.set(1, new SFConstant0(innerVarNames));
 				sf.set(2, new SFQuadraticLocal1D(funIndex-2));
-				sf.set(3, new SF0(innerVarNames));
+				sf.set(3, new SFConstant0(innerVarNames));
 			} else if(funIndex>=6 && funIndex<=7) {
-				sf.set(1, new SF0(innerVarNames));
-				sf.set(2, new SF0(innerVarNames));
+				sf.set(1, new SFConstant0(innerVarNames));
+				sf.set(2, new SFConstant0(innerVarNames));
 				sf.set(3, new SFLinearLocal1D(funIndex-5));
+			} else {
+				throw new FutureyeException("ERROR: funID should be 1,2,3...,8.");
 			}
 			
 		}
 
 		@Override
-		public void asignElement(Element e) {
+		public void assignElement(Element e) {
 			if(funIndex>=0 && funIndex<=2) {
-				((ScalarShapeFunction)sf.get(1)).asignElement(e);
+				((ScalarShapeFunction)sf.get(1)).assignElement(e);
 			} else if(funIndex>=3 && funIndex<=5) {
-				((ScalarShapeFunction)sf.get(2)).asignElement(e);
+				((ScalarShapeFunction)sf.get(2)).assignElement(e);
 			} else if(funIndex>=6 && funIndex<=7) {
-				((ScalarShapeFunction)sf.get(3)).asignElement(e);
+				((ScalarShapeFunction)sf.get(3)).assignElement(e);
 			}
 		}
 		
@@ -221,41 +239,36 @@ public class QuadraticV_LinearP extends AbstractVectorFunction
 		}
 		
 		@Override
-		public Function get(int index) {
+		public MathFunc get(int index) {
 			return sf.get(index);
 		}
 
 		@Override
-		public void set(int index, Function value) {
+		public void set(int index, MathFunc value) {
 			throw new UnsupportedOperationException();
 		}
 	};
 
 	@Override
-	public Function dot(VectorFunction b) {
+	public MathFunc dot(VectorFunction b) {
 		return sf.dot(b);
 	}
 
 	@Override
-	public Function dot(Vector b) {
+	public MathFunc dot(Vector b) {
 		return sf.dot(b);
 	}
 
 	@Override
-	public Function get(int index) {
+	public MathFunc get(int index) {
 		return sf.get(index);
-	}
-
-	@Override
-	public void set(int index, Function value) {
-		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-	public void print() {
+	public void set(int index, MathFunc value) {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	@Override
 	public Vector value(Variable v) {
 		return (Vector) this.sf.value(v);

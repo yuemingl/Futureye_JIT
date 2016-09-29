@@ -1,30 +1,32 @@
 package edu.uta.futureye.function.basic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import edu.uta.futureye.function.AbstractFunction;
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
+
+import edu.uta.futureye.function.MathFuncBasic;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.VariableArray;
+import edu.uta.futureye.function.intf.MathFunc;
+import static edu.uta.futureye.function.FMath.C0;
 
 /**
- * Constant function: f=c
+ * Constant function: f = c
  * 
- * @author liuyueming
- *
  */
-public class FC extends AbstractFunction{
-	//Predefined constant
-	public static FC c0 = new FC(0.0);
-	public static FC c1 = new FC(1.0);
-	public static FC PI = new FC(Math.PI);
-	public static FC E = new FC(Math.E);
+public class FC extends MathFuncBasic {
+	protected double val;
 	
-	protected double val = 0.0;
+	//Constants cache
 	protected static Map<Double, FC> cs = new HashMap<Double, FC>();
-	
-	public FC() {
-	}
 	
 	public FC(double val) {
 		this.val = val;
@@ -48,32 +50,105 @@ public class FC extends AbstractFunction{
 	}
 	
 	@Override
-	public double value(Variable v) {
+	public double apply(Variable v) {
 		return val;
 	}
 
 	@Override
-	public double value() {
+	public double apply(double... args) {
 		return val;
 	}
 	
 	@Override
-	public Function _d(String varName) {
-		return c0;
+	public double apply(Variable v, Map<Object,Object> cache) {
+		return val;
 	}
 	
 	@Override
-	public int getOpOrder() {
-		return OP_ORDER0;
+	public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
+		int len = v.length();
+		double[] rlt = new double[len];
+		for(int i=0;i<len;i++)
+			rlt[i] = val;
+		return rlt;
 	}
 	
 	@Override
-	public Function copy() {
-		return new FC(this.val);
+	public MathFunc diff(String varName) {
+		return C0;
+	}
+	
+	@Override
+	public MathFunc copy() {
+		//return new FC(this.val);
+		return this;
 	}
 	
 	@Override
 	public String toString() {
 		return String.valueOf(val);
+	}
+	
+	@Override 
+	public boolean isConstant() {
+		return true;
+	}
+	
+	@Override
+	public boolean isInteger() {
+		return Math.floor(val)==val;
+	}
+	
+	@Override
+	public boolean isZero() {
+		return val==0.0;
+	}
+	
+	@Override
+	public boolean isReal() {
+		return true;
+	}
+	
+	@Override
+	public String getName() {
+		return String.valueOf(val);
+	}
+
+	@Override
+	public MathFunc setName(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public MathFunc setVarNames(List<String> varNames) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<String> getVarNames() {
+		return new ArrayList<String>();
+	}
+
+	@Override
+	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+		return this;
+	}
+
+	@Override
+	public Map<String, Integer> getArgIdxMap() {
+		return new HashMap<String, Integer>();
+	}
+
+	@Override
+	public String getExpr() {
+		return String.valueOf(val);
+	}
+	
+	@Override
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+			ConstantPoolGen cp, InstructionFactory factory,
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
+			Map<MathFunc, Integer> funcRefsMap) {
+		return il.append(new PUSH(cp, val));
 	}
 }

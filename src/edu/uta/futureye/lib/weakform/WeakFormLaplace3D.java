@@ -9,26 +9,27 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 
 /**
+ * <blockquote><pre>
  * Solve
  *   -k*Laplace(u) + c*u = f, in \Omega
  *   u = u0,                  on \Gamma1
- *   d*u + k*u_n = q,         on \Gamma2
+ *   d*u + k*u_n = g,         on \Gamma2
  *=>
  *   A(u, v) = (f, v)
  * 
  * where
- *   A(u, v) = (k*u_x, v_x) + (k*u_y, v_y) + (k*u_z, v_z) - (q-d*u,v)_\Gamma2 + (c*u, v)
+ *   A(u, v) = (k*u_x, v_x) + (k*u_y, v_y) + (k*u_z, v_z) - (g-d*u,v)_\Gamma2 + (c*u, v)
  *=>
- *   A(u, v) = (k*u_x, v_x) + (k*u_y, v_y) + (k*u_z, v_z) + (d*u-q,v)_\Gamma2 + (c*u, v)
+ *   A(u, v) = (k*u_x, v_x) + (k*u_y, v_y) + (k*u_z, v_z) + (d*u-g,v)_\Gamma2 + (c*u, v)
  *
  *   \Gamma1: Dirichlet boundary of \Omega
  *   \Gamma2: Neumann(Robin) boundary of \Omega
@@ -37,55 +38,56 @@ import edu.uta.futureye.util.container.ElementList;
  *   k = k(x,y)
  *   c = c(x,y)
  *   d = d(x,y)
- *   q = q(x,y)
- *   
+ *   g = g(x,y)
+ * </blockquote></pre>  
+ * 
  * @author liuyueming
  *
  */
 public class WeakFormLaplace3D extends AbstractScalarWeakForm {
-	protected Function g_f = null;
-	protected Function g_k = null;
-	protected Function g_c = null;
-	protected Function g_q = null;
-	protected Function g_d = null;
+	protected MathFunc g_f = null;
+	protected MathFunc g_k = null;
+	protected MathFunc g_c = null;
+	protected MathFunc g_g = null;
+	protected MathFunc g_d = null;
 
-	public void setF(Function f) {
+	public void setF(MathFunc f) {
 		this.g_f = f;
 	}
 	
-	//Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
-	public void setParam(Function k,Function c,Function q,Function d) {
+	//Robin:  d*u + k*u_n= g (自然边界：d==k, g=0)
+	public void setParam(MathFunc k,MathFunc c,MathFunc g,MathFunc d) {
 		this.g_k = k;
 		this.g_c = c;
-		this.g_q = q;
+		this.g_g = g;
 		this.g_d = d;
 	}
 
 	@Override
-	public Function leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			Function integrand = null;
+			MathFunc integrand = null;
 			if(g_k == null) {
 				integrand = FMath.sum(
-						u._d("x").M(v._d("x")),
-						u._d("y").M(v._d("y")),
-						u._d("z").M(v._d("z"))
+						u.diff("x").M(v.diff("x")),
+						u.diff("y").M(v.diff("y")),
+						u.diff("z").M(v.diff("z"))
 					);
 			} else {
-				Function fk = Utils.interpolateFunctionOnElement(g_k,e);
-				Function fc = Utils.interpolateFunctionOnElement(g_c,e);
+				MathFunc fk = Utils.interpolateOnElement(g_k,e);
+				MathFunc fc = Utils.interpolateOnElement(g_c,e);
 				integrand = fk.M(FMath.sum(
-								u._d("x").M(v._d("x")),
-								u._d("y").M(v._d("y")),
-								u._d("z").M(v._d("z"))
+								u.diff("x").M(v.diff("x")),
+								u.diff("y").M(v.diff("y")),
+								u.diff("z").M(v.diff("z"))
 							)).A(fc.M(u.M(v)));
 			}
 			return integrand;
 		} else if(itemType==ItemType.Border) {//Neumann border integration on LHS
 			if(g_d != null) {
 				Element be = e;
-				Function fd = Utils.interpolateFunctionOnElement(g_d, be);
-				Function borderIntegrand = fd.M(u.M(v));
+				MathFunc fd = Utils.interpolateOnElement(g_d, be);
+				MathFunc borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
 		}
@@ -93,16 +95,18 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public Function rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			Function ff = Utils.interpolateFunctionOnElement(g_f, e);
-			Function integrand = ff.M(v);
+			MathFunc ff = Utils.interpolateOnElement(g_f, e);
+			MathFunc integrand = ff.M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {//Neumann border type
-			Element be = e;
-			Function fq = Utils.interpolateFunctionOnElement(g_q, be);
-			Function borderIntegrand = fq.M(v);
-			return borderIntegrand;
+			if(g_g != null) {
+				Element be = e;
+				MathFunc fq = Utils.interpolateOnElement(g_g, be);
+				MathFunc borderIntegrand = fq.M(v);
+				return borderIntegrand;
+			}
 		}
 		return  null;
 	}
@@ -122,22 +126,22 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 		e.updateJacobinLinear3D();
 		
 		//形函数计算需要和单元关联，并提前计算导数
-		Map<Integer, Function> mapShape_x = new HashMap<Integer, Function>();
-		Map<Integer, Function> mapShape_y = new HashMap<Integer, Function>();
-		Map<Integer, Function> mapShape_z = new HashMap<Integer, Function>();
+		Map<Integer, MathFunc> mapShape_x = new HashMap<Integer, MathFunc>();
+		Map<Integer, MathFunc> mapShape_y = new HashMap<Integer, MathFunc>();
+		Map<Integer, MathFunc> mapShape_z = new HashMap<Integer, MathFunc>();
 		for(int i=1;i<=nDOFs;i++) {
 			DOF dof = DOFs.at(i);
 			ScalarShapeFunction sf = dof.getSSF();
-			dof.getSSF().asignElement(e);
-			mapShape_x.put(dof.getLocalIndex(), sf._d("x"));
-			mapShape_y.put(dof.getLocalIndex(), sf._d("y"));
-			mapShape_z.put(dof.getLocalIndex(), sf._d("z"));
+			dof.getSSF().assignElement(e);
+			mapShape_x.put(dof.getLocalIndex(), sf.diff("x"));
+			mapShape_y.put(dof.getLocalIndex(), sf.diff("y"));
+			mapShape_z.put(dof.getLocalIndex(), sf.diff("z"));
 		}
 
-		Function fk = null;
-		if(g_k != null) fk = Utils.interpolateFunctionOnElement(g_k,e);
-		Function fc = null;
-		if(g_c != null) fc = Utils.interpolateFunctionOnElement(g_c,e);
+		MathFunc fk = null;
+		if(g_k != null) fk = Utils.interpolateOnElement(g_k,e);
+		MathFunc fc = null;
+		if(g_c != null) fc = Utils.interpolateOnElement(g_c,e);
 
 		//所有自由度双循环
 		for(int i=1;i<=nDOFs;i++) {
@@ -151,7 +155,7 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 				int nGlobalCol = dofJ.getGlobalIndex();
 				
 				//Integrand part of Weak Form on element e
-				Function integrand = null;
+				MathFunc integrand = null;
 				if(g_k == null) {
 					integrand = FMath.sum(
 						mapShape_x.get(nLocalRow).M(mapShape_x.get(nLocalCol)),
@@ -178,8 +182,8 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 				globalStiff.add(nGlobalRow, nGlobalCol, lhsVal);
 			}
 			//Load vector
-			Function ff = Utils.interpolateFunctionOnElement(g_f, e);
-			Function integrand = ff.M(sfI);
+			MathFunc ff = Utils.interpolateOnElement(g_f, e);
+			MathFunc integrand = ff.M(sfI);
 			double rhsVal = 0.0;
 			if (e.vertices().size() == 4) {
 				rhsVal = FOIntegrate.intOnTetrahedraRefElement(
@@ -195,8 +199,8 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 			for(int n=1;n<=beList.size();n++) {
 				Element be = beList.at(n);
 				
-				Function fd = null;
-				if(g_d != null) fd = Utils.interpolateFunctionOnElement(g_d, be);
+				MathFunc fd = null;
+				if(g_d != null) fd = Utils.interpolateOnElement(g_d, be);
 				
 				//Check node type
 				NodeType nodeType = be.getBorderNodeType();
@@ -209,7 +213,7 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 					
 					//形函数计算需要和单元关联
 					for(int i=1;i<=nBeDOF;i++) {
-						beDOFs.at(i).getSSF().asignElement(be);
+						beDOFs.at(i).getSSF().assignElement(be);
 					}
 					
 					//所有自由度双循环
@@ -222,7 +226,7 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 							ScalarShapeFunction sfJ = dofJ.getSSF();
 							int nGlobalCol = dofJ.getGlobalIndex();
 							//Stiff matrix for border
-							Function borderIntegrand = fd.M(sfI.M(sfJ));
+							MathFunc borderIntegrand = fd.M(sfI.M(sfJ));
 							//Numerical integrate the border 'be' of element 'e'
 							double lhsBrVal = 0.0;
 							if(be.vertices().size() == 3) {
@@ -237,9 +241,9 @@ public class WeakFormLaplace3D extends AbstractScalarWeakForm {
 							globalStiff.add(nGlobalRow, nGlobalCol, lhsBrVal);
 						}
 						//Load vector for border
-						if(g_q != null) {
-							Function fq = Utils.interpolateFunctionOnElement(g_q, be);
-							Function borderIntegrand = fq.M(v);
+						if(g_g != null) {
+							MathFunc fq = Utils.interpolateOnElement(g_g, be);
+							MathFunc borderIntegrand = fq.M(v);
 							double rhsBrVal = 0.0;
 							if(be.vertices().size() == 3) {
 								rhsBrVal = FOIntegrate.intOnTriangleRefElement(

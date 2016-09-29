@@ -2,7 +2,7 @@ package edu.uta.futureye.application;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.io.MeshReader;
 
 public class MouseHeadPost {
@@ -82,6 +82,7 @@ public class MouseHeadPost {
 				370.875614945573, -237.500207785087
 		   };
 		
+		//手工建立一下文件夹，并复制结果文件
 //		String folderPostfix = "_factor=10000_rat6";
 		String folderPostfix = "_factor=10000_rat5";
 		String format760 = ".\\MouseHead\\Results\\760nm_"+gridName+folderPostfix+

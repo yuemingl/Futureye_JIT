@@ -2,6 +2,7 @@ package edu.uta.futureye.lib.element;
 
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
 import edu.uta.futureye.util.container.VertexList;
@@ -44,6 +45,17 @@ public class FEBilinearRectangle implements FiniteElementType {
 	@Override
 	public int getVectorShapeFunctionDim() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getDOFNumOnMesh(Mesh mesh, int vsfDim) {
+		return mesh.getNodeList().size();
+	}
+
+	@Override
+	public void initDOFIndexGenerator(Mesh mesh) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -1,7 +1,9 @@
 package edu.uta.futureye.core;
 
+import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.geometry.GeoEntity2D;
+import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 
@@ -26,7 +28,23 @@ public class Face extends GeoEntity2D<EdgeLocal,NodeLocal> {
 	
 	public Vector getNormVector() {
 		if(this.globalUnitNormVector == null) {
-			//TODO
+			ObjList<Vertex> vs = this.getVertices();
+			Point p1 = vs.at(1);
+			Point p2 = vs.at(2);
+			Point p3 = vs.at(3);
+			SpaceVector s1 = new SpaceVector(3);
+			SpaceVector s2 = new SpaceVector(3);
+			s1.set(1, p2.coord(1)-p1.coord(1));
+			s1.set(2, p2.coord(2)-p1.coord(2));
+			s1.set(3, p2.coord(3)-p1.coord(3));
+			
+			s2.set(1, p3.coord(1)-p2.coord(1));
+			s2.set(2, p3.coord(2)-p2.coord(2));
+			s2.set(3, p3.coord(3)-p2.coord(3));
+			
+			Vector rlt = s1.crossProduct(s2);
+			rlt.scale(1.0/rlt.norm2());
+			return rlt;
 		}
 		return this.globalUnitNormVector;
 	}
@@ -41,16 +59,18 @@ public class Face extends GeoEntity2D<EdgeLocal,NodeLocal> {
     }
     
 	/**
+	 * For vector valued problems, return boundary type of component <tt>nVVFComponent</tt>
+	 * <p>
 	 * 对于向量值问题，每个分量在同一边界上的类型不一定相同，
-	 * 该函数返回分量<tt>vvfIndex</tt>对应的边界类型
-	 * Vector valued function (vvf)
-	 * @param vvfIndex
+	 * 该函数返回分量<tt>nVVFComponent</tt>对应的边界类型
+	 * 
+	 * @param nVVFComponent
 	 * @return
 	 */
-    public NodeType getBorderType(int vvfIndex) {
-    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType(vvfIndex);
+    public NodeType getBorderType(int nVVFComponent) {
+    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType(nVVFComponent);
     	for(int i=2;i<this.vertices.size();i++) {
-    		NodeType nt2 = this.vertices.at(2).globalNode().getNodeType(vvfIndex);
+    		NodeType nt2 = this.vertices.at(2).globalNode().getNodeType(nVVFComponent);
     	   	if(nt1 != nt2) return null;                  
     	}
     	return nt1;                  

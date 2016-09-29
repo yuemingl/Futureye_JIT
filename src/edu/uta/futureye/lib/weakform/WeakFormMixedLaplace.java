@@ -7,12 +7,12 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
+import static edu.uta.futureye.function.FMath.*;
 
 /**
  * Problem:
@@ -36,19 +36,19 @@ import edu.uta.futureye.util.container.DOFList;
  * @author liuyueming
  *
  */
-public class WeakFormMixedLaplace extends AbstractVectorWeakform {
-	protected Function g_f = null;
-	protected Function g_k = null;
+public class WeakFormMixedLaplace extends AbstractVectorWeakForm {
+	protected MathFunc g_f = null;
+	protected MathFunc g_k = null;
 	//protected Function g_c = null;
 	//protected Function g_g = null;
 	//protected Function g_d = null;
 	
-	public void setF(Function f) {
+	public void setF(MathFunc f) {
 		this.g_f = f;
 	}
 	
 	//Robin:  d*u + k*u_n = g
-	public void setParam(Function k,Function c,Function g,Function d) {
+	public void setParam(MathFunc k,MathFunc c,MathFunc g,MathFunc d) {
 		this.g_k = k;
 		//this.g_c = c;
 		//this.g_g = g;
@@ -77,7 +77,7 @@ public class WeakFormMixedLaplace extends AbstractVectorWeakform {
 		
 		e.updateJacobinLinear2D();
 		for(int i=1;i<=nEdgeDOF;i++) {
-			edgeDOFs.at(i).getVSF().asignElement(e);
+			edgeDOFs.at(i).getVSF().assignElement(e);
 		}
 		
 		//边自由度双循环
@@ -89,7 +89,7 @@ public class WeakFormMixedLaplace extends AbstractVectorWeakform {
 				VectorShapeFunction vecU = dofU.getVSF();
 				
 				//B = (p,q)_{\Omega}
-				Function integrandB = null;
+				MathFunc integrandB = null;
 				integrandB = vecU.dot(vecV);
 				//单元上数值积分
 				if(e.vertices().size() == 3) {
@@ -102,8 +102,8 @@ public class WeakFormMixedLaplace extends AbstractVectorWeakform {
 			for(int k=1;k<=nElementDOF;k++) {
 				DOF dofE = eleDOFs.at(k);
 				//C = (u,\div{q})_{\Omega}
-				Function integrandC = null;
-				integrandC = FMath.div(vecV);
+				MathFunc integrandC = null;
+				integrandC = div(vecV);
 				double val = FOIntegrate.intOnTriangleRefElement(
 						integrandC.M(e.getJacobin()),4);
 				blockMat.add(dofV.getGlobalIndex(), dofE.getGlobalIndex(), val);
@@ -117,7 +117,7 @@ public class WeakFormMixedLaplace extends AbstractVectorWeakform {
 		for(int k=1;k<=nElementDOF;k++) {
 			DOF dofE = eleDOFs.at(k);
 			//ShapeFunction sf = dofE.getSF(); //分片常数元，在积分项中系数是1
-			Function integrand = Utils.interpolateFunctionOnElement(g_f, e);
+			MathFunc integrand = Utils.interpolateOnElement(g_f, e);
 			//bf = -(v,f)_{\Omega}
 			integrand = FC.c(-1.0).M(integrand);
 			double val = 0.0;

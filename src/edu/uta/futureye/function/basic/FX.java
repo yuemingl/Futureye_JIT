@@ -1,68 +1,149 @@
 package edu.uta.futureye.function.basic;
 
-import edu.uta.futureye.function.AbstractFunction;
-import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.Function;
+import static com.sun.org.apache.bcel.internal.generic.InstructionConstants.DALOAD;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.sun.org.apache.bcel.internal.generic.ALOAD;
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+import com.sun.org.apache.bcel.internal.generic.InstructionFactory;
+import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.MethodGen;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
+
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
+import edu.uta.futureye.function.FMath;
+import edu.uta.futureye.function.MathFuncBasic;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
- * f(x)=x
+ * Identity function
+ * f(x) = x
  * 
- * @author liuyueming
- *
  */
-public class FX extends AbstractFunction{
+public class FX extends MathFuncBasic {
 	/**
-	 * Used to form f(x)=x, instead of construct a new FX object, 
-	 * it will be faster and memory saving :)
+	 * Predefined instances of FX
 	 */
-	public final static FX fx = new FX(Constant.x); 
+	public final static FX x = new FX(Constant.x); 
+	public final static FX y = new FX(Constant.y); 
+	public final static FX z = new FX(Constant.z); 
+	
+	public final static FX r = new FX(Constant.r); 
+	public final static FX s = new FX(Constant.s); 
+	public final static FX t = new FX(Constant.t); 
+	
+	String varName;
+	int argIdx;
 	
 	/**
-	 * Different variable names
-	 */
-	public final static FX fy = new FX(Constant.y); 
-	public final static FX fz = new FX(Constant.z); 
-	
-	public final static FX fr = new FX(Constant.r); 
-	public final static FX fs = new FX(Constant.s); 
-	public final static FX ft = new FX(Constant.t); 
-	
-	protected String activeName = null;
-	
-	/**
-	 * Use this to construct f(varName)
+	 * Identity function: f(varName) = varName
 	 */
 	public FX(String varName) {
-		super(varName);
-		this.activeName = varName;
+		this.varName = varName;
 	}
 
 	@Override
-	public Function _d(String varName) {
-		if(this.activeName.equals(varName))
-			return FC.c1;
+	public double apply(Element e, Node n, double... args) {
+		return args[argIdx];
+	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
+	}
+
+	@Override
+	public MathFunc diff(String varName) {
+		if(this.varName.equals(varName))
+			return FMath.C1;
 		else
-			return FC.c0;
-	}
-
-	@Override
-	public double value(Variable v) {
-		return v.get(activeName);
+			return FMath.C0;
 	}
 	
 	@Override
-	public int getOpOrder() {
-		return OP_ORDER0;
-	}
-	
-	@Override
-	public Function copy() {
-		return new FX(this.activeName);
+	public String getExpr() {
+		return varName;
 	}
 	
 	@Override
 	public String toString() {
-		return activeName;
+		return varName;
+	}
+
+	@Override
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+			ConstantPoolGen cp, InstructionFactory factory,
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
+			Map<MathFunc, Integer> funcRefsMap) {
+		il.append(new ALOAD(argsStartPos));
+		il.append(new PUSH(cp, argsMap.get(varName)));
+		return il.append(DALOAD);
+	}
+
+	@Override
+	public MathFunc setName(String name) {
+		this.varName = name;
+		return this;
+	}
+
+	@Override
+	public MathFunc setVarNames(List<String> varNames) {
+		this.varName = varNames.get(0);
+		return this;
+	}
+	@Override
+	public List<String> getVarNames() {
+		List<String> ret = new ArrayList<String>();
+		ret.add(varName);
+		return ret;
+	}
+
+	public String getVarName() {
+		return this.varName;
+	}
+	
+	public MathFunc setVarName(String varName) {
+		this.varName = varName;
+		return this;
+	}
+
+	@Override
+	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+		this.argIdx = argsMap.get(varName);
+		return this;
+	}
+	
+	@Override
+	public Map<String, Integer> getArgIdxMap() {
+		Map<String, Integer> ret = new HashMap<String, Integer>();
+		ret.put(varName, argIdx);
+		return ret;
+	}
+	
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
+	
+	@Override
+	public boolean isInteger() {
+		return false;
+	}
+	
+	@Override
+	public boolean isZero() {
+		return false;
+	}
+	
+	@Override
+	public boolean isReal() {
+		return false;
 	}
 }

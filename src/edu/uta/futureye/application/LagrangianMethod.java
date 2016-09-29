@@ -6,19 +6,20 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.SolverJBLAS;
-import edu.uta.futureye.algebra.SparseVector;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -101,7 +102,7 @@ public class LagrangianMethod {
 	
 	public Vector solve_a(int iter,ObjList<Vector> vList,ObjList<Vector> lambdaList) {
 		double h = s[0] - s[1];
-		Vector int_a_b = new SparseVector(vList.at(1).getDim());
+		Vector int_a_b = new SparseVectorHashMap(vList.at(1).getDim());
 		ObjList<Vector> vml = new ObjList<Vector>();
 		for(int i=0;i<s.length;i++) {
 			//vml_i = v_i*lambda_i
@@ -119,7 +120,7 @@ public class LagrangianMethod {
 		}
 		
 		//return int_a_b;
-		SparseVector rlt = new SparseVector(this.a.getDim());
+		SparseVector rlt = new SparseVectorHashMap(this.a.getDim());
 		NodeList nodes = mesh.getNodeList();
 		for(int i=1;i<=nodes.size();i++) {
 			Node node = nodes.at(i);
@@ -177,7 +178,7 @@ public class LagrangianMethod {
 	}
 	
 	public void compute_Laplace_ln_u0(int s_i) {
-		Vector lnu0 = new SparseVector(u0.getDim());
+		Vector lnu0 = new SparseVectorHashMap(u0.getDim());
 		for(int i=1;i<=u0.getDim();i++) {
 			lnu0.set(i, Math.log(u0.get(i)));
 		}
@@ -213,15 +214,15 @@ public class LagrangianMethod {
 		Vector2Function fu0_y = new Vector2Function(u0_y);
 		
 		//-( a(x)-k^2 ) = k^2-a(x)
-		Vector v_c = FMath.axpy(-1.0, a, new SparseVector(a.getDim(),k*k));
+		Vector v_c = FMath.axpy(-1.0, a, new SparseVectorHashMap(a.getDim(),k*k));
 		plotVector(mesh, v_c, "param_c"+s_i+".dat");
 		Vector2Function param_c = new Vector2Function(v_c);
 		
 		//\nabla{lnu0}
 		//Function b1 = FOBasic.Divi(fu0_x,fu0);
 		//Function b2 = FOBasic.Divi(fu0_y,fu0);
-		Function b1 = new Vector2Function(lnu0_x);
-		Function b2 = new Vector2Function(lnu0_y);
+		MathFunc b1 = new Vector2Function(lnu0_x);
+		MathFunc b2 = new Vector2Function(lnu0_y);
 		plotFunction(mesh, b1, "b1_"+s_i+".dat");
 		plotFunction(mesh, b2, "b2_"+s_i+".dat");
 		
@@ -234,12 +235,12 @@ public class LagrangianMethod {
 				FC.c(2.0).M(b2));
 		
 		//q = d = 1 + \partial_{n}{lnu_0}
-		Function param_qd = FC.c(1.0).A(new DuDn(b1, b2, null));
+		MathFunc param_qd = FC.c(1.0).A(new DuDn(b1, b2, null));
 		weakForm.setRobin(FC.c(-1.0).M(param_qd),
 				FC.c(-1.0).M(param_qd));
 
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -255,7 +256,7 @@ public class LagrangianMethod {
 		plotVector(mesh, v, "Lagrangian_v"+s_i+".dat");
 		
 		//余量
-		Vector res = new SparseVector(v.getDim());
+		Vector res = new SparseVectorHashMap(v.getDim());
 		stiff.mult(v, res);
 		plotVector(mesh, res.axpy(-1.0, load), "Lagrangian_v_res"+s_i+".dat");
 		return v;
@@ -291,11 +292,11 @@ public class LagrangianMethod {
 		Vector2Function param_c = new Vector2Function(
 				FMath.axpy(-2.0, laplace_ln_u0,
 				FMath.ax(1.0,FMath.axpy(-1, a, 
-						new SparseVector(a.getDim(),k*k)))));
+						new SparseVectorHashMap(a.getDim(),k*k)))));
 		
 		//\nabla{lnu0}
-		Function b1 = fu0_x.D(fu0);
-		Function b2 = fu0_y.D(fu0);
+		MathFunc b1 = fu0_x.D(fu0);
+		MathFunc b2 = fu0_y.D(fu0);
 		WeakFormGCM weakForm = new WeakFormGCM();
 
 		//(v - g)_\partial{\Omega} 
@@ -319,7 +320,7 @@ public class LagrangianMethod {
 		}
 		System.out.println("v-g on border norm -------------> "+v_g2.norm2());
 		br.println("v-g on border norm = "+v_g2.norm2());
-		Function fv_g = new Vector2Function(v_g);
+		MathFunc fv_g = new Vector2Function(v_g);
 
 		weakForm.setF(FC.c(0.0));
 		//Test: v_g在整个区域上都已知
@@ -334,7 +335,7 @@ public class LagrangianMethod {
 		
 		
 		plotFunction(mesh, fv_g, "Lagrangian_v_g"+s_i+".dat");
-		Function param_d = FC.c(1.0).S(new DuDn(b1, b2, null));
+		MathFunc param_d = FC.c(1.0).S(new DuDn(b1, b2, null));
 		
 		//q=v-g_tidle, d=\partial_{n}{lnu_0}
 		//Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
@@ -345,7 +346,7 @@ public class LagrangianMethod {
 		//		FMath.Mult(FC.c(-1.0), param_d));
 		
 		mesh.clearBorderNodeMark();
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Robin, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -373,17 +374,17 @@ public class LagrangianMethod {
 	    writer.writeTechplot("./"+outputFolder+"/"+fileName, v);
 	}
 		
-	public static void plotFunction(Mesh mesh, Function fun, String fileName) {
+	public static void plotFunction(Mesh mesh, MathFunc fun, String fileName) {
 	    NodeList list = mesh.getNodeList();
 	    int nNode = list.size();
 		Variable var = new Variable();
-		Vector v = new SparseVector(nNode);
+		Vector v = new SparseVectorHashMap(nNode);
 	    for(int i=1;i<=nNode;i++) {
 	    	Node node = list.at(i);
 	    	var.setIndex(node.globalIndex);
 	    	var.set("x", node.coord(1));
 	    	var.set("y", node.coord(2));
-	    	v.set(i, fun.value(var));
+	    	v.set(i, fun.apply(var));
 	    }
 	    plotVector(mesh,v,fileName);
 	}
@@ -462,7 +463,7 @@ public class LagrangianMethod {
 				meshSmall, //mesh
 				s, //light sources
 				a_glob, //a_glob(x)
-				Math.sqrt(0.1/model.k.value(null)), //background of a(x)=k^2
+				Math.sqrt(0.1/model.k.apply(null)), //background of a(x)=k^2
 				uiSmall, //g(uiSmall or ui), g_tidle=g/u0
 				0.1 //theta
 				);

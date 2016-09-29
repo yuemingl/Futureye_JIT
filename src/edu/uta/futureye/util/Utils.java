@@ -1,15 +1,17 @@
 package edu.uta.futureye.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import edu.uta.futureye.algebra.SpaceVector;
-import edu.uta.futureye.algebra.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Element;
@@ -18,14 +20,14 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.geometry.Point;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.NodeList;
 import edu.uta.futureye.util.container.ObjIndex;
@@ -35,14 +37,60 @@ public class Utils {
 	
 	public static List<String> mergeList(List<String> a, List<String> b) {
 		Set<String> set = new LinkedHashSet<String>();
-		//TODO ??? 是否要做判断？
 		if(a != null)
 			set.addAll(a);
 		if(b != null)
 			set.addAll(b);
 		List<String> rlt = new LinkedList<String>();
 		rlt.addAll(set);
+		Collections.sort(rlt, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+			
+		});
 		return rlt;
+	}
+	
+	public static Map<String, Integer> getIndexMap(List<String> list) {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		for(int i=0; i<list.size(); i++) {
+			map.put(list.get(i), i);
+		}
+		return map;
+	}
+	
+	public static boolean isMapContain(Map<String, Integer> container, Map<String, Integer> target) {
+		if(target == null) return false;
+		if(container.size() < target.size()) return false;
+		for(Entry<String, Integer> e : target.entrySet()) {
+			if(container.get(e.getKey()) != e.getValue())
+				return false;
+		}
+		return true;
+	}
+	
+	public static boolean isListEqualIgnoreOrder(List<String> l1, List<String> l2) {
+		if(l1.size() != l2.size()) return false;
+		List<String> t1 = new ArrayList<String>();
+		t1.addAll(l1);
+		List<String> t2 = new ArrayList<String>();
+		t2.addAll(l2);
+		Collections.sort(t1, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		Collections.sort(t2, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		
+		return t1.equals(t2); //
 	}
 	
 	/**
@@ -165,15 +213,17 @@ public class Utils {
 //		double rlt = y1*sp1.value(var)+y2*sp2.value(var)+y3*sp3.value(var);
 		return rlt;
 	}	
+	
 	/**
 	 * Gauss smooth
+	 * 
 	 * @param mesh
 	 * @param u
-	 * @param neighborBand
-	 * @param weight
+	 * @param neighborBand 1: one neighbor; 2 layers of neighbor; 3...
+	 * @param weight weight*curNode + (1-weight)*neighborNode
 	 * @return
 	 */
-	public static Vector gaussSmooth(Mesh mesh, Vector u, int neighborBand, double weight) {
+	public static <Vec extends Vector> Vec gaussSmooth(Mesh mesh, Vec u, int neighborBand, double weight) {
 		NodeList list = mesh.getNodeList();
 		int nNode = list.size();
 		if(nNode != u.getDim()) {
@@ -181,7 +231,9 @@ public class Utils {
 					"nNode="+nNode+"  dim(u)="+u.getDim());
 		}
 		
-	    Vector su = new SparseVector(nNode);
+	    @SuppressWarnings("unchecked")
+		Vec su = (Vec)u.copy();
+	    su.setAll(0.0);
 	    
 	    if(neighborBand == 1) {
 		    for(int i=1;i<=nNode;i++) {
@@ -197,7 +249,7 @@ public class Utils {
 		    		}
 		    	}
 		    	nbList.addAll(node.neighbors);
-		    	if(nbList.size() == 0) {
+		    	if(nbList==null || nbList.size() == 0) {
 					throw new FutureyeException("No beighbors of Node "+node.globalIndex+
 							", call mesh.computeNeiborNode() first!");
 		    	}
@@ -217,7 +269,7 @@ public class Utils {
 		    	map.put(node, 0);
 
 		    	NodeList nbList = node.neighbors;
-		    	if(nbList.size() == 0) {
+		    	if(nbList==null || nbList.size() == 0) {
 					throw new FutureyeException("No beighbors of Node "+node.globalIndex+
 							", call mesh.computeNeiborNode() first!");
 		    	}
@@ -269,7 +321,9 @@ public class Utils {
 					"nNode="+nNode+"  dim(u)="+u.getDim());
 		}
 		
-	    Vector su = new SparseVector(nNode);
+	    Vector su = u.copy();
+	    su.setAll(0.0);
+	    
 	    for(int i=1;i<=nNode;i++) {
 	    	NodeList nbList = new NodeList();
 	    	Node node = list.at(i);
@@ -299,17 +353,18 @@ public class Utils {
 	    return su;
 	}
 	
-	public static VectorFunction interpolateFunctionOnElement(VectorFunction fun, Element e) {
+	public static VectorFunction interpolateOnElement(VectorFunction fun, Element e) {
 		SpaceVectorFunction rlt = new SpaceVectorFunction(fun.getDim());
 		for(int i=1;i<=fun.getDim();i++) {
-			rlt.set(i, interpolateFunctionOnElement(fun.get(i),e));
+			rlt.set(i, interpolateOnElement(fun.get(i),e));
 		}
 		return rlt;
 	}
-	public static Function interpolateFunctionOnElement(Function fun, Element e) {
-		if(fun instanceof FC)
+	public static MathFunc interpolateOnElement(MathFunc fun, Element e) {
+		if(fun == null) throw new FutureyeException("fun should not be null");
+		if(fun.isConstant())
 			return fun;
-		Function rlt = new FC(0.0);
+		MathFunc rlt = new FC(0.0);
 //		int nNode = e.nodes.size();
 //		for(int i=1;i<=nNode;i++) {
 //			DOFList dofListI = e.getNodeDOFList(i);
@@ -320,7 +375,7 @@ public class Utils {
 //				rlt = FOBasic.Plus(rlt, FOBasic.Mult(PValue, dofI.getSSF()));
 //			}
 //		}
-		if(e.eleDim() == 1) {
+		if(e.dim() == 1) {
 			CoordinateTransform trans = new CoordinateTransform(1);
 			Map<Vertex,ScalarShapeFunction> transSF = trans.getTransformLinear1DShapeFunction(e);
 			for(Entry<Vertex,ScalarShapeFunction> entry : transSF.entrySet()) {
@@ -334,11 +389,11 @@ public class Utils {
 					index = DOFs.at(1).getGlobalIndex();
 				Variable var = Variable.createFrom(fun, p, index);
 				var.setElement(e);
-				Function PValue = new FC(fun.value(var));
+				MathFunc PValue = new FC(fun.apply(var));
 				rlt = rlt.A(PValue.M(sf));			
 			}
 			
-		} else if(e.eleDim() == 2) {
+		} else if(e.dim() == 2) {
 			CoordinateTransform trans = new CoordinateTransform(2);
 			Map<Vertex,ScalarShapeFunction> transSF = trans.getTransformLinear2DShapeFunction(e);
 			for(Entry<Vertex,ScalarShapeFunction> entry : transSF.entrySet()) {
@@ -352,10 +407,10 @@ public class Utils {
 					index = DOFs.at(1).getGlobalIndex();
 				Variable var = Variable.createFrom(fun, p, index);
 				var.setElement(e);
-				Function PValue = new FC(fun.value(var));
+				MathFunc PValue = new FC(fun.apply(var));
 				rlt = rlt.A(PValue.M(sf));	
 			}
-		} else if(e.eleDim()==3) {
+		} else if(e.dim()==3) {
 			//TODO 有没有更简洁的办法？
 			CoordinateTransform trans = new CoordinateTransform(3);
 			Map<Vertex,ScalarShapeFunction> transSF = trans.getTransformLinear3DShapeFunction(e);
@@ -370,7 +425,7 @@ public class Utils {
 					index = DOFs.at(1).getGlobalIndex();
 				Variable var = Variable.createFrom(fun, p, index);
 				var.setElement(e);
-				Function PValue = new FC(fun.value(var));
+				MathFunc PValue = new FC(fun.apply(var));
 				rlt = rlt.A(PValue.M(sf));			
 			}
 		}
@@ -378,16 +433,16 @@ public class Utils {
 	}
 	
 	//只是用于三角形线性元
-	public static Map<String, Function> getFunctionComposeMap(Element e) {
+	public static Map<String, MathFunc> getFunctionComposeMap(Element e) {
 		final Element fe =e;
-		Map<String, Function> fInners = new HashMap<String, Function>();
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		final List<String> varNamesInner = new LinkedList<String>();
 		varNamesInner.add("r");
 		varNamesInner.add("s");
 		varNamesInner.add("t");
-		fInners.put("x", new AbstractFunction(varNamesInner) {	
+		fInners.put("x", new AbstractMathFunc(varNamesInner) {	
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				double rlt = 0.0;
 				for(int i=1;i<=fe.nodes.size();i++)
 					rlt += fe.nodes.at(i).coord(1)*v.get(varNamesInner.get(i-1));
@@ -395,9 +450,9 @@ public class Utils {
 				
 			}
 		});
-		fInners.put("y", new AbstractFunction(varNamesInner) {	
+		fInners.put("y", new AbstractMathFunc(varNamesInner) {	
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				double rlt = 0.0;
 				for(int i=1;i<=fe.nodes.size();i++)
 					rlt += fe.nodes.at(i).coord(2)*v.get(varNamesInner.get(i-1));
@@ -515,18 +570,35 @@ public class Utils {
 	}
 	
 	/**
-	 * 计算二维三角形面积
+	 * 计算三角形面积（二维点或者三维点）
 	 * @param vertices
 	 * @return
 	 */
 	public static double getTriangleArea(ObjList<Vertex> vertices) {
 		double area = 0.0;
-		if(vertices.size() == 3) {
+		if(vertices.size() == 3 && vertices.at(1).dim() == 2) {
 			double x1 = vertices.at(1).coord(1) , y1 =  vertices.at(1).coord(2) ;
 			double x2 = vertices.at(2).coord(1) , y2 =  vertices.at(2).coord(2) ;
 			double x3 = vertices.at(3).coord(1) , y3 =  vertices.at(3).coord(2) ;
 			area = ( (x2*y3 - x3*y2) - (x1*y3 - x3*y1) + (x1*y2 - x2*y1) ) / 2.0;
+		} else if(vertices.size() == 3 && vertices.at(1).dim() == 3) {
+			double x1 = vertices.at(1).coord(1) , y1 =  vertices.at(1).coord(2) , z1 =  vertices.at(1).coord(3) ;
+			double x2 = vertices.at(2).coord(1) , y2 =  vertices.at(2).coord(2) , z2 =  vertices.at(2).coord(3) ;
+			double x3 = vertices.at(3).coord(1) , y3 =  vertices.at(3).coord(2) , z3 =  vertices.at(3).coord(3) ;
+			SpaceVector v1 = new SpaceVector(3);
+			v1.set(1, x2-x1);
+			v1.set(2, y2-y1);
+			v1.set(3, z2-z1);
+			SpaceVector v2 = new SpaceVector(3);
+			v2.set(1, x3-x1);
+			v2.set(2, y3-y1);
+			v2.set(3, z3-z1);
+			area = v1.crossProduct(v2).norm2() / 2.0;
+			if(Math.abs(area)<Constant.eps) throw new FutureyeException();
+		} else {
+			throw new FutureyeException();
 		}
+		if(Math.abs(area)<Constant.eps) throw new FutureyeException();
 		return area;
 	}
 	
@@ -595,7 +667,7 @@ public class Utils {
 		double angle1 = Math.PI-computeAngle(v1,v2);
 		double angle2 = Math.PI-computeAngle(v2,v3);
 		double angle3 = Math.PI-computeAngle(v3,v1);
-
+//Ouput Matlab code to visualize parameters
 //		System.out.print("plot3(");
 //		System.out.print("["+o.coord(1)+" "+a.coord(1)+" "+b.coord(1)+" "+c.coord(1)+" "+a.coord(1)+"],");
 //		System.out.print("["+o.coord(2)+" "+a.coord(2)+" "+b.coord(2)+" "+c.coord(2)+" "+a.coord(2)+"],");
@@ -607,9 +679,9 @@ public class Utils {
 //		System.out.print("["+b.coord(3)+" "+o.coord(3)+" "+c.coord(3)+"])");
 //		System.out.println("\nhold on\n");
 		
-		double angle = (angle1 + angle2 + angle3 - Math.PI)*r*r;
+		double area = (angle1 + angle2 + angle3 - Math.PI)*r*r;
 
-		return angle;
+		return area;
 	}
 	
 
@@ -661,7 +733,7 @@ public class Utils {
 	 * @return [a1 a2 a3 a4]
 	 */
 	public static double[] computeBilinearFunctionCoef(
-				Point[] p, double[] ff) {
+				Point[] p, double[] fValues) {
 		int len = p.length;
 		if(len != 4) {
 			throw new FutureyeException("p.size()="+len+", should be 4.");
@@ -679,7 +751,7 @@ public class Utils {
 			y[i] = p[i-1].coord(2);
 			xx[i] = p[i-1].coord(1);
 			yy[i] = p[i-1].coord(2);
-			f[i] = ff[i-1];
+			f[i] = fValues[i-1];
 		}
 
 		int r = -1;
@@ -697,8 +769,8 @@ public class Utils {
 			x[r] = xx[2];
 			y[2] = yy[r];
 			y[r] = yy[2];
-			f[2] = ff[r-1];
-			f[r] = ff[1];
+			f[2] = fValues[r-1];
+			f[r] = fValues[1];
 		}
 		
 		
@@ -739,4 +811,93 @@ public class Utils {
 		return a;
 	}
 	
+	public static double determinant(double[][] A) {
+		if(A.length == 2) {
+			return A[0][0]*A[1][1] - A[0][1]*A[1][0];
+		} else if(A.length == 3) {
+			return    A[0][0]*(A[1][1]*A[2][2] - A[1][2]*A[2][1]) 
+					- A[0][1]*(A[1][0]*A[2][2] - A[1][2]*A[2][0]) 
+					+ A[0][2]*(A[0][0]*A[1][1] - A[0][1]*A[0][1]);
+		}
+		throw new FutureyeException("NOT Supported!");
+	}
+
+	/**
+	 * 
+	 * @param A A[2][2][len] or A[3][3][len]
+	 * @return
+	 */
+	public static double[] determinant(double[][][] A) {
+		int len = A[0][0].length;
+		double[] rlt = new double[len];
+		if(A.length == 2) {
+			for(int i=0;i<len;i++) {
+					rlt[i] = A[0][0][i]*A[1][1][i] - A[0][1][i]*A[1][0][i];
+			}
+		} else if(A.length == 3) {
+			for(int i=0;i<len;i++) {
+				rlt[i] = A[0][0][i]*(A[1][1][i]*A[2][2][i] - A[1][2][i]*A[2][1][i]) 
+						- A[0][1][i]*(A[1][0][i]*A[2][2][i] - A[1][2][i]*A[2][0][i]) 
+						+ A[0][2][i]*(A[0][0][i]*A[1][1][i] - A[0][1][i]*A[0][1][i]);
+			}
+		} else 
+			throw new FutureyeException("NOT Supported!");
+		return rlt;
+	}
+	
+	/**
+	 * 
+	 * @param A A[2][3][len]
+	 * @return
+	 */
+	public static double[] determinant23(double[][][] A) {
+		int len = A[0][0].length;
+		double[] rlt = new double[len];
+		for(int i=0;i<len;i++) {
+			double f0 = A[0][0][i];
+			double f1 = A[0][1][i];
+			double f2 = A[0][2][i];
+			double f3 = A[1][0][i];
+			double f4 = A[1][1][i];
+			double f5 = A[1][2][i];
+			rlt[i] = Math.sqrt( (f1*f5-f4*f2)*(f1*f5-f4*f2) + (f0*f5-f3*f2)*(f0*f5-f3*f2) + (f0*f4-f3*f1)*(f0*f4-f3*f1) );
+		}
+		return rlt;
+	}
+	
+	/**
+	 * Golden Section Search for minimum value of f on interval [a,b] with accuracy eps
+	 * 
+	 * @param a
+	 * @param b
+	 * @param eps
+	 * @param f
+	 * @param debug
+	 * @return
+	 */
+	public static double GoldenSectionSearch(double a, double b, double eps, MathFunc f, boolean debug) {
+		if(debug) System.out.println("Golden Section Search "+f+" :");
+		double r = (Math.sqrt(5)-1.0)/2.0; //0.618...
+		double x = a + r*(b-a);
+		double y = a + r*r*(b-a);
+		double u = f.apply(new Variable(x));
+		double v = f.apply(new Variable(y));
+		while(b-a > eps) {
+			if(debug) System.out.println(String.format("GSS Interval [%1.3f, %1.3f]: %s=%1.5f", a,b,f,u));
+			if(u > v) {
+				b = x;
+				x = y;
+				u = v;
+				y = a + r*r*(b-a);
+				v = f.apply(new Variable(y));
+			} else {
+				a = y;
+				y = x;
+				v = u;
+				x = a + r*(b-a);
+				u = f.apply(new Variable(x));
+			}
+		}
+		return x;
+	}
 }

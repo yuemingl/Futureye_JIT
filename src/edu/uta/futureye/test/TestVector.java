@@ -2,13 +2,14 @@ package edu.uta.futureye.test;
 
 import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.SparseBlockVector;
-import edu.uta.futureye.algebra.SparseVector;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
+import edu.uta.futureye.algebra.intf.SparseVector;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.VarPair;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 
 public class TestVector {
 
@@ -27,15 +28,15 @@ public class TestVector {
 		a3.crossProduct(b3).print();
 		
 		//Sparse Vector
-		SparseVector sv = new SparseVector(10,1);
+		SparseVector sv = new SparseVectorHashMap(10,1);
 		sv.set(3, 100);
 		sv.add(2, 10);
 		sv.print();
 		
 		//Space Vector Function
-		Function f1 = new FAxpb("x",1.0,1.0);
-		Function f2 = new FAxpb("y",2.0,2.0);
-		Function f3 = new FAxpb("z",3.0,3.0);
+		MathFunc f1 = new FAxpb("x",1.0,1.0);
+		MathFunc f2 = new FAxpb("y",2.0,2.0);
+		MathFunc f3 = new FAxpb("z",3.0,3.0);
 		
 		SpaceVectorFunction svf = new SpaceVectorFunction(f1,f2,f3);
 		System.out.println("svf(x,y,z)="+svf);
@@ -44,9 +45,9 @@ public class TestVector {
 				);
 		
 		System.out.println(svf.dot(new SpaceVector(1,2,3)));
-		Function dot2 = svf.dot(svf);
+		MathFunc dot2 = svf.dot(svf);
 		System.out.println(dot2);
-		System.out.println(dot2.value(
+		System.out.println(dot2.apply(
 				new Variable(
 						new VarPair("x",1),
 						new VarPair("y",1),
@@ -59,16 +60,16 @@ public class TestVector {
 		
 		//SparseBlockVector 
 		SparseBlockVector sbv = new SparseBlockVector(2);
-		SparseVector v1 = new SparseVector(1.0,2.0,3.0);
-		SparseVector v2 = new SparseVector(4.0,5.0);
+		SparseVector v1 = new SparseVectorHashMap(1.0,2.0,3.0);
+		SparseVector v2 = new SparseVectorHashMap(4.0,5.0);
 		//new SparseVector(4,5);  dim=5, default=5.0
 		sbv.setBlock(1, v1);
 		sbv.setBlock(2, v2);
 		sbv.print();
 		
 		SparseBlockVector sbv2 = new SparseBlockVector(2);
-		SparseVector v3 = new SparseVector(10.0,20.0,30.0);
-		SparseVector v4 = new SparseVector(40.0,50.0);
+		SparseVector v3 = new SparseVectorHashMap(10.0,20.0,30.0);
+		SparseVector v4 = new SparseVectorHashMap(40.0,50.0);
 		sbv2.setBlock(1, v3);
 		sbv2.setBlock(2, v4);
 		sbv2.print();

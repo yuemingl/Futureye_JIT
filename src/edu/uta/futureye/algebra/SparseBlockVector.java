@@ -1,18 +1,31 @@
 package edu.uta.futureye.algebra;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import edu.uta.futureye.algebra.SparseVectorHashMap.SVEntry;
 import edu.uta.futureye.algebra.intf.BlockVector;
+import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.intf.VectorEntry;
+import edu.uta.futureye.io.MatlabMatFileWriter;
 import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.Sequence;
 
-public class SparseBlockVector implements BlockVector {
+/**
+ * Block vector
+ * 
+ * @author liuyueming
+ *
+ */
+public class SparseBlockVector implements BlockVector<SparseVector>, SparseVector {
 	protected int blockDim = 0;
 	protected double defaultValue = 0.0;
-	protected Map<Integer,Vector> data = 
-		new HashMap<Integer,Vector>();
+	protected Map<Integer,SparseVector> data = 
+		new HashMap<Integer,SparseVector>();
+	protected String name = this.getClass().getSimpleName()+Sequence.getInstance().nextSeq();
 	
 	public SparseBlockVector(int blockDim) {
 		this.blockDim = blockDim;
@@ -31,7 +44,7 @@ public class SparseBlockVector implements BlockVector {
 	@Override
 	public int getDim() {
 		int rlt = 0;
-		for(Entry<Integer,Vector> entry : data.entrySet()) 
+		for(Entry<Integer,SparseVector> entry : data.entrySet()) 
 			rlt += entry.getValue().getDim();
 		return rlt;
 	}
@@ -53,7 +66,7 @@ public class SparseBlockVector implements BlockVector {
 	}
 	
 	@Override
-	public Vector set(Vector v) {
+	public SparseBlockVector set(Vector v) {
 		if(v instanceof SparseBlockVector) {
 			for(int bi=1;bi<=this.blockDim;bi++) {
 				this.data.get(bi).set(((SparseBlockVector)v).getBlock(bi));
@@ -67,7 +80,7 @@ public class SparseBlockVector implements BlockVector {
 	}
 	
 	@Override
-	public Vector add(double a, Vector v) {
+	public SparseBlockVector add(double a, Vector v) {
 		if(v instanceof SparseBlockVector) {
 			for(int bi=1;bi<=this.blockDim;bi++) {
 				this.data.get(bi).add(a,((SparseBlockVector)v).getBlock(bi));
@@ -102,12 +115,13 @@ public class SparseBlockVector implements BlockVector {
 	}
 	
 	@Override
-	public Vector copy() {
+	public SparseVector copy() {
 		SparseBlockVector r = new SparseBlockVector(
 				this.blockDim,this.defaultValue);
-		for(Entry<Integer, Vector> e : data.entrySet()) {
+		for(Entry<Integer, SparseVector> e : data.entrySet()) {
 			r.setBlock(e.getKey(), e.getValue().copy());
 		}
+		
 		return r;
 	}
 	
@@ -150,17 +164,23 @@ public class SparseBlockVector implements BlockVector {
 	}
 
 	@Override
-	public Map<Integer, Vector> getAllBlock() {
+	public Map<Integer, SparseVector> getAllBlock() {
 		return this.data;
 	}
 
 	@Override
-	public Vector getBlock(int index) {
+	public SparseVector getBlock(int index) {
+		if(index > this.blockDim) 
+			throw new FutureyeException(
+					"index(="+index+") should <= blockDim(="+this.blockDim+")");
 		return data.get(index);
 	}
 
 	@Override
-	public void setBlock(int index, Vector v) {
+	public void setBlock(int index, SparseVector v) {
+		if(index > this.blockDim) 
+			throw new FutureyeException(
+					"index(="+index+") should <= blockDim(="+this.blockDim+")");
 		data.put(index, v);
 	}
 
@@ -173,9 +193,27 @@ public class SparseBlockVector implements BlockVector {
 	}
 
 	@Override
-	public void clear() {
-		throw new UnsupportedOperationException();
-	}	
+	public void clearData() {
+		for(Entry<Integer, SparseVector> e : this.data.entrySet()) {
+			e.getValue().clearData();
+		}
+	}
+	
+	@Override
+	public void clearAll() {
+		for(Entry<Integer, SparseVector> e : this.data.entrySet()) {
+			e.getValue().clearAll();
+		}
+		this.data.clear();
+		this.blockDim = 0;
+	}
+	
+	@Override
+	public void setAll(double value) {
+		for(Entry<Integer, SparseVector> e : this.data.entrySet()) {
+			e.getValue().setAll(value);
+		}
+	}
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -193,22 +231,22 @@ public class SparseBlockVector implements BlockVector {
 	}
 
 	@Override
-	public Vector add(Vector v) {
+	public SparseBlockVector add(Vector v) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Vector axpy(double a, Vector y) {
+	public SparseBlockVector axpy(double a, Vector y) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Vector scale(double a) {
+	public SparseBlockVector scale(double a) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Vector ax(double a) {
+	public SparseBlockVector ax(double a) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -218,22 +256,166 @@ public class SparseBlockVector implements BlockVector {
 	}
 
 	@Override
-	public Vector set(double a, Vector v) {
+	public SparseBlockVector set(double a, Vector v) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Vector shift(double dv) {
+	public SparseBlockVector shift(double dv) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Vector axDivy(double a, Vector y) {
+	public SparseBlockVector axDivy(double a, Vector y) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Vector axMuly(double a, Vector y) {
+	public SparseBlockVector axMuly(double a, Vector y) {
 		throw new UnsupportedOperationException();
 	}
+	
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public SparseBlockVector setName(String name) {
+		this.name = name;
+		return this; 
+	}
+
+	@Override
+	public int getNonZeroNumber() {
+		int n=0;
+		for(Entry<Integer,SparseVector> e : this.data.entrySet()) {
+			n+=e.getValue().getNonZeroNumber();
+		}
+		return n;
+	}
+
+	@Override
+	public Map<Integer, Double> getAll() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public SparseVector setAll(int nBase, Map<Integer, Double> dataMap) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void writeMatFile(String fileName) {
+		MatlabMatFileWriter w = new MatlabMatFileWriter();
+		w.addSparseVector(this);
+		w.writeFile(fileName);
+	}
+
+	@Override
+	public void writeSimpleFile(String fileName) {
+		throw new UnsupportedOperationException();
+	}
+	
+	
+	@Override
+	public Iterator<VectorEntry> iterator() {
+		return new SVIterator(this.data.entrySet().iterator());
+	}
+	
+    /**
+     * Iterator over this sparse vector.
+     */
+    class SVIterator implements Iterator<VectorEntry> {
+        /**
+         * Vector cursor
+         */
+    	Iterator<VectorEntry> iter = null;
+    	Iterator<Entry<Integer,SparseVector>> iterVector;
+    	int nIndexBase = 0;
+    	int nNextIndexBase = 0;
+    	
+        /**
+         * Vector entry
+         */
+        final SVEntry entry = new SVEntry();
+        
+    	SVIterator(Iterator<Entry<Integer,SparseVector>> iter) {
+    		this.iterVector = iter;
+    		while(this.iterVector.hasNext()) {
+    			Entry<Integer, SparseVector> v = this.iterVector.next();
+    			nNextIndexBase = v.getValue().getDim();
+    			this.iter = v.getValue().iterator();
+    			if(this.iter.hasNext())
+    				return;
+    			nIndexBase += nNextIndexBase;
+    		}
+    	}
+    	
+        public boolean hasNext() {
+        	if(iter !=null && iter.hasNext())
+        		return true;
+        	else {
+        		while(this.iterVector.hasNext()) {
+        			nIndexBase += nNextIndexBase;
+        			Entry<Integer, SparseVector> v = this.iterVector.next();
+        			nNextIndexBase = v.getValue().getDim();
+        			this.iter = v.getValue().iterator();
+        			if(this.iter.hasNext())
+        				return true;
+        		}
+        	}
+        	return false;
+        }
+
+        public VectorEntry next() {
+        	entry.upate(nIndexBase, iter.next());
+            return entry;
+        }
+
+        public void remove() {
+        	iter.remove();
+        }
+
+    }
+    
+    /**
+     * Vector entry backed by the vector.
+     */
+    class SVEntry implements VectorEntry {
+
+    	private int nIndexBase;
+    	private VectorEntry e;
+
+		@Override
+		public double getValue() {
+			return e.getValue();
+		}
+
+		@Override
+		public void setValue(double value) {
+			e.setValue(value);
+		}
+
+		@Override
+		public int getIndex() {
+			return nIndexBase + e.getIndex();
+		}
+		
+		private void upate(int nIndexBase, VectorEntry e) {
+			this.nIndexBase = nIndexBase;
+			this.e = e;
+		}
+    }
+
+	@Override
+	public double apply(int index) {
+		return this.get(index);
+	}
+
+	@Override
+	public void update(int index, double value) {
+		this.set(index,value);
+	}  
 }

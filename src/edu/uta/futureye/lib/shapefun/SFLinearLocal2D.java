@@ -1,34 +1,42 @@
 package edu.uta.futureye.lib.shapefun;
 
+import static edu.uta.futureye.function.FMath.C0;
+import static edu.uta.futureye.function.FMath.C1;
+import static edu.uta.futureye.function.FMath.Cm1;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
 /**
- * 三角形局部坐标，线性型函数
- *   Ni = N(r,s,t) = N( r(x,y), s(x,y), t(x,y) ), i=1,2,3
+ * Linear shape function in triangle local coordinate system (area coordinate system)
+ * 
+ * Ni = Ni(r,s,t) = Ni( r(x,y), s(x,y), t(x,y) ), i=1,2,3
+ * 
+ * where
  *     N1 = r
  *     N2 = s
  *     N3 = t
- * where 
+ * and 
  *   r + s + t = 1
- * @author liuyueming
  *
  */
-public class SFLinearLocal2D  extends AbstractFunction 
+public class SFLinearLocal2D  extends AbstractMathFunc 
 							  implements ScalarShapeFunction {
 	protected int funIndex;
-	private Function funOuter = null;
-	private Function funCompose = null;
+	private MathFunc funOuter = null;
+	private MathFunc funCompose = null;
 	protected ObjList<String> innerVarNames = null;
 	
 	protected Element e = null;
@@ -39,32 +47,41 @@ public class SFLinearLocal2D  extends AbstractFunction
 	
 	private double coef = 1.0;
 	
-	class SF123 extends AbstractFunction {
+	//r, s, t
+	class SF123 extends AbstractMathFunc {
 		public SF123() {
 			super(SFLinearLocal2D.this.varNames);
+			this.setArgIdx(Utils.getIndexMap(this.getVarNames()));
 		}
 		@Override
-		public Function _d(String var) {
-			if(varNames.get(funIndex).equals(var)) { 
-				//d(N1)/dr = 1.0
-				//d(N2)/ds = 1.0
-				//d(N3)/dt = 1.0
-				return new FC(1.0);
+		public MathFunc diff(String var) {
+			if(varNames[funIndex].equals(var)) { 
+				//d(N1)/dr = 1.0;  d(N2)/ds = 1.0;  d(N3)/dt = 1.0
+				return C1;
 			} else if(funIndex == 2){ 
-				//N3 = r = 1 - s - t, not free variable
-				//d(N3)/ds = -1.0
-				//d(N3)/dt = -1.0
-				return new FC(-1.0);
+				//N3 = t = 1 - r - s, t is not free variable
+				//d(N3)/dr = -1.0;  d(N3)/ds = -1.0
+				return Cm1;
 			} else {
-				return new FC(0.0);
+				return C0;
 			}
 		}
 		@Override
-		public double value(Variable v) {
-			return v.get(varNames.get(funIndex));
+		public double apply(Variable v) {
+			return v.get(varNames[funIndex]);
 		}
+		
+		public String getExpr() {
+			return varNames[funIndex];
+		}
+		
 		public String toString() {
-			return varNames.get(funIndex);
+			return varNames[funIndex];
+		}
+		
+		@Override
+		public double apply(double... args) {
+			return args[argIdx[funIndex]];
 		}
  	}
 	
@@ -82,17 +99,14 @@ public class SFLinearLocal2D  extends AbstractFunction
 			throw new FutureyeException("ERROR: funID should be 1,2 or 3.");
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
-		varNames.add("t");
+		this.varNames = new String[]{"r","s","t"};
 		innerVarNames = new ObjList<String>("x","y");
 		
-		//复合函数
-		Map<String, Function> fInners = new HashMap<String, Function>();
-		
-		final String varName = varNames.get(funIndex);
-		fInners.put(varName, new AbstractFunction(innerVarNames.toList()) {	
-			public Function _d(String var) {
+		//Compose function: r = r(x,y), s = s(x,y), t = t(x,y)
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
+		final String varName = varNames[funIndex];
+		fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {	
+			public MathFunc diff(String var) {
 				if(area < 0.0) {
 					throw new FutureyeException("Check nodes order: area < 0.0");
 				} else {
@@ -115,6 +129,11 @@ public class SFLinearLocal2D  extends AbstractFunction
 				}
 				return null;
 			}
+			
+			@Override
+			public double apply(double... args) {
+				throw new UnsupportedOperationException();
+			}
 		});
 		
 		//使用复合函数构造形函数
@@ -122,7 +141,8 @@ public class SFLinearLocal2D  extends AbstractFunction
 		this.coef = coef;
 		funCompose = FC.c(this.coef).M(
 				funOuter.compose(fInners)
-				); 
+				);
+		funCompose.setActiveVarNames(funOuter.getVarNames());
 	}
 	
 	public SFLinearLocal2D(int funID) {
@@ -134,17 +154,22 @@ public class SFLinearLocal2D  extends AbstractFunction
 	}
 	
 	@Override
-	public Function _d(String varName) {
-		return funCompose._d(varName);
+	public MathFunc diff(String varName) {
+		return funCompose.diff(varName);
 	}
 
 	@Override
-	public double value(Variable v) {
-		return funCompose.value(v);
+	public double apply(Variable v) {
+		return funCompose.apply(v);
+	}
+	
+	@Override
+	public double[] applyAll(VariableArray v, Map<Object,Object> cache) {
+		return funCompose.applyAll(v,cache);
 	}
 
 	@Override
-	public void asignElement(Element e) {
+	public void assignElement(Element e) {
 		this.e = e;
 		//由node改为vertex，因为Element.adjustVerticeToCounterClockwise()结点顺序只调整了vertex
 		VertexList vList = e.vertices();
@@ -164,9 +189,12 @@ public class SFLinearLocal2D  extends AbstractFunction
 		c[2] = x2 - x1;
 	}
 
+	public String getExpr() {
+		return "N"+(funIndex+1)+"(r,s,t)";
+	}
+	
 	public String toString() {
-		String varName = varNames.get(funIndex);
-		return "N"+(funIndex+1)+"( "+varName+"(x,y) )="+funOuter.toString();
+		return "N"+(funIndex+1)+"(r,s,t) = "+funOuter.getExpr();
 	}
 	
 	ScalarShapeFunction sf1d1 = new SFLinearLocal1D(1);
@@ -180,6 +208,11 @@ public class SFLinearLocal2D  extends AbstractFunction
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+	
+	@Override
+	public double apply(double... args) {
+		return this.funCompose.apply(args);
 	}
 	
 }

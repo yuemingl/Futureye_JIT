@@ -2,12 +2,12 @@ package edu.uta.futureye.test;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.SchurComplementSolver;
-import edu.uta.futureye.algebra.SparseVector;
-import edu.uta.futureye.algebra.intf.BlockMatrix;
-import edu.uta.futureye.algebra.intf.BlockVector;
-import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.SparseBlockMatrix;
+import edu.uta.futureye.algebra.SparseBlockVector;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
+import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.SchurComplementMixSolver;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
@@ -15,7 +15,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerMixedLaplace;
@@ -56,7 +56,7 @@ public class MixedLaplaceTest {
 //	    }
 		
 		
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
@@ -91,8 +91,8 @@ public class MixedLaplaceTest {
 		
 		//-\Delta{u} = f
 		//u(x,y)=0, (x,y)\in\partial{\Omega}
-		Function fxm5 = new FAxpb("x",1.0,-5.0);
-		Function fym5 = new FAxpb("y",1.0,-5.0);
+		MathFunc fxm5 = new FAxpb("x",1.0,-5.0);
+		MathFunc fym5 = new FAxpb("y",1.0,-5.0);
 		weakForm.setF(
 				//new FConstant(1.0)
 	
@@ -110,14 +110,14 @@ public class MixedLaplaceTest {
 				//u=(x^2-9)*(y^2-9)
 				//f=-2*(x^2+y^2)+36
 				FC.c(-2.0).M(
-						FX.fx.M(FX.fx).A(FX.fy.M(FX.fy))
+						FX.x.M(FX.x).A(FX.y.M(FX.y))
 					).A(FC.c(36.0))
 					
 				);
 		weakForm.setParam(
 					null,
 					null,
-					FC.c(6.0).M(FX.fy.M(FX.fy)).S(FC.c(54.0)),
+					FC.c(6.0).M(FX.y.M(FX.y)).S(FC.c(54.0)),
 					null //Robin: 6*y^2-54
 				);
 		
@@ -125,27 +125,25 @@ public class MixedLaplaceTest {
 		System.out.println("Begin Assemble...");
 		long begin = System.currentTimeMillis();
 		assembler.assemble();
-		Matrix stiff = assembler.getStiffnessMatrix();
-		Vector load = assembler.getLoadVector();
+		SparseBlockMatrix stiff = assembler.getStiffnessMatrix();
+		SparseBlockVector load = assembler.getLoadVector();
 		//assembler.imposeDirichletCondition(new FC(0.0));
 		long end = System.currentTimeMillis();
 		System.out.println("Assemble done!");
 		System.out.println("Time used:"+(end-begin));
 		
-		SchurComplementSolver solver = new SchurComplementSolver(
-				(BlockMatrix)stiff, 
-				(BlockVector)load);
+		SchurComplementMixSolver solver = new SchurComplementMixSolver(stiff, load);
 		//stiff.print();
 		//load.print();
-		Vector u = solver.solve();
+		SparseBlockVector u = solver.solve();
 	    System.out.println("u=");
 	    for(int i=1;i<=u.getDim();i++)
 	        System.out.println(String.format("%.4f", u.get(i)));
 	    
 	    //u=(Flux Disp)
-	    Vector disp = ((BlockVector)u).getBlock(2);
+	    SparseVector disp = u.getBlock(2);
 	    eList = mesh.getElementList();
-	    Vector out_disp = new SparseVector(mesh.getNodeList().size());
+	    Vector out_disp = new SparseVectorHashMap(mesh.getNodeList().size());
 	    for(int i=1;i<=eList.size();i++) {
 	    	NodeList nList = eList.at(i).nodes;
 	    	for(int j=1;j<=nList.size();j++) {

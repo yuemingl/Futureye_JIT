@@ -14,7 +14,7 @@ public interface ShapeFunction {
 	 * 关联形函数和单元
 	 * @param e
 	 */
-	void asignElement(Element e);
+	void assignElement(Element e);
 	
 	/**
 	 * 将形函数限制为低一维的形函数

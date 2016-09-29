@@ -31,6 +31,6 @@ public class GeoEntity0D implements GeoEntity {
 	}
 	
 	public String toString() {
-		return this.vertices.toString();
+		return "GeoEntity0D:"+this.vertices.toString();
 	}
 }

@@ -3,6 +3,7 @@ package edu.uta.futureye.algebra.intf;
 import java.util.Map;
 
 /**
+ * <blockquote><pre>
  * General block vector interface
  * 
  * e.g. A=(1 2 3)',B=(4 5)'
@@ -11,17 +12,18 @@ import java.util.Map;
  * 
  * V as a general vector,
  * V.get(4) == B(1)
+ * </blockquote></pre>
  * 
  * @author liuyueming
  *
  */
-public interface BlockVector extends Vector{
+public interface BlockVector<TVector extends Vector> extends Vector{
 	
 	public int getBlockDim();
 	
-	public Vector getBlock(int index);
-	public void setBlock(int index,Vector v);
+	public TVector getBlock(int index);
+	public void setBlock(int index,TVector v);
 	
-	public Map<Integer,Vector> getAllBlock();
+	public Map<Integer,TVector> getAllBlock();
 
 }

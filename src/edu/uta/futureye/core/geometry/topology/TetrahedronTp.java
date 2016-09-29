@@ -25,4 +25,12 @@ public class TetrahedronTp implements Topology3D {
 		return faces;
 	}
 	
+	@Override
+	public boolean edgeOnface(int[] face,int[] edge) {
+		for(int i=0;i<face.length;i++) {
+			if(edge[0] == face[i] && edge[1] == face[(i+1)%3])
+				return true;
+		}
+		return false;
+	}		
 }

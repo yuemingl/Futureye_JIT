@@ -2,10 +2,11 @@ package edu.uta.futureye.function;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.geometry.Point;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
@@ -25,15 +26,22 @@ import edu.uta.futureye.util.Constant;
  *
  */
 public class Variable {
-	//LinkedHashMap 遍历时保证变量顺序
-	protected Map<String,Double> values = new LinkedHashMap<String,Double>();
+	/**
+	 * We use LinkedHashMap here. LinkedHashMap is hash table and linked list implementation of the Map interface, 
+	 * with predictable iteration order.
+	 * <p>
+	 * 遍历时保证变量顺序
+	*/ 
+	protected Map<String,Double> valMap = new LinkedHashMap<String,Double>();
 
+	//protected double[] valArray = new double[9];
+	//protected boolean[] useArray = {false,false,false,false,false,false,false,false,false};
 	//protected boolean bApplyRestirct = false;
 	
 	//Node Index
 	protected int index = 0;
 	
-	//变量中可以携带element，见class DuDn
+	//Element 变量中可以携带单元对象，见class DuDn
 	protected Element element = null;
 	
 	public Variable() {
@@ -44,7 +52,9 @@ public class Variable {
 	 * 构造一维自变量并赋值
 	 */
 	public Variable(double val) {
-		values.put(Constant.x, val);
+		//valArray[0] = val;
+		//useArray[0] = true;
+		valMap.put(Constant.x, val);
 	}
 	
 	/**
@@ -52,20 +62,37 @@ public class Variable {
 	 * @return
 	 */
 	public double get() {
-		//TODO Need check values.size==1 ?
-		return values.values().iterator().next();
+		//return valArray[0];
+		return valMap.values().iterator().next();
 	}
 	
 	////////////////////////////////////////////////
 
 	public Variable(String name, double val) {
-		values.put(name, val);
+//		int id = VN.getID(name);
+//		if(id != -1) {
+//			valArray[id] = val;
+//			useArray[id] = true;
+//		}
+//		else
+			valMap.put(name, val);
 	}
 	
-	public Variable(VarPair fitst, VarPair ...pairs) {
-		values.put(fitst.name, fitst.value);
-		for(int i=0;i<pairs.length;i++)
-			values.put(pairs[i].name, pairs[i].value);
+	public Variable(VarPair first, VarPair ...pairs) {
+//		int id = first.getVarID();
+//		if(id != -1) {
+//			valArray[id] = first.value;
+//			useArray[id] = true;
+//		} else
+			valMap.put(first.name, first.value);
+		for(int i=0;i<pairs.length;i++) {
+//			id = pairs[i].getVarID();
+//			if(id != -1) {
+//				valArray[id] = pairs[i].value;
+//				useArray[id] = true;
+//			} else
+				valMap.put(pairs[i].name, pairs[i].value);
+		}
 	}
 	
 	/**
@@ -74,7 +101,30 @@ public class Variable {
 	 * @return
 	 */
 	public double get(String name) {
-		return values.get(name);
+//		int id = VN.getID(name);
+//		if(id != -1)
+//			return valArray[id];
+//		else
+			return valMap.get(name);
+	}
+	public double get(VN name) {
+		//return valArray[name.getID()];
+		return valMap.get(VN.names[name.getID()]);
+	}
+	
+	/**
+	 * Alias of get(String name), used in ScalaFEM as syntactic sugar: 
+	 * <code>v(name)</code>
+	 * 
+	 * @param name
+	 * @return <tt>v(name)</tt>
+	 */
+	public double apply(String name) {
+		return valMap.get(name);
+	}
+	
+	public double apply(VN name) {
+		return valMap.get(name);
 	}
 	
 	/**
@@ -83,7 +133,11 @@ public class Variable {
 	 * @return
 	 */
 	public double get(VarPair pair) {
-		pair.value = values.get(pair.name);
+//		int id = pair.getVarID();
+//		if(id != -1)
+//			valArray[id] = pair.value;
+//		else
+			pair.value = valMap.get(pair.name);
 		return pair.value;
 	}
 	
@@ -97,19 +151,57 @@ public class Variable {
 	 * @return
 	 */
 	public Variable set(String name, double val) {
-		values.put(name, val);
+//		int id = VN.getID(name);
+//		if(id != -1) {
+//			valArray[id] = val;
+//			useArray[id] = true;
+//		} else
+			valMap.put(name, val);
+		return this;
+	}
+	public Variable set(VN name, double val) {
+//		int id = name.getID();
+//		valArray[id] = val;
+//		useArray[id] = true;
+		valMap.put(VN.names[name.getID()],val);
 		return this;
 	}
 	
 	public Variable set(VarPair pair) {
-		values.put(pair.name, pair.value);
+//		int id = pair.getVarID();
+//		if(id != -1) {
+//			valArray[id] = pair.value;
+//			useArray[id] = true;
+//		} else
+			valMap.put(pair.name, pair.value);
 		return this;
 	}
 
-	public Map<String,Double> getValues() {
-		return values;
+	public Map<String,Double> getNameValuePairs() {
+//		for(int i=0;i<9;i++)
+//			if(useArray[i]) valMap.put(VN.names[i], valArray[i]);
+		return valMap;
 	}
 
+	public double[] getVarValues() {
+		double[] vals = new double[this.valMap.size()];
+		int i = 0;
+		for(Entry<String, Double> e : valMap.entrySet()) {
+			vals[i] = e.getValue();
+			i++;
+		}
+		return vals;		
+	}
+	
+	public String[] getVarNames() {
+		String[] names = new String[this.valMap.size()];
+		int i = 0;
+		for(Entry<String, Double> e : valMap.entrySet()) {
+			names[i] = e.getKey();
+			i++;
+		}
+		return names;
+	}
 	
 //	public void applyRestirct(boolean flag) {
 //		bApplyRestirct = flag;
@@ -132,14 +224,14 @@ public class Variable {
 	 * @param index
 	 * @return
 	 */
-	public static Variable createFrom(Function fun, Point point, int index) {
+	public static Variable createFrom(MathFunc fun, Point point, int index) {
 		if(fun == null)
 			return null;
 		Variable var = new Variable();
 		var.setIndex(index);
-		if(fun.varNames() != null) {
+		if(fun.getVarNames() != null) {
 			int ic = 1;
-			for(String vn : fun.varNames()) {
+			for(String vn : fun.getVarNames()) {
 				var.set(vn, point.coord(ic));
 				ic++;
 			}
@@ -174,7 +266,7 @@ public class Variable {
 	}
 	
 	public String toString() {
-		return values.toString();
+		return this.getNameValuePairs().toString();
 	}
 	
 	public static void main(String[] args) {
@@ -191,7 +283,9 @@ public class Variable {
 		System.out.println(v.get("y"));
 		v.setIndex(20);
 		System.out.println(v.getIndex());
-		v.setElement(new Element());
+		Element e = new Element();
+		e.globalIndex = 100;
+		v.setElement(e);
 		System.out.println(v.getElement());
 	}
 	

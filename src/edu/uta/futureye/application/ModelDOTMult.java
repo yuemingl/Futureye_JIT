@@ -2,26 +2,23 @@ package edu.uta.futureye.application;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.Solver;
-import edu.uta.futureye.algebra.SolverJBLAS;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DuDn;
-import edu.uta.futureye.function.basic.DuDx;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
-import edu.uta.futureye.function.intf.Function;
-import edu.uta.futureye.function.operator.FMath;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
-import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
@@ -42,80 +39,44 @@ import edu.uta.futureye.util.container.NodeList;
  *
  */
 public class ModelDOTMult {
-	//Light source
-	public Function delta = null;
-	public Variable lightPosition = null; //light source position
-	public int lightNum = -1;
+	//Light source delta function
+	private MathFunc delta = null;
+	//light source position
+	public Variable lightPosition = null; 
 	
-	//Inclusion mu_a
-	public Function mu_a = null;
+	//Absorption coefficient mu_a
+	private MathFunc mu_a = null;
+	//Reduced scattering coefficient mu_s'
+	public MathFunc mu_s = new FC(50.0/3.0);
 	
-	//mu_s'
-	public Function mu_s = new FC(50.0/3.0);
 	
-	/**
-	 * type=1: one inclusion
-	 * type=2: two inclusion
-	 * @param incX
-	 * @param incY
-	 * @param incR
-	 * @param maxMu_a
-	 * @param type
-	 */
-	public void setMu_a(double incX, double incY, double incR, double maxMu_a,
-			int type) {
-		final double fcx = incX;
-		final double fcy = incY;
-		final double fcr = incR;
-		final double fmu_a = maxMu_a;
-		final double distance = 0.8;
-		if(type == 1) {
-			mu_a = new AbstractFunction("x","y"){
-				@Override
-				public double value(Variable v) {
-					double bk = 0.1;
-					double dx = v.get("x")-fcx;
-					double dy = v.get("y")-fcy;
-					if(Math.sqrt(dx*dx+dy*dy) < fcr) {
-						double r = fmu_a*Math.cos((Math.PI/2)*Math.sqrt(dx*dx+dy*dy)/fcr); 
-						return r<bk?bk:r;
-					}
-					else
-						return bk;
-				}
-			};
-		} else if(type == 2) {
-			mu_a = new AbstractFunction("x","y"){
-				@Override
-				public double value(Variable v) {
-					double bk = 0.1;
-					double dx = v.get("x")-fcx;
-					double dy = v.get("y")-fcy;
-					double dx1 = v.get("x")-(fcx+distance);
-					double dy1 = v.get("y")-fcy;
-					if(Math.sqrt(dx*dx+dy*dy) < fcr) {
-						double r = fmu_a*Math.cos((Math.PI/2)*Math.sqrt(dx*dx+dy*dy)/fcr); 
-						return r<bk?bk:r;
-					}
-					else if(Math.sqrt(dx1*dx1+dy1*dy1) < fcr) {
-						double r = fmu_a*Math.cos((Math.PI/2)*Math.sqrt(dx1*dx1+dy1*dy1)/fcr); 
-						return r<bk?bk:r;
-					}
-					else
-						return bk;
-				}
-			};			
-		}
+	public void setMu_a(MathFunc fMu_a) {
+		this.mu_a = fMu_a;
+		
+		//update delta which depends on mu_a
+		delta = getRawDelta();
+		delta = delta.D(this.mu_a);
+	}
+	public MathFunc getMu_a() {
+		return this.mu_a;
 	}
 	
-	public void setDelta(double x,double y) {
+	public void setLightPosition(double x,double y) {
 		this.lightPosition = new Variable();
 		this.lightPosition.set("x", x);
 		this.lightPosition.set("y", y);
-		delta = new FDelta(this.lightPosition,0.01,2e5);
-		delta = delta.D(this.mu_a);
+		if(mu_a != null) {
+			delta = getRawDelta();
+			delta = delta.D(mu_a);
+		}
 	}
-
+	public MathFunc getDelta() {
+		return this.delta;
+	}
+	private MathFunc getRawDelta() {
+		return new FDelta(this.lightPosition,0.01,2e5);
+	}
+	
 	/**
 	 * 求解混合问题，需要提供函数diriBoundaryMark来标记Dirichlet边界类型，
 	 * 其余边界为Neumann类型。
@@ -135,10 +96,10 @@ public class ModelDOTMult {
 	 * @return
 	 */
 	public Vector solveMixedBorder(Mesh mesh, 
-			Function diriBoundaryMark, Function diri,
-			Function robinQ, Function robinD) {
+			MathFunc diriBoundaryMark, MathFunc diri,
+			MathFunc robinQ, MathFunc robinD) {
 		//Mark border type
-		HashMap<NodeType, Function> mapNTF = new HashMap<NodeType, Function>();
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		if(diriBoundaryMark == null && diri == null) {
 			mapNTF.put(NodeType.Robin, null);
 		} else if(diriBoundaryMark == null && diri != null) {
@@ -154,12 +115,11 @@ public class ModelDOTMult {
 		
 		//Right hand side
 		weakForm.setF(this.delta);
-
-
+		
 		//Model: \nabla{1/(3*mu_s'*mu_a)*\nabla{u}} + u = \delta/mu_a
 		weakForm.setParam(
-				FC.c1.D(mu_s.M(mu_a).M(3.0)), 
-				FC.c1, 
+				FC.C1.D(mu_s.M(mu_a).M(3.0)), 
+				FC.C1, 
 				robinQ, 
 				robinD //FC.c1.D(mu_s.M(mu_a).M(3.0) : d==k,q=0 (即：u_n + u =0)
 			);
@@ -178,19 +138,21 @@ public class ModelDOTMult {
 
 		//Solver solver = new Solver();
 		//Vector u = solver.solveCGS(stiff, load);
-		
         SolverJBLAS sol = new SolverJBLAS();
 		Vector u = sol.solveDGESV(stiff, load);
-		//Tools.plotVector(mesh,"",String.format("x.dat"),x);
 		
 		return u;
 	}
 	
 	public Vector solveNeumann(Mesh mesh) {
-		return solveMixedBorder(mesh,null,null,null,FC.c1.D(mu_s.M(mu_a).M(3.0)));
+		/**
+		 * 2011/10/18
+		 * mu_a 如果是Vector2Function，注意这里
+		 */
+		return solveMixedBorder(mesh,null,null,null,FC.C1.D(mu_s.M(mu_a).M(3.0)));
 	}
 
-	public Vector solveDirichlet(Mesh mesh, Function diri) {
+	public Vector solveDirichlet(Mesh mesh, MathFunc diri) {
 		return solveMixedBorder(mesh,null,diri,null,null);
 	}	
 	
@@ -202,20 +164,22 @@ public class ModelDOTMult {
 		String outputFolder = "ModelDOTMult";
 //		String gridFileBig = "prostate_test3_ex.grd";
 //		String gridFileSmall = "prostate_test3.grd";
-		String gridFileBig = "prostate_test7_ex.grd";
-		String gridFileSmall = "prostate_test7.grd";
+//		String gridFileBig = "prostate_test7_ex.grd";
+//		String gridFileSmall = "prostate_test7.grd";
 //		String gridFileBig = "prostate_test8_ex.grd";
 //		String gridFileSmall = "prostate_test8.grd";
+		String gridFileBig = "prostate_test10_ex.grd";
+		String gridFileSmall = "prostate_test10.grd";
 
 
 		ModelDOTMult model = new ModelDOTMult();
 //		model.setMu_a(2.0, 2.5, 0.5, //(x,y;r)
 //				0.4, //maxMu_a
 //				1); //type
-		model.setMu_a(3.0, 2.30, 0.6,
+		model.setMu_a(ModelParam.getMu_a(3.0, 2.30, 0.6,
 				0.8, //peak value of mu_a
-				1); //Number of inclusions
-		model.setDelta(2.5, 3.5);
+				1)); //Number of inclusions
+		model.setLightPosition(2.5, 3.5);
 	
 		MeshReader readerForward = new MeshReader(gridFileBig);
 		Mesh meshBig = readerForward.read2DMesh();
@@ -284,7 +248,7 @@ public class ModelDOTMult {
 		Vector uSmallRobin = model.solveMixedBorder(meshSmall, 
 				null, null, 
 				//new Vector2Function(uSmallDiriBoundary).M(0.5), null);
-				dudn.M(FC.c1.D(model.mu_s.M(model.mu_a).M(3.0))), 
+				dudn.M(FC.C1.D(model.mu_s.M(model.mu_a).M(3.0))), 
 				null);//FC.c1.D(model.mu_s.M(model.mu_a).M(3.0)));
 		Tools.plotVector(meshSmall, outputFolder, "u_small_robin.dat", uSmallRobin);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_extract_robin_diff.dat", 
@@ -295,9 +259,9 @@ public class ModelDOTMult {
 //		model.setMu_a(2.2, 2.5, 0.5, //(x,y;r)
 //				0.4, //maxMu_a
 //				1); //type
-		model.setMu_a(3.2, 2.10, 0.6,
+		model.setMu_a(ModelParam.getMu_a(3.2, 2.10, 0.6,
 				0.8, //peak value of mu_a
-				1); //Number of inclusions
+				1)); //Number of inclusions
 		
 		Tools.plotFunction(meshBig, outputFolder, "aRealGuess.dat", model.mu_a);
 		Vector uBigGuess = model.solveNeumann(meshBig);
@@ -312,9 +276,9 @@ public class ModelDOTMult {
 				FMath.axpy(-1.0, uSmallApproximate, uSmallGuess));
 		
 		//TEST 3. Only up side of the domain is Dirichlet boundary
-		Function diriBoundaryMark = new AbstractFunction("x","y"){
+		MathFunc diriBoundaryMark = new AbstractMathFunc("x","y"){
 			@Override
-			public double value(Variable v) {
+			public double apply(Variable v) {
 				//double x = v.get("x");
 				double y = v.get("y");
 				if(Math.abs(y - 3.0) < Constant.eps)
@@ -325,7 +289,7 @@ public class ModelDOTMult {
 		};
 		Vector uMix = model.solveMixedBorder(meshSmall, 
 				diriBoundaryMark, new Vector2Function(uSmallExtract),
-				null,FC.c1.D(model.mu_s.M(model.mu_a).M(3.0)));
+				null,FC.C1.D(model.mu_s.M(model.mu_a).M(3.0)));
 		Tools.plotVector(meshSmall, outputFolder, "u_mix.dat", uMix);
 	}
 

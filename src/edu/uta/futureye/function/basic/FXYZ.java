@@ -1,11 +1,17 @@
 package edu.uta.futureye.function.basic;
 
-import edu.uta.futureye.function.AbstractFunction;
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
+import edu.uta.futureye.function.AbstractMathFunc;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
-public class FXYZ extends AbstractFunction{
+/**
+ * f(x,y) = c1*x + c2*y + c3*z + c4
+ * 
+ */
+public class FXYZ extends AbstractMathFunc{
 
 	public FXYZ() {
 		varNames.add(Constant.x);
@@ -19,16 +25,27 @@ public class FXYZ extends AbstractFunction{
 
 	
 	@Override
-	public Function _d(String varName) {
+	public MathFunc diff(String varName) {
 		return null;
 	}
 
 	@Override
-	public double value(Variable v) {
-		return v.get(varNames().get(0));
+	public double apply(Variable v) {
+		return v.get(getVarNames().get(0));
 	}
 	
 	public String toString() {
-		return varNames().get(0);
+		return getVarNames().get(0);
+	}
+
+	@Override
+	public double apply(Element e, Node n, double... args) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double apply(double... args) {
+		return apply(null, null, args);
 	}
 }

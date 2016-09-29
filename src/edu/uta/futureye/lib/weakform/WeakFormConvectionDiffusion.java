@@ -1,11 +1,11 @@
 package edu.uta.futureye.lib.weakform;
 
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorFunction;
-import edu.uta.futureye.function.operator.FMath;
 import edu.uta.futureye.util.Utils;
 
 /**
@@ -42,13 +42,13 @@ import edu.uta.futureye.util.Utils;
  *
  */
 public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
-	protected Function g_f = null;
-	protected Function g_k = null;
-	protected Function g_b = null;
-	protected Function g_g = null;
-	protected Function g_d = null;
+	protected MathFunc g_f = null;
+	protected MathFunc g_k = null;
+	protected MathFunc g_b = null;
+	protected MathFunc g_g = null;
+	protected MathFunc g_d = null;
 	protected VectorFunction g_v = null;
-	protected Function g_cn = null;
+	protected MathFunc g_cn = null;
 	protected double Dt;
 
 	/**
@@ -58,7 +58,7 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 	 * @param cn: c_n
 	 * @param Dt
 	 */
-	public void setParam(Function k,Function b, Function cn, double Dt) {
+	public void setParam(MathFunc k,MathFunc b, MathFunc cn, double Dt) {
 		this.g_k = k;
 		this.g_b = b;
 		this.g_cn = cn;
@@ -70,30 +70,30 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 	}
 	
 	//right hand side function (source term)
-	public void setF(Function f) {
+	public void setF(MathFunc f) {
 		this.g_f = f;
 	}
 	
 	//Robin:  d*u + k*u_n= g (自然边界：d==k, g=0)
-	public void setRobin(Function g,Function d) {
+	public void setRobin(MathFunc g,MathFunc d) {
 		this.g_g = g;
 		this.g_d = d;
 	}
 
 	@Override
-	public Function leftHandSide(Element e, ItemType itemType) {
+	public MathFunc leftHandSide(Element e, ItemType itemType) {
 		 if(itemType==ItemType.Domain)  {
 			 //Interplate functions on element e
-			Function fk = Utils.interpolateFunctionOnElement(g_k,e);
-			Function fb = Utils.interpolateFunctionOnElement(g_b,e);
+			MathFunc fk = Utils.interpolateOnElement(g_k,e);
+			MathFunc fb = Utils.interpolateOnElement(g_b,e);
 			VectorFunction fv = new SpaceVectorFunction(g_v.getDim());
 			for(int dim=1;dim<=g_v.getDim();dim++)
-				fv.set(dim, Utils.interpolateFunctionOnElement(g_v.get(dim),e));
+				fv.set(dim, Utils.interpolateOnElement(g_v.get(dim),e));
 			
 			//Dt*(k*\nabla{u},\nabla{w}) + 
 			//Dt*( (v1*u_x,w)+(v2*u_y,w)+(v3*u_z,w) ) + 
 			//b*(u,w)
-			Function integrand = null;
+			MathFunc integrand = null;
 			integrand = fk.M(
 							FMath.grad(u,u.innerVarNames()).
 								dot(
@@ -108,8 +108,8 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 		else if(itemType==ItemType.Border) {
 			if(g_d != null) {
 				Element be = e;
-				Function fd = Utils.interpolateFunctionOnElement(g_d, be);
-				Function borderIntegrand = fd.M(u.M(v));
+				MathFunc fd = Utils.interpolateOnElement(g_d, be);
+				MathFunc borderIntegrand = fd.M(u.M(v));
 				return borderIntegrand;
 			}
 		}
@@ -117,17 +117,17 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 	}
 
 	@Override
-	public Function rightHandSide(Element e, ItemType itemType) {
+	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
 			//(Dt*f + c_n,w)
-			Function ff = Utils.interpolateFunctionOnElement(g_f, e);
-			Function fcn = Utils.interpolateFunctionOnElement(g_cn, e);
-			Function integrand = ff.M(FC.c(Dt)).A(fcn).M(v);
+			MathFunc ff = Utils.interpolateOnElement(g_f, e);
+			MathFunc fcn = Utils.interpolateOnElement(g_cn, e);
+			MathFunc integrand = ff.M(FC.c(Dt)).A(fcn).M(v);
 			return integrand;
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
-			Function fq = Utils.interpolateFunctionOnElement(g_g, be);
-			Function borderIntegrand = fq.M(v);
+			MathFunc fq = Utils.interpolateOnElement(g_g, be);
+			MathFunc borderIntegrand = fq.M(v);
 			return borderIntegrand;
 		}
 		return null;		

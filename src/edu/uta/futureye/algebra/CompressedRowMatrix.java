@@ -1,16 +1,32 @@
 package edu.uta.futureye.algebra;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import edu.uta.futureye.algebra.intf.AlgebraMatrix;
 import edu.uta.futureye.algebra.intf.AlgebraVector;
+import edu.uta.futureye.algebra.intf.MatrixEntry;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
+import edu.uta.futureye.util.Constant;
 
+/**
+ * Compressed row matrix
+ * 
+ * @author liuyueming
+ */
 public class CompressedRowMatrix implements AlgebraMatrix {
+	
+	/**
+	 * Column indices of non-zero values. These are kept sorted within each row.
+	 */
 	protected int[][] colIndex = null;
+
 	protected double[][] data = null;
+	
 	protected int rowDim;
 	protected int colDim;
 
@@ -31,36 +47,83 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 	
 	public void setRow(int row,int[] colIndex, double []data) {
 		int r = row - 1;
-		for(int c=0; c<colIndex.length; c++) {
-			this.colIndex[r][c] = colIndex[c];
-			this.data[r][c] = data[c];
-		}
+		this.colIndex[r] = new int[colIndex.length];
+		this.data[r] = new double[colIndex.length];
+		System.arraycopy(colIndex, 0, this.colIndex[r], 0, colIndex.length);
+		System.arraycopy(data, 0, this.data[r], 0, colIndex.length);
 	}
 	
 	public CompressedRowMatrix(SparseMatrix sMat, boolean clearSparseMatrix) {
 		this.rowDim = sMat.getRowDim();
 		this.colDim = sMat.getColDim();
 		
-		Map<Integer, Map<Integer, Double>> m = sMat.getAll();
-		this.colIndex = new int[this.rowDim][];
-		this.data = new double[this.rowDim][];
-		for(int r=0; r<this.rowDim; r++) {
-			Map<Integer,Double> row = m.get(r+1);
-			int size = 0;
-			if(row != null) size = row.size();
-			this.colIndex[r] = new int[size];
-			this.data[r] = new double[size];
-			int c = 0;
-			if(row != null) {
-				for(Entry<Integer,Double> col : row.entrySet()) {
-					this.colIndex[r][c] = col.getKey()-1;
-					this.data[r][c] = col.getValue();
-					c++;
-				}
+//		Map<Integer, Map<Integer, Double>> m = sMat.getAll();
+//		this.colIndex = new int[this.rowDim][];
+//		this.data = new double[this.rowDim][];
+//		for(int r=0; r<this.rowDim; r++) {
+//			Map<Integer,Double> row = m.get(r+1);
+//			int size = 0;
+//			if(row != null) size = row.size();
+//			this.colIndex[r] = new int[size];
+//			this.data[r] = new double[size];
+//			int c = 0;
+//			if(row != null) {
+//				for(Entry<Integer,Double> col : row.entrySet()) {
+//					this.colIndex[r][c] = col.getKey()-1;
+//					this.data[r][c] = col.getValue();
+//					c++;
+//				}
+//			}
+//			if(clearSparseMatrix) if(row!=null) row.clear();
+//		}
+//		if(clearSparseMatrix) m.clear();
+		
+		class IVPair {
+			int index;
+			double value;
+			IVPair(int index, double value) {
+				this.index = index;
+				this.value = value;
 			}
-			if(clearSparseMatrix) if(row!=null) row.clear();
 		}
-		if(clearSparseMatrix) m.clear();
+		
+		//by column
+		@SuppressWarnings("unchecked")
+		ArrayList<IVPair>[] rows = new ArrayList[this.rowDim];
+		for(int i=this.rowDim; --i>=0;) {
+			rows[i] = new ArrayList<IVPair>();
+		}
+		for(MatrixEntry e : sMat) {
+			int c = e.getCol();
+			int r = e.getRow();
+			double v = e.getValue();
+			rows[r-1].add(new IVPair(c-1,v));
+		}
+		
+		if(clearSparseMatrix) sMat.clearAll();
+		
+		this.colIndex = new int[this.colDim][];
+		this.data = new double[this.colDim][];
+		for(int r=this.rowDim; --r>=0;) {
+			int cDim = rows[r].size();
+			this.colIndex[r] = new int[cDim];
+			this.data[r] = new double[cDim];
+			//sort column indices in each row
+			Collections.sort(rows[r], new Comparator<IVPair>() {
+				@Override
+				public int compare(IVPair o1, IVPair o2) {
+					if(o1.index>o2.index) return 1;
+					else return -1;
+				}
+			});
+			
+			for(int c=cDim; --c>=0;) {
+				IVPair pair = rows[r].get(c);
+				this.colIndex[r][c] = pair.index;
+				this.data[r][c] = pair.value;
+			}
+			rows[r].clear();
+		}		
 	}
 	
 	public CompressedRowMatrix(SparseBlockMatrix sMat, boolean clearSparseMatrix) {
@@ -88,6 +151,7 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 		}
 		if(clearSparseMatrix) m.clear();
 	}
+	
 	@Override
 	public int getColDim() {
 		return this.colDim;
@@ -129,8 +193,8 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 	@Override
 	public void mult(AlgebraMatrix B, AlgebraMatrix C) {
 		if(B instanceof CompressedColMatrix && C instanceof CompressedRowMatrix) {
-			double[] tmpData = new double[this.colDim];
-			int[] tmpFlag = new int[this.colDim];
+			double[] tmpData = new double[this.colDim]; //保存一整行数据的临时数组
+			int[] tmpFlag = new int[this.colDim]; //保存一整行标记的临时数组
 			for(int j=0;j<this.colDim;j++) tmpData[j] = 0.0;
 			for(int j=0;j<this.colDim;j++) tmpFlag[j] = -1;
 			
@@ -140,28 +204,29 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 			CC.colDim = BB.colDim;
 			CC.colIndex = new int[CC.rowDim][];
 			CC.data = new double[CC.rowDim][];
-			
+	
+			int[] cColIndex= new int[BB.colDim];
+			double[] cColData = new double[BB.colDim];
 			for(int row=0; row<this.rowDim; row++) {
-				int nCol = colIndex[row].length;
-				for(int c=0; c<nCol; c++) {
-					int ci = colIndex[row][c];
-					tmpData[ci] = this.data[row][c];
-					tmpFlag[ci] = row;
-				}
 				
-				double[] cColData = new double[BB.colDim];
-				int[] cColIndex = new int[BB.colDim];
-
-				int total = 0;
+				int nCol = this.colIndex[row].length;
+				for(int c=0; c<nCol; c++) {
+					int ci = this.colIndex[row][c];
+					tmpData[ci] = this.data[row][c]; //非零列的数据保存在临时数组中
+					tmpFlag[ci] = row; //非零列的列号标记
+				}
+				int total = 0; //非零列总数计数器置0
 				for(int col=0; col<BB.colDim; col++) {
 					double v = 0.0;	
 					int nRow = BB.rowIndex[col].length;
+					double[] pCol = BB.data[col];
+					int[] pColIdx = BB.rowIndex[col];
 					for(int r=0; r<nRow; r++) {
-						int ri = BB.rowIndex[col][r];
+						int ri = pColIdx[r];
 						if(tmpFlag[ri] == row)
-							v += tmpData[ri]*BB.data[col][r];
+							v += tmpData[ri]*pCol[r];
 					}
-					if(Double.compare(v, 0.0) != 0) {
+					if(Math.abs(v) > Constant.eps) {
 						cColData[total] = v;
 						cColIndex[total] = col;
 						total++;
@@ -169,10 +234,41 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 				}
 				CC.colIndex[row] = new int[total];
 				CC.data[row] = new double[total];
-				for(int c=0;c<total;c++) {
-					CC.colIndex[row][c] = cColIndex[c];
-					CC.data[row][c] = cColData[c];
+				System.arraycopy(cColIndex, 0, CC.colIndex[row], 0, total);
+				System.arraycopy(cColData, 0, CC.data[row], 0, total);
+			}
+		} else if(B instanceof FullMatrix && C instanceof CompressedRowMatrix) {
+			FullMatrix BB = (FullMatrix)B;
+			CompressedRowMatrix CC = (CompressedRowMatrix)C;
+			CC.rowDim = this.rowDim;
+			CC.colDim = BB.colDim;
+			CC.colIndex = new int[CC.rowDim][];
+			CC.data = new double[CC.rowDim][];
+			
+			double[] cColData = new double[BB.colDim];
+			int[] cColIndex = new int[BB.colDim];
+			
+			for(int row=0; row<this.rowDim; row++) {
+				int nCol = this.colIndex[row].length;
+				double[] pRow = this.data[row];
+				int[] pRowIdx = this.colIndex[row];
+				int total = 0;
+				for(int col=0; col<BB.colDim; col++) {
+					double v = 0.0;	
+					for(int c=0; c<nCol; c++) {
+						int ci = pRowIdx[c];
+						v += pRow[c]*BB.data[ci][col];
+					}
+					if(Math.abs(v) > Constant.eps) {
+						cColData[total] = v;
+						cColIndex[total] = col;
+						total++;
+					}
 				}
+				CC.colIndex[row] = new int[total];
+				CC.data[row] = new double[total];
+				System.arraycopy(cColIndex, 0, CC.colIndex[row], 0, total);
+				System.arraycopy(cColData, 0, CC.data[row], 0, total);
 			}
 		} else {
 			throw new UnsupportedOperationException();
@@ -199,7 +295,16 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 		return T;		
 	}
 
-	public CompressedColMatrix convertToCompressedCol() {
+	/**
+	 * CompressedRowMatrix与CompressedColMatrix视为一对压缩存储的矩阵类，
+	 * 他们之间可以通过该函数互相转换
+	 * <p>
+	 * The values are copied. So subsequent changes in this matrix 
+	 * are not reflected in the returned matrix, and vice-versa.
+	 * 
+	 * @return A new object of class CompressedRowMatrix, data are copied.
+	 */
+	public CompressedColMatrix getCompressedColMatrix() {
 		CompressedColMatrix C = new CompressedColMatrix();
 		C.colDim = this.colDim;
 		C.rowDim = this.rowDim;
@@ -301,8 +406,16 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * <p>
+	 * The values are copied. So subsequent changes in this matrix 
+	 * are not reflected in the returned matrix, and vice-versa.
+	 * 
+	 * @return
+	 */
 	public SparseMatrix getSparseMatrix() {
-		SparseMatrix rlt = new SparseMatrix(this.rowDim,this.colDim);
+		SparseMatrix rlt = new SparseMatrixRowMajor(this.rowDim,this.colDim);
 		for(int r=0; r<this.rowDim; r++) {
 			for(int c=0; c<this.colIndex[r].length; c++) {
 				rlt.set(r+1, this.colIndex[r][c]+1,
@@ -310,6 +423,20 @@ public class CompressedRowMatrix implements AlgebraMatrix {
 			}
 		}
 		return rlt;
+	}
+	
+	/**
+	 * 返回行压缩存储方式的列索引数组，列号从0开始
+	 */
+	public int[][] getColIndex() {
+		return this.colIndex;
+	}
+	
+	/**
+	 * 返回行压缩存储方式的数据数组
+	 */
+	public double[][] getData() {
+		return this.data;
 	}
 
 }

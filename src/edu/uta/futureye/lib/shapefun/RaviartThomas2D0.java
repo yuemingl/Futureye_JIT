@@ -11,12 +11,12 @@ import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractFunction;
-import edu.uta.futureye.function.AbstractVectorFunction;
+import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.AbstractVectorFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.Function;
+import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorFunction;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
@@ -27,11 +27,11 @@ import edu.uta.futureye.util.container.ObjList;
  * Raviart-Thomas 2D0 triangle element
  * 
  * for j=1,2,3
- * \psi_{E_{j}} = \sigma_{j} \frac{|E_{j}|}{2|T|} (\mathbf{x}-P_{j})
+ * \psi_{E_{j}} = \sigma_{j} \frac{|E_{j}|}{2|T|} (x-P_{j})
  *
  * where
- *   \mathbf{x} \in T
- *   E_{j} be the edge of a triangle T opposite to its vertex P_{j}
+ *   x = (x1,x2) \in T
+ *   E_{j} is the edge of a triangle T opposite to its vertex P_{j}
  *   sigma_{j} = \nu_{j} \dot \nu_{E_{j}}
  *   \nu_{j} the unit normal of T along E_{j} 
  *   \nu_{E_{j}} the unit normal vector of E_{j} chosen with a global fixed orientation
@@ -57,7 +57,7 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorShapeFunction {
+public class RaviartThomas2D0 extends AbstractVectorFunc implements VectorShapeFunction {
 	int funIndex = 0;
 	
 	private VectorFunction funCompose = null;
@@ -73,10 +73,10 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 	
 	
 	@Override
-	public void asignElement(final Element e) {
+	public void assignElement(final Element e) {
 		//Space Vector Function
-		Function fx = new FXY(varNames,1,0);
-		Function fy = new FXY(varNames,0,1);
+		MathFunc fx = new FXY(varNames,1,0);
+		MathFunc fy = new FXY(varNames,0,1);
 		SpaceVectorFunction svf = new SpaceVectorFunction(fx,fy);
 	
 		EdgeLocal lEdge = e.edges().at(funIndex+1);
@@ -93,31 +93,31 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 		this.funOuter = svf.S(v).scale(coef);
 		
 		//复合函数
-		Map<String, Function> fInners = new HashMap<String, Function>();
+		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		List<String> varNamesInner = new LinkedList<String>();
 		varNamesInner.add("r");
 		varNamesInner.add("s");
 
+		//x = x(r,s,t)
+		//y = y(r,s,t)
+		//	where t = 1 - r - s
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractFunction(varNamesInner) {
+			fInners.put(varName, new AbstractMathFunc(varNamesInner) {
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
-				public Function _d(String varName) {
+				public MathFunc diff(String varName) {
 					return null;
 				}
 				@Override
-				public double value(Variable v) {
+				public double apply(Variable v) {
 					//根据不同的varName给出不同的表达式
-					//x = x(r,s,t)
-					//y = y(r,s,t)
-					//where t = 1 - r - s
-					List<Function> transFun = trans.getTransformFunction(
+					List<MathFunc> transFun = trans.getTransformFunction(
 							trans.getTransformLinear2DShapeFunction(e));
-					if(varName.equals("x")) {
-						return transFun.get(0).value(v);
-					} else if(varName.equals("y")) {
-						return transFun.get(1).value(v);
+					if(varName.equals("x")) {//x = x(r,s,t)
+						return transFun.get(0).apply(v);
+					} else if(varName.equals("y")) {//y = y(r,s,t)
+						return transFun.get(1).apply(v);
 					} else {
 						Exception e = new FutureyeException("Error!");
 						e.printStackTrace();
@@ -139,28 +139,24 @@ public class RaviartThomas2D0 extends AbstractVectorFunction implements VectorSh
 	}
 
 	@Override
-	public Function dot(VectorFunction b) {
+	public MathFunc dot(VectorFunction b) {
 		return this.funCompose.dot(b);
 	}
 
 	@Override
-	public Function get(int index) {
+	public MathFunc get(int index) {
 		return this.funCompose.get(index);
 	}
+	
 
 	@Override
-	public void set(int index, Function value) {
+	public void set(int index, MathFunc value) {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
 	public int getDim() {
 		return this.funCompose.getDim();
-	}
-
-	@Override
-	public void print() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override

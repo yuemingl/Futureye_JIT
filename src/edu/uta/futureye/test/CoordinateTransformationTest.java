@@ -49,14 +49,14 @@ public class CoordinateTransformationTest {
 				p4.set("r", (x-700)/100.0);
 				p4.set("s", (y-200)/100.0+0.25);
 				
-				int x1 = (int)pane.fx.value(p1);
-				int y1 = (int)pane.fy.value(p1);
-				int x2 = (int)pane.fx.value(p2);
-				int y2 = (int)pane.fy.value(p2);
-				int x3 = (int)pane.fx.value(p3);
-				int y3 = (int)pane.fy.value(p3);
-				int x4 = (int)pane.fx.value(p4);
-				int y4 = (int)pane.fy.value(p4);
+				int x1 = (int)pane.fx.apply(p1);
+				int y1 = (int)pane.fy.apply(p1);
+				int x2 = (int)pane.fx.apply(p2);
+				int y2 = (int)pane.fy.apply(p2);
+				int x3 = (int)pane.fx.apply(p3);
+				int y3 = (int)pane.fy.apply(p3);
+				int x4 = (int)pane.fx.apply(p4);
+				int y4 = (int)pane.fy.apply(p4);
 				
 				label.setText((x-700)/100.0+","+(y-200)/100.0+"  => "+"("+x1+","+y1+")");
 				
