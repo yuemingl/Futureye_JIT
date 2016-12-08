@@ -5,6 +5,7 @@ import java.util.List;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
@@ -14,18 +15,20 @@ import edu.uta.futureye.util.Constant;
  * 
  */
 public class FXY extends AbstractMathFunc{
-	protected double c1,c2,c3=0.0;
+	protected double c1, c2, c3=0.0;
 
-	public FXY(double c1,double c2) {
-		varNames.add(Constant.x);
-		varNames.add(Constant.y);
+	public FXY(double c1, double c2) {
+		this.varNames = new String[2];
+		this.varNames[0] = Constant.x;
+		this.varNames[1] = Constant.y;
 		this.c1 = c1;
 		this.c2 = c2;
 	}
 	
-	public FXY(double c1,double c2,double c3) {
-		varNames.add(Constant.x);
-		varNames.add(Constant.y);
+	public FXY(double c1, double c2, double c3) {
+		this.varNames = new String[2];
+		this.varNames[0] = Constant.x;
+		this.varNames[1] = Constant.y;
 		this.c1 = c1;
 		this.c2 = c2;
 		this.c3 = c3;
@@ -46,17 +49,17 @@ public class FXY extends AbstractMathFunc{
 	
 	@Override
 	public MathFunc diff(String varName) {
-		if(varNames.get(0).equals(varName))
+		if(varNames[0].equals(varName))
 			return new FC(c1);
-		else if(varNames.get(1).equals(varName)) {
+		else if(varNames[1].equals(varName)) {
 			return new FC(c2);
 		}
-		return FC.C0;
+		return FMath.C0;
 	}
 
 	@Override
 	public double apply(Variable v) {
-		return c1 * v.get(varNames.get(0)) + c2 * v.get(varNames.get(1)) + c3;
+		return c1 * v.get(varNames[0]) + c2 * v.get(varNames[1]) + c3;
 	}
 	
 	@Override
@@ -77,11 +80,11 @@ public class FXY extends AbstractMathFunc{
 		if(Math.abs(c2) > Constant.eps)
 			s2 = s2 + "*";
 		if(s1.isEmpty() && !s2.isEmpty())
-			return s2+varNames.get(1);
+			return s2+this.varNames[1];
 		else if(!s1.isEmpty() && s2.isEmpty())
-			return s1+varNames.get(0);
+			return s1+this.varNames[0];
 		else
-			return s1+varNames.get(0)+" + " +s2+varNames.get(1);
+			return s1+this.varNames[0]+" + " +s2+this.varNames[1];
 		//TODO c3
 	}
 }
