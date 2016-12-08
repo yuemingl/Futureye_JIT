@@ -12,7 +12,7 @@ public abstract class CompiledFunc {
 	protected MathFunc[] funcRefs;
 
 	/**
-	 * This function should be implemented during compliation
+	 * This function should be implemented during compilation
 	 * @param e
 	 * @param n
 	 * @param args
