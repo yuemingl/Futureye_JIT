@@ -332,7 +332,7 @@ public class LaplaceTestJITForPaper {
 		
         //Right hand side(RHS):
         //MathFunc f = 2.0 * PI * PI * sin ( PI * x ) * sin ( PI * y );
-        MathFunc f = -2*(x*x+y*y)+36;
+        final MathFunc f = -2*(x*x+y*y)+36;
 
 		//4.Weak form
         //The direct implementation of the weak form requires a user write the expression of the weak form inside loops. 
@@ -349,9 +349,21 @@ public class LaplaceTestJITForPaper {
         //(3) Follow the idea from (2), but using the new feature lambda expression provided by Java 8, the expression of the weak form can be define concisely 
         //with all the advantages of method (2). Specifically, we define two functional interfaces of the weak form builder to accept 
         //the left hand side and right hand side of a weak form by providing two lambda expression by the users.
+//		fet.makeWeakForm(
+//				(u,v) -> grad(u,"x","y").dot(grad(v,"x","y")), 
+//				v -> f*v
+//		);
 		fet.makeWeakForm(
-				(u,v) -> grad(u,"x","y").dot(grad(v,"x","y")), 
-				v -> f*v
+				new LHSExpr() {
+					public MathFunc apply(MathFunc u, MathFunc v) {
+						return grad(u,"x","y").dot(grad(v,"x","y"));
+					}
+				},
+				new RHSExpr() {
+					public MathFunc apply(MathFunc v) {
+						return f*v;
+					}
+				}
 		);
 		fet.compileWeakForm();
 

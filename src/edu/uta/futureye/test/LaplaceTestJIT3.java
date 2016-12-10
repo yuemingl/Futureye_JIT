@@ -347,6 +347,10 @@ public class LaplaceTestJIT3 {
         //(3) Follow the idea from (2), but using the new feature lambda expression provided by Java 8, the expression of the weak form can be define concisely 
         //with all the advantages of method (2). Specifically, we define two functional interfaces of the weak form builder to accept 
         //the left hand side and right hand side of a weak form by providing two lambda expression by the users.
+//		fet.makeWeakForm(
+//				(u,v) -> grad(u,"x","y").dot(grad(v,"x","y")), 
+//				v -> f*v
+//		);
 		fet.makeWeakForm(
 				(u,v) -> grad(u,"x","y").dot(grad(v,"x","y")), 
 				v -> f*v

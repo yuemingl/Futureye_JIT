@@ -1,6 +1,6 @@
 package edu.uta.futureye.util;
 
-import com.sun.org.apache.bcel.internal.generic.ClassGen;
+import org.apache.bcel.generic.ClassGen;
 
 public class FuncClassLoader<T> extends ClassLoader {
 	

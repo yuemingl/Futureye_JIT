@@ -8,15 +8,17 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
 /**
+ * TODO not fully implemented
  * f(x,y) = c1*x + c2*y + c3*z + c4
  * 
  */
 public class FXYZ extends AbstractMathFunc{
 
 	public FXYZ() {
-		varNames.add(Constant.x);
-		varNames.add(Constant.y);
-		varNames.add(Constant.z);
+		this.varNames = new String[3];
+		this.varNames[0] = Constant.x;
+		this.varNames[1] = Constant.x;
+		this.varNames[2] = Constant.x;
 	}
 	
 	public FXYZ(String varName) {

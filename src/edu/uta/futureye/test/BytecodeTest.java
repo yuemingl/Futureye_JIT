@@ -2,7 +2,7 @@ package edu.uta.futureye.test;
 
 import java.util.HashMap;
 
-import com.sun.org.apache.bcel.internal.generic.ClassGen;
+import org.apache.bcel.generic.ClassGen;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.function.FMath;
