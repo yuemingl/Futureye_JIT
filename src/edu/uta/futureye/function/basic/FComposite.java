@@ -41,10 +41,13 @@ import edu.uta.futureye.util.Utils;
  * For example:
  *  MathFunc f = r*s + 1;
  *  Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
- *  fInners.put("r", x*x);
- *  fInners.put("s", y+1);
+ *  
+ *  fInners.put("r", x*x); //inner function: r(x) = x*x
+ *  fInners.put("s", y+1); //inner function: s(y) = y+1
+ *  
  *  MathFunc fc = f.compose(fInners);
  *  System.out.println(fc); //f(x,y) = (x*x)*(y + 1.0) + 1.0
+ *  
  * </pre></blockquote>
  */
 public class FComposite extends AbstractMathFunc {
@@ -55,13 +58,19 @@ public class FComposite extends AbstractMathFunc {
 	public FComposite(MathFunc fOuter, Map<String,MathFunc> fInners) {
 		this.fOuter = fOuter;
 		
-		//Extends variable names in fInners (copy on change)
-		List<String> list = new ArrayList<String>();
+		//Get all the variable names in inner function 
+		List<String> nameList = new ArrayList<String>();
 		for(Entry<String, MathFunc> e : fInners.entrySet()) {
-			list = Utils.mergeList(list, e.getValue().getVarNames());
+			nameList = Utils.mergeList(nameList, e.getValue().getVarNames());
 		}
+		
+		//Reconstruct argsMap
 		Map<String,MathFunc> fInners2 = new HashMap<String,MathFunc>();
-		Map<String, Integer> argsMap = Utils.getIndexMap(list);
+		Map<String, Integer> argsMap = Utils.getIndexMap(nameList);
+		
+		//Update argIdx for the inner functions
+		//Copy on change: if the argIdx changed for a inner function, then the 
+		//function is copied so that the original function is not affected 
 		for(Entry<String, MathFunc> e : fInners.entrySet()) {
 			if(!Utils.isMapContain(argsMap, e.getValue().getArgIdxMap())) {
 				MathFunc f = e.getValue().copy().setArgIdx(argsMap);
@@ -73,8 +82,8 @@ public class FComposite extends AbstractMathFunc {
 		this.fInners = fInners2;
 		
 		// Default to use free variables in fInners
-		this.setVarNames(list);
-		this.setArgIdx(Utils.getIndexMap(list));
+		this.setVarNames(nameList);
+		this.setArgIdx(Utils.getIndexMap(nameList));
 		isOuterVariablesActive = false;
 		//this.setVarNames(fOuter.getVarNames());
 		//this.setArgIdx(Utils.getIndexMap(fOuter.getVarNames()));
