@@ -71,10 +71,25 @@ public interface MathFunc {
 	 * @param v
 	 * @return double function value
 	 */
+	@Deprecated
 	double apply(Variable v);
 	
+	/**
+	 * Evaluating a function at point specified by 'args'
+	 * The order of free variables in 'args' is determined
+	 * by setArgIdx().
+	 * @param args
+	 * @return
+	 */
 	double apply(double ...args);
 	
+	/**
+	 * 
+	 * @param e
+	 * @param n
+	 * @param args
+	 * @return
+	 */
 	double apply(Element e, Node n, double ...args);
 	
 	/**
@@ -90,6 +105,7 @@ public interface MathFunc {
 	 * @param cache
 	 * @return
 	 */
+	@Deprecated
 	double apply(Variable v, Map<Object,Object> cache);
 	
 	/**
@@ -103,8 +119,12 @@ public interface MathFunc {
 	double[] applyAll(VariableArray valAry, Map<Object, Object> cache);
 	
 	/**
-	 * Set the index of each variable in parameter 'args' for the 'apply' methods
-	 *  
+	 * Set the index in the parameter 'args' of the 'apply(double ...args)' method
+	 * for each variable name
+	 *
+	 *??? How is the used in code generation?
+	 *??? argsMap in bytecodeGen() is used for this argument index purpose? 
+	 *
 	 * @param argIdx
 	 * @return
 	 */
