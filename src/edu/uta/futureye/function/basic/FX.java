@@ -15,10 +15,10 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUSH;
 
-import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MathFuncBasic;
+import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
@@ -40,23 +40,36 @@ public class FX extends MathFuncBasic {
 	public final static FX t = new FX(Constant.t); 
 	
 	String varName;
-	int argIdx;
+	int argIdx; //the index of varName in args of method apply(double ..args)
 	
 	/**
 	 * Identity function: f(varName) = varName
 	 */
 	public FX(String varName) {
 		this.varName = varName;
+		this.argIdx = 0;
 	}
 
-	@Override
-	public double apply(Element e, Node n, double... args) {
-		return args[argIdx];
-	}
-
+	/**
+	 * This is used only in non-compiled version
+	 * argIdx is introduced for this function with argument 'double ...args'
+	 * argIdx is not used in compiled version instead it uses 'argsMap'
+	 * see bytecodeGen(...,argsMap,...)
+	 * 
+	 */
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return args[argIdx];
+	}
+	
+	/**
+	 * This version doesn't have the problem in finding the index
+	 * in the version 'apply(double... args)'
+	 */
+	@Deprecated
+	@Override
+	public double apply(Variable v) {
+		return v.get(varName);
 	}
 
 	@Override
@@ -98,6 +111,7 @@ public class FX extends MathFuncBasic {
 		this.varName = varNames.get(0);
 		return this;
 	}
+	
 	@Override
 	public List<String> getVarNames() {
 		List<String> ret = new ArrayList<String>();
