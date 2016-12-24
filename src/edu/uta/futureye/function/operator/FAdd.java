@@ -21,7 +21,7 @@ public class FAdd extends FBinaryOp {
 
 	@Override
 	public double apply(double... args) {
-		return arg1.apply(null, null, args) + arg2.apply(null, null, args);
+		return arg1.apply(args) + arg2.apply(args);
 	}
 
 	@Override
