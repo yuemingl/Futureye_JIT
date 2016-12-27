@@ -14,6 +14,9 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUSH;
+import org.objectweb.asm.MethodVisitor;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.FMath;
@@ -101,6 +104,14 @@ public class FX extends MathFuncBasic {
 	}
 
 	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap, int argsStartPos, 
+			Map<MathFunc, Integer> funcRefsMap) {
+		mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
+		mv.visitLdcInsn(argsMap.get(varName));
+		mv.visitInsn(Opcodes.DALOAD);
+	}
+	
+	@Override
 	public MathFunc setName(String name) {
 		this.varName = name;
 		return this;
@@ -160,4 +171,5 @@ public class FX extends MathFuncBasic {
 	public boolean isReal() {
 		return false;
 	}
+
 }

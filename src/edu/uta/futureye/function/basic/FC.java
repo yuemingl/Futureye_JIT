@@ -11,6 +11,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUSH;
+import org.objectweb.asm.MethodVisitor;
 
 import edu.uta.futureye.function.MathFuncBasic;
 import edu.uta.futureye.function.Variable;
@@ -150,5 +151,11 @@ public class FC extends MathFuncBasic {
 			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
 			Map<MathFunc, Integer> funcRefsMap) {
 		return il.append(new PUSH(cp, val));
+	}
+
+	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
+		mv.visitLdcInsn(val);
 	}
 }

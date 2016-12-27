@@ -13,6 +13,7 @@ import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
+import org.objectweb.asm.MethodVisitor;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.Element;
@@ -292,6 +293,16 @@ public interface MathFunc {
 			int argsStartPos, Map<MathFunc, Integer> funcRefsMap);
 
 	/**
+	 * Use ASM library to generate bytecode.
+	 * Two libraries are supported at the same time
+	 * ASM library version implemented more features
+	 * 
+	 * @param mv
+	 */
+	void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap);
+
+	/**
 	 * Compile the function to bytecode with order of arguments from
 	 * the call of getVarNames()
 	 */
@@ -305,6 +316,8 @@ public interface MathFunc {
 	 * @return
 	 */
 	CompiledFunc compile(String[] varNames);
+	
+	CompiledFunc compileWithASM(String[] varNames);
 	
 	//////////////Operator overloading support through Java-OO//////////////////
 	/**

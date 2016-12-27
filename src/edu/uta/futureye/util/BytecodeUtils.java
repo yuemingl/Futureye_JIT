@@ -84,7 +84,7 @@ public class BytecodeUtils {
 			for(int i=0; i<args.size(); i++) {
 				argsMap.put(args[i], i);
 			}
-			System.out.println("JIT Compiled: "+func);
+//			System.out.println("JIT Compiled: "+func);
 		} else {
 			StringBuilder sb = new StringBuilder();
 			sb.append("(");
@@ -95,7 +95,7 @@ public class BytecodeUtils {
 			sb.delete(sb.length()-1, sb.length());
 			sb.append(")");
 			//func.setArgIdx(argsMap); //No need, this is for user defined apply() method not for compile()
-			System.out.println("JIT Compiled: "+func.getName()+sb.toString()+" = "+func.getExpr());
+//			System.out.println("JIT Compiled: "+func.getName()+sb.toString()+" = "+func.getExpr());
 		}
 
 		Map<MathFunc, Integer> refsMap = getFuncRefsMap(func);

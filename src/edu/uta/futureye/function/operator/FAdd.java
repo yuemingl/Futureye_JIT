@@ -8,6 +8,9 @@ import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
+import org.objectweb.asm.MethodVisitor;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
@@ -68,6 +71,14 @@ public class FAdd extends FBinaryOp {
 		arg1.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		arg2.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		return il.append(InstructionConstants.DADD);
+	}
+
+	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
+		arg1.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap);
+		arg2.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap);
+		mv.visitInsn(Opcodes.DADD);
 	}
 
 }

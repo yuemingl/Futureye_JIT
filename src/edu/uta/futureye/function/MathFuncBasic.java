@@ -2,7 +2,9 @@ package edu.uta.futureye.function;
 
 import static org.apache.bcel.Constants.ACC_PUBLIC;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,9 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.Type;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.Element;
@@ -32,6 +37,7 @@ import edu.uta.futureye.function.operator.FDiv;
 import edu.uta.futureye.function.operator.FMul;
 import edu.uta.futureye.function.operator.FSub;
 import edu.uta.futureye.util.BytecodeUtils;
+import edu.uta.futureye.util.ClassGenerator;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FuncClassLoader;
 
@@ -200,7 +206,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 			clsName = this.getClass().getSimpleName();
 		clsName = clsName + java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		
-		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>(FuncClassLoader.class.getClassLoader());
 		ClassGen genClass = BytecodeUtils.genClass(this, null, clsName, true, false);
 		CompiledFunc func = fcl.newInstance(genClass);
 		
@@ -218,7 +224,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 			clsName = this.getClass().getSimpleName();
 		clsName = clsName + java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		
-		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>(FuncClassLoader.class.getClassLoader());
 		ClassGen genClass = BytecodeUtils.genClass(this, varNames, clsName, true, false);
 		CompiledFunc func = fcl.newInstance(genClass);
 		
@@ -227,7 +233,104 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		func.setFuncRefs(list.toArray(new MathFunc[0]));
 		
 		return func;
-	}	
+	}
+
+	@Override
+	public CompiledFunc compileWithASM(String[] varNames) {
+		boolean writeFile = true;
+		String clsName = getName();
+		if (clsName == null || clsName.length() == 0)
+			clsName = this.getClass().getSimpleName();
+		clsName = clsName
+				+ java.util.UUID.randomUUID().toString().replaceAll("-", "");
+		try {
+			FuncClassLoader<CompiledFunc> mcl = new FuncClassLoader<CompiledFunc>(
+					ClassGenerator.class.getClassLoader());
+			ClassGenerator cgen = new ClassGenerator(clsName);
+
+			cgen.startClass(ClassGenerator.getASMName(CompiledFunc.class), null);
+
+			// Define method:
+			// double apply(Element e, Node n, double ...args);
+			MethodVisitor mv = null;
+			String methodName = "apply";
+
+			// Generate the function for the root expression
+			Label startMatchesLabel = new Label();
+			Label endMatchesLabel = new Label();
+			org.objectweb.asm.Type retType = org.objectweb.asm.Type
+					.getType(double.class);
+			org.objectweb.asm.Type param1 = org.objectweb.asm.Type
+					.getType(Element.class);
+			org.objectweb.asm.Type param2 = org.objectweb.asm.Type
+					.getType(Node.class);
+			org.objectweb.asm.Type param3 = org.objectweb.asm.Type
+					.getType(double[].class);
+			mv = cgen.startMethod(Opcodes.ACC_PUBLIC, methodName,
+					org.objectweb.asm.Type.getMethodDescriptor(retType, 
+							param1, param2, param3));
+			cgen.startCode(mv, startMatchesLabel);
+			
+			
+			HashMap<String, Integer> argsMap = new HashMap<String, Integer>();
+			if(varNames == null) {
+				List<String> args = this.getVarNames();
+				for(int i=0; i<args.size(); i++) {
+					argsMap.put(args[i], i);
+				}
+				System.out.println("JIT compileWithASM: "+this);
+			} else {
+				StringBuilder sb = new StringBuilder();
+				sb.append("(");
+				for(int i=0; i<varNames.length; i++) {
+					argsMap.put(varNames[i], i);
+					sb.append(varNames[i]).append(",");
+				}
+				sb.delete(sb.length()-1, sb.length());
+				sb.append(")");
+				//func.setArgIdx(argsMap); //No need, this is for user defined apply() method not for compile()
+				System.out.println("JIT compileWithASM: "+this.getName()+sb.toString()+" = "+this.getExpr());
+			}
+
+			Map<MathFunc, Integer> refsMap = BytecodeUtils.getFuncRefsMap(this);
+			this.bytecodeGen(mv, argsMap, 3, refsMap); //3 for args: double apply(Element e, Node n, double ...args);
+			
+			mv.visitInsn(retType.getOpcode(Opcodes.IRETURN));
+			
+			mv.visitLocalVariable("this", "L" + clsName + ";", null,
+					startMatchesLabel, endMatchesLabel, 0);
+			mv.visitLocalVariable("element", param1.getDescriptor(), null,
+					startMatchesLabel, endMatchesLabel, 1);
+			mv.visitLocalVariable("node", param2.getDescriptor(), null,
+					startMatchesLabel, endMatchesLabel, 2);
+			mv.visitLocalVariable("args", param3.getDescriptor(), null,
+					startMatchesLabel, endMatchesLabel, 3);
+			mv.visitMaxs(-1, -1); // Auto generated
+			cgen.endCode(mv, endMatchesLabel);
+
+			cgen.endClass();
+
+			byte[] bcode = cgen.dump();
+			if (writeFile) {
+				FileOutputStream fos = new FileOutputStream(clsName + ".class");
+				fos.write(bcode);
+				fos.close();
+			}
+
+			Class<?> c = mcl.defineClassForName(null, bcode);
+
+			CompiledFunc func = (CompiledFunc) c.newInstance();
+
+			List<MathFunc> list = new ArrayList<MathFunc>();
+			BytecodeUtils.postOrder(this, list);
+			func.setFuncRefs(list.toArray(new MathFunc[0]));
+
+			return func;
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+
 	//////////////Operator overloading support through Java-OO//////////////////
 
 	public MathFunc valueOf(int v) {
