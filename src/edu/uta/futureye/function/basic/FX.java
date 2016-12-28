@@ -104,11 +104,15 @@ public class FX extends MathFuncBasic {
 	}
 
 	@Override
-	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap, int argsStartPos, 
-			Map<MathFunc, Integer> funcRefsMap) {
-		mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-		mv.visitLdcInsn(argsMap.get(varName));
-		mv.visitInsn(Opcodes.DALOAD);
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
+		if (this.compileToStaticField) {
+			mv.visitFieldInsn(Opcodes.GETSTATIC, this.genClassName, this.staticFieldName, "D");
+		} else {
+			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
+			mv.visitLdcInsn(argsMap.get(varName));
+			mv.visitInsn(Opcodes.DALOAD);
+		}
 	}
 	
 	@Override

@@ -22,6 +22,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.Type;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -42,6 +43,7 @@ import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FuncClassLoader;
 
 public abstract class MathFuncBasic implements MathFunc, Cloneable {
+	
 	@Override
 	public abstract double apply(double ...args);
 	
@@ -171,7 +173,8 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	///////////////////////////Compilation///////////////////////////////
 	
 	/**
-	 * Call the 'apply' method by default if a sub-class does not override this method to generate the bytecode
+	 * This implementation calls the 'apply(...)' method in referenced function by default 
+	 * in the case of that a generated sub-class does not override this method (bytecodeGen)
 	 */
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
@@ -237,16 +240,16 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 
 	@Override
 	public CompiledFunc compileWithASM(String[] varNames) {
+
 		boolean writeFile = true;
-		String clsName = getName();
-		if (clsName == null || clsName.length() == 0)
-			clsName = this.getClass().getSimpleName();
-		clsName = clsName
+		genClassName = getName();
+		if (genClassName == null || genClassName.length() == 0)
+			genClassName = this.getClass().getSimpleName();
+		genClassName = genClassName
 				+ java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		try {
-			FuncClassLoader<CompiledFunc> mcl = new FuncClassLoader<CompiledFunc>(
-					ClassGenerator.class.getClassLoader());
-			ClassGenerator cgen = new ClassGenerator(clsName);
+			FuncClassLoader<CompiledFunc> mcl = FuncClassLoader.getInstance(ClassGenerator.class.getClassLoader());
+			ClassGenerator cgen = new ClassGenerator(genClassName);
 
 			cgen.startClass(ClassGenerator.getASMName(CompiledFunc.class), null);
 
@@ -293,11 +296,29 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 			}
 
 			Map<MathFunc, Integer> refsMap = BytecodeUtils.getFuncRefsMap(this);
-			this.bytecodeGen(mv, argsMap, 3, refsMap); //3 for args: double apply(Element e, Node n, double ...args);
 			
+			if (this.compileToStaticField) {
+				this.compileToStaticField = false;//set the flag, so the call of bytecodeGen() can generate code
+				this.bytecodeGen(mv, argsMap, 3, refsMap, genClassName); //3 for args: double apply(Element e, Node n, double ...args);
+				staticFieldName = "var_" + this.getName();
+				FieldVisitor fv = cgen.getClassWriter().visitField(
+						Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, staticFieldName, "D", "D", 0.0);
+				fv.visitEnd();
+				mv.visitInsn(Opcodes.DUP2);
+				mv.visitFieldInsn(Opcodes.PUTSTATIC, cgen.getClassName(),
+						staticFieldName, "D");
+				
+				//no need to do this here:
+				//this.compileToStaticField = false; //set to false to indicate that it is already compiled
+				
+				//set the flag back to true, so the other call can generate the access to the static field
+				this.compileToStaticField = true;
+			} else {
+				this.bytecodeGen(mv, argsMap, 3, refsMap, genClassName); //3 for args: double apply(Element e, Node n, double ...args);
+			}
 			mv.visitInsn(retType.getOpcode(Opcodes.IRETURN));
 			
-			mv.visitLocalVariable("this", "L" + clsName + ";", null,
+			mv.visitLocalVariable("this", "L" + genClassName + ";", null,
 					startMatchesLabel, endMatchesLabel, 0);
 			mv.visitLocalVariable("element", param1.getDescriptor(), null,
 					startMatchesLabel, endMatchesLabel, 1);
@@ -312,7 +333,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 
 			byte[] bcode = cgen.dump();
 			if (writeFile) {
-				FileOutputStream fos = new FileOutputStream(clsName + ".class");
+				FileOutputStream fos = new FileOutputStream(genClassName + ".class");
 				fos.write(bcode);
 				fos.close();
 			}
@@ -327,8 +348,18 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 
 			return func;
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException(e.getMessage());
 		}
+	}
+
+	protected boolean compileToStaticField = false;
+	protected String genClassName;
+	protected String staticFieldName;
+	
+	@Override
+	public void compileToStaticField(boolean flag) {
+		this.compileToStaticField = flag;
 	}
 
 	//////////////Operator overloading support through Java-OO//////////////////

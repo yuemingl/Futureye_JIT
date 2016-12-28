@@ -298,9 +298,10 @@ public interface MathFunc {
 	 * ASM library version implemented more features
 	 * 
 	 * @param mv
+	 * @param clsName TODO
 	 */
 	void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
-			int argsStartPos, Map<MathFunc, Integer> funcRefsMap);
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName);
 
 	/**
 	 * Compile the function to bytecode with order of arguments from
@@ -317,7 +318,26 @@ public interface MathFunc {
 	 */
 	CompiledFunc compile(String[] varNames);
 	
+	/**
+	 * Compile the function to bytecode with a specified order of
+	 * arguments with ASM library (an independent way of bytecode generation)
+	 * 
+	 * @param varNames
+	 * @return
+	 */
 	CompiledFunc compileWithASM(String[] varNames);
+	
+	/**
+	 * Set the flag so that the evaluation results of this expression 
+	 * is compiled to a static filed of the generated class. Any expression
+	 * that contains this expression will access the static filed instead for
+	 * evaluation.
+	 * 
+	 * The default flag is false
+	 * 
+	 * @param flag
+	 */
+	void compileToStaticField(boolean flag);
 	
 	//////////////Operator overloading support through Java-OO//////////////////
 	/**
