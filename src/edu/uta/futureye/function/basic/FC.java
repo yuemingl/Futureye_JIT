@@ -155,7 +155,7 @@ public class FC extends MathFuncBasic {
 
 	@Override
 	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
-			int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
 		mv.visitLdcInsn(val);
 	}
 }

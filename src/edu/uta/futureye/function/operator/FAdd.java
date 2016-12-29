@@ -75,10 +75,14 @@ public class FAdd extends FBinaryOp {
 
 	@Override
 	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
-			int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
-		arg1.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap);
-		arg2.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap);
-		mv.visitInsn(Opcodes.DADD);
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
+		if (this.compileToStaticField && this.isCompiledToStaticFiled) {
+			mv.visitFieldInsn(Opcodes.GETSTATIC, this.genClassName, this.staticFieldName, "D");
+		} else {
+			arg1.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+			arg2.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+			mv.visitInsn(Opcodes.DADD);
+		}
 	}
 
 }

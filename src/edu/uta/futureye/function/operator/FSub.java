@@ -8,6 +8,9 @@ import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
+import org.objectweb.asm.MethodVisitor;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
@@ -74,6 +77,18 @@ public class FSub extends FBinaryOp {
 		arg1.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		arg2.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		return il.append(InstructionConstants.DSUB);
+	}
+
+	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
+		if (this.compileToStaticField && this.isCompiledToStaticFiled) {
+			mv.visitFieldInsn(Opcodes.GETSTATIC, this.genClassName, this.staticFieldName, "D");
+		} else {
+			arg1.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+			arg2.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+			mv.visitInsn(Opcodes.DSUB);
+		}
 	}
 
 }

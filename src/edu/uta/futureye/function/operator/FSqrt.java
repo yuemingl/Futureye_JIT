@@ -9,6 +9,9 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.Type;
+import org.objectweb.asm.MethodVisitor;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -46,6 +49,17 @@ public class FSqrt extends FUniaryOp {
 		Constants.INVOKESTATIC));
 	}
 	
+	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
+		if (this.compileToStaticField && this.isCompiledToStaticFiled) {
+			mv.visitFieldInsn(Opcodes.GETSTATIC, this.genClassName, this.staticFieldName, "D");
+		} else {
+			arg.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Math", "sqrt", "(D)D", false);
+		}
+	}
+
 	@Override
 	public String getExpr() {
 		return "sqrt("+arg.getExpr()+")";

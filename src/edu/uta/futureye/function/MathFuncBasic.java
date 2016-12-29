@@ -298,7 +298,6 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 			Map<MathFunc, Integer> refsMap = BytecodeUtils.getFuncRefsMap(this);
 			
 			if (this.compileToStaticField) {
-				this.compileToStaticField = false;//set the flag, so the call of bytecodeGen() can generate code
 				this.bytecodeGen(mv, argsMap, 3, refsMap, genClassName); //3 for args: double apply(Element e, Node n, double ...args);
 				staticFieldName = "var_" + this.getName();
 				FieldVisitor fv = cgen.getClassWriter().visitField(
@@ -311,8 +310,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 				//no need to do this here:
 				//this.compileToStaticField = false; //set to false to indicate that it is already compiled
 				
-				//set the flag back to true, so the other call can generate the access to the static field
-				this.compileToStaticField = true;
+				this.isCompiledToStaticFiled = true;
 			} else {
 				this.bytecodeGen(mv, argsMap, 3, refsMap, genClassName); //3 for args: double apply(Element e, Node n, double ...args);
 			}
@@ -353,13 +351,19 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 		}
 	}
 
+	// Indicate whether the result of the expression is needed to be assigned to a static field
 	protected boolean compileToStaticField = false;
+	// This flag is automatically set to false when 'compileToStaticField' is set to true and
+	// it is set to true after the first time of compilation so the expressions that contain this
+	// expression will refer the static field thereafter
+	protected boolean isCompiledToStaticFiled = false;
 	protected String genClassName;
 	protected String staticFieldName;
 	
 	@Override
 	public void compileToStaticField(boolean flag) {
 		this.compileToStaticField = flag;
+		this.isCompiledToStaticFiled = false;
 	}
 
 	//////////////Operator overloading support through Java-OO//////////////////
