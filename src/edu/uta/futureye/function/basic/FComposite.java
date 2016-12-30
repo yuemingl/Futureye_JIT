@@ -12,6 +12,7 @@ import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.DALOAD;
 import org.apache.bcel.generic.DASTORE;
 import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionFactory;
@@ -240,27 +241,27 @@ public class FComposite extends AbstractMathFunc {
 			// Prepare a double array as the arguments for the fOuter function
 			// which is equal to call the outer function
 			LocalVariableGen lg;
-			
-			//double[] arg = null;
+
+			//double[] aryArgOuter = null;
 			lg = mg.addLocalVariable("aryArgOuter",
 				new ArrayType(Type.DOUBLE, 1), null, null);
 			int aryArgOuter = lg.getIndex();
 			il.append(InstructionConstants.ACONST_NULL);
 			lg.setStart(il.append(new ASTORE(aryArgOuter))); // "idxArg" valid from here
-			
-			//arg = new double[size]
+
+			//aryArgOuter = new double[size]
 			//il.append(new PUSH(cp, fInners.size()));
 			il.append(new PUSH(cp, fOuter.getVarNames().size()));
 			il.append(new NEWARRAY(Type.DOUBLE));
 			il.append(new ASTORE(aryArgOuter));
-			
+
 			//int index = 0;
-			Map<String, Integer> argMap = fOuter.getArgIdxMap();
+			Map<String, Integer> fOuterArgMap = fOuter.getArgIdxMap();
 			for(String name : fOuter.getVarNames()) {
 				MathFunc f = fInners.get(name);
 				//aryArgOuter[argIdx] = {value of the argument}
 				il.append(new ALOAD(aryArgOuter));
-				il.append(new PUSH(cp, argMap.get(name))); //index++
+				il.append(new PUSH(cp, fOuterArgMap.get(name))); //index++
 				if(f != null) {
 					List<String> args = f.getVarNames();
 					HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
@@ -269,7 +270,12 @@ public class FComposite extends AbstractMathFunc {
 					}
 					f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
 				} else {
-					il.append(new PUSH(cp, 0.0)); //pad 0.0 for undefined variables in fInners map
+					//il.append(new PUSH(cp, 0.0)); //pad 0.0 for undefined variables in fInners map
+					//bugfix
+					//args[argsMap.get(name)]
+					il.append(new ALOAD(argsStartPos));
+					il.append(new PUSH(cp, argsMap.get(name)));
+					il.append(new DALOAD());
 				}
 				il.append(new DASTORE());
 			}

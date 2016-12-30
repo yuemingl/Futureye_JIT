@@ -7,6 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.DALOAD;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUSH;
 import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
@@ -159,7 +167,10 @@ public class LaplaceTestJITForPaper {
 
 		@Override
 		public double apply(double... args) {
-			return 0;
+			//argIdx is not correct??????
+			//if we do not override 'InstructionHandle bytecodeGen(..)'
+			//this function will be call and argIdx need to be figured out
+			return args[this.argIdx];
 		}
 		
 //		r_x = (y2-y3)/jac;
@@ -181,7 +192,22 @@ public class LaplaceTestJITForPaper {
 		public String getExpr() {
 			return this.varName;
 		}
-		
+		@Override
+		public MathFunc setArgIdx(Map<String, Integer> argsMap) {
+			this.argIdx = argsMap.get(varName);
+			return this;
+		}
+
+		@Override
+		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
+				ConstantPoolGen cp, InstructionFactory factory, 
+				InstructionList il, Map<String, Integer> argsMap, 
+				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
+			il.append(new ALOAD(argsStartPos));
+			il.append(new PUSH(cp, argsMap.get(this.getName())));
+			return il.append(new DALOAD());
+		}
+
 		@Override
 		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
 				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
@@ -209,7 +235,10 @@ public class LaplaceTestJITForPaper {
 
 		@Override
 		public double apply(double... args) {
-			return 0;
+			//argIdx is not correct??????
+			//if we do not override 'InstructionHandle bytecodeGen(..)'
+			//this function will be call and argIdx need to be figured out
+			return args[this.argIdx];
 		}
 		
 //		s_x = (y3-y1)/jac;
@@ -232,6 +261,17 @@ public class LaplaceTestJITForPaper {
 		public String getExpr() {
 			return this.varName;
 		}
+		
+		@Override
+		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
+				ConstantPoolGen cp, InstructionFactory factory, 
+				InstructionList il, Map<String, Integer> argsMap, 
+				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
+			il.append(new ALOAD(argsStartPos));
+			il.append(new PUSH(cp, argsMap.get(this.getName())));
+			return il.append(new DALOAD());
+		}
+		
 		@Override
 		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
 				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
@@ -315,11 +355,11 @@ public class LaplaceTestJITForPaper {
 			crhs = new CompiledFunc[nDOFs];
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
-					clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
-					//clhs[j][i] = matLHS[j][i].compile(argsOrder);
+					//clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
+					clhs[j][i] = matLHS[j][i].compile(argsOrder);
 				}
-				crhs[j] = vecRHS[j].compileWithASM(argsOrder);
-				//crhs[j] = vecRHS[j].compile(argsOrder);
+				//crhs[j] = vecRHS[j].compileWithASM(argsOrder);
+				crhs[j] = vecRHS[j].compile(argsOrder);
 			}
 		}
 		
