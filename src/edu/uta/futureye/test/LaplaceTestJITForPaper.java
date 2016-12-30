@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.objectweb.asm.MethodVisitor;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
+
 import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
@@ -177,6 +181,16 @@ public class LaplaceTestJITForPaper {
 		public String getExpr() {
 			return this.varName;
 		}
+		
+		@Override
+		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
+				String clsName) {
+			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
+			mv.visitLdcInsn(argsMap.get(varName));
+			mv.visitInsn(Opcodes.DALOAD);
+		}
+
 	}
 	public static class TriAreaCoordS extends AbstractSimpleMathFunc {
 		MathFunc jac;
@@ -218,6 +232,14 @@ public class LaplaceTestJITForPaper {
 		public String getExpr() {
 			return this.varName;
 		}
+		@Override
+		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
+				String clsName) {
+			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
+			mv.visitLdcInsn(argsMap.get(varName));
+			mv.visitInsn(Opcodes.DALOAD);
+		}
 	}
 	
 	public interface LHSExpr {
@@ -255,6 +277,8 @@ public class LaplaceTestJITForPaper {
 			// 2D JacMat = (r[2] r[3]) = (y_r, y_s)
 			//jac changes with element, define the expression for jac with linear element
 			jac = fx.diff("r")*fy.diff("s") - fy.diff("r")*fx.diff("s");
+			//jac.compileToStaticField(true);
+			//cjac = jac.compileWithASM(argsOrder);
 			matLHS = new MathFunc[nDOFs][nDOFs];
 			vecRHS = new MathFunc[nDOFs];
 		}
@@ -271,7 +295,7 @@ public class LaplaceTestJITForPaper {
 
 			for(int j=0; j<nDOFs; j++) {
 				MathFunc v = sf[j];
-				System.out.println(">>>"+sf[j]);
+//				System.out.println(">>>"+sf[j]);
 				for(int i=0; i<nDOFs; i++) {
 					MathFunc u = sf[i];
 					matLHS[j][i] = lhsExpr.apply(u, v).compose(map)*jac;
@@ -284,15 +308,18 @@ public class LaplaceTestJITForPaper {
 		
 		CompiledFunc[][] clhs = new CompiledFunc[nDOFs][nDOFs];
 		CompiledFunc[] crhs = new CompiledFunc[nDOFs];
+		CompiledFunc cjac;
 		
 		public void compileWeakForm() {
 			clhs = new CompiledFunc[nDOFs][nDOFs];
 			crhs = new CompiledFunc[nDOFs];
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
-					clhs[j][i] = matLHS[j][i].compile(argsOrder);
+					clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
+					//clhs[j][i] = matLHS[j][i].compile(argsOrder);
 				}
-				crhs[j] = vecRHS[j].compile(argsOrder);
+				crhs[j] = vecRHS[j].compileWithASM(argsOrder);
+				//crhs[j] = vecRHS[j].compile(argsOrder);
 			}
 		}
 		
@@ -304,14 +331,26 @@ public class LaplaceTestJITForPaper {
 			return crhs;
 		}
 		
+		public CompiledFunc getJac() {
+			return this.cjac;
+		}
+		
 	}
 	
-	public void run() {
+	public void run(int nNodes) {
+		int n = 51;
+		boolean solveSystem = true;
+		
         //1.Generate mesh
-        //MeshReader reader = new MeshReader("triangle.grd");
-        //Mesh mesh = reader.read2DMesh();
-        Mesh mesh = MeshGenerator.rectangle(-3, 3, -3, 3, 600, 600);
-        //Compute geometry relationship between nodes and elements
+		Mesh mesh = null;
+		if(solveSystem) {
+	        MeshReader reader = new MeshReader("triangle.grd");
+	        mesh = reader.read2DMesh();
+		} else {
+			mesh = MeshGenerator.rectangle(-3, 3, -3, 3, n, n);
+		}
+		
+		//Compute geometry relationship between nodes and elements
         mesh.computeNodeBelongsToElements();
 
         //2.Mark border types
@@ -351,7 +390,10 @@ public class LaplaceTestJITForPaper {
 					}
 				}
 		);
+		
+		long startCompile = System.currentTimeMillis();
 		fet.compileWeakForm();
+		System.out.println("Compile time: "+(System.currentTimeMillis()-startCompile));
 
 		CompiledFunc[][] clhs = fet.getCompiledLHS();
 		CompiledFunc[] crhs = fet.getCompiledRHS();
@@ -366,7 +408,9 @@ public class LaplaceTestJITForPaper {
 		SparseVector load = new SparseVectorHashMap(dim);
 		
 		long start = System.currentTimeMillis();
-		int NN = 1;//10000*512/eList.size();
+		int NN = nNodes/((n-1)*(n-1)); //10000*512/eList.size();
+		if(solveSystem)
+			NN=1;
 		for(int ii=0; ii<NN; ii++) {
 		for(Element e : eList) {
 			//e.adjustVerticeToCounterClockwise();
@@ -382,37 +426,41 @@ public class LaplaceTestJITForPaper {
 				b[j] = intOnTriangleRefElement(crhs[j], params, coords.length, 3);
 			}
 			
-			for(int j=0;j<nDOFs;j++) {
-				DOF dofI = DOFs.at(j+1);
-				int nGlobalRow = dofI.getGlobalIndex();
-				for(int i=0;i<nDOFs;i++) {
-					DOF dofJ = DOFs.at(i+1);
-					int nGlobalCol = dofJ.getGlobalIndex();
-					stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
+			if(solveSystem) {
+				for(int j=0;j<nDOFs;j++) {
+					DOF dofI = DOFs.at(j+1);
+					int nGlobalRow = dofI.getGlobalIndex();
+					for(int i=0;i<nDOFs;i++) {
+						DOF dofJ = DOFs.at(i+1);
+						int nGlobalCol = dofJ.getGlobalIndex();
+						stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
+					}
+					//Local load vector
+					load.add(nGlobalRow, b[j]);
 				}
-				//Local load vector
-				load.add(nGlobalRow, b[j]);
 			}
 		}
 		}
-		System.out.println("Aassembly time: "+(System.currentTimeMillis()-start)+"ms");
+		System.out.println("Nodes="+nNodes+", Aassembly time: "+(System.currentTimeMillis()-start)+"ms");
 
-		//Boundary condition
-		imposeDirichletCondition(stiff, load, mesh, C0);
-		
-        //6.Solve linear system
-        SolverJBLAS solver = new SolverJBLAS();
-        Vector u = solver.solveDGESV(stiff, load);
-        System.out.println("u=");
-        for(int i=1;i<=u.getDim();i++)
-            System.out.println(String.format("%.3f ", u.get(i)));
-
-        //7.Output results to an Techplot format file
-        MeshWriter writer = new MeshWriter(mesh);
-        writer.writeTechplot("./tutorial/Laplace2D.dat", u);
-
-        this.mesh = mesh;
-        this.u = u;
+		if(solveSystem) {
+			//Boundary condition
+			imposeDirichletCondition(stiff, load, mesh, C0);
+			
+	        //6.Solve linear system
+	        SolverJBLAS solver = new SolverJBLAS();
+	        Vector u = solver.solveDGESV(stiff, load);
+	        System.out.println("u=");
+	        for(int i=1;i<=u.getDim();i++)
+	            System.out.println(String.format("%.3f ", u.get(i)));
+	
+	        //7.Output results to an Techplot format file
+	        MeshWriter writer = new MeshWriter(mesh);
+	        writer.writeTechplot("./tutorial/Laplace2D.dat", u);
+	
+	        this.mesh = mesh;
+	        this.u = u;
+		}
 	}
 	
 	public static void setDirichlet(Matrix stiff, Vector load, int matIndex, double value) {
@@ -498,6 +546,32 @@ public class LaplaceTestJITForPaper {
 	}	
     public static void main(String[] args) {
     	LaplaceTestJITForPaper ex1 = new LaplaceTestJITForPaper();
-    	ex1.run();
+    	ex1.run(10000);
+    	ex1.run(100000);
+    	ex1.run(10000*512);
+    	ex1.run(1000000);
+    	ex1.run(10000000);
+    	ex1.run(100000000);
+    	/**
+    	 * Nodes=10000, Aassembly time: 120ms
+Nodes=100000, Aassembly time: 249ms
+Nodes=1000000, Aassembly time: 1719ms
+Nodes=10000000, Aassembly time: 15709ms
+Nodes=100000000, Aassembly time: 147688ms
+
+
+Compile time: 130
+Nodes=10000, Aassembly time: 118ms
+Compile time: 23
+Nodes=100000, Aassembly time: 252ms
+Compile time: 27
+Nodes=1000000, Aassembly time: 1625ms
+Compile time: 25
+Nodes=10000000, Aassembly time: 15896ms
+Compile time: 18
+Nodes=100000000, Aassembly time: 142159ms
+
+
+    	 */
     }
 }

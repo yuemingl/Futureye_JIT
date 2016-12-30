@@ -22,6 +22,8 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.Type;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.Element;
@@ -222,6 +224,11 @@ public class FComposite extends AbstractMathFunc {
 		}
 	}
 
+	/**
+	 * Generate an array which contains the results of inner functions
+	 * Then generate the outer function and take the array as the dummy
+	 * arguments
+	 */
 	@Override
 	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
 			ConstantPoolGen cp, InstructionFactory factory,
@@ -266,11 +273,25 @@ public class FComposite extends AbstractMathFunc {
 				}
 				il.append(new DASTORE());
 			}
-			// Pass a double array to fOuter
+			// Pass the generated double array to fOuter by specifying the start position to 'aryArgOuter'
 			return fOuter.bytecodeGen(clsName, mg, cp, factory, il, fOuter.getArgIdxMap(), aryArgOuter, funcRefsMap);
 		}
 	}
 	
+	/**
+	 * Generate a separate function for the outer function and pass the results of inner functions as
+	 * arguments
+	 * 
+	 * @param clsName
+	 * @param mg
+	 * @param cp
+	 * @param factory
+	 * @param il
+	 * @param argsMap
+	 * @param argsStartPos
+	 * @param funcRefsMap
+	 * @return
+	 */
 	public InstructionHandle bytecodeGenSlow(String clsName, MethodGen mg,
 			ConstantPoolGen cp, InstructionFactory factory,
 			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
@@ -361,4 +382,48 @@ public class FComposite extends AbstractMathFunc {
 		}
 		throw new FutureyeException("Active variable names are different from all existing variable names!");
 	}
+
+	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
+		if(this.isOuterVariablesActive) {
+			fOuter.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+		} else {
+			int aryArgOuterLVTIdx = 4;//???
+			//define a local variable 
+			//double[] aryArgOuter = new double[size];
+			mv.visitLdcInsn(fOuter.getVarNames().size());
+			mv.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_DOUBLE);
+			mv.visitVarInsn(Opcodes.ASTORE, aryArgOuterLVTIdx);
+
+			//int index = 0;
+			Map<String, Integer> fOuterArgMap = fOuter.getArgIdxMap();
+			for(String name : fOuter.getVarNames()) {
+				MathFunc f = fInners.get(name);
+				//aryArgOuter[argIdx] = {value of the argument}
+				mv.visitVarInsn(Opcodes.ALOAD, aryArgOuterLVTIdx);
+				mv.visitLdcInsn(fOuterArgMap.get(name));
+				if(f != null) {
+					List<String> args = f.getVarNames();
+					HashMap<String, Integer> fArgsMap = new HashMap<String, Integer>();
+					for(int i=0; i<args.size(); i++) {
+						fArgsMap.put(args[i], argsMap.get(args[i]));
+					}
+					f.bytecodeGen(mv, fArgsMap, argsStartPos, funcRefsMap, clsName);
+				} else {
+					//f(r,x,y) = ((x*x + y*y)*-2.0 + 36.0)*r
+					//fInner = {x=..., y=...} //no r
+					//mv.visitLdcInsn(0.0); // //pad 0.0 for undefined variables in fInners map
+					//get from 'argsMap' seems correct?
+					mv.visitVarInsn(Opcodes.ALOAD, argsStartPos);
+					mv.visitLdcInsn(argsMap.get(name));
+					mv.visitInsn(Opcodes.DALOAD);
+				}
+				mv.visitInsn(Opcodes.DASTORE);
+			}
+			// Pass the generated double array to fOuter by specifying the start position to 'aryArgOuterLVTIdx'
+			fOuter.bytecodeGen(mv, fOuter.getArgIdxMap(), aryArgOuterLVTIdx, funcRefsMap, clsName);
+		}
+	}
+
 }
