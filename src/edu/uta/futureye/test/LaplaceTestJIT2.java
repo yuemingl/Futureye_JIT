@@ -40,6 +40,7 @@ import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2DRS;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
+import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
@@ -152,7 +153,8 @@ public class LaplaceTestJIT2 {
 
 		@Override
 		public double apply(double... args) {
-			return 0;
+			//this.argIdx is set in 'BytecodeUtils.genClass()'
+			return args[this.argIdx];
 		}
 		
 //		r_x = (y2-y3)/jac;
@@ -192,7 +194,8 @@ public class LaplaceTestJIT2 {
 
 		@Override
 		public double apply(double... args) {
-			return 0;
+			//this.argIdx is set in 'BytecodeUtils.genClass()'
+			return args[this.argIdx];
 		}
 		
 //		s_x = (y3-y1)/jac;

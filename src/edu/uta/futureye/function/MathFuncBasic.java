@@ -181,7 +181,7 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 			ConstantPoolGen cp, InstructionFactory factory, 
 			InstructionList il, Map<String, Integer> argsMap, 
 			int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
-
+//		throw new UnsupportedOperationException();
 		FieldGen fg = new FieldGen(ACC_PUBLIC, new ArrayType(Type.getType(MathFunc.class), 1), "funcRefs", cp);
 		//System.out.println(fg.getSignature());
 		int idxFuncRefs = cp.addFieldref("edu.uta.futureye.bytecode.CompiledFunc", "funcRefs", fg.getSignature());

@@ -98,6 +98,11 @@ public class BytecodeUtils {
 //			System.out.println("JIT Compiled: "+func.getName()+sb.toString()+" = "+func.getExpr());
 		}
 
+		//Recursively set the argument index (order) before calling 'getFuncRefsMap()'
+		//since the call of 'setArgIdx()' may change the expression tree
+		//TODO the call of 'setArgIdx()' in 'bytecodeGen()' may be not necessary
+		func.setArgIdx(argsMap);
+		
 		Map<MathFunc, Integer> refsMap = getFuncRefsMap(func);
 		
 		if(staticMethod)

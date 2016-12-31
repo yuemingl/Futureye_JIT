@@ -170,6 +170,7 @@ public class LaplaceTestJITForPaper {
 			//argIdx is not correct??????
 			//if we do not override 'InstructionHandle bytecodeGen(..)'
 			//this function will be call and argIdx need to be figured out
+			//this.argIdx is set in 'BytecodeUtils.genClass()'
 			return args[this.argIdx];
 		}
 		
@@ -238,6 +239,7 @@ public class LaplaceTestJITForPaper {
 			//argIdx is not correct??????
 			//if we do not override 'InstructionHandle bytecodeGen(..)'
 			//this function will be call and argIdx need to be figured out
+			//this.argIdx is set in 'BytecodeUtils.genClass()'
 			return args[this.argIdx];
 		}
 		
