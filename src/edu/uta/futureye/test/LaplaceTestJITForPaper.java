@@ -461,9 +461,9 @@ public class LaplaceTestJITForPaper {
 
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
-					A[j][i] = intOnTriangleRefElement(clhs[j][i], params, coords.length, 3);
+					A[j][i] = intOnTriangleRefElement(clhs[j][i], params, coords.length, 2);//2=80.839 3=80.966, 4=80.967
 				}
-				b[j] = intOnTriangleRefElement(crhs[j], params, coords.length, 3);
+				b[j] = intOnTriangleRefElement(crhs[j], params, coords.length, 2);
 			}
 			
 			if(solveSystem) {
