@@ -319,8 +319,8 @@ public class LaplaceTestJITForPaper {
 			// 2D JacMat = (r[2] r[3]) = (y_r, y_s)
 			//jac changes with element, define the expression for jac with linear element
 			jac = fx.diff("r")*fy.diff("s") - fy.diff("r")*fx.diff("s");
-			//jac.compileToStaticField(true);
-			//cjac = jac.compileWithASM(argsOrder);
+			jac.compileToStaticField(true);
+			cjac = jac.compileWithASM(argsOrder);
 			matLHS = new MathFunc[nDOFs][nDOFs];
 			vecRHS = new MathFunc[nDOFs];
 		}
@@ -357,11 +357,11 @@ public class LaplaceTestJITForPaper {
 			crhs = new CompiledFunc[nDOFs];
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
-					//clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
-					clhs[j][i] = matLHS[j][i].compile(argsOrder);
+					clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
+					//clhs[j][i] = matLHS[j][i].compile(argsOrder);
 				}
-				//crhs[j] = vecRHS[j].compileWithASM(argsOrder);
-				crhs[j] = vecRHS[j].compile(argsOrder);
+				crhs[j] = vecRHS[j].compileWithASM(argsOrder);
+				//crhs[j] = vecRHS[j].compile(argsOrder);
 			}
 		}
 		
@@ -461,6 +461,9 @@ public class LaplaceTestJITForPaper {
 			double[] coords = e.getNodeCoords();
 			System.arraycopy(coords, 0, params, 0, coords.length);
 
+			//put it in intOnTriangleRefElement?
+			fet.getJac().apply(params);
+			
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = intOnTriangleRefElement(clhs[j][i], params, coords.length, 2);//2=80.839 3=80.966, 4=80.967
