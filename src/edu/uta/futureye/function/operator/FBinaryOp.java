@@ -32,6 +32,13 @@ public abstract class FBinaryOp extends AbstractMathFunc {
 		return arg2;
 	}
 	
+	/**
+	 * TODO return this if no change
+	 * return the copied version if there is any change for argIdx
+	 * this.arg1 = this.arg1.setArgIdx(...)
+	 * this.arg2 = this.arg2.setArgIdx(...)
+	 * 
+	 */
 	@Override
 	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
 		//Allocate new array each time due to the "copy on change"

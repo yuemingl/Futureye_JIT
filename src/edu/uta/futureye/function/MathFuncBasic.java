@@ -203,6 +203,13 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	}
 	
 	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
+			String clsName) {
+		throw new RuntimeException("Unimplementd method!");
+	}
+
+	@Override
 	public CompiledFunc compile() {
 		String clsName="";
 		if(getName() == null || getName().length() == 0)
@@ -500,12 +507,12 @@ public abstract class MathFuncBasic implements MathFunc, Cloneable {
 	/////////////////////////////////////////////////////////////
 	@Override
 	public String getName() {
-		return "";
+		return "[Undefined expressin. Please override 'String getName()']";
 	}
 	
 	@Override
 	public String getExpr() {
-		return "";
+		return "[Undefined expressin. Please override 'String getExpr()']";
 	}
 	
 	@Override
