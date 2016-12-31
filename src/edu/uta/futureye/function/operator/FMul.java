@@ -78,6 +78,9 @@ public class FMul extends FBinaryOp {
 			ConstantPoolGen cp, InstructionFactory factory,
 			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
 			Map<MathFunc, Integer> funcRefsMap) {
+//call setArgIdx here will create new objects which are not in funcRefsMap
+//		arg1.setArgIdx(argsMap);
+//		arg2.setArgIdx(argsMap);
 		arg1.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		arg2.bytecodeGen(clsName, mg, cp, factory, il, argsMap, argsStartPos, funcRefsMap);
 		return il.append(InstructionConstants.DMUL);

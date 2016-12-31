@@ -121,10 +121,18 @@ public interface MathFunc {
 	
 	/**
 	 * Set the index in the parameter 'args' of the 'apply(double ...args)' method
-	 * for each variable name
+	 * for each variable name (that means the order of variables can be specified by this function)
 	 *
-	 *??? How is the used in code generation?
+	 *??? How is this used in code generation?
+	 *
 	 *??? argsMap in bytecodeGen() is used for this argument index purpose? 
+	 *
+	 *There are two solutions for argument ordering
+	 *1. The old solution, 'apply(VariableNode n)' which in turn use the map in VairableNode
+	 *2. use 'setArgIdx(Map<String, Integer> argsMap) and apply(double ...args)'. The draw back of this
+	 *is that the function needs to be copied once the index is changed which can cause a lot of complexity
+	 *A simple solution may be order the argument in alphabetical order in force by providing a utility function
+	 *to convert a 'Map<String, Double> args' to 'double[] args'
 	 *
 	 * @param argIdx
 	 * @return
