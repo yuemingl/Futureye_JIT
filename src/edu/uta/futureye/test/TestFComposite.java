@@ -57,23 +57,26 @@ public class TestFComposite {
 		Map<String,Integer> argMap = new HashMap<String, Integer>();
 		argMap.put("x", 1);
 		argMap.put("y", 0);
-		f.setArgIdx(argMap);
-		System.out.println(f);
+		f.setArgIdx(argMap); //f(y,x)=y-x
+		
+		System.out.println(f.toString());
 		System.out.println(f.getVarNames());
 		System.out.println(f.getArgIdxMap());
+		System.out.println(f.apply(1,3));
 
 		MathFunc fx = r;
 		MathFunc fy = s;
 		Map<String, MathFunc> map = new HashMap<String, MathFunc>();
-		map.put("x", fx);
-		map.put("y", fy);
+		map.put("x", fx); //x(r)=r
+		map.put("y", fy); //y(s)=s
 		MathFunc cf = f.compose(map);
-		System.out.println(cf);
+		System.out.println(cf); //f(r,s)=s-r
 		System.out.println(cf.getVarNames());
 		System.out.println(cf.getArgIdxMap());
 		
+		//the order of "s","r" matters
 		CompiledFunc ccf = cf.compile(new String[]{"s","r"});
-		System.out.println(ccf.apply(5.5,2));
+		System.out.println(ccf.apply(5.5, 2));
 
 	}
 	
