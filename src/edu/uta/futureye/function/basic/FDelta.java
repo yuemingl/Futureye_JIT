@@ -2,7 +2,7 @@ package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 
@@ -10,7 +10,7 @@ import edu.uta.futureye.function.intf.MathFunc;
  * Delta function
  *
  */
-public class FDelta extends AbstractMathFunc {
+public class FDelta extends MultiVarFunc {
 	Variable x0;
 	double eps;
 	double amp;

@@ -13,7 +13,7 @@ import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;

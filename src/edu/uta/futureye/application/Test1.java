@@ -13,7 +13,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -93,7 +93,7 @@ public class Test1 {
 									
 			weakForm.setParam(
 			new FC(0.02), //  1/(3*mu_s') = 0.02
-			new AbstractMathFunc("x","y"){ //mu_a
+			new MultiVarFunc("x","y"){ //mu_a
 				@Override
 				public double apply(Variable v) {
 					double dx = v.get("x")-fcx;
@@ -202,7 +202,7 @@ public class Test1 {
 
 		weakForm.setParam(
 		new FC(0.02), //  1/(3*mu_s') = 0.02
-		new AbstractMathFunc("x","y"){ //mu_a
+		new MultiVarFunc("x","y"){ //mu_a
 			@Override
 			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;

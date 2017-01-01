@@ -12,16 +12,16 @@ import edu.uta.futureye.util.FutureyeException;
  * Template to implement multiple variables MathFunc 
  *
  */
-public abstract class AbstractMathFunc extends MathFuncBasic {
+public abstract class MultiVarFunc extends MathFuncBase {
 	protected String fName = "";
 	protected String[] varNames;
 	protected int[] argIdx;
 	
-	public AbstractMathFunc(String ...varNames) {
+	public MultiVarFunc(String ...varNames) {
 		this.varNames = varNames;
 	}
 	
-	public AbstractMathFunc(List<String> varNames) {
+	public MultiVarFunc(List<String> varNames) {
 		this.varNames = varNames.toArray(new String[0]);
 	}
 	

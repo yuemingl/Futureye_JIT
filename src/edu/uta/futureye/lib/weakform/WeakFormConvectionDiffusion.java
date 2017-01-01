@@ -5,7 +5,7 @@ import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.util.Utils;
 
 /**
@@ -47,7 +47,7 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 	protected MathFunc g_b = null;
 	protected MathFunc g_g = null;
 	protected MathFunc g_d = null;
-	protected VectorFunction g_v = null;
+	protected VectorMathFunc g_v = null;
 	protected MathFunc g_cn = null;
 	protected double Dt;
 
@@ -65,7 +65,7 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 		this.Dt = Dt;
 	}
 	
-	public void setConvectionVelocity(VectorFunction v) {
+	public void setConvectionVelocity(VectorMathFunc v) {
 		this.g_v = v;
 	}
 	
@@ -86,7 +86,7 @@ public class WeakFormConvectionDiffusion extends AbstractScalarWeakForm {
 			 //Interplate functions on element e
 			MathFunc fk = Utils.interpolateOnElement(g_k,e);
 			MathFunc fb = Utils.interpolateOnElement(g_b,e);
-			VectorFunction fv = new SpaceVectorFunction(g_v.getDim());
+			VectorMathFunc fv = new SpaceVectorFunction(g_v.getDim());
 			for(int dim=1;dim<=g_v.getDim();dim++)
 				fv.set(dim, Utils.interpolateOnElement(g_v.get(dim),e));
 			

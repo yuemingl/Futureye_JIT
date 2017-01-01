@@ -5,13 +5,13 @@ import java.util.Map;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.PairDoubleInteger;
 import edu.uta.futureye.util.container.ObjList;
 
-public class DiscreteIndexFunction extends AbstractMathFunc {
+public class DiscreteIndexFunction extends MultiVarFunc {
 	protected Map<Integer, Double> data = new HashMap<Integer, Double>();
 	
 	public DiscreteIndexFunction() {

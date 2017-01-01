@@ -20,7 +20,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -104,7 +104,7 @@ public class MouseHead {
 		final double fcr = incBand;
 		final double fMaxMu_a = maxMu_a;
 		final double fBkMu_a = bkMu_a;
-		mu_a = new AbstractMathFunc("x","y"){
+		mu_a = new MultiVarFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;
@@ -135,7 +135,7 @@ public class MouseHead {
 		final double fcr = incR;
 		final double fMaxMu_a = maxMu_a;
 		final double fBkMu_a = bkMu_a;
-		rltMu_a = new AbstractMathFunc("x","y"){
+		rltMu_a = new MultiVarFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				double dx = v.get("x")-fcx;
@@ -213,7 +213,7 @@ public class MouseHead {
 	public Vector solveParamInverse(Mesh mesh, Vector U) {
 		HashMap<NodeType, MathFunc> mapNTF2 = new HashMap<NodeType, MathFunc>();
 		
-		mapNTF2.put(NodeType.Dirichlet, new AbstractMathFunc("x","y") {
+		mapNTF2.put(NodeType.Dirichlet, new MultiVarFunc("x","y") {
 			@Override
 			public double apply(Variable v) {
 				//应该全是Dirichlet条件，否则在非Dirichlet条件处会产生大变化
@@ -982,7 +982,7 @@ public class MouseHead {
 	public void markExteriorBorder(Mesh mesh, final TailType fTailType) {
 		//外问题 Solve exterior problem
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y") {
+		mapNTF.put(NodeType.Robin, new MultiVarFunc("x","y") {
 			@Override
 			public double apply(Variable v) {
 				double x = v.get("x");

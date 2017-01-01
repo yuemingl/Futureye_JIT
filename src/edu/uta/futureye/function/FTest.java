@@ -2,7 +2,7 @@ package edu.uta.futureye.function;
 
 import edu.uta.futureye.function.intf.MathFunc;
 
-public class FTest extends AbstractMathFunc {
+public class FTest extends MultiVarFunc {
 
 	@Override
 	public double apply(double... args) {
@@ -13,7 +13,7 @@ public class FTest extends AbstractMathFunc {
 	public static void main(String[]args) {
 		System.out.println(new FTest());
 		
-		MathFunc f = new AbstractMathFunc("x","y") {
+		MathFunc f = new MultiVarFunc("x","y") {
 	
 			@Override
 			public double apply(double... args) {

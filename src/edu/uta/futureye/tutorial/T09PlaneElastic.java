@@ -7,7 +7,7 @@ import edu.uta.futureye.algebra.SparseBlockVector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -39,7 +39,7 @@ public class T09PlaneElastic {
         //2.Mark border types
         HashMap<NodeType, MathFunc> mapNTF =
                 new HashMap<NodeType, MathFunc>();
-        mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y"){
+        mapNTF.put(NodeType.Robin, new MultiVarFunc("x","y"){
         	@Override
         	public double apply(Variable v) {
         		double x = v.get("x");
@@ -52,7 +52,7 @@ public class T09PlaneElastic {
         			return 0;
         	}
         });
-        mapNTF.put(NodeType.Dirichlet, new AbstractMathFunc("x","y"){
+        mapNTF.put(NodeType.Dirichlet, new MultiVarFunc("x","y"){
         	@Override
         	public double apply(Variable v) {
         		double x = v.get("x");
@@ -90,7 +90,7 @@ public class T09PlaneElastic {
         b.set(1,FC.C0);
         b.set(2,FC.C0);
 //        t.set(1,FC.c0);
-        t.set(1,new AbstractMathFunc("x","y"){
+        t.set(1,new MultiVarFunc("x","y"){
         	@Override
         	public double apply(Variable v) {
         		//double y = v.get("y");

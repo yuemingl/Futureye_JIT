@@ -18,7 +18,7 @@ import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
@@ -567,7 +567,7 @@ public class LaplaceTest {
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new AbstractMathFunc("x","y"){
+		assembler.imposeDirichletCondition(new MultiVarFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				if(3.0-v.get("x")<0.01 && 

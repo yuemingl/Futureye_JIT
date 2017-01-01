@@ -11,12 +11,12 @@ import edu.uta.futureye.function.intf.MathFunc;
  * Template to implement single variable MathFunc 
  *
  */
-public abstract class AbstractSimpleMathFunc extends MathFuncBasic {
+public abstract class SingleVarFunc extends MathFuncBase {
 	protected String fName = "";
 	protected String varName;
 	protected int argIdx;
 	
-	public AbstractSimpleMathFunc(String funcName, String varName) {
+	public SingleVarFunc(String funcName, String varName) {
 		this.fName = funcName;
 		this.varName = varName;
 	}

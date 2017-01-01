@@ -11,7 +11,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.WeakForm;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -135,7 +135,7 @@ public class T08AdvectionDiffusion1D {
         Matrix stiff = assembler.getStiffnessMatrix();
         Vector load = assembler.getLoadVector();
         //Boundary condition
-        assembler.imposeDirichletCondition(new AbstractMathFunc("x") {
+        assembler.imposeDirichletCondition(new MultiVarFunc("x") {
         	@Override
         	public double apply(Variable v) {
         		double x = v.get("x");
@@ -195,7 +195,7 @@ public class T08AdvectionDiffusion1D {
         Matrix stiff = assembler.getStiffnessMatrix();
         Vector load = assembler.getLoadVector();
         //Boundary condition
-        assembler.imposeDirichletCondition(new AbstractMathFunc("x") {
+        assembler.imposeDirichletCondition(new MultiVarFunc("x") {
         	@Override
         	public double apply(Variable v) {
         		double x = v.get("x");

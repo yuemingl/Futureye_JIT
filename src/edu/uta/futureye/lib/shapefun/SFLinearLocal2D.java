@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.FC;
@@ -32,7 +32,7 @@ import edu.uta.futureye.util.container.VertexList;
  *   r + s + t = 1
  *
  */
-public class SFLinearLocal2D  extends AbstractMathFunc 
+public class SFLinearLocal2D  extends MultiVarFunc 
 							  implements ScalarShapeFunction {
 	protected int funIndex;
 	private MathFunc funOuter = null;
@@ -48,7 +48,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 	private double coef = 1.0;
 	
 	//r, s, t
-	class SF123 extends AbstractMathFunc {
+	class SF123 extends MultiVarFunc {
 		public SF123() {
 			super(SFLinearLocal2D.this.varNames);
 			this.setArgIdx(Utils.getIndexMap(this.getVarNames()));
@@ -105,7 +105,7 @@ public class SFLinearLocal2D  extends AbstractMathFunc
 		//Compose function: r = r(x,y), s = s(x,y), t = t(x,y)
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		final String varName = varNames[funIndex];
-		fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {	
+		fInners.put(varName, new MultiVarFunc(innerVarNames.toList()) {	
 			public MathFunc diff(String var) {
 				if(area < 0.0) {
 					throw new FutureyeException("Check nodes order: area < 0.0");

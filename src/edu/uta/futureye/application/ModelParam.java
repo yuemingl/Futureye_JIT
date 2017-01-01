@@ -1,6 +1,6 @@
 package edu.uta.futureye.application;
 
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.FutureyeException;
@@ -61,7 +61,7 @@ public class ModelParam {
 		
 		MathFunc rltMu_a = null;
 		if(num_inclusion == 1) {
-			rltMu_a = new AbstractMathFunc("x","y"){
+			rltMu_a = new MultiVarFunc("x","y"){
 				@Override
 				public double apply(Variable v) {
 					double dx = v.get("x")-fcx;
@@ -82,7 +82,7 @@ public class ModelParam {
 				}
 			};
 		} else if(num_inclusion == 2){
-			rltMu_a = new AbstractMathFunc("x","y"){
+			rltMu_a = new MultiVarFunc("x","y"){
 				@Override
 				public double apply(Variable v) {
 					double dx = v.get("x")-fcx;
@@ -106,7 +106,7 @@ public class ModelParam {
 				}
 			};	
 		} else if(num_inclusion == 3) { //Three inclusions
-			rltMu_a = new AbstractMathFunc("x","y"){
+			rltMu_a = new MultiVarFunc("x","y"){
 				@Override
 				public double apply(Variable v) {
 					double dx = v.get("x")-fcx;
@@ -138,7 +138,7 @@ public class ModelParam {
 				}
 			};			
 		} else if(num_inclusion == 5) { //Five inclusions
-			rltMu_a = new AbstractMathFunc("x","y"){
+			rltMu_a = new MultiVarFunc("x","y"){
 				@Override
 				public double apply(Variable v) {
 					double dx = v.get("x")-fcx;

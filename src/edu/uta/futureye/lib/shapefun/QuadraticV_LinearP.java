@@ -2,13 +2,13 @@ package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractVectorFunc;
+import edu.uta.futureye.function.VectorMathFuncBase;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
@@ -74,7 +74,7 @@ import edu.uta.futureye.util.container.ObjList;
  *
  * @author liuyueming
  */
-public class QuadraticV_LinearP extends AbstractVectorFunc 
+public class QuadraticV_LinearP extends VectorMathFuncBase 
 								implements VectorShapeFunction {
 	//(u1,u2,p)
 	protected SpaceVectorFunction sf = null;
@@ -180,7 +180,7 @@ public class QuadraticV_LinearP extends AbstractVectorFunc
 	 * @author liuyueming
 	 *
 	 */
-	public class QuadraticV_LinearP1D extends AbstractVectorFunc 
+	public class QuadraticV_LinearP1D extends VectorMathFuncBase 
 						implements VectorShapeFunction {
 		//(u1,u2,p)
 		protected SpaceVectorFunction sf = new SpaceVectorFunction(3);
@@ -250,7 +250,7 @@ public class QuadraticV_LinearP extends AbstractVectorFunc
 	};
 
 	@Override
-	public MathFunc dot(VectorFunction b) {
+	public MathFunc dot(VectorMathFunc b) {
 		return sf.dot(b);
 	}
 

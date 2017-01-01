@@ -20,7 +20,7 @@ import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.FMath;
-import edu.uta.futureye.function.MathFuncBasic;
+import edu.uta.futureye.function.MathFuncBase;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
@@ -30,7 +30,7 @@ import edu.uta.futureye.util.Constant;
  * f(x) = x
  * 
  */
-public class FX extends MathFuncBasic {
+public class FX extends MathFuncBase {
 	/**
 	 * Predefined instances of FX
 	 */

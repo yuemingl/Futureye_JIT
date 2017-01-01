@@ -7,7 +7,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 
-public interface VectorFunction {
+public interface VectorMathFunc {
 	/**
 	 * Returns the value of vector function at <tt>v</tt>
 	 * <p>
@@ -91,7 +91,7 @@ public interface VectorFunction {
 	 * @param fInners
 	 * @return
 	 */
-	VectorFunction compose(Map<String,MathFunc> fInners);
+	VectorMathFunc compose(Map<String,MathFunc> fInners);
 
 	///////////////////////////////////////////////
 	
@@ -102,7 +102,7 @@ public interface VectorFunction {
 	 * 
 	 * @param <code>\vec{g}(x)=(g1(x),g2(x),...,gn(x)</code>
 	 */
-	VectorFunction set(VectorFunction g);
+	VectorMathFunc set(VectorMathFunc g);
 	
 	/**
 	 * <code>fi(x)=a*gi(x), i=1...dim</code>
@@ -111,14 +111,14 @@ public interface VectorFunction {
 	 * 
 	 * @param <code>\vec{g}(x)=(g1(x),g2(x),...,gn(x)</code>
 	 */
-	VectorFunction set(double a, VectorFunction g);
+	VectorMathFunc set(double a, VectorMathFunc g);
 	
 	/**
 	 * <code>\vec{f}(x) = \vec{f}(x) + \vec{g}(x)</code>
 	 * 
 	 * @param <code>\vec{g}(x)=(g1(x), g2(x), ..., gn(x))</code>
 	 */
-	VectorFunction add(VectorFunction g);
+	VectorMathFunc add(VectorMathFunc g);
 	
 	/**
 	 * <code>\vec{f}(x) = \vec{f}(x) + a*\vec{g}(x)</code>
@@ -126,7 +126,7 @@ public interface VectorFunction {
 	 * @param a
 	 * @param <code>\vec{g}(x)=(g1(x), g2(x), ..., gn(x))</code>
 	 */
-	VectorFunction add(double a, VectorFunction g);
+	VectorMathFunc add(double a, VectorMathFunc g);
 	
 	/**
 	 * <code>\vec{f}(x) = a*\vec{f}(x)</code>
@@ -134,7 +134,7 @@ public interface VectorFunction {
 	 * @param a
 	 * @return
 	 */
-	VectorFunction scale(double a);
+	VectorMathFunc scale(double a);
 	
 	/**
 	 * <code>\vec{f}(x) = a*\vec{f}(x)</code>
@@ -142,7 +142,7 @@ public interface VectorFunction {
 	 * @param a
 	 * @return
 	 */
-	VectorFunction ax(double a);
+	VectorMathFunc ax(double a);
 	
 	/**
 	 * <code>\vec{f}(x) = a*\vec{f}(x) + \vec{g}(x)</code>
@@ -151,7 +151,7 @@ public interface VectorFunction {
 	 * @param <code>\vec{g}(x)=(g1(x), g2(x), ..., gn(x))</code>
 	 * @return
 	 */
-	VectorFunction axpy(double a, VectorFunction g);
+	VectorMathFunc axpy(double a, VectorMathFunc g);
 	
 	/**
 	 * Dot product, returns 
@@ -163,7 +163,7 @@ public interface VectorFunction {
 	 * @param <code>\vec{g}(x) = (g1(x), g2(x), ..., gn(x))</code>
 	 * @return
 	 */
-	MathFunc dot(VectorFunction g);
+	MathFunc dot(VectorMathFunc g);
 	
 	/**
 	 * Dot product, returns
@@ -191,7 +191,7 @@ public interface VectorFunction {
 	 * @param g
 	 * @return
 	 */
-	VectorFunction A(VectorFunction g);
+	VectorMathFunc A(VectorMathFunc g);
 	
 	/**
 	 * Add
@@ -205,7 +205,7 @@ public interface VectorFunction {
 	 * @param v
 	 * @return
 	 */
-	VectorFunction A(Vector v);
+	VectorMathFunc A(Vector v);
 	
 	/**
 	 * Subtract
@@ -219,7 +219,7 @@ public interface VectorFunction {
 	 * @param g
 	 * @return
 	 */
-	VectorFunction S(VectorFunction g);
+	VectorMathFunc S(VectorMathFunc g);
 	
 	/**
 	 *  Subtract
@@ -233,7 +233,7 @@ public interface VectorFunction {
 	 * @param v
 	 * @return
 	 */
-	VectorFunction S(Vector v);
+	VectorMathFunc S(Vector v);
 	
 	/**
 	 *  Multiply (componentwise) with vector function
@@ -247,7 +247,7 @@ public interface VectorFunction {
 	 * @param g
 	 * @return
 	 */
-	VectorFunction M(VectorFunction g);
+	VectorMathFunc M(VectorMathFunc g);
 	
 	/**
 	 * Multiply (componentwise) with vector
@@ -261,7 +261,7 @@ public interface VectorFunction {
 	 * @param v
 	 * @return
 	 */
-	VectorFunction M(Vector v);	
+	VectorMathFunc M(Vector v);	
 	
 	/**
 	 *  Divide (componentwise) by vector function
@@ -275,7 +275,7 @@ public interface VectorFunction {
 	 * @param g
 	 * @return
 	 */
-	VectorFunction D(VectorFunction g);
+	VectorMathFunc D(VectorMathFunc g);
 	
 	/**
 	 * Divide (componentwise) by vector
@@ -289,7 +289,7 @@ public interface VectorFunction {
 	 * @param v: a Vector
 	 * @return
 	 */
-	VectorFunction D(Vector v);
+	VectorMathFunc D(Vector v);
 	
 	/////////////////////////////////////////////////
 	
@@ -299,7 +299,7 @@ public interface VectorFunction {
 	 * 
 	 * @return
 	 */
-	VectorFunction copy();
+	VectorMathFunc copy();
 	
 	/**
 	 * return the expression of function
@@ -323,6 +323,6 @@ public interface VectorFunction {
 	 * function is returned by <code>toString()</code> method
 	 * @param name
 	 */
-	VectorFunction setFName(String name);
+	VectorMathFunc setFName(String name);
 	
 }

@@ -2,7 +2,7 @@ package edu.uta.futureye.function.basic;
 
 import java.util.Map;
 
-import edu.uta.futureye.function.AbstractSimpleMathFunc;
+import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
@@ -12,7 +12,7 @@ import edu.uta.futureye.util.Constant;
 /**
  * f(x) = a*x + b
  */
-public class FAxpb extends AbstractSimpleMathFunc {
+public class FAxpb extends SingleVarFunc {
 	protected double a;
 	protected double b;
 

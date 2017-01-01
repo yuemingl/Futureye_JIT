@@ -5,7 +5,7 @@ import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.Vector2Function;
@@ -164,7 +164,7 @@ public class KlibanovNew {
 		ModelPoissonEx model_Imw = new ModelPoissonEx(omega);
 		
 		//delta(z-z1) == delta(y-y1) [let y denote z]
-		MathFunc delta = new AbstractMathFunc("x","y") {
+		MathFunc delta = new MultiVarFunc("x","y") {
 			FDelta dt = new FDelta(new Variable("x",domain.z1),0.01,2e5);
 			Variable tmp = new Variable();
 			public double apply(Variable v) {
@@ -175,7 +175,7 @@ public class KlibanovNew {
 		Tools.plotFunction(omega, outputFolder, String.format("delta_z.dat"), delta);
 
 		//Return a positive value to indicate the Dirichlet boundary type
-		MathFunc diriMark = new AbstractMathFunc("x","y") {
+		MathFunc diriMark = new MultiVarFunc("x","y") {
 			public double apply(Variable v) {
 				if(Math.abs(domain.z_max-v.get("y"))<Constant.meshEps)
 					return 1;

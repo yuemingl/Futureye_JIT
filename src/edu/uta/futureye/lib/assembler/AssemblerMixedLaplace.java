@@ -8,7 +8,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.util.container.ElementList;
 
 public class AssemblerMixedLaplace implements Assembler {
@@ -72,7 +72,7 @@ public class AssemblerMixedLaplace implements Assembler {
 	}
 
 	@Override
-	public void imposeDirichletCondition(VectorFunction diri) {
+	public void imposeDirichletCondition(VectorMathFunc diri) {
 		throw new UnsupportedOperationException();
 	}
 }

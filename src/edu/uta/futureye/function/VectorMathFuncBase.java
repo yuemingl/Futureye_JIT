@@ -8,7 +8,7 @@ import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
@@ -21,24 +21,24 @@ import edu.uta.futureye.util.Utils;
  * @author liuyueming
  *
  */
-public abstract class AbstractVectorFunc implements VectorFunction {
+public abstract class VectorMathFuncBase implements VectorMathFunc {
 	protected int dim = 0;
 	protected List<String> varNames = new LinkedList<String>();
 	protected String fName = null;
 	
-	public AbstractVectorFunc() {
+	public VectorMathFuncBase() {
 	}
 	
-	public AbstractVectorFunc(int dim) {
+	public VectorMathFuncBase(int dim) {
 		this.dim = dim;
 	}
 	
-	public AbstractVectorFunc(int dim, List<String> varNames) {
+	public VectorMathFuncBase(int dim, List<String> varNames) {
 		this.dim = dim;
 		this.varNames = varNames;
 	}
 	
-	public AbstractVectorFunc(int dim, String varName, String ...aryVarNames) {
+	public VectorMathFuncBase(int dim, String varName, String ...aryVarNames) {
 		this.dim = dim;
 		varNames.add(varName);
 		for(String s : aryVarNames)
@@ -88,7 +88,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction compose(Map<String,MathFunc> fInners) {
+	public VectorMathFunc compose(Map<String,MathFunc> fInners) {
 		for(int i=1; i<=dim; i++)
 			this.set(i,this.get(i).compose(fInners));
 		return this;
@@ -101,7 +101,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction set(VectorFunction v) {
+	public VectorMathFunc set(VectorMathFunc v) {
 		for(int i=1; i<=dim; i++)
 			this.set(i,v.get(i));
 		this.setVarNames(v.varNames());
@@ -109,7 +109,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction set(double a, VectorFunction v) {
+	public VectorMathFunc set(double a, VectorMathFunc v) {
 		for(int i=1; i<=dim; i++) {
 			this.set(i,v.get(i).M(a));
 		}
@@ -118,7 +118,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction add(VectorFunction g) {
+	public VectorMathFunc add(VectorMathFunc g) {
 		for(int i=1; i<=dim; i++) {
 			this.set(i,this.get(i).A(g.get(i)));
 		}
@@ -127,7 +127,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction add(double a, VectorFunction g) {
+	public VectorMathFunc add(double a, VectorMathFunc g) {
 		for(int i=1; i<=dim; i++) {
 			this.set(i,this.get(i).A(g.get(i).M(a)));
 		}
@@ -136,7 +136,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction scale(double a) {
+	public VectorMathFunc scale(double a) {
 		for(int i=1; i<=dim; i++) {
 			this.set(i,this.get(i).M(a));
 		}
@@ -144,7 +144,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction ax(double a) {
+	public VectorMathFunc ax(double a) {
 		for(int i=1; i<=dim; i++) {
 			this.set(i,this.get(i).M(a));
 		}
@@ -152,7 +152,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction axpy(double a, VectorFunction g) {
+	public VectorMathFunc axpy(double a, VectorMathFunc g) {
 		for(int i=1; i<=dim; i++) {
 			this.set(i,this.get(i).M(a).A(g.get(i)));
 		}
@@ -161,7 +161,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public MathFunc dot(VectorFunction b) {
+	public MathFunc dot(VectorMathFunc b) {
 		if(dim != b.getDim()) {
 			Exception e = new FutureyeException("Dims between two vector functions must be same!");
 			e.printStackTrace();
@@ -186,7 +186,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	/////////////////////////////////////////////
 	
 	@Override
-	public VectorFunction A(VectorFunction g) {
+	public VectorMathFunc A(VectorMathFunc g) {
 		SpaceVectorFunction svf = new SpaceVectorFunction(dim);
 		for(int i=1; i<=dim; i++) {
 			svf.set(i, this.get(i).A(g.get(i)));
@@ -195,7 +195,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction A(Vector g) {
+	public VectorMathFunc A(Vector g) {
 		SpaceVectorFunction svf = new SpaceVectorFunction(dim);
 		for(int i=1; i<=dim; i++) {
 			svf.set(i, this.get(i).A(g.get(i)));
@@ -204,7 +204,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction S(VectorFunction g) {
+	public VectorMathFunc S(VectorMathFunc g) {
 		SpaceVectorFunction svf = new SpaceVectorFunction(dim);
 		for(int i=1; i<=dim; i++) {
 			svf.set(i, this.get(i).S(g.get(i)));
@@ -213,7 +213,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction S(Vector g) {
+	public VectorMathFunc S(Vector g) {
 		SpaceVectorFunction svf = new SpaceVectorFunction(dim);
 		for(int i=1; i<=dim; i++) {
 			svf.set(i, this.get(i).S(g.get(i)));
@@ -223,7 +223,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	
 
 	@Override
-	public VectorFunction M(VectorFunction g) {
+	public VectorMathFunc M(VectorMathFunc g) {
 		SpaceVectorFunction svf = new SpaceVectorFunction(dim);
 		for(int i=1; i<=dim; i++) {
 			svf.set(i, this.get(i).M(g.get(i)));
@@ -231,7 +231,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 		return svf;
 	}
 	@Override
-	public VectorFunction M(Vector g) {
+	public VectorMathFunc M(Vector g) {
 		SpaceVectorFunction svf = new SpaceVectorFunction(dim);
 		for(int i=1; i<=dim; i++) {
 			svf.set(i, this.get(i).M(g.get(i)));
@@ -241,7 +241,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	
 
 	@Override
-	public VectorFunction D(VectorFunction g) {
+	public VectorMathFunc D(VectorMathFunc g) {
 		SpaceVectorFunction svf = new SpaceVectorFunction(dim);
 		for(int i=1; i<=dim; i++) {
 			svf.set(i, this.get(i).D(g.get(i)));
@@ -249,7 +249,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 		return svf;		
 	}
 	@Override
-	public VectorFunction D(Vector g) {
+	public VectorMathFunc D(Vector g) {
 		SpaceVectorFunction svf = new SpaceVectorFunction(dim);
 		for(int i=1; i<=dim; i++) {
 			svf.set(i, this.get(i).D(g.get(i)));
@@ -260,7 +260,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	///////////////////////////////////////////////////
 	
 	@Override
-	public VectorFunction copy() {
+	public VectorMathFunc copy() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -282,7 +282,7 @@ public abstract class AbstractVectorFunc implements VectorFunction {
 	}
 	
 	@Override
-	public VectorFunction setFName(String name) {
+	public VectorMathFunc setFName(String name) {
 		this.fName = name;
 		return this;
 	}

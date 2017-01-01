@@ -1,7 +1,7 @@
 package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractVectorFunc;
+import edu.uta.futureye.function.VectorMathFuncBase;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
@@ -9,7 +9,7 @@ import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.container.ObjList;
 
 //TODO
-public class QuadraticV_LinearP1D extends AbstractVectorFunc implements
+public class QuadraticV_LinearP1D extends VectorMathFuncBase implements
 		VectorShapeFunction {
 
 	@Override

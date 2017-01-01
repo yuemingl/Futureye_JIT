@@ -11,7 +11,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.Solver;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
@@ -161,7 +161,7 @@ public class T06Wave {
 		Dt = 0.004;
 		c2 = 500;
 		
-		u0 = new AbstractMathFunc("x","y") {
+		u0 = new MultiVarFunc("x","y") {
 			
 //[-3,3]x[-3,3]			
 //			@Override

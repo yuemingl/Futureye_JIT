@@ -16,13 +16,13 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
 import edu.uta.futureye.lib.element.FEBilinearV_ConstantP;
@@ -60,9 +60,9 @@ public class T11NavierStokesBox {
 	//Assembler
 	protected AssemblerVector assembler = null;
 	//Dirichlet boundary condition
-	protected VectorFunction diri = null;
+	protected VectorMathFunc diri = null;
 	//Previous Velocity
-	protected VectorFunction U = new SpaceVectorFunction(2);
+	protected VectorMathFunc U = new SpaceVectorFunction(2);
 	
 	//delta t
 	protected double dt = 0.02;
@@ -152,7 +152,7 @@ public class T11NavierStokesBox {
 		}
 
 		diri = new SpaceVectorFunction(3);
-		diri.set(1, new AbstractMathFunc("x","y") {
+		diri.set(1, new MultiVarFunc("x","y") {
 					@Override
 					public double apply(Variable v) {
 						double y = v.get("y");

@@ -28,7 +28,7 @@ import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.core.geometry.GeoEntity2D;
 import edu.uta.futureye.core.geometry.GeoEntity3D;
 import edu.uta.futureye.core.intf.WeakForm.ItemType;
-import edu.uta.futureye.function.AbstractSimpleMathFunc;
+import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -136,7 +136,7 @@ public class LaplaceTestJIT2 {
 	public Mesh mesh;
 	public Vector u;
 	
-	public static class TriAreaCoordR extends AbstractSimpleMathFunc {
+	public static class TriAreaCoordR extends SingleVarFunc {
 		MathFunc jac;
 		FX x1 = new FX("x1");
 		FX x2 = new FX("x2");
@@ -177,7 +177,7 @@ public class LaplaceTestJIT2 {
 			return this.varName;
 		}
 	}
-	public static class TriAreaCoordS extends AbstractSimpleMathFunc {
+	public static class TriAreaCoordS extends SingleVarFunc {
 		MathFunc jac;
 		FX x1 = new FX("x1");
 		FX x2 = new FX("x2");

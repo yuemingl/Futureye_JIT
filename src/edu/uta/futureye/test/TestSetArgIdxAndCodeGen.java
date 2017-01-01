@@ -13,7 +13,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUSH;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
-import edu.uta.futureye.function.AbstractSimpleMathFunc;
+import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public class TestSetArgIdxAndCodeGen {
@@ -23,7 +23,7 @@ public class TestSetArgIdxAndCodeGen {
 	 * @author yueming.liu
 	 *
 	 */
-	public static class MyFunc1 extends AbstractSimpleMathFunc {
+	public static class MyFunc1 extends SingleVarFunc {
 		public MyFunc1(String funcName, String varName) {
 			super(funcName, varName);
 		}
@@ -46,7 +46,7 @@ public class TestSetArgIdxAndCodeGen {
 	 * @author yueming.liu
 	 *
 	 */
-	public static class MyFunc2 extends AbstractSimpleMathFunc {
+	public static class MyFunc2 extends SingleVarFunc {
 		public MyFunc2(String funcName, String varName) {
 			super(funcName, varName);
 		}

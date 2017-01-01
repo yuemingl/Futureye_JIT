@@ -2,15 +2,15 @@ package edu.uta.futureye.lib.weakform;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
 public class WeakFormElasticIsoPlaneStress2D extends AbstractVectorWeakForm {
 	double E = 1000; //Young's modulus
 	double gamma = 0.25; //Poisson ratio
-	VectorFunction g_b; //Body force
-	VectorFunction g_t; //Distributed external loading on boundary
+	VectorMathFunc g_b; //Body force
+	VectorMathFunc g_t; //Distributed external loading on boundary
 	
 	@Override
 	public MathFunc leftHandSide(Element e, ItemType itemType) {
@@ -67,11 +67,11 @@ public class WeakFormElasticIsoPlaneStress2D extends AbstractVectorWeakForm {
 	@Override
 	public MathFunc rightHandSide(Element e, ItemType itemType) {
 		if(itemType==ItemType.Domain)  {
-			VectorFunction fb = Utils.interpolateOnElement(g_b, e);
+			VectorMathFunc fb = Utils.interpolateOnElement(g_b, e);
 			return v.dot(fb);
 		} else if(itemType==ItemType.Border) {
 			Element be = e;
-			VectorFunction ft = Utils.interpolateOnElement(g_t, be);
+			VectorMathFunc ft = Utils.interpolateOnElement(g_t, be);
 			MathFunc borderIntegrand = v.dot(ft);
 			return borderIntegrand;
 		}
@@ -82,7 +82,7 @@ public class WeakFormElasticIsoPlaneStress2D extends AbstractVectorWeakForm {
 	 * Body force
 	 * @param f
 	 */
-	public void setF(VectorFunction b, VectorFunction t) {
+	public void setF(VectorMathFunc b, VectorMathFunc t) {
 		this.g_b = b;
 		this.g_t = t;
 	}

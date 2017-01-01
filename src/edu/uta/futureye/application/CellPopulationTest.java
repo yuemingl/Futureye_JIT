@@ -16,7 +16,7 @@ import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.MathFunc;

@@ -11,14 +11,14 @@ import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFunc;
-import edu.uta.futureye.function.AbstractVectorFunc;
+import edu.uta.futureye.function.MultiVarFunc;
+import edu.uta.futureye.function.VectorMathFuncBase;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
@@ -57,11 +57,11 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class RaviartThomas2D0 extends AbstractVectorFunc implements VectorShapeFunction {
+public class RaviartThomas2D0 extends VectorMathFuncBase implements VectorShapeFunction {
 	int funIndex = 0;
 	
-	private VectorFunction funCompose = null;
-	private VectorFunction funOuter = null;
+	private VectorMathFunc funCompose = null;
+	private VectorMathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 
 	public RaviartThomas2D0(int funID) {
@@ -102,7 +102,7 @@ public class RaviartThomas2D0 extends AbstractVectorFunc implements VectorShapeF
 		//y = y(r,s,t)
 		//	where t = 1 - r - s
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractMathFunc(varNamesInner) {
+			fInners.put(varName, new MultiVarFunc(varNamesInner) {
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
@@ -139,7 +139,7 @@ public class RaviartThomas2D0 extends AbstractVectorFunc implements VectorShapeF
 	}
 
 	@Override
-	public MathFunc dot(VectorFunction b) {
+	public MathFunc dot(VectorMathFunc b) {
 		return this.funCompose.dot(b);
 	}
 

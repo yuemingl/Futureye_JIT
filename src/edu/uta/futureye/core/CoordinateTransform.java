@@ -14,7 +14,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.uta.futureye.core.geometry.topology.TetrahedronTp;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
@@ -399,7 +399,7 @@ public class CoordinateTransform {
 		}
 	}
 	
-	public static class Jacobian2D extends AbstractMathFunc {
+	public static class Jacobian2D extends MultiVarFunc {
 		MathFunc[] funs = null;
 		public Jacobian2D(MathFunc[] funs) {
 			this.funs = funs;
@@ -500,7 +500,7 @@ public class CoordinateTransform {
 	 * @author liuyueming
 	 *
 	 */
-	public static class Jacobian2DFrom3D extends AbstractMathFunc {
+	public static class Jacobian2DFrom3D extends MultiVarFunc {
 		MathFunc[] funs = null;
 		public Jacobian2DFrom3D(MathFunc[] funs) {
 			this.funs = funs;
@@ -624,7 +624,7 @@ public class CoordinateTransform {
 		this.Jacobian = new Jacobian3D(funs);
 	}
 	
-	public static class Jacobian3D extends AbstractMathFunc {
+	public static class Jacobian3D extends MultiVarFunc {
 		MathFunc[] funs = null;
 		public Jacobian3D(MathFunc[] funs) {
 			this.funs = funs;

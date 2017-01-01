@@ -11,7 +11,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.WeakForm;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -137,7 +137,7 @@ public class T04UseWeakFormBuilder {
         //2.Mark border types
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Robin type on boundary x=3.0 of \Omega
-		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y"){
+		mapNTF.put(NodeType.Robin, new MultiVarFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				if(3.0-v.get("x") < 0.01)
@@ -250,7 +250,7 @@ public class T04UseWeakFormBuilder {
         HashMap<NodeType, MathFunc> mapNTF =
                 new HashMap<NodeType, MathFunc>();
 		//Robin type on boundary x=3.0 of \Omega
-		mapNTF.put(NodeType.Robin, new AbstractMathFunc("x","y"){
+		mapNTF.put(NodeType.Robin, new MultiVarFunc("x","y"){
 			@Override
 			public double apply(Variable v) {
 				if(3.0-v.get("x") < 0.01)

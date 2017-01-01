@@ -12,11 +12,11 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
 import edu.uta.futureye.lib.element.FEQuadraticV_LinearP;
@@ -133,7 +133,7 @@ public class T10StokesBox {
 		weakForm.setF(new SpaceVectorFunction(C0,C0));
 		weakForm.setParam(C1);
 		//Robin:  k*u_n + d*u - p\vec{n} = 0
-		VectorFunction d = new SpaceVectorFunction(2);
+		VectorMathFunc d = new SpaceVectorFunction(2);
 		d.set(1, C0);
 		d.set(2, C0);
 		weakForm.setRobin(d);
@@ -143,8 +143,8 @@ public class T10StokesBox {
 		assembler.assemble();
 		SparseBlockMatrix stiff = assembler.getStiffnessMatrix();
 		SparseBlockVector load = assembler.getLoadVector();
-		VectorFunction diri = new SpaceVectorFunction(3);
-		diri.set(1, new AbstractMathFunc("x","y") {
+		VectorMathFunc diri = new SpaceVectorFunction(3);
+		diri.set(1, new MultiVarFunc("x","y") {
 					@Override
 					public double apply(Variable v) {
 						double y = v.get("y");

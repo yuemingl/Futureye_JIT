@@ -2,17 +2,17 @@ package edu.uta.futureye.lib.shapefun;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractVectorFunc;
+import edu.uta.futureye.function.VectorMathFuncBase;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.container.ObjList;
 
-public class SFBilinearLocal2DVector extends AbstractVectorFunc 
+public class SFBilinearLocal2DVector extends VectorMathFuncBase 
 								implements VectorShapeFunction {
 	protected SpaceVectorFunction sf = new SpaceVectorFunction(2);
 	protected int funIndex;
@@ -51,7 +51,7 @@ public class SFBilinearLocal2DVector extends AbstractVectorFunc
 		return innerVarNames;
 	}
 
-	public class SFBilinearLocal1DVector extends AbstractVectorFunc 
+	public class SFBilinearLocal1DVector extends VectorMathFuncBase 
 			implements VectorShapeFunction {
 		protected SpaceVectorFunction sf = new SpaceVectorFunction(2);
 		protected int funIndex;
@@ -127,7 +127,7 @@ public class SFBilinearLocal2DVector extends AbstractVectorFunc
 	}
 
 	@Override
-	public MathFunc dot(VectorFunction b) {
+	public MathFunc dot(VectorMathFunc b) {
 		return sf.dot(b);
 	}
 

@@ -29,7 +29,7 @@ import org.objectweb.asm.Opcodes;
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -53,7 +53,7 @@ import edu.uta.futureye.util.Utils;
  *  
  * </pre></blockquote>
  */
-public class FComposite extends AbstractMathFunc {
+public class FComposite extends MultiVarFunc {
 	public MathFunc fOuter;
 	public Map<String,MathFunc> fInners;
 	boolean isOuterVariablesActive;

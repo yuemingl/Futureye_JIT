@@ -22,7 +22,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Refiner;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -114,7 +114,7 @@ public class GCMModel {
 		final double fmu_a = maxMu_a;
 		final double distance = 0.8;
 		if(type == 1) {
-			mu_a = new AbstractMathFunc("x","y"){
+			mu_a = new MultiVarFunc("x","y"){
 				@Override
 				public double apply(Variable v) {
 					double bk = 0.1;
@@ -129,7 +129,7 @@ public class GCMModel {
 				}
 			};
 		} else if(type == 2) {
-			mu_a = new AbstractMathFunc("x","y"){
+			mu_a = new MultiVarFunc("x","y"){
 				@Override
 				public double apply(Variable v) {
 					double bk = 0.1;
@@ -212,7 +212,7 @@ public class GCMModel {
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.clear();
 		if(borderType == 1) {
-			mapNTF.put(NodeType.Dirichlet, new AbstractMathFunc("x","y"){
+			mapNTF.put(NodeType.Dirichlet, new MultiVarFunc("x","y"){
 				@Override
 				public double apply(Variable v) {
 					//double x = v.get("x");

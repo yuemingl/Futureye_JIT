@@ -3,11 +3,11 @@ package edu.uta.futureye.function.operator;
 import java.util.List;
 import java.util.Map;
 
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Utils;
 
-public abstract class FBinaryOp extends AbstractMathFunc {
+public abstract class FBinaryOp extends MultiVarFunc {
 	public MathFunc arg1;
 	public MathFunc arg2;
 	

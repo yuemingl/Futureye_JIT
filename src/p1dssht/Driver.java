@@ -10,7 +10,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2Function;
@@ -92,7 +92,7 @@ public class Driver {
         //Mark border type
         HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Dirichlet boundary of u
-		mapNTF.put(NodeType.Dirichlet, new AbstractMathFunc("x") {
+		mapNTF.put(NodeType.Dirichlet, new MultiVarFunc("x") {
 //			@Override
 //			public double apply(Variable v) {
 //				double x = v.get("x");
@@ -155,7 +155,7 @@ public class Driver {
     		//Update parameter k
     		final Vector2Function funU = new Vector2Function(T, mesh, "x");
     		//k depends on T, for example k=2*T
-    		k = new AbstractMathFunc("x") {
+    		k = new MultiVarFunc("x") {
     			public double apply(Variable v) {
     				return 1.05 + 2150.0/(funU.apply(v) + 200.0);
     			}

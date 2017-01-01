@@ -6,7 +6,7 @@ import java.util.Map;
 
 import edu.uta.futureye.core.CoordinateTransform;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
@@ -39,7 +39,7 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class SFQuadraticLocal2D extends AbstractMathFunc implements ScalarShapeFunction {
+public class SFQuadraticLocal2D extends MultiVarFunc implements ScalarShapeFunction {
 	private int funIndex;
 	private MathFunc funCompose = null;
 	private MathFunc funOuter = null;
@@ -64,7 +64,7 @@ public class SFQuadraticLocal2D extends AbstractMathFunc implements ScalarShapeF
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {
+			fInners.put(varName, new MultiVarFunc(innerVarNames.toList()) {
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				

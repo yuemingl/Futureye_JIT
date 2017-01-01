@@ -15,7 +15,7 @@ import org.apache.bcel.generic.MethodGen;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -35,7 +35,7 @@ import edu.uta.futureye.util.container.VertexList;
  *     N2 = s
  *     N3 = 1 - r - s
  */
-public class SFLinearLocal2DRS  extends AbstractMathFunc 
+public class SFLinearLocal2DRS  extends MultiVarFunc 
 							  implements ScalarShapeFunction {
 	protected int funIndex;
 	private MathFunc funCompose = null;
@@ -69,7 +69,7 @@ public class SFLinearLocal2DRS  extends AbstractMathFunc
 		//Compose function: r=r(x,y), s=s(x,y)
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		for(final String varName : varNames) {
-			fInners.put(varName, new AbstractMathFunc(innerVarNames.toList()) {	
+			fInners.put(varName, new MultiVarFunc(innerVarNames.toList()) {	
 				public MathFunc diff(String var) {
 					if(varName.equals("r")) { //r对应三角形高h的负倒数
 						if(var.equals("x"))

@@ -12,7 +12,7 @@ import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.core.intf.WeakForm;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 
@@ -100,7 +100,7 @@ public class AssemblerScalarFast implements Assembler{
 	}
 	
 	@Override
-	public void imposeDirichletCondition(VectorFunction diri) {
+	public void imposeDirichletCondition(VectorMathFunc diri) {
 		throw new UnsupportedOperationException();
 	}	
 }

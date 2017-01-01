@@ -20,14 +20,14 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.geometry.Point;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.NodeList;
 import edu.uta.futureye.util.container.ObjIndex;
@@ -353,7 +353,7 @@ public class Utils {
 	    return su;
 	}
 	
-	public static VectorFunction interpolateOnElement(VectorFunction fun, Element e) {
+	public static VectorMathFunc interpolateOnElement(VectorMathFunc fun, Element e) {
 		SpaceVectorFunction rlt = new SpaceVectorFunction(fun.getDim());
 		for(int i=1;i<=fun.getDim();i++) {
 			rlt.set(i, interpolateOnElement(fun.get(i),e));
@@ -440,7 +440,7 @@ public class Utils {
 		varNamesInner.add("r");
 		varNamesInner.add("s");
 		varNamesInner.add("t");
-		fInners.put("x", new AbstractMathFunc(varNamesInner) {	
+		fInners.put("x", new MultiVarFunc(varNamesInner) {	
 			@Override
 			public double apply(Variable v) {
 				double rlt = 0.0;
@@ -450,7 +450,7 @@ public class Utils {
 				
 			}
 		});
-		fInners.put("y", new AbstractMathFunc(varNamesInner) {	
+		fInners.put("y", new MultiVarFunc(varNamesInner) {	
 			@Override
 			public double apply(Variable v) {
 				double rlt = 0.0;

@@ -7,7 +7,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.geometry.Point;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -60,7 +60,7 @@ import edu.uta.futureye.util.Utils;
  * @author liuyueming
  *
  */
-public class DuDx extends AbstractMathFunc implements ElementDependentFunction {
+public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 	protected Element e = null;
 	protected Mesh mesh = null;
 	protected Vector2Function u = null;

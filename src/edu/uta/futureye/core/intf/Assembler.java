@@ -3,7 +3,7 @@ package edu.uta.futureye.core.intf;
 import edu.uta.futureye.algebra.intf.SparseMatrix;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 
 /**
  * Assembler Interface
@@ -54,5 +54,5 @@ public interface Assembler {
 	 * 
 	 * @param diri
 	 */
-	void imposeDirichletCondition(VectorFunction diri);
+	void imposeDirichletCondition(VectorMathFunc diri);
 }

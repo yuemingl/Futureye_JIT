@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
 import edu.uta.futureye.function.basic.FC;
@@ -16,7 +16,7 @@ import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
-public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFunction {
+public class SFLinearLocal1D extends MultiVarFunc  implements ScalarShapeFunction {
 	private int funIndex;
 	private MathFunc funCompose = null;
 	private MathFunc funOuter = null;
@@ -58,7 +58,7 @@ public class SFLinearLocal1D extends AbstractMathFunc  implements ScalarShapeFun
 		 *  r = [2*x - (x1+x2)]/(x2-x1) 
 		 *  r_x = 2/(x2-x1)  
 		 */
-		fInners.put("r", new AbstractMathFunc(varNamesInner) {	
+		fInners.put("r", new MultiVarFunc(varNamesInner) {	
 			public MathFunc diff(String var) {
 				if(var.equals("x")) {
 					VertexList vl = e.vertices();

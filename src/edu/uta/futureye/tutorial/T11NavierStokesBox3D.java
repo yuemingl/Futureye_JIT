@@ -11,13 +11,13 @@ import edu.uta.futureye.algebra.solver.SchurComplementStokesSolver;
 import edu.uta.futureye.application.DataReader;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.AbstractMathFunc;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2Function;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorFunction;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
 import edu.uta.futureye.lib.element.FETrilinearV_ConstantP;
@@ -52,9 +52,9 @@ public class T11NavierStokesBox3D {
 	//Assembler
 	protected AssemblerVector assembler = null;
 	//Dirichlet boundary condition
-	protected VectorFunction diri = null;
+	protected VectorMathFunc diri = null;
 	//Previous Velocity
-	protected VectorFunction U = new SpaceVectorFunction(3);
+	protected VectorMathFunc U = new SpaceVectorFunction(3);
 	
 	//delta t
 	protected double dt = 0.02;
@@ -111,7 +111,7 @@ public class T11NavierStokesBox3D {
 		}
 
 		diri = new SpaceVectorFunction(4);
-		diri.set(1, new AbstractMathFunc("x","y","z") {
+		diri.set(1, new MultiVarFunc("x","y","z") {
 					@Override
 					public double apply(Variable v) {
 						double z = v.get("z");

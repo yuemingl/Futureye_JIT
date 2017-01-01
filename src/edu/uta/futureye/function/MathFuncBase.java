@@ -42,7 +42,7 @@ import edu.uta.futureye.util.ClassGenerator;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FuncClassLoader;
 
-public abstract class MathFuncBasic implements MathFunc, Cloneable {
+public abstract class MathFuncBase implements MathFunc, Cloneable {
 	
 	@Override
 	public abstract double apply(double ...args);

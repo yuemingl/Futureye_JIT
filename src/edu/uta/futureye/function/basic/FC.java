@@ -13,7 +13,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUSH;
 import org.objectweb.asm.MethodVisitor;
 
-import edu.uta.futureye.function.MathFuncBasic;
+import edu.uta.futureye.function.MathFuncBase;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -23,7 +23,7 @@ import static edu.uta.futureye.function.FMath.C0;
  * Constant function: f = c
  * 
  */
-public class FC extends MathFuncBasic {
+public class FC extends MathFuncBase {
 	protected double val;
 	
 	//Constants cache
