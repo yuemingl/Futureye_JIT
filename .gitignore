@@ -35,8 +35,6 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
-*.dat
-
 *.class
-
 *.dat
+./tutorial/*.dat
