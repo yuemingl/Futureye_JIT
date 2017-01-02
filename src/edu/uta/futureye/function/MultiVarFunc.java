@@ -17,11 +17,15 @@ public abstract class MultiVarFunc extends MathFuncBase {
 	protected String[] varNames;
 	protected int[] argIdx;
 	
-	public MultiVarFunc(String ...varNames) {
+	public MultiVarFunc() {
+	}
+	
+	public MultiVarFunc(String funcName, String ...varNames) {
+		this.fName = funcName;
 		this.varNames = varNames;
 	}
 	
-	public MultiVarFunc(List<String> varNames) {
+	public MultiVarFunc(String funcName, List<String> varNames) {
 		this.varNames = varNames.toArray(new String[0]);
 	}
 	
