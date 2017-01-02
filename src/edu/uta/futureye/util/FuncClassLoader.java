@@ -3,18 +3,19 @@ package edu.uta.futureye.util;
 import org.apache.bcel.generic.ClassGen;
 
 public class FuncClassLoader<T> extends ClassLoader {
-	public static FuncClassLoader instance = null;
+	public static FuncClassLoader<?> instance = null;
 	
 	public FuncClassLoader(ClassLoader classLoader) {
 		super(classLoader);
 	}
 	
-	public static FuncClassLoader getInstance(ClassLoader classLoader) {
+	@SuppressWarnings("unchecked")
+	public static <T> FuncClassLoader<T> getInstance(ClassLoader classLoader) {
 		if(instance == null) {
-			FuncClassLoader fcl = new FuncClassLoader(classLoader);
+			FuncClassLoader<T> fcl = new FuncClassLoader<T>(classLoader);
 			instance = fcl;
 		}
-		return instance;
+		return (FuncClassLoader<T>) instance;
 	}
 	
 	/**

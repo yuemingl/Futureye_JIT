@@ -440,24 +440,38 @@ public class Utils {
 		varNamesInner.add("r");
 		varNamesInner.add("s");
 		varNamesInner.add("t");
-		fInners.put("x", new MultiVarFunc(varNamesInner) {	
+		fInners.put("x", new MultiVarFunc("x",varNamesInner) {	
+//			@Override
+//			public double apply(Variable v) {
+//				double rlt = 0.0;
+//				for(int i=1;i<=fe.nodes.size();i++)
+//					rlt += fe.nodes.at(i).coord(1)*v.get(varNamesInner.get(i-1));
+//				return rlt;
+//			}
+			
 			@Override
-			public double apply(Variable v) {
+			public double apply(double... args) {
 				double rlt = 0.0;
 				for(int i=1;i<=fe.nodes.size();i++)
-					rlt += fe.nodes.at(i).coord(1)*v.get(varNamesInner.get(i-1));
+					rlt += fe.nodes.at(i).coord(1)*args[this.argIdx[i-1]];
 				return rlt;
-				
 			}
 		});
-		fInners.put("y", new MultiVarFunc(varNamesInner) {	
+		fInners.put("y", new MultiVarFunc("y", varNamesInner) {	
+//			@Override
+//			public double apply(Variable v) {
+//				double rlt = 0.0;
+//				for(int i=1;i<=fe.nodes.size();i++)
+//					rlt += fe.nodes.at(i).coord(2)*v.get(varNamesInner.get(i-1));
+//				return rlt;
+//			}
+			
 			@Override
-			public double apply(Variable v) {
+			public double apply(double... args) {
 				double rlt = 0.0;
 				for(int i=1;i<=fe.nodes.size();i++)
-					rlt += fe.nodes.at(i).coord(2)*v.get(varNamesInner.get(i-1));
+					rlt += fe.nodes.at(i).coord(1)*args[this.argIdx[i-1]];
 				return rlt;
-				
 			}
 		});		
 		return fInners;

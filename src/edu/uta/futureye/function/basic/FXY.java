@@ -23,8 +23,8 @@ public class FXY extends MultiVarFunc{
 		this.c3 = c3;
 	}	
 	
-	public FXY(List<String> varNames,double c1,double c2,double c3) {
-		super(varNames);
+	public FXY(String funcName, List<String> varNames,double c1,double c2,double c3) {
+		super(funcName, varNames);
 		this.c1 = c1;
 		this.c2 = c2;
 		this.c3 = c3;

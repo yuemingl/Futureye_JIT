@@ -27,14 +27,15 @@ public class FXYZ extends MultiVarFunc{
 	
 	/**
 	 * Construct the function with variable names other than the default x,y,z
+	 * @param funcName
 	 * @param varNames
 	 * @param c1
 	 * @param c2
 	 * @param c3
 	 * @param c4
 	 */
-	public FXYZ(List<String> varNames, double c1, double c2, double c3, double c4) {
-		super(varNames);
+	public FXYZ(String funcName, List<String> varNames, double c1, double c2, double c3, double c4) {
+		super(funcName, varNames);
 		this.c1 = c1;
 		this.c2 = c2;
 		this.c3 = c3;

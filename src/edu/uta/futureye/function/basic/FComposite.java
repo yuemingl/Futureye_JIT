@@ -33,6 +33,7 @@ import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.test.BytecodeTest;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
 import edu.uta.futureye.util.FutureyeException;
@@ -307,7 +308,7 @@ public class FComposite extends MultiVarFunc {
 		} else {
 			String outerName  = "fun_outer_"+java.util.UUID.randomUUID().toString().replaceAll("-", "");
 			// Generate the outer function
-			FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+			FuncClassLoader<CompiledFunc> fcl = FuncClassLoader.<CompiledFunc>getInstance(BytecodeTest.class.getClassLoader());
 			ClassGen genClass = BytecodeUtils.genClass(fOuter, null, outerName, true, true);
 			fcl.newInstance(genClass);
 	

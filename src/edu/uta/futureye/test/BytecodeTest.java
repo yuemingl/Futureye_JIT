@@ -8,13 +8,12 @@ import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.basic.FAx;
 import edu.uta.futureye.function.basic.FAxpb;
-import edu.uta.futureye.function.basic.FCos;
-import edu.uta.futureye.function.basic.FSin;
-import edu.uta.futureye.function.basic.FSqrt;
-import edu.uta.futureye.function.basic.FTan;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.function.operator.FCos;
 import edu.uta.futureye.function.operator.FSin;
+import edu.uta.futureye.function.operator.FSqrt;
+import edu.uta.futureye.function.operator.FTan;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
 
@@ -25,7 +24,7 @@ public class BytecodeTest {
 		MathFunc y = FX.y;
 		MathFunc xy = x.S(y);
 		
-		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		FuncClassLoader<CompiledFunc> fcl = FuncClassLoader.<CompiledFunc>getInstance(BytecodeTest.class.getClassLoader());
 		ClassGen genClass = BytecodeUtils.genClass(xy, null, "add", true, false);
 		CompiledFunc fxy = fcl.newInstance(genClass);
 		System.out.println(fxy.apply(1.0, 2.0));
@@ -48,7 +47,7 @@ public class BytecodeTest {
 		
 		System.out.println(FX.r.A(FX.s).M(FX.r.S(FX.s)));
 		
-		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		FuncClassLoader<CompiledFunc> fcl = FuncClassLoader.<CompiledFunc>getInstance(BytecodeTest.class.getClassLoader());
 		ClassGen genClass = BytecodeUtils.genClass(xy2, null, "add2", true, false);
 		CompiledFunc fxy2 = fcl.newInstance(genClass);
 		System.out.println(fxy2.apply(4.0, 2.0));
@@ -62,8 +61,8 @@ public class BytecodeTest {
 	}
 
 	public static void test4() {
-		FSin sin = new FSin("x");
-		FCos cos = new FCos("y");
+		FSin sin = new FSin(FMath.x);
+		FCos cos = new FCos(FMath.y);
 		MathFunc f = sin * cos;
 		System.out.println(f);
 		System.out.println(f.getVarNames());
@@ -85,7 +84,7 @@ public class BytecodeTest {
 	}
 	
 	public static void test6() {
-		FTan tan = new FTan("x");
+		FTan tan = new FTan(FMath.x);
 		System.out.println(tan.diff("x"));
 		
 		FAx fax = new FAx("x",2.0);
@@ -100,7 +99,7 @@ public class BytecodeTest {
 	}
 	
 	public static void test7() {
-		FSin sin = new FSin();
+		FSin sin = new FSin(FMath.x);
 		MathFunc fun = FMath.pow(sin, 2);
 		System.out.println(fun.toString());
 		System.out.println(fun.diff("x"));
@@ -108,7 +107,7 @@ public class BytecodeTest {
 		System.out.println(FMath.sqrt(sin));
 		System.out.println(FMath.sqrt(sin).diff("x"));
 		
-		FSqrt sqrt = new FSqrt();
+		FSqrt sqrt = new FSqrt(FMath.x);
 		System.out.println(sqrt.compile().apply(16));
 		System.out.println(FMath.sqrt(FX.x).compile().apply(16));
 		

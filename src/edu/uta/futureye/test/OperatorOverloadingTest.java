@@ -17,7 +17,7 @@ public class OperatorOverloadingTest {
 		MathFunc y = FX.y;
 		MathFunc add = x - y + 1;
 		
-		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		FuncClassLoader<CompiledFunc> fcl = FuncClassLoader.<CompiledFunc>getInstance(BytecodeTest.class.getClassLoader());
 		ClassGen genClass = BytecodeUtils.genClass(add, null, "add", true, false);
 		CompiledFunc fadd = fcl.newInstance(genClass);
 		System.out.println(fadd.apply(1.0, 2.0));
@@ -34,7 +34,7 @@ public class OperatorOverloadingTest {
 		MathFunc add2 = add.compose(map);
 		System.out.println(add2);
 		
-		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>();
+		FuncClassLoader<CompiledFunc> fcl = FuncClassLoader.<CompiledFunc>getInstance(BytecodeTest.class.getClassLoader());
 		ClassGen genClass = BytecodeUtils.genClass(add2, null, "add2", true, false);
 		CompiledFunc fadd2 = fcl.newInstance(genClass);
 		System.out.println(fadd2.apply(4.0, 2.0));
