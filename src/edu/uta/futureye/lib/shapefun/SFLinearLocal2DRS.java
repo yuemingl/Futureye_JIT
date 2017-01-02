@@ -69,7 +69,7 @@ public class SFLinearLocal2DRS  extends MultiVarFunc
 		//Compose function: r=r(x,y), s=s(x,y)
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 		for(final String varName : varNames) {
-			fInners.put(varName, new MultiVarFunc(innerVarNames.toList()) {	
+			fInners.put(varName, new MultiVarFunc(varName, innerVarNames.toList()) {	
 				public MathFunc diff(String var) {
 					if(varName.equals("r")) { //r对应三角形高h的负倒数
 						if(var.equals("x"))

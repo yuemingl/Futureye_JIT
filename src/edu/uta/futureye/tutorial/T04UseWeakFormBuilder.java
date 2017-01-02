@@ -137,10 +137,18 @@ public class T04UseWeakFormBuilder {
         //2.Mark border types
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		//Robin type on boundary x=3.0 of \Omega
-		mapNTF.put(NodeType.Robin, new MultiVarFunc("x","y"){
+		mapNTF.put(NodeType.Robin, new MultiVarFunc("Robin", "x","y"){
+//			@Override
+//			public double apply(Variable v) {
+//				if(3.0-v.get("x") < 0.01)
+//					return 1.0; //this is Robin condition
+//				else
+//					return -1.0;
+//			}
+
 			@Override
-			public double apply(Variable v) {
-				if(3.0-v.get("x") < 0.01)
+			public double apply(double... args) {
+				if(3.0-args[this.argIdx[0]] < 0.01)
 					return 1.0; //this is Robin condition
 				else
 					return -1.0;
@@ -250,14 +258,23 @@ public class T04UseWeakFormBuilder {
         HashMap<NodeType, MathFunc> mapNTF =
                 new HashMap<NodeType, MathFunc>();
 		//Robin type on boundary x=3.0 of \Omega
-		mapNTF.put(NodeType.Robin, new MultiVarFunc("x","y"){
+		mapNTF.put(NodeType.Robin, new MultiVarFunc("Robin", "x","y"){
+//			@Override
+//			public double apply(Variable v) {
+//				if(3.0-v.get("x") < 0.01)
+//					return 1.0; //this is Robin condition
+//				else
+//					return -1.0;
+//			}
+
 			@Override
-			public double apply(Variable v) {
-				if(3.0-v.get("x") < 0.01)
+			public double apply(double... args) {
+				if(3.0-args[this.argIdx[0]] < 0.01)
 					return 1.0; //this is Robin condition
 				else
 					return -1.0;
 			}
+
 		});
         mapNTF.put(NodeType.Dirichlet, null);
         mesh.markBorderNode(mapNTF);

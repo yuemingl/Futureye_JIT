@@ -58,7 +58,7 @@ public class SFLinearLocal1D extends MultiVarFunc  implements ScalarShapeFunctio
 		 *  r = [2*x - (x1+x2)]/(x2-x1) 
 		 *  r_x = 2/(x2-x1)  
 		 */
-		fInners.put("r", new MultiVarFunc(varNamesInner) {	
+		fInners.put("r", new MultiVarFunc("r", varNamesInner) {	
 			public MathFunc diff(String var) {
 				if(var.equals("x")) {
 					VertexList vl = e.vertices();
