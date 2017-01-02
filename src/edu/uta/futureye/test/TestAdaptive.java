@@ -286,7 +286,7 @@ public class TestAdaptive {
 		mesh.markBorderNode(mapNTF);
 		
 		mesh.printMeshInfo();
-		Tools.plotFunction(mesh, "", "patch_rectangle_test1.dat", FC.C0);
+		Tools.plotFunction(mesh, "", "patch_rectangle_test1.dat", FMath.C0);
 		
 		//二次加密
 		eToRefine.clear();
@@ -298,7 +298,7 @@ public class TestAdaptive {
 		mesh.markBorderNode(mapNTF);
 		
 		mesh.printMeshInfo();
-		Tools.plotFunction(mesh, "", "patch_rectangle_test2.dat", FC.C0);
+		Tools.plotFunction(mesh, "", "patch_rectangle_test2.dat", FMath.C0);
 
 		SFBilinearLocal2D[] shapeFun = new SFBilinearLocal2D[4];
 		for(int i=0;i<4;i++)

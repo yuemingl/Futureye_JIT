@@ -1,7 +1,5 @@
 package edu.uta.futureye.test;
 
-import edu.uta.futureye.function.basic.FCos;
-import edu.uta.futureye.function.basic.FSin;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public class MathFunTest {

@@ -16,6 +16,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -40,10 +41,18 @@ public class Laplace3DTest {
 		mesh.computeNodeBelongsToElements(); //worked in 3D
 		
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Robin, new MultiVarFunc("x","y","z"){
+		mapNTF.put(NodeType.Robin, new MultiVarFunc("BC1", "x","y","z"){
+//			@Override
+//			public double apply(Variable v) {
+//				if(1.0-v.get("x")<0.01)
+//					return 1.0;
+//				else
+//					return -1.0;
+//			}
+
 			@Override
-			public double apply(Variable v) {
-				if(1.0-v.get("x")<0.01)
+			public double apply(double... args) {
+				if(1.0-args[this.argIdx[0]]<0.01)
 					return 1.0;
 				else
 					return -1.0;
@@ -221,10 +230,18 @@ public class Laplace3DTest {
 		mesh.computeGlobalEdge();
 		
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Robin, new MultiVarFunc("x","y","z"){
+		mapNTF.put(NodeType.Robin, new MultiVarFunc("BC1", "x","y","z"){
+//			@Override
+//			public double apply(Variable v) {
+//				if(2.8-v.get("x")<0.01 || 2.8-v.get("z")<0.01)
+//					return 1.0;
+//				else
+//					return -1.0;
+//			}
+
 			@Override
-			public double apply(Variable v) {
-				if(2.8-v.get("x")<0.01 || 2.8-v.get("z")<0.01)
+			public double apply(double... args) {
+				if(2.8-args[this.argIdx[0]]<0.01 || 2.8-args[this.argIdx[2]]<0.01)
 					return 1.0;
 				else
 					return -1.0;
@@ -267,7 +284,7 @@ public class Laplace3DTest {
 		System.out.println("Time used:"+(end-begin));
 		System.out.println("imposeDirichletCondition()...");
 		begin = System.currentTimeMillis();
-		assembler.imposeDirichletCondition(FC.C0);
+		assembler.imposeDirichletCondition(FMath.C0);
 		end = System.currentTimeMillis();
 		System.out.println("imposeDirichletCondition() time used:"+(end-begin));
 		

@@ -34,8 +34,8 @@ import static edu.uta.futureye.function.FMath.*;
 public class FunctionTest {
 	
 	public static void constantTest() {
-		MathFunc c0 = FC.C0;
-		MathFunc c1 = FC.C1;
+		MathFunc c0 = FMath.C0;
+		MathFunc c1 = FMath.C1;
 		MathFunc fx = FX.x;
 		
 		System.out.println(c0.A(c0));
@@ -145,7 +145,7 @@ public class FunctionTest {
 		System.out.println(fp_x3.apply(new Variable(3.0)));
 		
 		MathFunc power = FMath.pow(c2, c3);
-		System.out.println(power+"="+power.apply(null));
+		System.out.println(power+"="+power.apply());
 		
 	}
 	
@@ -168,7 +168,7 @@ public class FunctionTest {
 	public static void severalVariableFunctions() {
 		MathFunc fx = FX.x;
 		MathFunc fy = FX.y;
-		MathFunc f = FC.c(0.25).M(FC.C1.S(fx)).M(FC.C1.S(fy));
+		MathFunc f = FC.c(0.25).M(FMath.C1.S(fx)).M(FMath.C1.S(fy));
 		System.out.println(f);
 		Variable v = new Variable("x",0.5).set("y", 0.5);
 		System.out.println(f.apply(v));
@@ -273,50 +273,63 @@ public class FunctionTest {
 	
 	
 	public static void testForScala() {
-	    //f1 = x^2 + 2x + 2
-	    MathFunc f1 = x.M(x).A( x.A(1.0).M(2.0) );
-	    System.out.println(f1);
-	    System.out.println(f1.apply(new Variable(2.0)));
-	    System.out.println(f1.diff("x"));
-	    System.out.println(f1.diff("x").apply(new Variable(3.0)));
+		// f1 = x^2 + 2x + 2
+		MathFunc f1 = x.M(x).A(x.A(1.0).M(2.0));
+		System.out.println(f1);
+		System.out.println(f1.apply(new Variable(2.0)));
+		System.out.println(f1.diff("x"));
+		System.out.println(f1.diff("x").apply(new Variable(3.0)));
 
-	    //f2 = 3x^2 + 4y + 1
-	    MathFunc f2 = new MultiVarFunc("x","y") {
-	    	@Override
-	    	public double apply(Variable v) {
-		          double x = v.get("x");
-		          double y = v.get("y");
-		          return 3*x*x + 4*y + 1; 
-	    	}
-	    	@Override
-	    	public MathFunc diff(String vn) {
-	    		if (vn == "x") return C(6).M(x);
-	    		else if(vn == "y") return C(4);
-	    		else throw new FutureyeException("variable name="+vn);
-	    	}
-	    }.setName("f(x,y) = 3x^2+4y+1");
-	    
-	    System.out.println(f2);
-	    Variable vv = new Variable("x",2.0).set("y",3.0);
-	    System.out.println(f2.apply(vv));
-	    
-	    System.out.println(f2.diff("x"));
-	    System.out.println(f2.diff("y"));
-	    //System.out.println(f2._d("z")); //Exception
-	    
-	    //f3 = (x+y, x*y, 1.0)
-	    VectorMathFunc f3 = new SpaceVectorFunction( 
-	    		new MultiVarFunc("x","y") {
-	    	    	@Override
-	    	    	public double apply(Variable v) {
-	    		          return v.get("x") + v.get("y"); 
-	    	    	}
-	    	    }.setName("x+y"),
-	    	    x.M(y),
-	    	    C1
-	        );
-	    System.out.println(f3);
-	    System.out.println(f3.value(new Variable("x",2.0).set("y",2.0)));
+		// f2 = 3x^2 + 4y + 1
+		MathFunc f2 = new MultiVarFunc("f2", "x", "y") {
+			@Override
+			public double apply(Variable v) {
+				double x = v.get("x");
+				double y = v.get("y");
+				return 3 * x * x + 4 * y + 1;
+			}
+
+			@Override
+			public MathFunc diff(String vn) {
+				if (vn == "x")
+					return C(6).M(x);
+				else if (vn == "y")
+					return C(4);
+				else
+					throw new FutureyeException("variable name=" + vn);
+			}
+
+			@Override
+			public double apply(double... args) {
+				double x = args[this.argIdx[0]];
+				double y = args[this.argIdx[1]];
+				return 3 * x * x + 4 * y + 1;
+			}
+		}.setName("f(x,y) = 3x^2+4y+1");
+
+		System.out.println(f2);
+		Variable vv = new Variable("x", 2.0).set("y", 3.0);
+		System.out.println(f2.apply(vv));
+
+		System.out.println(f2.diff("x"));
+		System.out.println(f2.diff("y"));
+		// System.out.println(f2._d("z")); //Exception
+
+		// f3 = (x+y, x*y, 1.0)
+		VectorMathFunc f3 = new SpaceVectorFunction(new MultiVarFunc("f3", "x",
+				"y") {
+			@Override
+			public double apply(Variable v) {
+				return v.get("x") + v.get("y");
+			}
+
+			@Override
+			public double apply(double... args) {
+				return args[this.argIdx[0]] + args[this.argIdx[1]];
+			}
+		}.setName("x+y"), x.M(y), C1);
+		System.out.println(f3);
+		System.out.println(f3.value(new Variable("x", 2.0).set("y", 2.0)));
 	}
 	
 	public static void main(String[] args) {

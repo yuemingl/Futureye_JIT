@@ -18,6 +18,7 @@ import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -111,7 +112,7 @@ public class LaplaceTest {
 //					FC.c(2.0).X(FX.fx),//2*x
 					FC.c(0.0),
 					
-					FC.C0 //Robin: 6*y^2-54
+					FMath.C0 //Robin: 6*y^2-54
 				);
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakForm);
@@ -567,11 +568,20 @@ public class LaplaceTest {
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
-		assembler.imposeDirichletCondition(new MultiVarFunc("x","y"){
+		assembler.imposeDirichletCondition(new MultiVarFunc("BC1", "x","y"){
+//			@Override
+//			public double apply(Variable v) {
+//				if(3.0-v.get("x")<0.01 && 
+//						Math.abs(1.0-v.get("y"))<0.2)
+//					return -10.0;
+//				else
+//					return 0.0;
+//			}
+
 			@Override
-			public double apply(Variable v) {
-				if(3.0-v.get("x")<0.01 && 
-						Math.abs(1.0-v.get("y"))<0.2)
+			public double apply(double... args) {
+				if(3.0-args[this.argIdx[0]]<0.01 && 
+						Math.abs(1.0-args[this.argIdx[0]])<0.2)
 					return -10.0;
 				else
 					return 0.0;
