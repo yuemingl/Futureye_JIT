@@ -18,7 +18,6 @@ import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MathFuncBase;
 import edu.uta.futureye.function.Variable;
@@ -106,7 +105,7 @@ public class FX extends MathFuncBase {
 	@Override
 	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
 			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
-		//No need to compile to static field for performance consideration
+		//No need to compile to static field due to performance consideration
 //		if (this.compileToStaticField && !this.isCompiledToStaticFiled) {
 //			mv.visitFieldInsn(Opcodes.GETSTATIC, this.genClassName, this.staticFieldName, "D");
 //			this.isCompiledToStaticFiled = true;

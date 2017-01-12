@@ -396,7 +396,9 @@ public class FComposite extends MultiVarFunc {
 		if(this.isOuterVariablesActive) {
 			fOuter.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
 		} else {
+			//TODO find a way to determine aryArgOuterLVTIdx and put the variable in LVT
 			int aryArgOuterLVTIdx = 4;//???
+			
 			//define a local variable 
 			//double[] aryArgOuter = new double[size];
 			mv.visitLdcInsn(fOuter.getVarNames().size());

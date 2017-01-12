@@ -315,8 +315,8 @@ public class LaplaceTestJITForPaper {
 			map = new HashMap<String, MathFunc>();
 			map.put("x", fx);
 			map.put("y", fy);
-			//             (r[0] r[1])   (x_r, x_s)
-			// 2D JacMat = (r[2] r[3]) = (y_r, y_s)
+			// 2D JacMat = (r[0] r[1]) = (x_r, x_s)
+			//             (r[2] r[3])   (y_r, y_s)
 			//jac changes with element, define the expression for jac with linear element
 			jac = fx.diff("r")*fy.diff("s") - fy.diff("r")*fx.diff("s");
 			jac.compileToStaticField(true);
