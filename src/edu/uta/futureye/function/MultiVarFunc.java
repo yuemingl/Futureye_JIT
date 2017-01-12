@@ -13,7 +13,7 @@ import edu.uta.futureye.util.FutureyeException;
  *
  */
 public abstract class MultiVarFunc extends MathFuncBase {
-	protected String fName = "";
+	protected String fName;
 	protected String[] varNames;
 	protected int[] argIdx;
 	
