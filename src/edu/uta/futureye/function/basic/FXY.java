@@ -1,9 +1,19 @@
 package edu.uta.futureye.function.basic;
 
 import java.util.List;
+import java.util.Map;
 
-import edu.uta.futureye.function.MultiVarFunc;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
+import org.objectweb.asm.MethodVisitor;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
+
 import edu.uta.futureye.function.FMath;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.Constant;
 
@@ -32,8 +42,9 @@ public class FXY extends MultiVarFunc{
 
 	@Override
 	public double apply(double... args) {
-		return c1*args[0] + c2*args[1] + c3;
+		return c1*args[this.argIdx[0]] + c2*args[this.argIdx[1]] + c3;
 	}
+	
 	@Override
 	public MathFunc diff(String varName) {
 		if(varNames[0].equals(varName))
@@ -44,6 +55,32 @@ public class FXY extends MultiVarFunc{
 		return FMath.C0;
 	}
 
+	@Override
+	public InstructionHandle bytecodeGen(String clsName, MethodGen mg,
+			ConstantPoolGen cp, InstructionFactory factory,
+			InstructionList il, Map<String, Integer> argsMap, int argsStartPos, 
+			Map<MathFunc, Integer> funcRefsMap) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
+			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
+			mv.visitLdcInsn(argsMap.get(this.varNames[0]));
+			mv.visitInsn(Opcodes.DALOAD);
+			mv.visitLdcInsn(this.c1);
+			mv.visitInsn(Opcodes.DMUL);
+			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
+			mv.visitLdcInsn(argsMap.get(this.varNames[1]));
+			mv.visitInsn(Opcodes.DALOAD);
+			mv.visitLdcInsn(this.c2);
+			mv.visitInsn(Opcodes.DMUL);
+			mv.visitInsn(Opcodes.DADD);
+			mv.visitLdcInsn(this.c3);
+			mv.visitInsn(Opcodes.DADD);
+	}
+	
 	public String toString() {
 		String s1 = "";
 		if(Math.abs(c1) > Constant.eps)
