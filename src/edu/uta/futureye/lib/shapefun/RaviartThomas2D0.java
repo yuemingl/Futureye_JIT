@@ -75,8 +75,8 @@ public class RaviartThomas2D0 extends VectorMathFuncBase implements VectorShapeF
 	@Override
 	public void assignElement(final Element e) {
 		//Space Vector Function
-		MathFunc fx = new FXY(varNames,1,0);
-		MathFunc fy = new FXY(varNames,0,1);
+		MathFunc fx = new FXY("fx", varNames,1,0,0);
+		MathFunc fy = new FXY("fy", varNames,0,1,0);
 		SpaceVectorFunction svf = new SpaceVectorFunction(fx,fy);
 	
 		EdgeLocal lEdge = e.edges().at(funIndex+1);
@@ -102,22 +102,38 @@ public class RaviartThomas2D0 extends VectorMathFuncBase implements VectorShapeF
 		//y = y(r,s,t)
 		//	where t = 1 - r - s
 		for(final String varName : varNames) {
-			fInners.put(varName, new MultiVarFunc(varNamesInner) {
+			fInners.put(varName, new MultiVarFunc(varName, varNamesInner) {
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
 				public MathFunc diff(String varName) {
 					return null;
 				}
+//				@Override
+//				public double apply(Variable v) {
+//					//根据不同的varName给出不同的表达式
+//					List<MathFunc> transFun = trans.getTransformFunction(
+//							trans.getTransformLinear2DShapeFunction(e));
+//					if(varName.equals("x")) {//x = x(r,s,t)
+//						return transFun.get(0).apply(v);
+//					} else if(varName.equals("y")) {//y = y(r,s,t)
+//						return transFun.get(1).apply(v);
+//					} else {
+//						Exception e = new FutureyeException("Error!");
+//						e.printStackTrace();
+//					}
+//					return 0.0;
+//				}
+				
 				@Override
-				public double apply(Variable v) {
+				public double apply(double... args) {
 					//根据不同的varName给出不同的表达式
 					List<MathFunc> transFun = trans.getTransformFunction(
 							trans.getTransformLinear2DShapeFunction(e));
 					if(varName.equals("x")) {//x = x(r,s,t)
-						return transFun.get(0).apply(v);
+						return transFun.get(0).apply(args);
 					} else if(varName.equals("y")) {//y = y(r,s,t)
-						return transFun.get(1).apply(v);
+						return transFun.get(1).apply(args);
 					} else {
 						Exception e = new FutureyeException("Error!");
 						e.printStackTrace();
