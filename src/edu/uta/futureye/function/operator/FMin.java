@@ -9,6 +9,9 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.Type;
+import org.objectweb.asm.MethodVisitor;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.function.intf.MathFunc;
 
@@ -41,6 +44,18 @@ public class FMin extends FBinaryOp {
 		Constants.INVOKESTATIC));
 	}
 	
+	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
+		if (this.compileToStaticField && this.isCompiledToStaticFiled) {
+			mv.visitFieldInsn(Opcodes.GETSTATIC, this.genClassName, this.staticFieldName, "D");
+		} else {
+			arg1.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+			arg2.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Math", "min", "(DD)D", false);
+		}
+	}
+
 	@Override
 	public String getExpr() {
 		return "min("+arg1.getExpr()+","+arg2.getExpr()+")";

@@ -66,34 +66,38 @@ public class FXY extends MultiVarFunc{
 	@Override
 	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
 			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
-			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-			mv.visitLdcInsn(argsMap.get(this.varNames[0]));
-			mv.visitInsn(Opcodes.DALOAD);
-			mv.visitLdcInsn(this.c1);
-			mv.visitInsn(Opcodes.DMUL);
-			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-			mv.visitLdcInsn(argsMap.get(this.varNames[1]));
-			mv.visitInsn(Opcodes.DALOAD);
-			mv.visitLdcInsn(this.c2);
-			mv.visitInsn(Opcodes.DMUL);
-			mv.visitInsn(Opcodes.DADD);
-			mv.visitLdcInsn(this.c3);
-			mv.visitInsn(Opcodes.DADD);
+		mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
+		mv.visitLdcInsn(argsMap.get(this.varNames[0]));
+		mv.visitInsn(Opcodes.DALOAD);
+		mv.visitLdcInsn(this.c1);
+		mv.visitInsn(Opcodes.DMUL);
+		mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
+		mv.visitLdcInsn(argsMap.get(this.varNames[1]));
+		mv.visitInsn(Opcodes.DALOAD);
+		mv.visitLdcInsn(this.c2);
+		mv.visitInsn(Opcodes.DMUL);
+		mv.visitInsn(Opcodes.DADD);
+		mv.visitLdcInsn(this.c3);
+		mv.visitInsn(Opcodes.DADD);
 	}
 	
 	public String toString() {
+		//fixme c2=0
 		String s1 = "";
 		if(Math.abs(c1) > Constant.eps)
-			s1 = s1 + "*";
+			s1 = c1 + "*" + this.varNames[0];
 		String s2 = "";
 		if(Math.abs(c2) > Constant.eps)
-			s2 = s2 + "*";
-		if(s1.isEmpty() && !s2.isEmpty())
-			return s2+this.varNames[1];
-		else if(!s1.isEmpty() && s2.isEmpty())
-			return s1+this.varNames[0];
-		else
-			return s1+this.varNames[0]+" + " +s2+this.varNames[1];
-		//TODO c3
+			s2 = c2 + "*" + this.varNames[1];
+		String p1 = (s1.isEmpty()||s2.isEmpty())?"":" + ";
+		String s3 = "";
+		if(Math.abs(c3) > Constant.eps)
+			s3 = c3;
+		String p2 = (s2.isEmpty()||s3.isEmpty())?"":" + ";
+		return s1+p1+s2+p2+s3;
+	}
+	
+	public String getExpr() {
+		return this.toString();
 	}
 }

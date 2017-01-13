@@ -10,6 +10,9 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUSH;
 import org.apache.bcel.generic.Type;
+import org.objectweb.asm.MethodVisitor;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.function.intf.MathFunc;
 
@@ -67,6 +70,25 @@ public class FPow extends FBinaryOp {
 		}
 	}
 	
+
+	@Override
+	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
+			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {
+		if (this.compileToStaticField && this.isCompiledToStaticFiled) {
+			mv.visitFieldInsn(Opcodes.GETSTATIC, this.genClassName, this.staticFieldName, "D");
+		} else {
+			arg1.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+			if(arg2.isInteger()) {
+				arg2.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+				mv.visitInsn(Opcodes.D2I);
+				mv.visitMethodInsn(Opcodes.INVOKESTATIC, FPow.class.getName().replaceAll("\\.", "/"), "powi", "(DI)D", false);
+			} else {
+				arg2.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
+				mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Math", "pow", "(DD)D", false);
+			}
+		}
+	}
+
 	@Override
 	public String getExpr() {
 		return "pow("+arg1.getExpr()+","+arg2.getExpr()+")";
