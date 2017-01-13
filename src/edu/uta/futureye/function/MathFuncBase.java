@@ -208,27 +208,9 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 			String clsName) {
 		throw new RuntimeException("Unimplementd method!");
 	}
-
-	@Override
-	public CompiledFunc compile() {
-		String clsName="";
-		if(getName() == null || getName().length() == 0)
-			clsName = this.getClass().getSimpleName();
-		clsName = clsName + java.util.UUID.randomUUID().toString().replaceAll("-", "");
-		
-		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>(FuncClassLoader.class.getClassLoader());
-		ClassGen genClass = BytecodeUtils.genClass(this, null, clsName, true, false);
-		CompiledFunc func = fcl.newInstance(genClass);
-		
-		List<MathFunc> list = new ArrayList<MathFunc>();
-		BytecodeUtils.postOrder(this, list);
-		func.setFuncRefs(list.toArray(new MathFunc[0]));
-		
-		return func;
-	}
 	
 	@Override
-	public CompiledFunc compile(String[] varNames) {
+	public CompiledFunc compile(String ...varNames) {
 		String clsName = getName();
 		if(clsName == null || clsName.length() == 0)
 			clsName = this.getClass().getSimpleName();
@@ -246,7 +228,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 	}
 
 	@Override
-	public CompiledFunc compileWithASM(String[] varNames) {
+	public CompiledFunc compileWithASM(String ...varNames) {
 
 		boolean writeFile = true;
 		genClassName = getName();
@@ -283,12 +265,12 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 			
 			
 			HashMap<String, Integer> argsMap = new HashMap<String, Integer>();
-			if(varNames == null) {
+			if(varNames == null || varNames.length == 0) {
 				List<String> args = this.getVarNames();
 				for(int i=0; i<args.size(); i++) {
 					argsMap.put(args[i], i);
 				}
-				System.out.println("JIT compileWithASM: "+this);
+				System.out.println("JIT compileWithASM(): "+this.getName()+"("+argsMap+")"+" = "+this.getExpr());
 			} else {
 				StringBuilder sb = new StringBuilder();
 				sb.append("(");
@@ -541,7 +523,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 			}
 			sb.delete(sb.length()-1, sb.length());
 			sb.append(")");
-			if(getName().length() == 0)
+			if(getName() == null || getName().length() == 0)
 				return "f" + sb.toString() + " = " + getExpr();
 			else
 				return getName() + sb.toString() + " = " + getExpr();

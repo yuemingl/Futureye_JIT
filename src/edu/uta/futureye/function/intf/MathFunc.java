@@ -312,19 +312,13 @@ public interface MathFunc {
 			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName);
 
 	/**
-	 * Compile the function to bytecode with order of arguments from
-	 * the call of getVarNames()
-	 */
-	CompiledFunc compile();
-	
-	/**
-	 * Compile the function to bytecode with a specified order of
-	 * arguments
+	 * Compile the function to bytecode with a specified order of arguments
+	 * If no argument provided, it uses the the call of getVarNames()
 	 * 
 	 * @param varNames
 	 * @return
 	 */
-	CompiledFunc compile(String[] varNames);
+	CompiledFunc compile(String ...varNames);
 	
 	/**
 	 * Compile the function to bytecode with a specified order of
@@ -333,7 +327,7 @@ public interface MathFunc {
 	 * @param varNames
 	 * @return
 	 */
-	CompiledFunc compileWithASM(String[] varNames);
+	CompiledFunc compileWithASM(String ...varNames);
 	
 	/**
 	 * Set the flag so that the evaluation results of this expression 

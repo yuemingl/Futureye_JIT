@@ -37,4 +37,4 @@ local.properties
 
 *.class
 *.dat
-./tutorial/*.dat
+tutorial/*.dat

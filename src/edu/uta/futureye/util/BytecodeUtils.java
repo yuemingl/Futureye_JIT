@@ -79,7 +79,7 @@ public class BytecodeUtils {
 				il, cp);
 		
 		HashMap<String, Integer> argsMap = new HashMap<String, Integer>();
-		if(varNames == null) {
+		if(varNames == null || varNames.length == 0) {
 			List<String> args = func.getVarNames();
 			for(int i=0; i<args.size(); i++) {
 				argsMap.put(args[i], i);
