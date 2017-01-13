@@ -130,13 +130,13 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 				throw new FutureyeException("x(="+x+") should be 'x' or 'y'!");
 			}
 			Variable vv = new Variable();
-			if(varNames==null || varNames.size()==0) {
+			if(varNames==null || varNames.length==0) {
 				throw new FutureyeException("varNames should be specified in parameter 'u'.");
 			}
 			if(v.getIndex() != 0) {
 				Node node = mesh.getNodeList().at(v.getIndex());
-				for(int i=0;i<varNames.size();i++) {
-					vv.set(varNames.get(i),node.coord(i+1));
+				for(int i=0;i<varNames.length;i++) {
+					vv.set(varNames[i],node.coord(i+1));
 				}
 				return du.apply(vv);
 			} else {
@@ -201,13 +201,13 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 				throw new FutureyeException("x(="+x+") should be 'x' or 'y'!");
 			}
 			Variable vv = new Variable();
-			if(varNames==null || varNames.size()==0) {
+			if(varNames==null || varNames.length==0) {
 				throw new FutureyeException("varNames should be specified in parameter 'u'.");
 			}
 			if(n.getIndex() != 0) {
 				Node node = mesh.getNodeList().at(n.getIndex());
-				for(int i=0;i<varNames.size();i++) {
-					vv.set(varNames.get(i),node.coord(i+1));
+				for(int i=0;i<varNames.length;i++) {
+					vv.set(varNames[i],node.coord(i+1));
 				}
 				return du.apply(vv);
 			} else {
