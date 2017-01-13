@@ -79,16 +79,27 @@ public class Vector2Function extends MultiVarFunc {
 		nDim = u.getDim();
 		if(nDim != mesh.getNodeList().size())
 			throw new FutureyeException("u.getDim() != mesh.getNodeList().size()");
-		varNames.add(varName);
-		for(String s : aryVarNames)
-			varNames.add(s);
+		varNames = new String[1+aryVarNames.length];
+		varNames[0] = varName;
+		for(int i=0; i<aryVarNames.length; i++)
+			varNames[i+1] = aryVarNames[i];
+	}
+	
+	public Vector2Function(Vector u, Mesh mesh,
+			String []aryVarNames) {
+		this.u = u;
+		this.mesh = mesh;
+		nDim = u.getDim();
+		if(nDim != mesh.getNodeList().size())
+			throw new FutureyeException("u.getDim() != mesh.getNodeList().size()");
+		varNames = aryVarNames;
 	}
 	
 	public Vector2Function(Vector u, Mesh mesh,
 			List<String> varNames) {
 		this.u = u;
 		this.mesh = mesh;
-		this.varNames = varNames;
+		this.varNames = varNames.toArray(new String[0]);
 	}	
 	
 	/**
@@ -145,9 +156,9 @@ public class Vector2Function extends MultiVarFunc {
 						index,nDim));
 		} else { //如果同时指定mesh，需要判断是否需要插值
 			boolean needInterpolation = false;
-			double[] coord = new double[varNames.size()];
-			for(int i=0;i<varNames.size();i++) {
-				coord[i] = v.get(varNames.get(i));
+			double[] coord = new double[varNames.length];
+			for(int i=0;i<varNames.length;i++) {
+				coord[i] = v.get(varNames[i]);
 			}
 			
 			if(index < 0)
