@@ -13,6 +13,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
 import edu.uta.futureye.util.container.VertexList;
 
@@ -85,7 +86,13 @@ public class SFLinearLocal1D extends MultiVarFunc  implements ScalarShapeFunctio
 		else
 			funOuter = new FAxpb("r",0.5,0.5);
 		funCompose = funOuter.compose(fInners);
-		funCompose.setActiveVarNames(funOuter.getVarNames());
+		funCompose.setActiveVarByNames(funOuter.getVarNames());
+		/**
+		 * The default active variable names of a composite function is the inner variable names.
+		 * Shape function needs the outer variable names as the active variable names.
+		 */
+		funCompose.setActiveVarByNames(funOuter.getVarNames());
+		funCompose.setArgIdx(Utils.getIndexMap(this.getVarNames()));
 	}
 	
 	@Override

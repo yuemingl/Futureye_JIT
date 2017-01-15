@@ -142,7 +142,7 @@ public class SFLinearLocal2D  extends MultiVarFunc
 		funCompose = FC.c(this.coef).M(
 				funOuter.compose(fInners)
 				);
-		funCompose.setActiveVarNames(funOuter.getVarNames());
+		funCompose.setActiveVarByNames(funOuter.getVarNames());
 	}
 	
 	public SFLinearLocal2D(int funID) {

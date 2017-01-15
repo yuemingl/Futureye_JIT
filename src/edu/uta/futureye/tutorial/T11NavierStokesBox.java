@@ -34,6 +34,7 @@ import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.ObjIndex;
 import edu.uta.futureye.util.container.ObjList;
+import static edu.uta.futureye.function.FMath.*;
 
 
 /**
@@ -45,6 +46,7 @@ import edu.uta.futureye.util.container.ObjList;
  * 2. Rajiv Sampath and Nicholas Zabaras Design and object-oriented implementation of a 
  *    preconditioned-stabilized incompressible NaiverStokes solver using equal-order-interpolation 
  *    velocity pressure elements
+ *
  * @author liuyueming
  *
  */
@@ -152,25 +154,34 @@ public class T11NavierStokesBox {
 		}
 
 		diri = new SpaceVectorFunction(3);
-		diri.set(1, new MultiVarFunc("x","y") {
+		diri.set(1, new MultiVarFunc("", "x", "y") {
+//					@Override
+//					public double apply(Variable v) {
+//						double y = v.get("y");
+//						if(Math.abs(y-1.0)<Constant.meshEps)
+//							return 1.0;
+//						else
+//							return 0.0;
+//					}
+
 					@Override
-					public double apply(Variable v) {
-						double y = v.get("y");
+					public double apply(double... args) {
+						double y = args[this.argIdx[1]];
 						if(Math.abs(y-1.0)<Constant.meshEps)
 							return 1.0;
 						else
 							return 0.0;
 					}
 				});
-		diri.set(2, FC.C0);
-		diri.set(3, FC.C0);
+		diri.set(2, C0);
+		diri.set(3, C0);
 		
 	}
 	
 	public SparseBlockVector nonlinearIter(int time, int nIter, SpaceVectorFunction uk) {
 		//Right hand side(RHS): f = (0,0)'
 		if(time==0)
-			weakForm.setF(new SpaceVectorFunction(FC.C0,FC.C0));
+			weakForm.setF(new SpaceVectorFunction(C0,C0));
 		else
 			weakForm.setF(new SpaceVectorFunction(uk.get(1).D(dt),uk.get(2).D(dt)));
 		
@@ -192,8 +203,8 @@ public class T11NavierStokesBox {
 	
 	public SparseBlockVector nonlinearIterSteady(int nIter, SpaceVectorFunction uk) {
 		//Right hand side(RHS): f = (0,0)'
-		weakForm.setF(new SpaceVectorFunction(FC.C0,FC.C0));
-		weakForm.setParam(FC.c(nu),U,FC.C0);
+		weakForm.setF(new SpaceVectorFunction(C0,C0));
+		weakForm.setParam(FC.c(nu),U,C0);
 		
 		assembler = new AssemblerVector(mesh, weakForm,fe);
 		assembler.assemble();
@@ -225,8 +236,8 @@ public class T11NavierStokesBox {
 			U.set(1, new Vector2Function(vecU));
 			U.set(2, new Vector2Function(vecV));
 		} else {
-			U.set(1, FC.C0);
-			U.set(2, FC.C0);
+			U.set(1, C0);
+			U.set(2, C0);
 		}
 		
 		

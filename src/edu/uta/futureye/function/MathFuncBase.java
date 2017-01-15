@@ -85,8 +85,14 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 		}
 		if(!find) 
 			return this; //No compose
-		else
-			return new FComposite(this, fInners);
+		else {
+			MathFunc ret = new FComposite(this, fInners);
+			if(ret.isOuterVarActive())
+				ret.setOuterVarActive();
+			else
+				ret.setInnerVarActive();
+			return ret;
+		}
 	}
 	
 	////////////////////////Basic Math Operations/////////////////////////////
@@ -541,9 +547,32 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 	}
 	
 	@Override
-	public MathFunc setActiveVarNames(List<String> varNames) {
-		//Do nothing
-		return this;
+	public MathFunc setActiveVarByNames(List<String> varNames) {
+		throw new UnsupportedOperationException();
 	}
-
+	
+	@Override
+	public List<String> getActiveVarNames() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public void setOuterVarActive() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public void setInnerVarActive() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean isOuterVarActive() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean isInnerVarActive() {
+		throw new UnsupportedOperationException();
+	}
 }

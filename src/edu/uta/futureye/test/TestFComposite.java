@@ -45,7 +45,7 @@ public class TestFComposite {
 		List<String> varNames = new ArrayList<String>();
 		varNames.add("t");
 		varNames.add("s");
-		fc.setActiveVarNames(varNames);
+		fc.setActiveVarByNames(varNames);
 		fc = fc + r;
 		
 		check(fc.toString(), "f(r,s,t) = t + s + r");

@@ -51,8 +51,9 @@ import edu.uta.futureye.util.Utils;
  *  
  *  MathFunc fc = f.compose(fInners);
  *  System.out.println(fc); //f(x,y) = (x*x)*(y + 1.0) + 1.0
- *  
  * </pre></blockquote>
+ * The active variable of the composite function is the variables
+ * of the inner functions by default.
  */
 public class FComposite extends MultiVarFunc {
 	public MathFunc fOuter;
@@ -85,12 +86,12 @@ public class FComposite extends MultiVarFunc {
 		}
 		this.fInners = fInners2;
 		
+		this.setOuterVarActive();
 		// Default to use free variables in fInners
-		this.setVarNames(nameList);
-		this.setArgIdx(Utils.getIndexMap(nameList));
-		isOuterVariablesActive = false;
-		//this.setVarNames(fOuter.getVarNames());
-		//this.setArgIdx(Utils.getIndexMap(fOuter.getVarNames()));
+//		this.setVarNames(nameList);
+//		this.setArgIdx(Utils.getIndexMap(nameList));
+//		//this.setVarNames(fOuter.getVarNames());
+//		//this.setArgIdx(Utils.getIndexMap(fOuter.getVarNames()));
 	}
 
 	@Override
@@ -172,25 +173,30 @@ public class FComposite extends MultiVarFunc {
 	}
 	
 	/**
-	 * 链式求导
-	 * f( x(r,s),y(r,s) )_r = f_x * x_r + f_y * y_r
+	 * Chain rule of calculus
+	 * 
+	 * For example:
+	 * f( x(r,s), y(r,s) )_r = f_x * x_r + f_y * y_r
 	 */
 	@Override
 	public MathFunc diff(String varName) {
 		MathFunc rlt = null;
 		if(fOuter.getVarNames().contains(varName)) {
-			//f(x,y)关于x或y求导
+			//Return derivative of f(x,y) with respect to x or y
 			rlt = fOuter.diff(varName);
 			return rlt;
 		} else {
-			//f(x,y)关于r或s求导
+			//Return derivative of f(x(r,s),y(r,s)) with respective to r or s
 			rlt = new FC(0.0);
 			for(String innerVarName : fOuter.getVarNames()) {
 				MathFunc fInner = fInners.get(innerVarName);
 				if(fInner != null) {
 					MathFunc rltOuter = fOuter.diff(innerVarName);
-					if(!(rltOuter.isConstant()))
+					if(!(rltOuter.isConstant())) {
 						rltOuter = rltOuter.compose(fInners);
+						//No need. see MathFuncBase.compose()
+						//rltOuter.setOuterVarActive();
+					}
 					MathFunc rltInner = fInner.diff(varName);
 					//f_x * x_r + f_y * y_r
 					rlt = rlt.A(
@@ -365,7 +371,7 @@ public class FComposite extends MultiVarFunc {
 	}
 	
 	@Override
-	public MathFunc setActiveVarNames(List<String> varNames) {
+	public MathFunc setActiveVarByNames(List<String> varNames) {
 		if(Utils.isListEqualIgnoreOrder(fOuter.getVarNames(),  varNames)) {
 			this.isOuterVariablesActive = true;
 			this.setVarNames(varNames);
@@ -390,6 +396,41 @@ public class FComposite extends MultiVarFunc {
 		throw new FutureyeException("Active variable names are different from all existing variable names!");
 	}
 
+	@Override
+	public List<String> getActiveVarNames() {
+		if(this.isOuterVariablesActive)
+			return fOuter.getVarNames();
+		else {
+			List<String> list = new ArrayList<String>();
+			for(Entry<String, MathFunc> e : fInners.entrySet()) {
+				list = Utils.mergeList(list, e.getValue().getVarNames());
+			}
+			return list;
+		}
+	}
+	
+	@Override
+	public void setOuterVarActive() {
+		this.isOuterVariablesActive = true;
+		this.setActiveVarByNames(this.getActiveVarNames());
+	}
+	
+	@Override
+	public void setInnerVarActive() {
+		this.isOuterVariablesActive = false;
+		this.setActiveVarByNames(this.getActiveVarNames());
+	}
+	
+	@Override
+	public boolean isOuterVarActive() {
+		return this.isOuterVariablesActive;
+	}
+	
+	@Override
+	public boolean isInnerVarActive() {
+		return !this.isOuterVariablesActive;
+	}
+	
 	@Override
 	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
 			int argsStartPos, Map<MathFunc, Integer> funcRefsMap, String clsName) {

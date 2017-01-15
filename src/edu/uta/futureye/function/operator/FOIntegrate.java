@@ -242,13 +242,13 @@ public class FOIntegrate{
 		} else if(order == 2) {
 			v.set(VN.r, a2);
 			v.set(VN.s, a2);
-			rlt += integrand.apply(v);			
+			rlt += integrand.apply(v);
 			v.set(VN.r, -a2);
 			v.set(VN.s, a2);
-			rlt += integrand.apply(v);			
+			rlt += integrand.apply(v);
 			v.set(VN.r, a2);
 			v.set(VN.s, -a2);
-			rlt += integrand.apply(v);			
+			rlt += integrand.apply(v);
 			v.set(VN.r, -a2);
 			v.set(VN.s, -a2);
 			rlt += integrand.apply(v);

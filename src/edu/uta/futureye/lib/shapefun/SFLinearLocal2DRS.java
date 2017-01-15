@@ -87,6 +87,7 @@ public class SFLinearLocal2DRS  extends MultiVarFunc
 				}
 				@Override
 				public double apply(double... args) {
+					//This is supposed not to be called.
 					throw new UnsupportedOperationException();
 				}
 				
@@ -116,7 +117,7 @@ public class SFLinearLocal2DRS  extends MultiVarFunc
 		 * The default active variable names of a composite function is the inner variable names.
 		 * Shape function needs the outer variable names as the active variable names.
 		 */
-		funCompose.setActiveVarNames(funOuter.getVarNames());
+		funCompose.setActiveVarByNames(funOuter.getVarNames());
 		funCompose.setArgIdx(Utils.getIndexMap(this.getVarNames()));
 	}
 	

@@ -71,7 +71,7 @@ public class SFBilinearLocal2D extends MultiVarFunc implements ScalarShapeFuncti
 		//r = r(x,y)
 		//s = s(x,y)
 		for(final String varName : varNames) {
-			fInners.put(varName, new MultiVarFunc(innerVarNames.toList()) {
+			fInners.put(varName, new MultiVarFunc(varName, innerVarNames.toList()) {
 				
 /**
 How to get derivative r_x, r_y, s_x, s_y:
@@ -126,8 +126,7 @@ from the above four equations, we have:
 				
 				@Override
 				public double apply(double... args) {
-					// TODO Auto-generated method stub
-					return 0;
+					throw new RuntimeException("Unimplemented method");
 				}
 			});
 		}
@@ -147,9 +146,13 @@ from the above four equations, we have:
 		
 		//使用复合函数构造形函数
 		this.coef = coef;
-		funCompose = FC.c(this.coef).M(
-					funOuter.compose(fInners)
-				);
+		funCompose = FC.c(this.coef).M(funOuter.compose(fInners));
+		/**
+		 * The default active variable names of a composite function is the inner variable names.
+		 * Shape function needs the outer variable names as the active variable names.
+		 */
+		funCompose.setActiveVarByNames(funOuter.getVarNames());
+		funCompose.setArgIdx(Utils.getIndexMap(this.getVarNames()));
 	}
 
 	public SFBilinearLocal2D(int funID,double coef) {
@@ -161,6 +164,7 @@ from the above four equations, we have:
 	}
 
 	public MathFunc diff(String varName) {
+		//????this.funCompose.setActiveVarNames(this.getVarNames());
 		return funCompose.diff(varName);
 	}
 
@@ -233,7 +237,8 @@ from the above four equations, we have:
 
 	@Override
 	public double apply(double... args) {
-		this.funCompose.setActiveVarNames(this.getVarNames());
+		//no need. see MathFuncBase.compose()
+		//this.funCompose.setActiveVarByNames(this.getVarNames());
 		return this.funCompose.apply(args);
 	}
 }

@@ -50,12 +50,39 @@ public interface MathFunc {
 	MathFunc setVarNames(List<String> varNames);
 	
 	/**
-	 * Set 'active' variable names of composite function for evaluation.
-	 *  
-	 * @param varNames
+	 * Set active variables by variable names of a composite function.
+	 * Active variables are the variables used in evaluating a composite function and
+	 * computing derivatives of the composite function.
+	 * @param varNames - active variable names
 	 * @return
 	 */
-	MathFunc setActiveVarNames(List<String> varNames);
+	MathFunc setActiveVarByNames(List<String> varNames);
+	
+	/**
+	 *  Get the active variable names of a composite function
+	 * @return
+	 */
+	List<String> getActiveVarNames();
+	
+	/**
+	 * Set the outer variables of a composite function as active variables
+	 */
+	void setOuterVarActive();
+	
+	/**
+	 * Set the inner variables of a composite function as active variables
+	 */
+	void setInnerVarActive();
+	
+	/**
+	 * Return true if the outer variables of a composite function is active
+	 */
+	boolean isOuterVarActive();
+	
+	/**
+	 * Return true if the inner variables of a composite function is active
+	 */
+	boolean isInnerVarActive();
 	
 	/**
 	 * Return all free variable names of the function
