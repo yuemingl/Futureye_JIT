@@ -25,7 +25,7 @@ import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -255,7 +255,7 @@ public class MouseHead {
 		weakFormL2.setF(this.delta);
 		//Parameters
 		weakFormL2.setParam(
-				this.k, new Vector2Function(U)
+				this.k, new Vector2MathFunc(U)
 			);
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakFormL2);
@@ -1135,7 +1135,7 @@ public class MouseHead {
 				PairDoubleInteger di = measBorderValues.at(i);
 				vDiri.set(di.i,di.d);
 			}
-			diri = new Vector2Function(vDiri);
+			diri = new Vector2MathFunc(vDiri);
 			u1_bk = solveForwardDirichlet(meshOmega1,diri);
 			Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1_bk.dat", u1_bk);
 			
@@ -1152,7 +1152,7 @@ public class MouseHead {
 			mapNTF.put(NodeType.Dirichlet, null);
 			meshOmega2.clearBorderNodeMark();
 			meshOmega2.markBorderNode(mapNTF);
-			diri = new Vector2Function(u2_bk);
+			diri = new Vector2MathFunc(u2_bk);
 			//diri = new Vector2Function(this.extractData(meshOmega0, meshOmega2, u0_bk));//for test
 			
 			u2_bk = solveForwardDirichlet(meshOmega2,diri);
@@ -1212,7 +1212,7 @@ public class MouseHead {
 		//读取测量边界条件，光源编号为srcLightId，时间编号为timeId
 		MathFunc diri = null;
 		if(bSimulate)
-			diri = new Vector2Function(u1_sim);
+			diri = new Vector2MathFunc(u1_sim);
 		else {
 			//diri = new DiscreteIndexFunction(readInterpData(srcLightId,timeId));
 			ObjList<PairDoubleInteger> measBorderValues = readInterpData(srcLightId,timeId);
@@ -1223,7 +1223,7 @@ public class MouseHead {
 				PairDoubleInteger di = measBorderValues.at(i);
 				vDiri.set(di.i,di.d);
 			}
-			diri = new Vector2Function(vDiri);
+			diri = new Vector2MathFunc(vDiri);
 		}
 		Vector u1 = solveForwardDirichlet(meshOmega1,diri);
 		Tools.plotVector(meshOmega1, outputFolder, tailType+"_u1.dat", u1);

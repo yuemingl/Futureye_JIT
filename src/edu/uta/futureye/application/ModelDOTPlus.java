@@ -13,7 +13,7 @@ import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -238,7 +238,7 @@ public class ModelDOTPlus {
 		Vector uSmallExtract = Tools.extractData(meshBig, meshSmall, uBig);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_extract.dat", uSmallExtract);
 
-		Vector uSmallDiri = model.solveDirichlet(meshSmall, new Vector2Function(uSmallExtract));
+		Vector uSmallDiri = model.solveDirichlet(meshSmall, new Vector2MathFunc(uSmallExtract));
 		Tools.plotVector(meshSmall, outputFolder, "u_small_diri.dat", uSmallDiri);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_extract_diri_diff.dat", 
 				FMath.axpy(-1.0, uSmallDiri, uSmallExtract));
@@ -251,7 +251,7 @@ public class ModelDOTPlus {
 		}
 		Vector uSmallRobin = model.solveMixedBorder(meshSmall, 
 				null, null, 
-				new Vector2Function(uSmallDiriBoundary), null);
+				new Vector2MathFunc(uSmallDiriBoundary), null);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_robin.dat", uSmallRobin);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_extract_robin_diff.dat", 
 				FMath.axpy(-1.0, uSmallRobin, uSmallExtract));
@@ -274,7 +274,7 @@ public class ModelDOTPlus {
 		Vector uSmallGuess = Tools.extractData(meshBig, meshSmall, uBigGuess);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_guess.dat", uSmallGuess);
 		
-		Vector uSmallApproximate = model.solveDirichlet(meshSmall, new Vector2Function(uSmallExtract));
+		Vector uSmallApproximate = model.solveDirichlet(meshSmall, new Vector2MathFunc(uSmallExtract));
 		Tools.plotVector(meshSmall, outputFolder, "u_small_approximate.dat", uSmallApproximate);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_guess_approximate_diff.dat", 
 				FMath.axpy(-1.0, uSmallApproximate, uSmallGuess));
@@ -292,7 +292,7 @@ public class ModelDOTPlus {
 			}
 		};
 		Vector uMix = model.solveMixedBorder(meshSmall, diriBoundaryMark, 
-				new Vector2Function(uSmallExtract), null, FC.C1.D(model.mu_s.A(model.mu_a).M(3.0)));
+				new Vector2MathFunc(uSmallExtract), null, FC.C1.D(model.mu_s.A(model.mu_a).M(3.0)));
 		Tools.plotVector(meshSmall, outputFolder, "u_mix.dat", uMix);
 	}
 

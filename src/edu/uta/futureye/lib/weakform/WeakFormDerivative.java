@@ -6,7 +6,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.container.DOFList;
@@ -28,7 +28,7 @@ import edu.uta.futureye.util.container.DOFList;
  * @author liuyueming
  */
 public class WeakFormDerivative extends AbstractScalarWeakForm {
-	protected Vector2Function g_U = null;
+	protected Vector2MathFunc g_U = null;
 	protected String varName; // "x" or "y"
 	protected double eps = -1.0;
 
@@ -76,11 +76,11 @@ public class WeakFormDerivative extends AbstractScalarWeakForm {
 		return null;
 	}
 
-	public void setParam(Vector2Function U) {
+	public void setParam(Vector2MathFunc U) {
 		this.g_U = U;
 	}
 	
-	public void setParam(Vector2Function U, double eps) {
+	public void setParam(Vector2MathFunc U, double eps) {
 		this.g_U = U;
 		this.eps = eps;
 	}

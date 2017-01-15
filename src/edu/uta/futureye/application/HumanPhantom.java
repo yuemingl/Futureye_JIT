@@ -19,7 +19,7 @@ import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.Utils;
@@ -55,7 +55,7 @@ public class HumanPhantom {
 		double left = -2.8;
 		double width = 5.6;
 		Point lPos = model.getLightPosition();
-		Vector2Function fu = new Vector2Function(u,mesh,"x","y");
+		Vector2MathFunc fu = new Vector2MathFunc(u,mesh,"x","y");
 		SparseVector rlt = new SparseVectorHashMap(u.getDim());
 		
 		for(int i=1;i<=nodes.size();i++) {
@@ -83,7 +83,7 @@ public class HumanPhantom {
 		double right = 2.8;
 		double width = 5.6;
 		Point lPos = model.getLightPosition();
-		Vector2Function fu = new Vector2Function(u,mesh,"x","y");
+		Vector2MathFunc fu = new Vector2MathFunc(u,mesh,"x","y");
 		SparseVector rlt = new SparseVectorHashMap(u.getDim());
 		
 		for(int i=1;i<=nodes.size();i++) {
@@ -335,9 +335,9 @@ public class HumanPhantom {
 		Vector v3D = new SparseVectorHashMap(mesh3D.getNodeList().size());
 		NodeList nodes = mesh3D.getNodeList();
 		double dz = 5.8/NN;
-		List<Vector2Function> faList = new ArrayList<Vector2Function>();
+		List<Vector2MathFunc> faList = new ArrayList<Vector2MathFunc>();
 		for(int i=0;i<alphaList.size();i++) {
-			faList.add(new Vector2Function(alphaList.get(i),mesh,"x","y"));
+			faList.add(new Vector2MathFunc(alphaList.get(i),mesh,"x","y"));
 		}
 		for(int i=1;i<=nodes.size();i++) {
 			Node node = nodes.at(i);

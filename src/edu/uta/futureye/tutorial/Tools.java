@@ -12,7 +12,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
@@ -63,7 +63,7 @@ public class Tools {
 		mesh.clearBorderNodeMark();
 		
 		WeakFormDerivative weakForm = new WeakFormDerivative(varName);
-		weakForm.setParam(new Vector2Function(U));
+		weakForm.setParam(new Vector2MathFunc(U));
 		
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		assembler.assemble();

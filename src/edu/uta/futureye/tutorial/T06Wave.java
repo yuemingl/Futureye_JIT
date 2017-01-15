@@ -14,7 +14,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -210,7 +210,7 @@ public class T06Wave {
 		u_n1 = u0;
 		for(int i=1;i<=300;i++) {
 			Vector rlt = solverOneStep(i);
-			u_n1 = new Vector2Function(rlt);
+			u_n1 = new Vector2MathFunc(rlt);
 		}
 	}
 	

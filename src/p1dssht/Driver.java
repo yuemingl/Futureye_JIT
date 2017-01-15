@@ -13,7 +13,7 @@ import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinear1D;
@@ -153,7 +153,7 @@ public class Driver {
     		Vector T = solver.solveDGESV(stiff, load); //Direct solver
     		
     		//Update parameter k
-    		final Vector2Function funU = new Vector2Function(T, mesh, "x");
+    		final Vector2MathFunc funU = new Vector2MathFunc(T, mesh, "x");
     		//k depends on T, for example k=2*T
     		k = new MultiVarFunc("x") {
     			public double apply(Variable v) {

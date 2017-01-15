@@ -23,7 +23,7 @@ import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -141,7 +141,7 @@ public class VariationGaussNewton {
 	public SparseVector getResLlmd(Vector u, Vector q) {
         //4.Weak form
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFunc fq = new Vector2Function(q);
+        MathFunc fq = new Vector2MathFunc(q);
         weakForm.setParam(fq, FC.C0, null, null);
         //Right hand side(RHS): f(x) = -4.0
         weakForm.setF(FC.c(-4.0));
@@ -182,10 +182,10 @@ public class VariationGaussNewton {
 	public SparseVector getResLu(Vector u, Vector lambda, Vector q) {
         //4.Weak form
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFunc fq = new Vector2Function(q);
+        MathFunc fq = new Vector2MathFunc(q);
         weakForm.setParam(fq, FC.C0, null, null);
         //Right hand side(RHS): f(x) = - (u - z)
-        MathFunc z_u = z.S(new Vector2Function(u));
+        MathFunc z_u = z.S(new Vector2MathFunc(u));
         plotFunction(mesh, z_u, String.format("z_u%02d.dat",this.iterNum));
         weakForm.setF(z_u);
 
@@ -230,8 +230,8 @@ public class VariationGaussNewton {
         WeakFormL22D weakForm = new WeakFormL22D();
         weakForm.setParam(FC.C0, FC.C1);
         //Right hand side(RHS): f(x) = -(1.0/\beta)\nabla{u}\cdot\nabla{v}
-        MathFunc fu = new Vector2Function(u,mesh,"x","y");
-        MathFunc flmd = new Vector2Function(lambda,mesh,"x","y");
+        MathFunc fu = new Vector2MathFunc(u,mesh,"x","y");
+        MathFunc flmd = new Vector2MathFunc(lambda,mesh,"x","y");
         MathFunc f = FMath.grad(fu).dot(FMath.grad(flmd));
         plotFunction(mesh,f,String.format("Grad(u)Grad(lmd)%02d.dat",this.iterNum));
         MathFunc f2 = FC.c(-1.0/beta).M(f).A(qBar);
@@ -300,7 +300,7 @@ public class VariationGaussNewton {
 	public SparseMatrix getA(Vector qk) {
         //4.Weak form: (\nabla{dl},qk*\nabla{\phi})
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFunc fqk = new Vector2Function(qk);
+        MathFunc fqk = new Vector2MathFunc(qk);
         weakForm.setParam(fqk, FC.C0, null, null);
         //Right hand side(RHS): f(x) = 0
         weakForm.setF(FC.C0);
@@ -323,7 +323,7 @@ public class VariationGaussNewton {
         //4.Weak form: (\nabla{\phi},dq\nabla{uk})
         WeakFormGCM weakForm = new WeakFormGCM();
         
-        MathFunc fuk = new Vector2Function(uk,mesh,"x","y");
+        MathFunc fuk = new Vector2MathFunc(uk,mesh,"x","y");
         MathFunc u_x = fuk.diff("x");
         MathFunc u_y = fuk.diff("y");
         plotFunction(mesh, u_x, "u_x.dat");
@@ -400,7 +400,7 @@ public class VariationGaussNewton {
 	public Vector solveStateEquation(Vector q) {
         //4.Weak form
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFunc fq = new Vector2Function(q);
+        MathFunc fq = new Vector2MathFunc(q);
         weakForm.setParam(fq, FC.C0, null, null);
         //Right hand side(RHS): f(x) = -4.0
         weakForm.setF(FC.c(-4.0));
@@ -427,10 +427,10 @@ public class VariationGaussNewton {
 	public Vector solveAdjointEquation(Vector u, Vector q) {
         //4.Weak form
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFunc fq = new Vector2Function(q);
+        MathFunc fq = new Vector2MathFunc(q);
         weakForm.setParam(fq, FC.C0, null, null);
         //Right hand side(RHS): f(x) = - (u - z)
-        weakForm.setF(z.S(new Vector2Function(u)));
+        weakForm.setF(z.S(new Vector2MathFunc(u)));
 
         //5.Assembly process
         AssemblerScalar assembler =
@@ -655,7 +655,7 @@ public class VariationGaussNewton {
 //		plotVector(vgn.mesh, uReal, "uRealCut.dat");
 		
 		//u测量值
-		vgn.z = new Vector2Function(uReal);
+		vgn.z = new Vector2MathFunc(uReal);
 		//q参考值
 		vgn.qBar = new MultiVarFunc("x","y") {
 	    	@Override

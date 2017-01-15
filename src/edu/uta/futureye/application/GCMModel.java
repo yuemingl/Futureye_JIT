@@ -27,7 +27,7 @@ import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.io.MeshReader;
@@ -272,7 +272,7 @@ public class GCMModel {
 		
 		//Parameters
 		weakFormL2.setParam(
-				this.k, new Vector2Function(U)
+				this.k, new Vector2MathFunc(U)
 			);
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakFormL2);
@@ -301,7 +301,7 @@ public class GCMModel {
 		
 		//Parameters
 		weakFormL2.setParam(
-				this.k, new Vector2Function(U)
+				this.k, new Vector2MathFunc(U)
 			);
 		
 		Assembler assembler = new AssemblerScalar(mesh, weakFormL2);
@@ -343,7 +343,7 @@ public class GCMModel {
 		
 		//Right hand side
 		MathFunc rhs = null;
-		MathFunc diff_am = new Vector2Function(FMath.axpy(-1.0, a_m_1, a_m));
+		MathFunc diff_am = new Vector2MathFunc(FMath.axpy(-1.0, a_m_1, a_m));
 		this.plotFunction(mesh, diff_am, "enhance_diff_am"+iterNum+".dat");
 		if(iterNum>=2) {
 			MathFunc lamd_exp = new FC(Math.PI*Math.PI*Math.pow(Math.E, iterNum-1)).
@@ -352,10 +352,10 @@ public class GCMModel {
 			this.plotFunction(mesh, lamd_exp, "enhance_rhs_lamd_exp"+iterNum+".dat");
 			MathFunc lamd = FMath.pow(new FC(Math.E), lamd_exp).M(new FC(Math.pow(1.05, -iterNum)));
 			this.plotFunction(mesh, lamd, "enhance_rhs_lamd"+iterNum+".dat");
-			rhs = lamd.M(diff_am).M(new Vector2Function(u_m_1));
+			rhs = lamd.M(diff_am).M(new Vector2MathFunc(u_m_1));
 			this.plotFunction(mesh, rhs, "enhance_rhs"+iterNum+".dat");
 		} else {
-			rhs = diff_am.M(new Vector2Function(u_m_1)).M(1.5);//enhance!!!
+			rhs = diff_am.M(new Vector2MathFunc(u_m_1)).M(1.5);//enhance!!!
 			this.plotFunction(mesh, rhs, "enhance_rhs"+iterNum+".dat");
 		}
 		weakForm.setF(FC.C0.S(rhs)); //-1
@@ -367,7 +367,7 @@ public class GCMModel {
 //		);
 		//2011-5-7 OK
 		weakForm.setParam(
-				this.k, new Vector2Function(a_m), null, this.k
+				this.k, new Vector2MathFunc(a_m), null, this.k
 		);
 		
 		//bugfix 2011-5-7两种方式结果不一样？
@@ -378,7 +378,7 @@ public class GCMModel {
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		if(boundary != null)
-			assembler.imposeDirichletCondition(new Vector2Function(boundary));
+			assembler.imposeDirichletCondition(new Vector2MathFunc(boundary));
 		else
 			assembler.imposeDirichletCondition(new FC(0.0));
 		System.out.println("Assemble done!");
@@ -890,8 +890,8 @@ public class GCMModel {
 	    Vector incUL_subtract_bkUL = FMath.axpy(-1.0, bkUL, incUL);
 	    plotVector(meshGCM, incUL_subtract_bkUL, "incUL_subtract_bkUL.dat");
 	    
-		mu_a = new Vector2Function(alpha_m1);
-		MathFunc diri = new Vector2Function(incUL);
+		mu_a = new Vector2MathFunc(alpha_m1);
+		MathFunc diri = new Vector2MathFunc(incUL);
 		Vector um01 = solveForwardDirichlet(meshGCM,diri,2);
 		Vector um2 = null;
 		for(int nit=1;nit<=3;nit++) {
@@ -1591,7 +1591,7 @@ public class GCMModel {
 					sumLaplaceQ,sumQ_x,sumQ_y,
 					//sumLaplaceQ_real,sumQ_x_real,sumQ_y_real,
 					T_laplace,T_x,T_y,
-					new Vector2Function(phi[i]),
+					new Vector2MathFunc(phi[i]),
 					q_0,phi[i],
 					false //flag, if linearize equation q_n
 					);
@@ -1777,12 +1777,12 @@ public class GCMModel {
 			}
 			
 			WeakFormGCM weakForm = new WeakFormGCM();
-			weakForm.setF(new Vector2Function(f));
+			weakForm.setF(new Vector2MathFunc(f));
 			weakForm.setParam(
 					new FC(-1.0),//-1 注意，有负号!!!
 					new FC(0.0), //-\eps{q_n}!!! \eps-0.1
-					new Vector2Function(b1),
-					new Vector2Function(b2)
+					new Vector2MathFunc(b1),
+					new Vector2MathFunc(b2)
 				);
 			
 			mesh.clearBorderNodeMark();

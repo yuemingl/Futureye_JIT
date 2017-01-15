@@ -11,7 +11,7 @@ import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
@@ -165,7 +165,7 @@ public class T07ConvectionDiffusion {
 		
 		for(int i=1;i<=20;i++) {
 			Vector rlt = solverOneStep(i, c_n);
-			c_n = new Vector2Function(rlt);
+			c_n = new Vector2MathFunc(rlt);
 		}
 	}
 	

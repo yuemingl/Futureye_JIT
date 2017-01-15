@@ -15,7 +15,7 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -255,7 +255,7 @@ public class VariationGaussNewtonDOT2 {
 	 * @return
 	 */
 	public Vector solveGuessU(int s_i, Vector g_tidle) {
-		Vector u0 = modelGuess.solveDirichlet(mesh, new Vector2Function(g_tidle));
+		Vector u0 = modelGuess.solveDirichlet(mesh, new Vector2MathFunc(g_tidle));
 		plotVector(mesh, u0, "u0_"+s_i+".dat");
 		return u0;
 	}	
@@ -283,12 +283,12 @@ public class VariationGaussNewtonDOT2 {
 			Vector v, Vector z) {
 		Vector v_x = Tools.computeDerivative(mesh, v, "x");
 		Vector v_y = Tools.computeDerivative(mesh, v, "x");
-		MathFunc b1 = new Vector2Function(v_x);
-		MathFunc b2 = new Vector2Function(v_y);
+		MathFunc b1 = new Vector2MathFunc(v_x);
+		MathFunc b2 = new Vector2MathFunc(v_y);
 		WeakFormGCMDual weakForm = new WeakFormGCMDual();
 
 		Vector v_g = FMath.axpy(-1.0, z, v);
-		MathFunc fv_g = new Vector2Function(v_g);
+		MathFunc fv_g = new Vector2MathFunc(v_g);
 		plotFunction(mesh, fv_g, String.format("v_g%02d.dat",s_i));
 
 		weakForm.setF(fv_g.M(FC.c(-1.0)));

@@ -2,7 +2,7 @@ package edu.uta.futureye.application;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.util.container.ElementList;
@@ -53,11 +53,11 @@ public class NitschesMethodTest {
 			if(nodes.at(i).isInnerNode())
 				uSmallForBoundary.set(i,0.0);
 		}
-		Vector uSmall = model.solveDirichlet(meshSmall, new Vector2Function(uSmallForBoundary));
+		Vector uSmall = model.solveDirichlet(meshSmall, new Vector2MathFunc(uSmallForBoundary));
 		Tools.plotVector(meshSmall, folder, "u_small.dat", uSmall);
 		
 		
-		Vector uNitsches = model.solveNitsches(meshSmall, new Vector2Function(uSmallForBoundary), 0.00001);
+		Vector uNitsches = model.solveNitsches(meshSmall, new Vector2MathFunc(uSmallForBoundary), 0.00001);
 		Tools.plotVector(meshSmall, folder, "u_Nitsches.dat", uNitsches);
 		
 	}

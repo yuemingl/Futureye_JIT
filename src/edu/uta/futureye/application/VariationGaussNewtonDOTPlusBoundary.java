@@ -31,7 +31,7 @@ import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.io.MeshReader;
@@ -354,9 +354,9 @@ public class VariationGaussNewtonDOTPlusBoundary {
 			if(nodes.at(j).isInnerNode())
 				u_g.set(j,0.0);
 		}
-		MathFunc fu_g = new Vector2Function(u_g);
+		MathFunc fu_g = new Vector2MathFunc(u_g);
 		plotFunction(mesh, fu_g, String.format("M%02d_Lagrangian_u_g%02d.dat",s_i,this.iterNum));
-		MathFunc fa = new Vector2Function(a);
+		MathFunc fa = new Vector2MathFunc(a);
 
 		if(bTestWholdDomain)
 			weakForm.setF(fu_g.M(-1.0));//!!!!!!1.0=>
@@ -427,7 +427,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	public Equation getEqnU(Mesh _mesh, Vector a, Vector g) {
 		
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		MathFunc fa = new Vector2Function(a);
+		MathFunc fa = new Vector2MathFunc(a);
 		
 		//不能忽略光源的影响???
 		//if(g == null)
@@ -455,7 +455,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		if(g != null)
-			assembler.imposeDirichletCondition(new Vector2Function(g));
+			assembler.imposeDirichletCondition(new Vector2MathFunc(g));
 		System.out.println("Assemble done!");
 
 		Equation eqn = new Equation();
@@ -511,7 +511,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
         //stabilize
         //weakForm.setParam(FC.c(0.01), FC.c1, null, null);
         
-        MathFunc faGlob = new Vector2Function(_aGlob);
+        MathFunc faGlob = new Vector2MathFunc(_aGlob);
         int N=u.length;
         Vector[] vMlmd = new Vector[N];
         MathFunc[] fuDotlmd = new MathFunc[N];
@@ -578,12 +578,12 @@ public class VariationGaussNewtonDOTPlusBoundary {
 		this.connectSells(mesh, sum2);
 		plotVector(mesh,sum2,String.format("La_RHS_v_lmd_sum2_%02d.dat",this.iterNum));
 		  
-		MathFunc akpk_2 = FMath.pow(new Vector2Function(ak).A(model_k),-2.0);
+		MathFunc akpk_2 = FMath.pow(new Vector2MathFunc(ak).A(model_k),-2.0);
 		plotFunction(mesh,akpk_2,String.format("La_RHS_akpk_2_%02d.dat",this.iterNum));
 		Vector sum12 = FMath.axpy(1.0, sum1, sum2);
 		plotVector(mesh,sum12,String.format("La_RHS_v_lmd_sum12_%02d.dat",this.iterNum));
 		  
-		MathFunc rhs = akpk_2.M(new Vector2Function(sum2)).A(new Vector2Function(sum1)).M(1.0/beta);
+		MathFunc rhs = akpk_2.M(new Vector2MathFunc(sum2)).A(new Vector2MathFunc(sum1)).M(1.0/beta);
 		plotFunction(mesh,rhs,String.format("La_RHS_rhs%02d.dat",this.iterNum));
 		MathFunc f2 = faGlob.S(rhs);
 		plotFunction(mesh,f2,String.format("La_RHS_all%02d.dat",this.iterNum));
@@ -790,7 +790,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	}
 	public Equation getA(Vector ak, MathFunc f, MathFunc diri,boolean procHangingNode) {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		MathFunc fa = new Vector2Function(ak);
+		MathFunc fa = new Vector2MathFunc(ak);
 		
 		if(f==null)
 			weakForm.setF(FC.c(0.0));
@@ -853,10 +853,10 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	 */
 	public Matrix getC(Vector ak, Vector uk) {
         WeakFormGCMDual weakForm = new WeakFormGCMDual();
-        MathFunc fuk = new Vector2Function(uk);
-        MathFunc fa = new Vector2Function(ak);
-        MathFunc b1 = new Vector2Function(Tools.computeDerivative(mesh, uk, "x"));
-        MathFunc b2 = new Vector2Function(Tools.computeDerivative(mesh, uk, "y"));
+        MathFunc fuk = new Vector2MathFunc(uk);
+        MathFunc fa = new Vector2MathFunc(ak);
+        MathFunc b1 = new Vector2MathFunc(Tools.computeDerivative(mesh, uk, "x"));
+        MathFunc b2 = new Vector2MathFunc(Tools.computeDerivative(mesh, uk, "y"));
         MathFunc _apk_2 = FMath.pow(fa.A(model_k),-2).M(-1.0);
         
         weakForm.setParam(FC.C0, fuk, b1.M(_apk_2), b2.M(_apk_2));
@@ -902,10 +902,10 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	 */
 	public Matrix getCT(Vector ak, Vector uk) {
         WeakFormGCM weakForm = new WeakFormGCM();
-        MathFunc fuk = new Vector2Function(uk);
-        MathFunc fa = new Vector2Function(ak);
-        MathFunc b1 = new Vector2Function(Tools.computeDerivative(mesh, uk, "x"));
-        MathFunc b2 = new Vector2Function(Tools.computeDerivative(mesh, uk, "y"));
+        MathFunc fuk = new Vector2MathFunc(uk);
+        MathFunc fa = new Vector2MathFunc(ak);
+        MathFunc b1 = new Vector2MathFunc(Tools.computeDerivative(mesh, uk, "x"));
+        MathFunc b2 = new Vector2MathFunc(Tools.computeDerivative(mesh, uk, "y"));
         MathFunc _apk_2 = FMath.pow(fa.A(model_k),-2).M(-1.0);
         
         weakForm.setParam(FC.C0, fuk, b1.M(_apk_2), b2.M(_apk_2));
@@ -1022,7 +1022,7 @@ public class VariationGaussNewtonDOTPlusBoundary {
 	 * @return
 	 */
 	public Vector solveDeltaU(Vector ak, Vector _resLlmd_da, Vector uk) {
-		Equation eq = getA(ak,new Vector2Function(_resLlmd_da),FC.C0,true);
+		Equation eq = getA(ak,new Vector2MathFunc(_resLlmd_da),FC.C0,true);
         Solver sol = new Solver();
         Vector x = sol.solveCGS(eq.A, eq.f);
         return x;

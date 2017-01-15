@@ -25,7 +25,7 @@ import edu.uta.futureye.core.intf.Assembler;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.io.MatlabMatFileReader;
@@ -57,7 +57,7 @@ public class Tools {
 		
 		WeakFormDerivative weakForm = new WeakFormDerivative(varName);
 		//stabilize
-		weakForm.setParam(new Vector2Function(U),stableFactor);
+		weakForm.setParam(new Vector2MathFunc(U),stableFactor);
 		
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
 		assembler.assemble();
@@ -95,7 +95,7 @@ public class Tools {
 		Vector rltVector = U.copy();
 		rltVector.setAll(0.0);
 		
-		MathFunc fU = new Vector2Function(U);
+		MathFunc fU = new Vector2MathFunc(U);
 		for(int i=1;i<=eList.size();i++) {
 			Element e = eList.at(i);
 			int N = e.nodes.size();
@@ -287,7 +287,7 @@ public class Tools {
 		//Parameters
 //利用弱形式内部定义的单元上的分片导数计算Ux,Uy		
 		weakFormL2.setParam(
-				k, new Vector2Function(U)
+				k, new Vector2MathFunc(U)
 			);
 
 //求解方程计算导数
@@ -528,7 +528,7 @@ public class Tools {
 		}
 	}
 
-	public static Vector interplateFrom(Mesh oldMesh, Mesh newMesh, Vector2Function vecFun) {
+	public static Vector interplateFrom(Mesh oldMesh, Mesh newMesh, Vector2MathFunc vecFun) {
 		int nNode = newMesh.getNodeList().size();
 		NodeList nodes = newMesh.getNodeList();
 		Vector rlt = new SparseVectorHashMap(nNode);

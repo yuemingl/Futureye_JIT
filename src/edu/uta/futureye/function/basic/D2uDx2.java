@@ -51,7 +51,7 @@ import edu.uta.futureye.util.FutureyeException;
 public class D2uDx2 extends MultiVarFunc implements ElementDependentFunction {
 	protected Element e = null;
 	protected Mesh mesh = null;
-	protected Vector2Function u = null;
+	protected Vector2MathFunc u = null;
 	protected String x = null;
 	protected MathFunc fdu2 = null;
 	
@@ -61,7 +61,7 @@ public class D2uDx2 extends MultiVarFunc implements ElementDependentFunction {
 	 * @param u: u(x,y) or u(x,y,z)
 	 * @param x
 	 */
-	public D2uDx2(Mesh mesh, Vector2Function u, String x) {
+	public D2uDx2(Mesh mesh, Vector2MathFunc u, String x) {
 		this.mesh = mesh;
 		this.u = u;
 		this.x = x;

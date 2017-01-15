@@ -9,7 +9,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -136,7 +136,7 @@ public class HeatTransfer_Jiang {
 		MathFunc u_n = new FC(0.0);
 		for(int i=1;i<=40;i++) {
 			Vector rlt = solverOneStep(i, u_n);
-			u_n = new Vector2Function(rlt);
+			u_n = new Vector2MathFunc(rlt);
 		}
 	}
 	

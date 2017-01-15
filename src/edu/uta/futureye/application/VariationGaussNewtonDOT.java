@@ -30,7 +30,7 @@ import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.io.MeshReader;
@@ -343,20 +343,20 @@ public class VariationGaussNewtonDOT {
 			Vector lnu0_x, Vector lnu0_y, Vector laplace_lnu0,
 			Vector a, Vector v, Vector g_tidle) {
 		//-2*Laplace(lnu0) - ( a(x)-k^2 ) = -2*Laplace(lnu0) + ( k^2-a(x) )
-		Vector2Function param_c = new Vector2Function(
+		Vector2MathFunc param_c = new Vector2MathFunc(
 				FMath.axpy(-2.0, laplace_lnu0,
 				FMath.ax(1.0,FMath.axpy(-1, a, 
 						new SparseVectorHashMap(a.getDim(),aBkSquare)))));
 		
 		//\nabla{lnu0}
-		MathFunc b1 = new Vector2Function(lnu0_x);
-		MathFunc b2 = new Vector2Function(lnu0_y);
+		MathFunc b1 = new Vector2MathFunc(lnu0_x);
+		MathFunc b2 = new Vector2MathFunc(lnu0_y);
 		WeakFormGCM weakForm = new WeakFormGCM();
 
 		//(v - g)_\partial{\Omega} 
 		Vector v_g = FMath.axpy(-1.0, g_tidle, v);
 		//System.out.println("v-g norm -------------> "+v_g.norm2());
-		MathFunc fv_g = new Vector2Function(v_g);
+		MathFunc fv_g = new Vector2MathFunc(v_g);
 		plotFunction(mesh, fv_g, String.format("M%02d_Lagrangian_v_g%02d.dat",s_i,this.iterNum));
 
 		//weakForm.setF(FC.c(0.0));
@@ -431,10 +431,10 @@ public class VariationGaussNewtonDOT {
 		//-( a(x)-k^2 ) = k^2-a(x)
 		Vector v_c = FMath.axpy(-1.0, a, new SparseVectorHashMap(a.getDim(),aBkSquare));
 		//plotVector(mesh, v_c, "param_c"+s_i+".dat");
-		Vector2Function param_c = new Vector2Function(v_c);
+		Vector2MathFunc param_c = new Vector2MathFunc(v_c);
 		
-		MathFunc b1 = new Vector2Function(lnu0_x);
-		MathFunc b2 = new Vector2Function(lnu0_y);
+		MathFunc b1 = new Vector2MathFunc(lnu0_x);
+		MathFunc b2 = new Vector2MathFunc(lnu0_y);
 		
 		WeakFormGCM weakForm = new WeakFormGCM();
 		weakForm.setF(FC.c(0.0));
@@ -463,7 +463,7 @@ public class VariationGaussNewtonDOT {
 		SparseMatrix stiff = assembler.getStiffnessMatrix();
 		SparseVector load = assembler.getLoadVector();
 		if(g_tidle != null)
-			assembler.imposeDirichletCondition(new Vector2Function(g_tidle));
+			assembler.imposeDirichletCondition(new Vector2MathFunc(g_tidle));
 		System.out.println("Assemble done!");
 
 		Equation eqn = new Equation();
@@ -493,9 +493,9 @@ public class VariationGaussNewtonDOT {
         WeakFormL22D weakForm = new WeakFormL22D();
         weakForm.setParam(FC.C0, FC.C1);
         //Right hand side(RHS): f(x) = -\frac{1.0}{\beta}*v*\lambda + a_glob
-        MathFunc fv = new Vector2Function(v);
-        MathFunc flmd = new Vector2Function(lambda);
-        MathFunc fa_glob = new Vector2Function(a_glob);
+        MathFunc fv = new Vector2MathFunc(v);
+        MathFunc flmd = new Vector2MathFunc(lambda);
+        MathFunc fa_glob = new Vector2MathFunc(a_glob);
         MathFunc fv_lmd = fv.M(flmd);
         plotFunction(mesh,fv_lmd,String.format("La_RHS_v_lmd%02d.dat",this.iterNum));
 //        Function f2 = fv_lmd.M(-1.0/beta).A(fa_glob);
@@ -539,7 +539,7 @@ public class VariationGaussNewtonDOT {
         weakForm.setParam(FC.C0, FC.C1, null, null);
         
         //Right hand side(RHS): f(x) = -\frac{1.0}{\beta}*v*\lambda + a_glob
-        MathFunc fa_glob = new Vector2Function(a_glob);
+        MathFunc fa_glob = new Vector2MathFunc(a_glob);
         int N=v.length;
         Vector[] vMlmd = new Vector[N];
         for(int i=0; i<N; i++) {
@@ -565,7 +565,7 @@ public class VariationGaussNewtonDOT {
         //????????????????????????????????????
         //-1.0/beta
         //????????????????????????????????????
-        MathFunc f2 = new Vector2Function(sum).M(1.0/beta).A(fa_glob);
+        MathFunc f2 = new Vector2MathFunc(sum).M(1.0/beta).A(fa_glob);
         
         plotFunction(mesh,f2,String.format("La_RHS_all%02d.dat",this.iterNum));
         weakForm.setF(f2);
@@ -719,10 +719,10 @@ public class VariationGaussNewtonDOT {
 	public SparseMatrix getA(Vector ak, Vector lnu0_x, Vector lnu0_y) {
         //4.Weak form:
         WeakFormGCM weakForm = new WeakFormGCM();
-        MathFunc fak = new Vector2Function(ak);
+        MathFunc fak = new Vector2MathFunc(ak);
         
-        MathFunc flnu0_x = new Vector2Function(lnu0_x);
-        MathFunc flnu0_y = new Vector2Function(lnu0_y);
+        MathFunc flnu0_x = new Vector2MathFunc(lnu0_x);
+        MathFunc flnu0_y = new Vector2MathFunc(lnu0_y);
         //weakForm.setParam(FC.c(k), fak.S(k*k), flnu0_x.M(-2.0), flnu0_y.M(-2.0));
         weakForm.setParam(FC.C1, fak.S(aBkSquare), flnu0_x.M(-2.0), flnu0_y.M(-2.0));
         
@@ -765,10 +765,10 @@ public class VariationGaussNewtonDOT {
 			) {
         //4.Weak form:
         WeakFormGCM weakForm = new WeakFormGCM();
-        MathFunc fak = new Vector2Function(ak);
+        MathFunc fak = new Vector2MathFunc(ak);
         
-        MathFunc flnu0_x = new Vector2Function(lnu0_x);
-        MathFunc flnu0_y = new Vector2Function(lnu0_y);
+        MathFunc flnu0_x = new Vector2MathFunc(lnu0_x);
+        MathFunc flnu0_y = new Vector2MathFunc(lnu0_y);
         //weakForm.setParam(FC.c(k), fak.S(k*k), flnu0_x.M(-2.0), flnu0_y.M(-2.0));
         weakForm.setParam(FC.C1, fak.S(aBkSquare), 
         		flnu0_x.M(-2.0), flnu0_y.M(-2.0));
@@ -776,7 +776,7 @@ public class VariationGaussNewtonDOT {
         //Right hand side(RHS): f(x) = da*vk
         //Vector dqvk = _resLlmd_da.axMuly(1.0, vk);
         Vector dqvk = FMath.axMuly(1.0, _resLlmd_da, vk);
-        weakForm.setF(new Vector2Function(dqvk));
+        weakForm.setF(new Vector2MathFunc(dqvk));
 
         //需要重新标记边界条件，否则在“整体合成”过程会出现错误。
         //虽然边界条件实在大矩阵中设置，这一步也是需要的。
@@ -804,10 +804,10 @@ public class VariationGaussNewtonDOT {
 	public SparseMatrix getAT(Vector ak, Vector lnu0_x, Vector lnu0_y) {
         //4.Weak form:
         WeakFormGCMDual weakForm = new WeakFormGCMDual();
-        MathFunc fak = new Vector2Function(ak);
+        MathFunc fak = new Vector2MathFunc(ak);
         
-        MathFunc flnu0_x = new Vector2Function(lnu0_x);
-        MathFunc flnu0_y = new Vector2Function(lnu0_y);
+        MathFunc flnu0_x = new Vector2MathFunc(lnu0_x);
+        MathFunc flnu0_y = new Vector2MathFunc(lnu0_y);
         //weakForm.setParam(FC.c(k), fak.S(k*k), flnu0_x.M(-2.0), flnu0_y.M(-2.0));
         weakForm.setParam(FC.C1, fak.S(aBkSquare), flnu0_x.M(-2.0), flnu0_y.M(-2.0));
         
@@ -838,7 +838,7 @@ public class VariationGaussNewtonDOT {
 	public SparseMatrix getC(Vector vk) {
         //4.Weak form: (\phi,da*vk)
         WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-        MathFunc fvk = new Vector2Function(vk);
+        MathFunc fvk = new Vector2MathFunc(vk);
         weakForm.setParam(FC.C0, fvk, null, null);
         //Right hand side(RHS): f(x) = 0
         weakForm.setF(FC.C0);

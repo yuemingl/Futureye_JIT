@@ -19,7 +19,7 @@ import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
@@ -116,7 +116,7 @@ public class HumanReal {
 		double xMax = 9.0;
 		double skipLen = 1.0;
 		Point rPos = model.getLightPosition();
-		Vector2Function fu = new Vector2Function(u,mesh,"x","y");
+		Vector2MathFunc fu = new Vector2MathFunc(u,mesh,"x","y");
 		SparseVector rlt = new SparseVectorHashMap(u.getDim());
 		
 		for(int i=1;i<=nodes.size();i++) {
@@ -423,9 +423,9 @@ public class HumanReal {
 		Vector v3D = new SparseVectorHashMap(mesh3D.getNodeList().size());
 		NodeList nodes = mesh3D.getNodeList();
 		double dz = 7.5/(NSlice-1);
-		List<Vector2Function> faSlices = new ArrayList<Vector2Function>();
+		List<Vector2MathFunc> faSlices = new ArrayList<Vector2MathFunc>();
 		for(int i=0;i<alphaSlices.size();i++) {
-			faSlices.add(new Vector2Function(alphaSlices.get(i),mesh,"x","y"));
+			faSlices.add(new Vector2MathFunc(alphaSlices.get(i),mesh,"x","y"));
 		}
 		for(int i=1;i<=nodes.size();i++) {
 			Node node = nodes.at(i);
@@ -447,9 +447,9 @@ public class HumanReal {
 		Vector v3D = new SparseVectorHashMap(mesh3D.getNodeList().size());
 		NodeList nodes = mesh3D.getNodeList();
 		double dz = 7.5/(NSlice-1);
-		List<Vector2Function> faSlices = new ArrayList<Vector2Function>();
+		List<Vector2MathFunc> faSlices = new ArrayList<Vector2MathFunc>();
 		for(int i=0;i<alphaSlices.size();i++) {
-			faSlices.add(new Vector2Function(alphaSlices.get(i),mesh,"x","y"));
+			faSlices.add(new Vector2MathFunc(alphaSlices.get(i),mesh,"x","y"));
 		}
 		for(int i=1;i<=nodes.size();i++) {
 			Node node = nodes.at(i);

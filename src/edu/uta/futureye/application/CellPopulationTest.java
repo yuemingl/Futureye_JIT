@@ -18,7 +18,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MatlabMatFileReader;
 import edu.uta.futureye.io.MeshReader;
@@ -99,7 +99,7 @@ public class CellPopulationTest {
         //Right hand side(RHS): f = lambda
         Vector vf = readLambda(mesh);
         Tools.plotVector(mesh, "./CellPopulation", "f.dat", vf);
-        weakForm.setF(new Vector2Function(vf));
+        weakForm.setF(new Vector2MathFunc(vf));
 
         //5.Assembly process
         AssemblerScalar assembler =

@@ -19,7 +19,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
 import edu.uta.futureye.function.basic.FX;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.io.MeshReader;
@@ -244,7 +244,7 @@ public class Test1 {
 		weakFormL2.setF(delta);
 		weakFormL2.setParam(
 				new FC(0.02), 
-				new Vector2Function(u)
+				new Vector2MathFunc(u)
 				);
 		
 		AssemblerScalar assembler2 = new AssemblerScalar(mesh, weakFormL2);

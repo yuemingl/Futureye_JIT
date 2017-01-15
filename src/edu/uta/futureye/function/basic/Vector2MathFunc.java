@@ -34,7 +34,7 @@ import edu.uta.futureye.util.Utils;
  * @author liuyueming
  *
  */
-public class Vector2Function extends MultiVarFunc {
+public class Vector2MathFunc extends MultiVarFunc {
 	Vector vec = null;
 	Mesh mesh = null;
 	
@@ -50,7 +50,7 @@ public class Vector2Function extends MultiVarFunc {
 	 * 
 	 * @param u
 	 */
-	public Vector2Function(Vector u) {
+	public Vector2MathFunc(Vector u) {
 		this.vec = u;
 	}
 	
@@ -71,7 +71,7 @@ public class Vector2Function extends MultiVarFunc {
 	 * @param varName
 	 * @param aryVarNames
 	 */
-	public Vector2Function(Vector u, Mesh mesh,
+	public Vector2MathFunc(Vector u, Mesh mesh,
 			String varName, String ...aryVarNames) {
 		this.vec = u;
 		this.mesh = mesh;
@@ -83,7 +83,7 @@ public class Vector2Function extends MultiVarFunc {
 			varNames[i+1] = aryVarNames[i];
 	}
 	
-	public Vector2Function(Vector u, Mesh mesh,
+	public Vector2MathFunc(Vector u, Mesh mesh,
 			String []aryVarNames) {
 		this.vec = u;
 		this.mesh = mesh;
@@ -92,7 +92,7 @@ public class Vector2Function extends MultiVarFunc {
 		varNames = aryVarNames;
 	}
 	
-	public Vector2Function(Vector u, Mesh mesh,
+	public Vector2MathFunc(Vector u, Mesh mesh,
 			List<String> varNames) {
 		this.vec = u;
 		this.mesh = mesh;
@@ -104,7 +104,7 @@ public class Vector2Function extends MultiVarFunc {
 	 * @param fun
 	 * @return
 	 */
-	public Vector2Function setDefaultFunction(MathFunc fun) {
+	public Vector2MathFunc setDefaultFunction(MathFunc fun) {
 		this.defaultFunction = fun;
 		return this;
 	}
@@ -302,7 +302,7 @@ public class Vector2Function extends MultiVarFunc {
 			throw new FutureyeException(
 					"Please use constructor Vector2Function(Vector u, Mesh mesh, String varName, String ...aryVarNames)");
 		Vector vd = Tools.computeDerivative(mesh, vec, varName);
-		MathFunc fd = new Vector2Function(vd,mesh,this.varNames);
+		MathFunc fd = new Vector2MathFunc(vd,mesh,this.varNames);
 		return fd;
 	}
 	

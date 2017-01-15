@@ -8,7 +8,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FDelta;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.util.Constant;
@@ -186,22 +186,22 @@ public class KlibanovNew {
 		model_Rew.f = delta;
 		model_Rew.k = C1;
 		model_Rew.c = ax.A(s*s+k*k);
-		Vector Rew = model_Rew.solveMixedBorder(diriMark , new Vector2Function(Rephi,omega,"x","y"), C0, C(k));
+		Vector Rew = model_Rew.solveMixedBorder(diriMark , new Vector2MathFunc(Rephi,omega,"x","y"), C0, C(k));
 		Tools.plotVector(omega, outputFolder, String.format("Rew_iter0.dat"), Rew);
 		
 		//Solve iteratively
 		Vector Imw = null;
 		for(int i=1; i<=10; ++i) {
 			Vector Rew_x = Tools.computeDerivative(omega, Rew, "x");
-			model_Imw.f = new Vector2Function(Rew_x,omega,"x","y").M(2*s);
+			model_Imw.f = new Vector2MathFunc(Rew_x,omega,"x","y").M(2*s);
 			model_Imw.k = C1;
 			model_Imw.c = ax.A(s*s+k*k);
-			Imw = model_Rew.solveMixedBorder(diriMark , new Vector2Function(Imphi,omega,"x","y"), C0, C(k));
+			Imw = model_Rew.solveMixedBorder(diriMark , new Vector2MathFunc(Imphi,omega,"x","y"), C0, C(k));
 			Tools.plotVector(omega, outputFolder, String.format("Imw_iter%d.dat",i), Imw);
 		
 			Vector Imw_x = Tools.computeDerivative(omega, Imw, "x");
-			model_Rew.f = delta.S(new Vector2Function(Imw_x,omega,"x","y").M(2*s));
-			Rew = model_Rew.solveMixedBorder(diriMark , new Vector2Function(Rephi,omega,"x","y"), C0, C(k));
+			model_Rew.f = delta.S(new Vector2MathFunc(Imw_x,omega,"x","y").M(2*s));
+			Rew = model_Rew.solveMixedBorder(diriMark , new Vector2MathFunc(Rephi,omega,"x","y"), C0, C(k));
 			Tools.plotVector(omega, outputFolder, String.format("Rew_iter%d.dat",i), Rew);
 		}
 	}

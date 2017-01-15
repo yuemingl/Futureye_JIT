@@ -36,7 +36,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.DuDx;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -293,8 +293,8 @@ public class VariationGaussNewtonDOTGeneral {
 		if(inputDataMesh != null && !inputDataMesh.isEmpty()) {
 			MeshReader mReader = new MeshReader(inputDataFolder+inputDataMesh);
 			Mesh inputMesh = mReader.read2DMesh();
-			aReal = Tools.interplateFrom(inputMesh, mesh, new Vector2Function(aReal,inputMesh,"x","y"));
-			aGuess = Tools.interplateFrom(inputMesh, mesh, new Vector2Function(aGuess,inputMesh,"x","y"));
+			aReal = Tools.interplateFrom(inputMesh, mesh, new Vector2MathFunc(aReal,inputMesh,"x","y"));
+			aGuess = Tools.interplateFrom(inputMesh, mesh, new Vector2MathFunc(aGuess,inputMesh,"x","y"));
 		}
         aInit = aGuess.copy();
 	}
@@ -526,7 +526,7 @@ public class VariationGaussNewtonDOTGeneral {
 		};
 	}
 	
-	public static Vector2Function generateTestRealMu_a2(Mesh mesh,double bk) {
+	public static Vector2MathFunc generateTestRealMu_a2(Mesh mesh,double bk) {
 		int[] nodes = {134,135,136,151,152,153,168,169,170,185,186,187};
 		double[] values = {0.25,0.3,0.22,0.23,0.4,0.2,0.3,0.4,0.22,0.23,0.25,0.24};
 		int[] nodes2 = {137,138,154,155,171,172};
@@ -545,10 +545,10 @@ public class VariationGaussNewtonDOTGeneral {
 					v.set(i, values2[j]);
 			}
 		}
-		return new Vector2Function(v);
+		return new Vector2MathFunc(v);
 	}
 	
-	public static Vector2Function generateTestGuessMu_a2(Mesh mesh,double bk) {
+	public static Vector2MathFunc generateTestGuessMu_a2(Mesh mesh,double bk) {
 		int[] nodes = {135,136,137,151,152,153,154,168,169,170,171,186,187};
 		double[] values = {0.32,0.3,0.32,0.3,0.35,0.28,0.38,0.25,0.3,0.25,0.3,0.3,0.3};
 
@@ -562,10 +562,10 @@ public class VariationGaussNewtonDOTGeneral {
 					v.set(i, values[j]);
 			}
 		}
-		return new Vector2Function(v);
+		return new Vector2MathFunc(v);
 	}
 	
-	public static Vector2Function generateRealMu_aTest15(Mesh mesh,double bk) {
+	public static Vector2MathFunc generateRealMu_aTest15(Mesh mesh,double bk) {
 		//v1
 //		int[] nodes = {
 //				113,
@@ -619,10 +619,10 @@ public class VariationGaussNewtonDOTGeneral {
 					v.set(i, values2[j]);
 			}
 		}
-		return new Vector2Function(v);
+		return new Vector2MathFunc(v);
 	}
 	
-	public static Vector2Function generateGuessMu_aTest15(Mesh mesh,double bk) {
+	public static Vector2MathFunc generateGuessMu_aTest15(Mesh mesh,double bk) {
 		//v1
 //		int[] nodes = {
 //				113,
@@ -684,7 +684,7 @@ public class VariationGaussNewtonDOTGeneral {
 					v.set(i, values2[j]);
 			}
 		}
-		return new Vector2Function(v);
+		return new Vector2MathFunc(v);
 	}
 	
     /**
@@ -876,9 +876,9 @@ public class VariationGaussNewtonDOTGeneral {
 			}
 		}
 		
-		MathFunc fu_g = new Vector2Function(u_g);
+		MathFunc fu_g = new Vector2MathFunc(u_g);
 		plotFunction(mesh, fu_g, String.format("M%02d_Lagrangian_u_g%02d.dat",s_i,this.iterNum));
-		MathFunc fa = new Vector2Function(a);
+		MathFunc fa = new Vector2MathFunc(a);
 
 		
 		if(bTestWholdDomain)
@@ -956,14 +956,14 @@ public class VariationGaussNewtonDOTGeneral {
 			 
 		
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		MathFunc fa = new Vector2Function(a);
+		MathFunc fa = new Vector2MathFunc(a);
 		
 		//不能忽略光源的影响???this.bTestWholeDomainDirichletBoundary
 		if(this.useVectorMu_a) {//2011/10/18
 			Vector aRealNew = Tools.interplateFrom(aMesh, _mesh, 
-					new Vector2Function(aReal,aMesh,"x","y").
+					new Vector2MathFunc(aReal,aMesh,"x","y").
 					setDefaultFunction(FC.c(this.aBackground)));
-			modelReal.setMu_a(new Vector2Function(aRealNew));
+			modelReal.setMu_a(new Vector2MathFunc(aRealNew));
 		}
 		//if(g == null)
 			weakForm.setF(this.modelReal.getDelta());
@@ -998,7 +998,7 @@ public class VariationGaussNewtonDOTGeneral {
 		SparseMatrix stiff = assembler.getStiffnessMatrix();
 		SparseVector load = assembler.getLoadVector();
 		if(g != null)
-			assembler.imposeDirichletCondition(new Vector2Function(g));
+			assembler.imposeDirichletCondition(new Vector2MathFunc(g));
 		System.out.println("Assemble done!");
 
 		if(eqn != null) {
@@ -1099,8 +1099,8 @@ public class VariationGaussNewtonDOTGeneral {
 //		plotFunction(mesh,f2,String.format("La_RHS_all%02d.dat",this.iterNum));
 //		weakForm.setF(f2);
 		
-		MathFunc faGlob = new Vector2Function(_aGlob);
-		MathFunc akmk_2mk = FMath.pow(new Vector2Function(ak).M(model_k),-2.0)
+		MathFunc faGlob = new Vector2MathFunc(_aGlob);
+		MathFunc akmk_2mk = FMath.pow(new Vector2MathFunc(ak).M(model_k),-2.0)
 							.M(model_k).M(1.0/beta);
 		//Function ak_2 = FMath.pow(new Vector2Function(ak),-2.0).M(1.0/beta);
 		int NF = u.length;
@@ -1110,12 +1110,12 @@ public class VariationGaussNewtonDOTGeneral {
 		DuDn[] du0dn = new DuDn[NF];
 		MathFunc[] du0dnmfl = new MathFunc[NF];
 		for(int k=0;k<NF;k++) {
-			fu[k] = new Vector2Function(u[k]);
-			fl[k] = new Vector2Function(lambda[k]);
+			fu[k] = new Vector2MathFunc(u[k]);
+			fl[k] = new Vector2MathFunc(lambda[k]);
 			fumfl[k] = fu[k].M(fl[k]);
         	du0dn[k] = new DuDn(
-        		new Vector2Function(u_x[k]),
-        		new Vector2Function(u_y[k]),
+        		new Vector2MathFunc(u_x[k]),
+        		new Vector2MathFunc(u_y[k]),
         		null
         		);
         	du0dnmfl[k] = du0dn[k].M(fl[k]);
@@ -1368,7 +1368,7 @@ public class VariationGaussNewtonDOTGeneral {
 	}
 	public Equation getA(Vector ak, MathFunc f, MathFunc diri,boolean procHangingNode) {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		MathFunc fa = new Vector2Function(ak);
+		MathFunc fa = new Vector2MathFunc(ak);
 		
 		if(f==null)
 			weakForm.setF(FC.c(0.0));
@@ -1457,8 +1457,8 @@ public class VariationGaussNewtonDOTGeneral {
 //        		b2.M(_amk_2mk));
         
         WeakFormC weakForm = new WeakFormC();
-        MathFunc fa = new Vector2Function(ak);
-        MathFunc fu = new Vector2Function(uk);
+        MathFunc fa = new Vector2MathFunc(ak);
+        MathFunc fu = new Vector2MathFunc(uk);
         MathFunc _amk_2mk = FMath.pow(fa.M(model_k),-2).M(model_k).M(-1.0);
         
         weakForm.setParam(_amk_2mk, FC.C0, fu);
@@ -1533,8 +1533,8 @@ public class VariationGaussNewtonDOTGeneral {
 //        		b2.M(_amk_2mk));
         
         WeakFormCT weakForm = new WeakFormCT();
-        MathFunc fa = new Vector2Function(ak);
-        MathFunc fu = new Vector2Function(uk);
+        MathFunc fa = new Vector2MathFunc(ak);
+        MathFunc fu = new Vector2MathFunc(uk);
         MathFunc _amk_2mk = FMath.pow(fa.M(model_k),-2).M(model_k).M(-1.0);
         
         weakForm.setParam(_amk_2mk, FC.C0, fu);
@@ -1583,8 +1583,8 @@ public class VariationGaussNewtonDOTGeneral {
 	
 	public Matrix testGetCT(Vector ak, Vector uk, Vector uk_x, Vector uk_y) {
       WeakFormCT weakForm = new WeakFormCT();
-      MathFunc fa = new Vector2Function(ak);
-      MathFunc fu = new Vector2Function(uk);
+      MathFunc fa = new Vector2MathFunc(ak);
+      MathFunc fu = new Vector2MathFunc(uk);
       MathFunc _amk_2mk = FMath.pow(fa.M(model_k),-2).M(model_k).M(-1.0);
       
       weakForm.setParam(_amk_2mk, fu, fu);
@@ -1632,13 +1632,13 @@ public class VariationGaussNewtonDOTGeneral {
 	public Equation testGetCTLoad(Vector[] u, Vector[] u_x,Vector[] u_y, Vector[] lambda, 
 			Vector ak, MathFunc diri) {
 		
-		MathFunc akmk_2mk = FMath.pow(new Vector2Function(ak).M(model_k),-2.0).M(model_k).M(-1.0/beta);
+		MathFunc akmk_2mk = FMath.pow(new Vector2MathFunc(ak).M(model_k),-2.0).M(model_k).M(-1.0/beta);
 		int NF = u.length;
 		MathFunc[] fu = new MathFunc[NF];
 		MathFunc[] fl = new MathFunc[NF];
 		for(int k=0;k<NF;k++) {
-			fu[k] = new Vector2Function(u[k]);
-			fl[k] = new Vector2Function(lambda[k]);
+			fu[k] = new Vector2MathFunc(u[k]);
+			fl[k] = new Vector2MathFunc(lambda[k]);
         }
         WeakFormLa weakForm = new WeakFormLa();
         
@@ -1732,9 +1732,9 @@ public class VariationGaussNewtonDOTGeneral {
 	public Vector solveRealU(int s_i) {
 		if(this.useVectorMu_a) {//2011/10/18
 			Vector aRealBig = Tools.interplateFrom(aMesh, meshBig, 
-					new Vector2Function(aReal,aMesh,"x","y").
+					new Vector2MathFunc(aReal,aMesh,"x","y").
 					setDefaultFunction(FC.c(this.aBackground)));
-			modelReal.setMu_a(new Vector2Function(aRealBig));
+			modelReal.setMu_a(new Vector2MathFunc(aRealBig));
 		}
 		Vector uRealBig = modelReal.solveNeumann(meshBig);
 		plotVector(meshBig, uRealBig, String.format("M%02d_uRealBig.dat",s_i));
@@ -1786,7 +1786,7 @@ public class VariationGaussNewtonDOTGeneral {
 	 * @return
 	 */
 	public Vector solveDeltaU(Vector ak, Vector _resLlmd_da, Vector uk) {
-		Equation eq = getA(ak,new Vector2Function(_resLlmd_da),FC.C0,true);
+		Equation eq = getA(ak,new Vector2MathFunc(_resLlmd_da),FC.C0,true);
         //Solver sol = new Solver();
         //Vector x = sol.solveCGS(eq.A, eq.f);
         SolverJBLAS sol = new SolverJBLAS();
@@ -2220,7 +2220,7 @@ public class VariationGaussNewtonDOTGeneral {
 		if(newMesh == null) {
 			if(this.useVectorMu_a) {//2011/10/18
 				return Tools.interplateFrom(aMesh, oldMesh, 
-						new Vector2Function(aGuess,aMesh,"x","y").
+						new Vector2MathFunc(aGuess,aMesh,"x","y").
 						setDefaultFunction(FC.c(this.aBackground)));
 			}
 			return Tools.function2vector(oldMesh, modelGuess.getMu_a());
@@ -2229,13 +2229,13 @@ public class VariationGaussNewtonDOTGeneral {
 			//否则会导致重构结果在加密单元的中间结点产生小突起（整个看起来有很多小突起）
 			if(this.useVectorMu_a) {//2011/10/18
 				return Tools.interplateFrom(aMesh, newMesh, 
-						new Vector2Function(aGuess,aMesh,"x","y").
+						new Vector2MathFunc(aGuess,aMesh,"x","y").
 						setDefaultFunction(FC.c(this.aBackground)));
 			}
 			if(aGlob ==  null)
 				aGlob = Tools.function2vector(oldMesh, modelGuess.getMu_a());
 			return Tools.interplateFrom(oldMesh, newMesh, 
-					new Vector2Function(aGlob,oldMesh,"x","y").setDefaultFunction(FC.c(this.aBackground)));
+					new Vector2MathFunc(aGlob,oldMesh,"x","y").setDefaultFunction(FC.c(this.aBackground)));
 		}
 		return null;
 	}
@@ -2249,8 +2249,8 @@ public class VariationGaussNewtonDOTGeneral {
 			para.g = solveRealU(i);
 			if(debug) {
 				meshBig.writeNodesInfo(String.format("%s/meshBig%02d.dat",this.getOutputFolder(),iterNum));
-				MathFunc gx = new DuDx(mesh,new Vector2Function(para.g,mesh,"x","y"),"x");
-				MathFunc gy = new DuDx(mesh,new Vector2Function(para.g,mesh,"x","y"),"y");
+				MathFunc gx = new DuDx(mesh,new Vector2MathFunc(para.g,mesh,"x","y"),"x");
+				MathFunc gy = new DuDx(mesh,new Vector2MathFunc(para.g,mesh,"x","y"),"y");
 				Tools.plotFunction(mesh, this.getOutputFolder(), 
 						String.format("testM%02d_g_grad.dat",i), gx, gy);
 			}
@@ -2307,9 +2307,9 @@ public class VariationGaussNewtonDOTGeneral {
 			//用于Neumann边界条件情形
 			if(this.useVectorMu_a) {//2011/10/18
 				Vector aGuessBig = Tools.interplateFrom(aMesh, meshBig, 
-						new Vector2Function(aGuess,aMesh,"x","y").
+						new Vector2MathFunc(aGuess,aMesh,"x","y").
 						setDefaultFunction(FC.c(this.aBackground)));
-				modelGuess.setMu_a(new Vector2Function(aGuessBig));
+				modelGuess.setMu_a(new Vector2MathFunc(aGuessBig));
 			}
 			//使用modelGuess计算是不是有问题？应该用mu_a=a0？
 			Vector uBig = this.modelGuess.solveNeumann(meshBig);
@@ -2675,7 +2675,7 @@ public class VariationGaussNewtonDOTGeneral {
 				
 				//Interplate ak from old mesh to new refined mesh
 				ak = Tools.interplateFrom(oldMesh,mesh,
-						new Vector2Function(aNew,oldMesh,"x","y").setDefaultFunction(FC.c(this.aBackground)));
+						new Vector2MathFunc(aNew,oldMesh,"x","y").setDefaultFunction(FC.c(this.aBackground)));
 				//Interplate aGlob from old mesh to new refined mesh
 				//or
 				//Read a(x) from GCM (Global Convergence Method) based on new refined mesh
@@ -2701,9 +2701,9 @@ public class VariationGaussNewtonDOTGeneral {
 				if(this.useVectorMu_a) {//2011/10/18
 					//mesh already been refined now!
 					Vector aRealRefine = Tools.interplateFrom(aMesh, mesh, 
-							new Vector2Function(aReal,aMesh,"x","y").
+							new Vector2MathFunc(aReal,aMesh,"x","y").
 							setDefaultFunction(FC.c(this.aBackground)));
-					modelReal.setMu_a(new Vector2Function(aRealRefine));
+					modelReal.setMu_a(new Vector2MathFunc(aRealRefine));
 				}
 				plotFunction(mesh, modelReal.getMu_a(), String.format("aReal_refine%02d.dat",i));
 				if(this.useVectorMu_a) {//2011/10/18
@@ -2711,9 +2711,9 @@ public class VariationGaussNewtonDOTGeneral {
 					//mesh already been refined now!
 					//重新运行已经不需要aGuess
 					Vector aRealRefine = Tools.interplateFrom(aMesh, mesh, 
-							new Vector2Function(aGuess,aMesh,"x","y").
+							new Vector2MathFunc(aGuess,aMesh,"x","y").
 							setDefaultFunction(FC.c(this.aBackground)));
-					modelGuess.setMu_a(new Vector2Function(aRealRefine));
+					modelGuess.setMu_a(new Vector2MathFunc(aRealRefine));
 					plotFunction(mesh, modelGuess.getMu_a(), String.format("Input/input_guess_mu_a.dat",i));
 				}
 
@@ -2724,9 +2724,9 @@ public class VariationGaussNewtonDOTGeneral {
 				if(this.useVectorMu_a) {//2011/10/18
 					//mesh already be refined now!
 					Vector aRealBigRefine = Tools.interplateFrom(aMesh, meshBig, 
-							new Vector2Function(aReal,aMesh,"x","y").
+							new Vector2MathFunc(aReal,aMesh,"x","y").
 							setDefaultFunction(FC.c(this.aBackground)));
-					modelReal.setMu_a(new Vector2Function(aRealBigRefine));
+					modelReal.setMu_a(new Vector2MathFunc(aRealBigRefine));
 				}
 				plotFunction(meshBig, modelReal.getMu_a(), String.format("aRealBig_refine%02d.dat",i));
 			}
@@ -2781,7 +2781,7 @@ public class VariationGaussNewtonDOTGeneral {
 
 		//Interplate ak from old mesh to new refined mesh
 		a0 = Tools.interplateFrom(oldMesh,mesh,
-				new Vector2Function(a0,oldMesh,"x","y").setDefaultFunction(FC.c(this.aBackground)));
+				new Vector2MathFunc(a0,oldMesh,"x","y").setDefaultFunction(FC.c(this.aBackground)));
 		//Interplate aGlob from old mesh to new refined mesh
 		//or
 		//Read a(x) from GCM (Global Convergence Method) based on new mesh
@@ -2799,9 +2799,9 @@ public class VariationGaussNewtonDOTGeneral {
 		if(this.useVectorMu_a) {//2011/10/18
 			//mesh already be refined now!
 			Vector aRealRefine = Tools.interplateFrom(aMesh, mesh, 
-					new Vector2Function(aReal,aMesh,"x","y").
+					new Vector2MathFunc(aReal,aMesh,"x","y").
 					setDefaultFunction(FC.c(this.aBackground)));
-			modelReal.setMu_a(new Vector2Function(aRealRefine));
+			modelReal.setMu_a(new Vector2MathFunc(aRealRefine));
 		}
 		plotFunction(mesh, modelReal.getMu_a(), String.format("aReal_refine%02d.dat",lastRefineNum+1));
 		plotVector(mesh, aGlob, "aGlob.dat");
@@ -2811,9 +2811,9 @@ public class VariationGaussNewtonDOTGeneral {
 		if(this.useVectorMu_a) {//2011/10/18
 			//mesh already be refined now!
 			Vector aRealBigRefine = Tools.interplateFrom(aMesh, meshBig, 
-					new Vector2Function(aReal,aMesh,"x","y").
+					new Vector2MathFunc(aReal,aMesh,"x","y").
 					setDefaultFunction(FC.c(this.aBackground)));
-			modelReal.setMu_a(new Vector2Function(aRealBigRefine));
+			modelReal.setMu_a(new Vector2MathFunc(aRealBigRefine));
 		}
 		plotFunction(meshBig, modelReal.getMu_a(), String.format("aRealBig_refine%02d.dat",lastRefineNum+1));
 		
@@ -2849,7 +2849,7 @@ public class VariationGaussNewtonDOTGeneral {
 		//Plot parameters: a0, aReal, aGlob
 		plotVector(mesh, a0, "a0.dat");
 		if(this.useVectorMu_a)//2011/10/18
-			modelReal.setMu_a(new Vector2Function(aReal));
+			modelReal.setMu_a(new Vector2MathFunc(aReal));
 		plotFunction(mesh,   modelReal.getMu_a(),  String.format("aReal.dat"));
 		plotVector(mesh, aGlob, "aGlob.dat");
 		plotVector(mesh, FMath.axpy(-1.0, a0, 
@@ -2857,9 +2857,9 @@ public class VariationGaussNewtonDOTGeneral {
 		
 		if(this.useVectorMu_a) {//2011/10/18
 			Vector aRealBig = Tools.interplateFrom(aMesh, meshBig, 
-					new Vector2Function(aReal,aMesh,"x","y").
+					new Vector2MathFunc(aReal,aMesh,"x","y").
 					setDefaultFunction(FC.c(this.aBackground)));
-			modelReal.setMu_a(new Vector2Function(aRealBig));
+			modelReal.setMu_a(new Vector2MathFunc(aRealBig));
 		}
 		plotFunction(meshBig, modelReal.getMu_a(),String.format("aRealBig.dat"));
 		

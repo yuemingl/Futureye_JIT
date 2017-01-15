@@ -30,7 +30,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.DuDx;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -422,9 +422,9 @@ public class VariationGaussNewtonDOTMult {
 			}
 		}
 		
-		MathFunc fu_g = new Vector2Function(u_g);
+		MathFunc fu_g = new Vector2MathFunc(u_g);
 		plotFunction(mesh, fu_g, String.format("M%02d_Lagrangian_u_g%02d.dat",s_i,this.iterNum));
-		MathFunc fa = new Vector2Function(a);
+		MathFunc fa = new Vector2MathFunc(a);
 
 		
 		if(bTestWholdDomain)
@@ -499,7 +499,7 @@ public class VariationGaussNewtonDOTMult {
 	public Equation getEqnU(Mesh _mesh, Vector a, Vector g, Vector u0_x, Vector u0_y) {
 		
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		MathFunc fa = new Vector2Function(a);
+		MathFunc fa = new Vector2MathFunc(a);
 		
 		//不能忽略光源的影响???
 		//if(g == null)
@@ -507,7 +507,7 @@ public class VariationGaussNewtonDOTMult {
 		//else
 		//	weakForm.setF(FC.c(0.0));
 		
-		DuDn du0dn = new DuDn(new Vector2Function(u0_x),new Vector2Function(u0_y),null);
+		DuDn du0dn = new DuDn(new Vector2MathFunc(u0_x),new Vector2MathFunc(u0_y),null);
 		
 		weakForm.setParam(
 				FC.C1.D(fa.M(model_k)),
@@ -535,7 +535,7 @@ public class VariationGaussNewtonDOTMult {
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();
 		if(g != null)
-			assembler.imposeDirichletCondition(new Vector2Function(g));
+			assembler.imposeDirichletCondition(new Vector2MathFunc(g));
 		System.out.println("Assemble done!");
 
 		Equation eqn = new Equation();
@@ -629,10 +629,10 @@ public class VariationGaussNewtonDOTMult {
 //		plotFunction(mesh,f2,String.format("La_RHS_all%02d.dat",this.iterNum));
 //		weakForm.setF(f2);
 		
-		MathFunc faGlob = new Vector2Function(_aGlob);
-		MathFunc akmk_2mk = FMath.pow(new Vector2Function(ak).M(model_k),-2.0)
+		MathFunc faGlob = new Vector2MathFunc(_aGlob);
+		MathFunc akmk_2mk = FMath.pow(new Vector2MathFunc(ak).M(model_k),-2.0)
 							.M(model_k).M(1.0/beta);
-		MathFunc ak_2 = FMath.pow(new Vector2Function(ak),-2.0).M(1.0/beta);
+		MathFunc ak_2 = FMath.pow(new Vector2MathFunc(ak),-2.0).M(1.0/beta);
 		int NF = u.length;
 		MathFunc[] fu = new MathFunc[NF];
 		MathFunc[] fl = new MathFunc[NF];
@@ -640,12 +640,12 @@ public class VariationGaussNewtonDOTMult {
 		DuDn[] du0dn = new DuDn[NF];
 		MathFunc[] du0dnmfl = new MathFunc[NF];
 		for(int k=0;k<NF;k++) {
-			fu[k] = new Vector2Function(u[k]);
-			fl[k] = new Vector2Function(lambda[k]);
+			fu[k] = new Vector2MathFunc(u[k]);
+			fl[k] = new Vector2MathFunc(lambda[k]);
 			fumfl[k] = fu[k].M(fl[k]);
         	du0dn[k] = new DuDn(
-        		new Vector2Function(u_x[k]),
-        		new Vector2Function(u_y[k]),
+        		new Vector2MathFunc(u_x[k]),
+        		new Vector2MathFunc(u_y[k]),
         		null
         		);
         	du0dnmfl[k] = du0dn[k].M(fl[k]);
@@ -893,7 +893,7 @@ public class VariationGaussNewtonDOTMult {
 	}
 	public Equation getA(Vector ak, MathFunc f, MathFunc diri,boolean procHangingNode) {
 		WeakFormLaplace2D weakForm = new WeakFormLaplace2D();
-		MathFunc fa = new Vector2Function(ak);
+		MathFunc fa = new Vector2MathFunc(ak);
 		
 		if(f==null)
 			weakForm.setF(FC.c(0.0));
@@ -982,8 +982,8 @@ public class VariationGaussNewtonDOTMult {
 //        		b2.M(_amk_2mk));
         
         WeakFormC weakForm = new WeakFormC();
-        MathFunc fa = new Vector2Function(ak);
-        MathFunc fu = new Vector2Function(uk);
+        MathFunc fa = new Vector2MathFunc(ak);
+        MathFunc fu = new Vector2MathFunc(uk);
         MathFunc _amk_2mk = FMath.pow(fa.M(model_k),-2).M(model_k).M(-1.0);
         
         weakForm.setParam(_amk_2mk, FC.C0, fu);
@@ -993,8 +993,8 @@ public class VariationGaussNewtonDOTMult {
         //Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
         //weakForm.setRobin(FC.c0, _amk_2mk.M(fu));
         DuDn du0dn = new DuDn(
-        		new Vector2Function(uk_x),
-        		new Vector2Function(uk_y),
+        		new Vector2MathFunc(uk_x),
+        		new Vector2MathFunc(uk_y),
         		null);
         //weakForm.setRobin(FC.c0, _amk_2mk.M(du0dn).M(-1.0));
         weakForm.setRobin(FC.C0, FC.C0);
@@ -1058,8 +1058,8 @@ public class VariationGaussNewtonDOTMult {
 //        		b2.M(_amk_2mk));
         
         WeakFormCT weakForm = new WeakFormCT();
-        MathFunc fa = new Vector2Function(ak);
-        MathFunc fu = new Vector2Function(uk);
+        MathFunc fa = new Vector2MathFunc(ak);
+        MathFunc fu = new Vector2MathFunc(uk);
         MathFunc _amk_2mk = FMath.pow(fa.M(model_k),-2).M(model_k).M(-1.0);
         
         weakForm.setParam(_amk_2mk, FC.C0, fu);
@@ -1069,8 +1069,8 @@ public class VariationGaussNewtonDOTMult {
         //Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
         //weakForm.setRobin(FC.c0, _amk_2mk.M(fu));
         DuDn du0dn = new DuDn(
-        		new Vector2Function(uk_x),
-        		new Vector2Function(uk_y),
+        		new Vector2MathFunc(uk_x),
+        		new Vector2MathFunc(uk_y),
         		null);
         //2011/1/18 这两个条件结果差不多（bugfix:是因为没有标记边界条件：忘记调用mesh.markBorderNode(mapNTF);）
         //weakForm.setRobin(FC.c0, _amk_2mk.M(du0dn).M(-1.0));
@@ -1108,8 +1108,8 @@ public class VariationGaussNewtonDOTMult {
 	
 	public Matrix testGetCT(Vector ak, Vector uk, Vector uk_x, Vector uk_y) {
       WeakFormCT weakForm = new WeakFormCT();
-      MathFunc fa = new Vector2Function(ak);
-      MathFunc fu = new Vector2Function(uk);
+      MathFunc fa = new Vector2MathFunc(ak);
+      MathFunc fu = new Vector2MathFunc(uk);
       MathFunc _amk_2mk = FMath.pow(fa.M(model_k),-2).M(model_k).M(-1.0);
       
       weakForm.setParam(_amk_2mk, fu, fu);
@@ -1117,8 +1117,8 @@ public class VariationGaussNewtonDOTMult {
       //Robin:  d*u + k*u_n= q (自然边界：d==k, q=0)
       //weakForm.setRobin(FC.c0, _amk_2mk.M(fu));
       DuDn du0dn = new DuDn(
-      		new Vector2Function(uk_x),
-      		new Vector2Function(uk_y),
+      		new Vector2MathFunc(uk_x),
+      		new Vector2MathFunc(uk_y),
       		null);
       //2011/1/18 这两个条件结果差不多（bugfix:是因为没有标记边界条件：忘记调用mesh.markBorderNode(mapNTF);）
       //weakForm.setRobin(FC.c0, _amk_2mk.M(du0dn).M(-1.0));
@@ -1157,13 +1157,13 @@ public class VariationGaussNewtonDOTMult {
 	public Equation testGetCTLoad(Vector[] u, Vector[] u_x,Vector[] u_y, Vector[] lambda, 
 			Vector ak, MathFunc diri) {
 		
-		MathFunc akmk_2mk = FMath.pow(new Vector2Function(ak).M(model_k),-2.0).M(model_k).M(-1.0/beta);
+		MathFunc akmk_2mk = FMath.pow(new Vector2MathFunc(ak).M(model_k),-2.0).M(model_k).M(-1.0/beta);
 		int NF = u.length;
 		MathFunc[] fu = new MathFunc[NF];
 		MathFunc[] fl = new MathFunc[NF];
 		for(int k=0;k<NF;k++) {
-			fu[k] = new Vector2Function(u[k]);
-			fl[k] = new Vector2Function(lambda[k]);
+			fu[k] = new Vector2MathFunc(u[k]);
+			fl[k] = new Vector2MathFunc(lambda[k]);
         }
         WeakFormLa weakForm = new WeakFormLa();
         
@@ -1305,7 +1305,7 @@ public class VariationGaussNewtonDOTMult {
 	 * @return
 	 */
 	public Vector solveDeltaU(Vector ak, Vector _resLlmd_da, Vector uk) {
-		Equation eq = getA(ak,new Vector2Function(_resLlmd_da),FC.C0,true);
+		Equation eq = getA(ak,new Vector2MathFunc(_resLlmd_da),FC.C0,true);
         //Solver sol = new Solver();
         //Vector x = sol.solveCGS(eq.A, eq.f);
         SolverJBLAS sol = new SolverJBLAS();
@@ -1901,8 +1901,8 @@ public class VariationGaussNewtonDOTMult {
 				ParamOfLightSource para = new ParamOfLightSource();
 				para.s_i = i;
 				para.g = vgn.solveRealU(i);
-				MathFunc gx = new DuDx(vgn.mesh,new Vector2Function(para.g,vgn.mesh,"x","y"),"x");
-				MathFunc gy = new DuDx(vgn.mesh,new Vector2Function(para.g,vgn.mesh,"x","y"),"y");
+				MathFunc gx = new DuDx(vgn.mesh,new Vector2MathFunc(para.g,vgn.mesh,"x","y"),"x");
+				MathFunc gy = new DuDx(vgn.mesh,new Vector2MathFunc(para.g,vgn.mesh,"x","y"),"y");
 				Tools.plotFunction(vgn.mesh, VariationGaussNewtonDOTMult.outputFolder, 
 						String.format("M%02d_g_grad.dat",i), gx, gy);
 
@@ -1948,7 +1948,7 @@ public class VariationGaussNewtonDOTMult {
 			
 			outputFolder = String.format(tmpOutputFolder+"%02d", k);
 			//将结果插值到加密后的网格上
-			a0 = Tools.interplateFrom(oldMesh,vgn.mesh,new Vector2Function(ak,oldMesh,"x","y"));
+			a0 = Tools.interplateFrom(oldMesh,vgn.mesh,new Vector2MathFunc(ak,oldMesh,"x","y"));
 			plotVector(vgn.mesh, a0, "a0.dat");
 			vgn.aGlob = Tools.function2vector(vgn.mesh, vgn.modelGuess.getMu_a());
 			plotVector(vgn.mesh, vgn.aGlob, "aGlob.dat");

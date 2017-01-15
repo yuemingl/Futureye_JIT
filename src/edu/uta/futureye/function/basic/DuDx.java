@@ -63,7 +63,7 @@ import edu.uta.futureye.util.Utils;
 public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 	protected Element e = null;
 	protected Mesh mesh = null;
-	protected Vector2Function u = null;
+	protected Vector2MathFunc u = null;
 	protected String x = null;
 	protected MathFunc fdu2 = null;
 	
@@ -73,7 +73,7 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 	 * @param u: u(x,y) or u(x,y,z)
 	 * @param x
 	 */
-	public DuDx(Mesh mesh, Vector2Function u, String x) {
+	public DuDx(Mesh mesh, Vector2MathFunc u, String x) {
 		this.mesh = mesh;
 		this.u = u;
 		this.x = x;
@@ -146,7 +146,7 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 		} else {
 			if(this.fdu2 == null) {
 				Vector du2 = Tools.computeDerivativeFast(mesh, u.vec, x);
-				fdu2 = new Vector2Function(du2);
+				fdu2 = new Vector2MathFunc(du2);
 			}
 			return fdu2.apply(v);
 		}
@@ -217,7 +217,7 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 		} else {
 			if(this.fdu2 == null) {
 				Vector du2 = Tools.computeDerivativeFast(mesh, u.vec, x);
-				fdu2 = new Vector2Function(du2);
+				fdu2 = new Vector2MathFunc(du2);
 			}
 			return fdu2.apply(e, n, args);
 		}

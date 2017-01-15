@@ -16,7 +16,7 @@ import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -248,7 +248,7 @@ public class ModelDOT {
 		//	if(nodes.at(i).isInnerNode())
 		//		uSmallForBoundary.set(i,0.0);
 		//}
-		Vector uSmallDiri = model.solveDirichlet(meshSmall, new Vector2Function(uSmallExtract));
+		Vector uSmallDiri = model.solveDirichlet(meshSmall, new Vector2MathFunc(uSmallExtract));
 		Tools.plotVector(meshSmall, outputFolder, "u_small_diri.dat", uSmallDiri);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_extract_diri_diff.dat", 
 				FMath.axpy(-1.0, uSmallDiri, uSmallExtract));
@@ -289,7 +289,7 @@ public class ModelDOT {
 		Vector uSmallGuess = Tools.extractData(meshBig, meshSmall, uBigGuess);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_guess.dat", uSmallGuess);
 		
-		Vector uSmallApproximate = model.solveDirichlet(meshSmall, new Vector2Function(uSmallExtract));
+		Vector uSmallApproximate = model.solveDirichlet(meshSmall, new Vector2MathFunc(uSmallExtract));
 		Tools.plotVector(meshSmall, outputFolder, "u_small_approximate.dat", uSmallApproximate);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_guess_approximate_diff.dat", 
 				FMath.axpy(-1.0, uSmallGuess, uSmallApproximate));
@@ -310,7 +310,7 @@ public class ModelDOT {
 		Tools.plotFunction(meshBig, outputFolder, "a_real_big_refine.dat", model.mu_a);
 		Vector v_mu_a = Tools.function2vector(meshBig, model.mu_a);
 		Tools.constrainHangingNodes(meshBig, v_mu_a);
-		model.mu_a = new Vector2Function(v_mu_a);
+		model.mu_a = new Vector2MathFunc(v_mu_a);
 		Tools.plotFunction(meshBig, outputFolder, "a_real_big_refine_hanging_node.dat", model.mu_a);
 		
 		Vector uBigRefine = model.solveNeumann(meshBig);
@@ -337,7 +337,7 @@ public class ModelDOT {
 					return -1.0;
 			}
 		};
-		Vector uMix = model.solveMixedBorder(meshSmall, diriBoundaryMark, new Vector2Function(uSmallExtract));
+		Vector uMix = model.solveMixedBorder(meshSmall, diriBoundaryMark, new Vector2MathFunc(uSmallExtract));
 		Tools.plotVector(meshSmall, outputFolder, "u_mix.dat", uMix);
 	}
 

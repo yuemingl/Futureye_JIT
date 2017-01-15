@@ -26,7 +26,7 @@ import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -258,8 +258,8 @@ public class HumanRealSimulate {
 		//Coordinates of detectors
 		double []setup_x = {1,3,5,7,  2,  4,  6,1,3,5,7};
 		double []setup_y = {3,3,3,3,4.5,4.5,4.5,6,6,6,6};
-		Vector2Function fmeaSurf0 = new Vector2Function(meaSurf0, meshMeasureSurface, "x","y");
-		Vector2Function fmeaSurf = new Vector2Function(meaSurf, meshMeasureSurface, "x","y");
+		Vector2MathFunc fmeaSurf0 = new Vector2MathFunc(meaSurf0, meshMeasureSurface, "x","y");
+		Vector2MathFunc fmeaSurf = new Vector2MathFunc(meaSurf, meshMeasureSurface, "x","y");
 		Vector diffIntensity = new SpaceVector(setup_x.length);
 		Vector diffOD = new SpaceVector(setup_x.length);
 		for(int i=0;i<setup_x.length;i++) {

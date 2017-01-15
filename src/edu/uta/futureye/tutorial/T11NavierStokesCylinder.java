@@ -24,7 +24,7 @@ import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
@@ -336,15 +336,15 @@ public class T11NavierStokesCylinder {
 					outputFolder,file,startTimeStep),3);
 			Vector vecV = DataReader.readVector(String.format("./%s/%s_uv_final_t%02d.dat",
 					outputFolder,file,startTimeStep),4);
-			U.set(1, new Vector2Function(vecU));
-			U.set(2, new Vector2Function(vecV));
+			U.set(1, new Vector2MathFunc(vecU));
+			U.set(2, new Vector2MathFunc(vecV));
 		} else if(bSteady && startTimeStep>0){ //startTimeStep will be iteration restart step in steady case
 			Vector vecU = DataReader.readVector(String.format("./%s/%s_uv_steady_%02d.dat",
 					outputFolder,file,startTimeStep),3);
 			Vector vecV = DataReader.readVector(String.format("./%s/%s_uv_steady_%02d.dat",
 					outputFolder,file,startTimeStep),4);
-			U.set(1, new Vector2Function(vecU));
-			U.set(2, new Vector2Function(vecV));
+			U.set(1, new Vector2MathFunc(vecU));
+			U.set(2, new Vector2MathFunc(vecV));
 		} else {
 			U.set(1, FC.C0);
 			U.set(2, FC.C0);
@@ -370,8 +370,8 @@ public class T11NavierStokesCylinder {
 							u.getBlock(1).get(i)-
 							U.get(1).apply(new Variable().setIndex(i)));
 				
-				U.set(1, new Vector2Function(u.getBlock(1)));
-				U.set(2, new Vector2Function(u.getBlock(2)));
+				U.set(1, new Vector2MathFunc(u.getBlock(1)));
+				U.set(2, new Vector2MathFunc(u.getBlock(2)));
 	
 				System.out.println("Iter="+iter+" Error Norm2 (||u1_k+1 - u1_k||) = "+delta_u.norm2());
 				

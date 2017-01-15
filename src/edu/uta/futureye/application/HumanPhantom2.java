@@ -19,7 +19,7 @@ import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.Utils;
@@ -57,7 +57,7 @@ public class HumanPhantom2 {
 	public Vector computeTailLeftLight(Mesh mesh, Vector u) {
 		NodeList nodes = mesh.getNodeList();
 		Point rPos = model.getLightPosition();
-		Vector2Function fu = new Vector2Function(u,mesh,"x","y");
+		Vector2MathFunc fu = new Vector2MathFunc(u,mesh,"x","y");
 		SparseVector rlt = new SparseVectorHashMap(u.getDim());
 		double skipLen = 1.0;
 		for(int i=1;i<=nodes.size();i++) {
@@ -512,9 +512,9 @@ public class HumanPhantom2 {
 		NodeList nodes = mesh3D.getNodeList();
 		double minX = -4.4;
 		double dx = 8.8/NN;
-		List<Vector2Function> faList = new ArrayList<Vector2Function>();
+		List<Vector2MathFunc> faList = new ArrayList<Vector2MathFunc>();
 		for(int i=0;i<alphaList.size();i++) {
-			faList.add(new Vector2Function(alphaList.get(i),mesh,"x","y"));
+			faList.add(new Vector2MathFunc(alphaList.get(i),mesh,"x","y"));
 		}
 		for(int i=1;i<=nodes.size();i++) {
 			Node node = nodes.at(i);

@@ -14,7 +14,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FDelta;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -211,7 +211,7 @@ public class ModelDOTMult {
 		//TEST 2.
 		Vector uSmallExtract = Tools.extractData(meshBig, meshSmall, uBig);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_extract.dat", uSmallExtract);
-		Vector uSmallDiri = model.solveDirichlet(meshSmall, new Vector2Function(uSmallExtract));
+		Vector uSmallDiri = model.solveDirichlet(meshSmall, new Vector2MathFunc(uSmallExtract));
 		Tools.plotVector(meshSmall, outputFolder, "u_small_diri.dat", uSmallDiri);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_extract_diri_diff.dat", 
 				FMath.axpy(-1.0, uSmallDiri, uSmallExtract));
@@ -233,8 +233,8 @@ public class ModelDOTMult {
 		Vector uSmall_x = Tools.extractData(meshBig, meshSmall, uBig_x);
 		Vector uSmall_y = Tools.extractData(meshBig, meshSmall, uBig_y);
 		DuDn dudn = new DuDn(
-				new Vector2Function(uSmall_x),
-				new Vector2Function(uSmall_y),
+				new Vector2MathFunc(uSmall_x),
+				new Vector2MathFunc(uSmall_y),
 				null);		
 		//单元上分片常数=小区域直接求导数
 //		Vector2Function fuSmall = new Vector2Function(uSmallExtract,meshSmall,"x","y");
@@ -270,7 +270,7 @@ public class ModelDOTMult {
 		Vector uSmallGuess = Tools.extractData(meshBig, meshSmall, uBigGuess);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_guess.dat", uSmallGuess);
 		
-		Vector uSmallApproximate = model.solveDirichlet(meshSmall, new Vector2Function(uSmallExtract));
+		Vector uSmallApproximate = model.solveDirichlet(meshSmall, new Vector2MathFunc(uSmallExtract));
 		Tools.plotVector(meshSmall, outputFolder, "u_small_approximate.dat", uSmallApproximate);
 		Tools.plotVector(meshSmall, outputFolder, "u_small_guess_approximate_diff.dat", 
 				FMath.axpy(-1.0, uSmallApproximate, uSmallGuess));
@@ -288,7 +288,7 @@ public class ModelDOTMult {
 			}
 		};
 		Vector uMix = model.solveMixedBorder(meshSmall, 
-				diriBoundaryMark, new Vector2Function(uSmallExtract),
+				diriBoundaryMark, new Vector2MathFunc(uSmallExtract),
 				null,FC.C1.D(model.mu_s.M(model.mu_a).M(3.0)));
 		Tools.plotVector(meshSmall, outputFolder, "u_mix.dat", uMix);
 	}

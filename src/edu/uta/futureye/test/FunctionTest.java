@@ -22,7 +22,7 @@ import edu.uta.futureye.function.basic.FLinear1D;
 import edu.uta.futureye.function.basic.FPolynomial1D;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
@@ -183,7 +183,7 @@ public class FunctionTest {
 	    Vector v = Tools.function2vector(mesh, FX.x.M(FX.y));
 	    
 	    Tools.plotVector(mesh, "testCase", "v.dat", v);
-	    DuDx vx = new DuDx(mesh,new Vector2Function(v, mesh, "x","y"),"y");
+	    DuDx vx = new DuDx(mesh,new Vector2MathFunc(v, mesh, "x","y"),"y");
 	    Tools.plotFunction(mesh, "testCase", "v_x.dat", vx);
 	    
 	    Vector[] a = new Vector[4];

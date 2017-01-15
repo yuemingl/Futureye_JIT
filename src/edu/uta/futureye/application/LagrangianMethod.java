@@ -18,7 +18,7 @@ import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.DuDn;
 import edu.uta.futureye.function.basic.FC;
-import edu.uta.futureye.function.basic.Vector2Function;
+import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
@@ -155,7 +155,7 @@ public class LagrangianMethod {
 		//直接在小网格上求解，自然边界，两者在边界处应该一致，
 		//但是经测试不一致，原因是delta函数如果在区域外，结果相差很大
 		//Vector u0Samll = model.solveForwardNeumann(mesh);
-		Vector u0Samll = model.solveForwardDirichlet(mesh,new Vector2Function(u0),1);
+		Vector u0Samll = model.solveForwardDirichlet(mesh,new Vector2MathFunc(u0),1);
 
 		plotVector(mesh, u0Samll, "u0_small"+s_i+".dat");
 		
@@ -209,20 +209,20 @@ public class LagrangianMethod {
 	 * @return
 	 */
 	public Vector solve_v(int s_i) {
-		Vector2Function fu0 = new Vector2Function(u0);
-		Vector2Function fu0_x = new Vector2Function(u0_x);
-		Vector2Function fu0_y = new Vector2Function(u0_y);
+		Vector2MathFunc fu0 = new Vector2MathFunc(u0);
+		Vector2MathFunc fu0_x = new Vector2MathFunc(u0_x);
+		Vector2MathFunc fu0_y = new Vector2MathFunc(u0_y);
 		
 		//-( a(x)-k^2 ) = k^2-a(x)
 		Vector v_c = FMath.axpy(-1.0, a, new SparseVectorHashMap(a.getDim(),k*k));
 		plotVector(mesh, v_c, "param_c"+s_i+".dat");
-		Vector2Function param_c = new Vector2Function(v_c);
+		Vector2MathFunc param_c = new Vector2MathFunc(v_c);
 		
 		//\nabla{lnu0}
 		//Function b1 = FOBasic.Divi(fu0_x,fu0);
 		//Function b2 = FOBasic.Divi(fu0_y,fu0);
-		MathFunc b1 = new Vector2Function(lnu0_x);
-		MathFunc b2 = new Vector2Function(lnu0_y);
+		MathFunc b1 = new Vector2MathFunc(lnu0_x);
+		MathFunc b2 = new Vector2MathFunc(lnu0_y);
 		plotFunction(mesh, b1, "b1_"+s_i+".dat");
 		plotFunction(mesh, b2, "b2_"+s_i+".dat");
 		
@@ -284,12 +284,12 @@ public class LagrangianMethod {
 	 * @return
 	 */
 	public Vector solve_lambda(int s_i, Vector v) {
-		Vector2Function fu0 = new Vector2Function(u0);
-		Vector2Function fu0_x = new Vector2Function(u0_x);
-		Vector2Function fu0_y = new Vector2Function(u0_y);
+		Vector2MathFunc fu0 = new Vector2MathFunc(u0);
+		Vector2MathFunc fu0_x = new Vector2MathFunc(u0_x);
+		Vector2MathFunc fu0_y = new Vector2MathFunc(u0_y);
 		
 		//-2*Laplace(lnu0) - ( a(x)-k^2 ) = -2*Laplace(lnu0) + ( k^2-a(x) )
-		Vector2Function param_c = new Vector2Function(
+		Vector2MathFunc param_c = new Vector2MathFunc(
 				FMath.axpy(-2.0, laplace_ln_u0,
 				FMath.ax(1.0,FMath.axpy(-1, a, 
 						new SparseVectorHashMap(a.getDim(),k*k)))));
@@ -320,7 +320,7 @@ public class LagrangianMethod {
 		}
 		System.out.println("v-g on border norm -------------> "+v_g2.norm2());
 		br.println("v-g on border norm = "+v_g2.norm2());
-		MathFunc fv_g = new Vector2Function(v_g);
+		MathFunc fv_g = new Vector2MathFunc(v_g);
 
 		weakForm.setF(FC.c(0.0));
 		//Test: v_g在整个区域上都已知
@@ -453,7 +453,7 @@ public class LagrangianMethod {
 			//直接在小网格上求解，自然边界，两者在边界处应该一致
 			//但是经测试不一致，原因是delta函数如果在区域外，结果相差很大
 			//uiSmall[i] = model.solveForwardNeumann(meshSmall);
-			uiSmall[i] = model.solveForwardDirichlet(meshSmall,new Vector2Function(ui[i]),1);
+			uiSmall[i] = model.solveForwardDirichlet(meshSmall,new Vector2MathFunc(ui[i]),1);
 			
 			plotVector(meshSmall, uiSmall[i], "ui_small"+i+".dat");
 		}
