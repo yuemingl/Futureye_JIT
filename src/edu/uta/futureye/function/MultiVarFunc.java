@@ -23,15 +23,22 @@ public abstract class MultiVarFunc extends MathFuncBase {
 	public MultiVarFunc(String funcName, String ...varNames) {
 		this.fName = funcName;
 		this.varNames = varNames;
+		this.argIdx = new int[varNames.length];
+		for(int i = 0; i<argIdx.length; i++)
+			argIdx[i] = i;
 	}
 	
 	public MultiVarFunc(String funcName, List<String> varNames) {
 		this.varNames = varNames.toArray(new String[0]);
+		this.argIdx = new int[varNames.size()];
+		for(int i = 0; i<argIdx.length; i++)
+			argIdx[i] = i;
 	}
 	
 	@Override
 	public List<String> getVarNames() {
 		List<String> list = new ArrayList<String>();
+		if(null == varNames) return list;
 		for(String s : varNames)
 			list.add(s);
 		return list;
@@ -48,6 +55,7 @@ public abstract class MultiVarFunc extends MathFuncBase {
 	@Override
 	public MathFunc setArgIdx(Map<String, Integer> argsMap) {
 		//Allocate new array each time due to the "copy on change"
+		if(null == varNames) return this;
 		int[] idx = new int[varNames.length];
 		for(int i=0; i<varNames.length; i++) {
 			Integer idx2 = argsMap.get(varNames[i]);

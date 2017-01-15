@@ -35,14 +35,14 @@ import edu.uta.futureye.util.Utils;
  *
  */
 public class Vector2Function extends MultiVarFunc {
-	Vector u = null;
+	Vector vec = null;
 	Mesh mesh = null;
-	int nDim = 0;
 	
 	//当自变量超出mesh范围时，使用该函数求值
 	MathFunc defaultFunction = null;
-	Map<Integer, Double> valueMap = null;
+	
 	boolean enableCache = false;
+	Map<Integer, Double> cachedValueMap = null;
 	
 	/**
 	 * 构造一个向量的函数封装，求值时自变量需要指定索引值（=向量的索引），
@@ -51,8 +51,7 @@ public class Vector2Function extends MultiVarFunc {
 	 * @param u
 	 */
 	public Vector2Function(Vector u) {
-		this.u = u;
-		nDim = u.getDim();
+		this.vec = u;
 	}
 	
 	/**
@@ -74,10 +73,9 @@ public class Vector2Function extends MultiVarFunc {
 	 */
 	public Vector2Function(Vector u, Mesh mesh,
 			String varName, String ...aryVarNames) {
-		this.u = u;
+		this.vec = u;
 		this.mesh = mesh;
-		nDim = u.getDim();
-		if(nDim != mesh.getNodeList().size())
+		if(vec.getDim() != mesh.getNodeList().size())
 			throw new FutureyeException("u.getDim() != mesh.getNodeList().size()");
 		varNames = new String[1+aryVarNames.length];
 		varNames[0] = varName;
@@ -87,17 +85,16 @@ public class Vector2Function extends MultiVarFunc {
 	
 	public Vector2Function(Vector u, Mesh mesh,
 			String []aryVarNames) {
-		this.u = u;
+		this.vec = u;
 		this.mesh = mesh;
-		nDim = u.getDim();
-		if(nDim != mesh.getNodeList().size())
+		if(vec.getDim() != mesh.getNodeList().size())
 			throw new FutureyeException("u.getDim() != mesh.getNodeList().size()");
 		varNames = aryVarNames;
 	}
 	
 	public Vector2Function(Vector u, Mesh mesh,
 			List<String> varNames) {
-		this.u = u;
+		this.vec = u;
 		this.mesh = mesh;
 		this.varNames = varNames.toArray(new String[0]);
 	}	
@@ -122,31 +119,32 @@ public class Vector2Function extends MultiVarFunc {
 	 */
 	public void cacheInterpolateValue(boolean b) {
 		this.enableCache = b;
-		if(b && valueMap == null)
-			valueMap = new HashMap<Integer, Double>();
+		if(b && cachedValueMap == null)
+			cachedValueMap = new HashMap<Integer, Double>();
 		else if(!b)
-			valueMap = null;
+			cachedValueMap = null;
 	}
 	/**
 	 * 清除插值出来的函数值缓存
 	 */
 	public void clearInterpolateValueCache() {
-		if(valueMap != null)
-			valueMap.clear();
+		if(cachedValueMap != null)
+			cachedValueMap.clear();
 	}
 	public Mesh getMesh() {
 		return this.mesh;
 	}
 	public Vector getVector() {
-		return this.u;
+		return this.vec;
 	}
 	
 	@Override
 	public double apply(Variable v) {
 		int index = v.getIndex();
+		int nDim = vec.getDim();
 		if(mesh == null) { //完全依靠index来求值
 			if(index > 0 && index <= nDim)
-				return u.get(index);//注：下标错位会造成结果出现随机混乱
+				return vec.get(index);//注：下标错位会造成结果出现随机混乱
 			else if(index == 0) {
 				throw new FutureyeException("Error: index(=0), please specify index of Variable!");
 			} else
@@ -176,7 +174,7 @@ public class Vector2Function extends MultiVarFunc {
 			
 			if(needInterpolation) {
 				if(enableCache && index > 0) {
-					Double cacheValue = valueMap.get(index);
+					Double cacheValue = cachedValueMap.get(index);
 					if(cacheValue != null) return cacheValue;
 				}
 
@@ -192,7 +190,7 @@ public class Vector2Function extends MultiVarFunc {
 				}
 				double[] f = new double[e.nodes.size()];
 				for(int i=1;i<=e.nodes.size();i++) {
-					f[i-1] = u.get(e.nodes.at(i).globalIndex);
+					f[i-1] = vec.get(e.nodes.at(i).globalIndex);
 				}
 				//二维四边形单元
 				if(e.vertices().size() == 4 && coord.length==2) {
@@ -202,13 +200,13 @@ public class Vector2Function extends MultiVarFunc {
 					double y = coord[1];
 					double interpValue = coef[0] + coef[1]*x + coef[2]*y + coef[3]*x*y;
 					if(enableCache && index > 0) {
-						valueMap.put(index, interpValue);
+						cachedValueMap.put(index, interpValue);
 					}
 					return interpValue;
 				}
 				throw new FutureyeException("Error: Unsported element type:"+e.toString());
 			} else {
-				return u.get(index);
+				return vec.get(index);
 			}
 		}
 	}
@@ -217,9 +215,10 @@ public class Vector2Function extends MultiVarFunc {
 	@Override
 	public double apply(Element ee, Node n, double... args) {
 		int index = n.getIndex();
+		int nDim = vec.getDim();
 		if(mesh == null) { //完全依靠index来求值
 			if(index > 0 && index <= nDim)
-				return u.get(index);//注：下标错位会造成结果出现随机混乱
+				return vec.get(index);//注：下标错位会造成结果出现随机混乱
 			else if(index == 0) {
 				throw new FutureyeException("Error: index(=0), please specify index of Variable!");
 			} else
@@ -246,7 +245,7 @@ public class Vector2Function extends MultiVarFunc {
 			
 			if(needInterpolation) {
 				if(enableCache && index > 0) {
-					Double cacheValue = valueMap.get(index);
+					Double cacheValue = cachedValueMap.get(index);
 					if(cacheValue != null) return cacheValue;
 				}
 
@@ -270,7 +269,7 @@ public class Vector2Function extends MultiVarFunc {
 				}
 				double[] f = new double[e.nodes.size()];
 				for(int i=1;i<=e.nodes.size();i++) {
-					f[i-1] = u.get(e.nodes.at(i).globalIndex);
+					f[i-1] = vec.get(e.nodes.at(i).globalIndex);
 				}
 				//二维四边形单元
 				if(e.vertices().size() == 4 && coord.length==2) {
@@ -280,13 +279,13 @@ public class Vector2Function extends MultiVarFunc {
 					double y = coord[1];
 					double interpValue = coef[0] + coef[1]*x + coef[2]*y + coef[3]*x*y;
 					if(enableCache && index > 0) {
-						valueMap.put(index, interpValue);
+						cachedValueMap.put(index, interpValue);
 					}
 					return interpValue;
 				}
 				throw new FutureyeException("Error: Unsported element type:"+e.toString());
 			} else {
-				return u.get(index);
+				return vec.get(index);
 			}
 		}
 	}
@@ -302,14 +301,14 @@ public class Vector2Function extends MultiVarFunc {
 		if(mesh == null) 
 			throw new FutureyeException(
 					"Please use constructor Vector2Function(Vector u, Mesh mesh, String varName, String ...aryVarNames)");
-		Vector vd = Tools.computeDerivative(mesh, u, varName);
+		Vector vd = Tools.computeDerivative(mesh, vec, varName);
 		MathFunc fd = new Vector2Function(vd,mesh,this.varNames);
 		return fd;
 	}
 	
 	@Override
 	public String toString() {
-		return "Vector2Function:"+this.u.toString();
+		return "Vector2Function:"+this.vec.toString();
 	}
 
 }

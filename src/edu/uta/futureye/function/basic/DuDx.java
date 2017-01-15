@@ -145,7 +145,7 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 			
 		} else {
 			if(this.fdu2 == null) {
-				Vector du2 = Tools.computeDerivativeFast(mesh, u.u, x);
+				Vector du2 = Tools.computeDerivativeFast(mesh, u.vec, x);
 				fdu2 = new Vector2Function(du2);
 			}
 			return fdu2.apply(v);
@@ -216,7 +216,7 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 			
 		} else {
 			if(this.fdu2 == null) {
-				Vector du2 = Tools.computeDerivativeFast(mesh, u.u, x);
+				Vector du2 = Tools.computeDerivativeFast(mesh, u.vec, x);
 				fdu2 = new Vector2Function(du2);
 			}
 			return fdu2.apply(e, n, args);
