@@ -39,7 +39,7 @@ import edu.uta.futureye.util.container.ElementList;
  *   u(x,y)=0, (x,y) \in \partial{\Omega}
  * where
  *   \Omega = [-3,3]*[-3,3]
- *   f = 2 * pi * pi * sin ( pi * x ) * sin ( pi * y )
+ *   f = -2 * (x * x + y * y) + 36
  * Solution:
  *   u = (x^2-9)*(y^2-9)
  * </blockquote>
