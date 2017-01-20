@@ -18,8 +18,6 @@ import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.LHSExpr;
-import edu.uta.futureye.core.intf.RHSExpr;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
