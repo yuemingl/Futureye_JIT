@@ -44,9 +44,8 @@ import edu.uta.futureye.util.container.ElementList;
 public class LaplaceGlobalAssemble {
 	public void run() {
 		// 1.Read mesh
-		Mesh mesh = null;
 		MeshReader reader = new MeshReader("grids/triangle.grd");
-		mesh = reader.read2DMesh();
+		Mesh mesh = reader.read2DMesh();
 		// Compute geometry relationship between nodes and elements
 		mesh.computeNodeBelongsToElements();
 
