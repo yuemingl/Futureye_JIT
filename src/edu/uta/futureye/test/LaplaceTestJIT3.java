@@ -52,7 +52,9 @@ import edu.uta.futureye.util.container.VertexList;
 
 
 /**
- * This file expression LHS by defining composite area coordinate variable r(x,y),s(x,y) with symbolic expression
+ * weakform and lambda expression are used
+ * for This file LHS anf RHS
+
  * <blockquote><pre>
  * Problem:
  *   -\Delta{u} = f

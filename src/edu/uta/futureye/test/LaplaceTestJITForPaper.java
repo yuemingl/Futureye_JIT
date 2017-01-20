@@ -49,7 +49,8 @@ import edu.uta.futureye.util.container.ElementList;
 
 
 /**
- * This file expression LHS by defining composite area coordinate variable r(x,y),s(x,y) with symbolic expression
+ * compileWithASM and benchmark for paper
+ *
  * <blockquote><pre>
  * Problem:
  *   -\Delta{u} = f
@@ -276,11 +277,11 @@ public class LaplaceTestJITForPaper {
 			crhs = new CompiledFunc[nDOFs];
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
-					//clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
-					clhs[j][i] = matLHS[j][i].compile(argsOrder);
+					clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
+					//clhs[j][i] = matLHS[j][i].compile(argsOrder);
 				}
-				//crhs[j] = vecRHS[j].compileWithASM(argsOrder);
-				crhs[j] = vecRHS[j].compile(argsOrder);
+				crhs[j] = vecRHS[j].compileWithASM(argsOrder);
+				//crhs[j] = vecRHS[j].compile(argsOrder);
 			}
 		}
 		
@@ -301,129 +302,133 @@ public class LaplaceTestJITForPaper {
 	public void run(int nNodes) {
 		int n = 51;
 		boolean solveSystem = false;
-		
-        //1.Generate mesh
+
+		// 1.Generate mesh
 		Mesh mesh = null;
-		if(solveSystem) {
-	        MeshReader reader = new MeshReader("triangle.grd");
-	        mesh = reader.read2DMesh();
+		if (solveSystem) {
+			MeshReader reader = new MeshReader("triangle.grd");
+			mesh = reader.read2DMesh();
 		} else {
 			mesh = MeshGenerator.rectangle(-3, 3, -3, 3, n, n);
 		}
-		
-		//Compute geometry relationship between nodes and elements
-        mesh.computeNodeBelongsToElements();
 
-        //2.Mark border types
-        HashMap<NodeType, MathFunc> mapNTF =
-                new HashMap<NodeType, MathFunc>();
-        mapNTF.put(NodeType.Dirichlet, null);
-        mesh.markBorderNode(mapNTF);
+		// Compute geometry relationship between nodes and elements
+		mesh.computeNodeBelongsToElements();
 
-        //3.Use element library to assign degrees of
-        //  freedom (DOF) to element
-        ElementList eList = mesh.getElementList();
-        FELinearTriangle feLT = new FELinearTriangle();
-        for(int i=1;i<=eList.size();i++)
-            feLT.assignTo(eList.at(i));
+		// 2.Mark border types
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+		mapNTF.put(NodeType.Dirichlet, null);
+		mesh.markBorderNode(mapNTF);
 
-		//Construct a function with the coordinate of points in an element as parameters
-		String[] argsOrder = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
+		// 3.Use element library to assign degrees of
+		// freedom (DOF) to element
+		ElementList eList = mesh.getElementList();
+		FELinearTriangle feLT = new FELinearTriangle();
+		for (int i = 1; i <= eList.size(); i++)
+			feLT.assignTo(eList.at(i));
+
+		// Construct a function with the coordinate of points in an element as
+		// parameters
+		String[] argsOrder = new String[] { "x1", "x2", "x3", "y1", "y2", "y3",
+				"r", "s", "t" };
 		FELinearTriangleT fet = new FELinearTriangleT();
-		
-        //Right hand side(RHS):
-        //MathFunc f = 2.0 * PI * PI * sin ( PI * x ) * sin ( PI * y );
-        final MathFunc f = -2*(x*x+y*y)+36;
 
-//		fet.makeWeakForm(
-//				(u,v) -> grad(u,"x","y").dot(grad(v,"x","y")), 
-//				v -> f*v
-//		);
-		fet.makeWeakForm(
-				new LHSExpr() {
-					public MathFunc apply(MathFunc u, MathFunc v) {
-						return grad(u,"x","y").dot(grad(v,"x","y"));
-					}
-				},
-				new RHSExpr() {
-					public MathFunc apply(MathFunc v) {
-						return f*v;
-					}
-				}
-		);
-		
+		// Right hand side(RHS):
+		// MathFunc f = 2.0 * PI * PI * sin ( PI * x ) * sin ( PI * y );
+		final MathFunc f = -2 * (x * x + y * y) + 36;
+
+		// fet.makeWeakForm(
+		// (u,v) -> grad(u,"x","y").dot(grad(v,"x","y")),
+		// v -> f*v
+		// );
+		fet.makeWeakForm(new LHSExpr() {
+			public MathFunc apply(MathFunc u, MathFunc v) {
+				return grad(u, "x", "y").dot(grad(v, "x", "y"));
+			}
+		}, new RHSExpr() {
+			public MathFunc apply(MathFunc v) {
+				return f * v;
+			}
+		});
+
 		long startCompile = System.currentTimeMillis();
 		fet.compileWeakForm();
-		System.out.println("Compile time: "+(System.currentTimeMillis()-startCompile));
+		System.out.println("Compile time: "
+				+ (System.currentTimeMillis() - startCompile));
 
 		CompiledFunc[][] clhs = fet.getCompiledLHS();
 		CompiledFunc[] crhs = fet.getCompiledRHS();
 		int nDOFs = fet.nDOFs;
-		
-		//5.Assembly process
+
+		// 5.Assembly process
 		double[][] A = new double[nDOFs][nDOFs];
 		double[] b = new double[nDOFs];
 		double[] params = new double[argsOrder.length];
 		int dim = mesh.getNodeList().size();
-		SparseMatrix stiff = new SparseMatrixRowMajor(dim,dim);
+		SparseMatrix stiff = new SparseMatrixRowMajor(dim, dim);
 		SparseVector load = new SparseVectorHashMap(dim);
-		
+
 		long start = System.currentTimeMillis();
-		int NN = nNodes/((n-1)*(n-1)); //10000*512/eList.size();
-		if(solveSystem)
-			NN=1;
-		for(int ii=0; ii<NN; ii++) {
-		for(Element e : eList) {
-			//e.adjustVerticeToCounterClockwise();
+		int NN = nNodes / ((n - 1) * (n - 1)); // 10000*512/eList.size();
+		if (solveSystem)
+			NN = 1;
+		for (int ii = 0; ii < NN; ii++) {
+			for (Element e : eList) {
+				// e.adjustVerticeToCounterClockwise();
 
-			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
-			double[] coords = e.getNodeCoords();
-			System.arraycopy(coords, 0, params, 0, coords.length);
+				DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
+				double[] coords = e.getNodeCoords();
+				System.arraycopy(coords, 0, params, 0, coords.length);
 
-			//put it in intOnTriangleRefElement?
-			fet.getJac().apply(params);
-			
-			for(int j=0; j<nDOFs; j++) {
-				for(int i=0; i<nDOFs; i++) {
-					A[j][i] = FOIntegrate.intOnTriangleRefElement(clhs[j][i], params, coords.length, 2);//2=80.839 3=80.966, 4=80.967
-				}
-				b[j] = FOIntegrate.intOnTriangleRefElement(crhs[j], params, coords.length, 2);
-			}
-			
-			if(solveSystem) {
-				for(int j=0;j<nDOFs;j++) {
-					DOF dofI = DOFs.at(j+1);
-					int nGlobalRow = dofI.getGlobalIndex();
-					for(int i=0;i<nDOFs;i++) {
-						DOF dofJ = DOFs.at(i+1);
-						int nGlobalCol = dofJ.getGlobalIndex();
-						stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
+				// put it in intOnTriangleRefElement?
+				fet.getJac().apply(params);
+
+				for (int j = 0; j < nDOFs; j++) {
+					for (int i = 0; i < nDOFs; i++) {
+						A[j][i] = FOIntegrate.intOnTriangleRefElement(
+								clhs[j][i], params, coords.length, 2);// 2=80.839
+																		// 3=80.966,
+																		// 4=80.967
 					}
-					//Local load vector
-					load.add(nGlobalRow, b[j]);
+					b[j] = FOIntegrate.intOnTriangleRefElement(crhs[j], params,
+							coords.length, 2);
+				}
+
+				if (solveSystem) {
+					for (int j = 0; j < nDOFs; j++) {
+						DOF dofI = DOFs.at(j + 1);
+						int nGlobalRow = dofI.getGlobalIndex();
+						for (int i = 0; i < nDOFs; i++) {
+							DOF dofJ = DOFs.at(i + 1);
+							int nGlobalCol = dofJ.getGlobalIndex();
+							stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
+						}
+						// Local load vector
+						load.add(nGlobalRow, b[j]);
+					}
 				}
 			}
 		}
-		}
-		System.out.println("Nodes="+nNodes+", Aassembly time: "+(System.currentTimeMillis()-start)+"ms");
+		System.out.println("Nodes=" + nNodes + ", Aassembly time: "
+				+ (System.currentTimeMillis() - start) + "ms");
 
-		if(solveSystem) {
-			//Boundary condition
+		if (solveSystem) {
+			// Boundary condition
 			Utils.imposeDirichletCondition(stiff, load, mesh, C0);
-			
-	        //6.Solve linear system
-	        SolverJBLAS solver = new SolverJBLAS();
-	        Vector u = solver.solveDGESV(stiff, load);
-	        System.out.println("u=");
-	        for(int i=1;i<=u.getDim();i++)
-	            System.out.println(String.format("%.3f ", u.get(i)));
-	
-	        //7.Output results to an Techplot format file
-	        MeshWriter writer = new MeshWriter(mesh);
-	        writer.writeTechplot("./tutorial/Laplace2D.dat", u);
-	
-	        this.mesh = mesh;
-	        this.u = u;
+
+			// 6.Solve linear system
+			SolverJBLAS solver = new SolverJBLAS();
+			Vector u = solver.solveDGESV(stiff, load);
+			System.out.println("u=");
+			for (int i = 1; i <= u.getDim(); i++)
+				System.out.println(String.format("%.3f ", u.get(i)));
+
+			// 7.Output results to an Techplot format file
+			MeshWriter writer = new MeshWriter(mesh);
+			writer.writeTechplot("./tutorial/Laplace2D.dat", u);
+
+			this.mesh = mesh;
+			this.u = u;
 		}
 	}
 
