@@ -1,15 +1,17 @@
 package edu.uta.futureye.test;
 
-import static edu.uta.futureye.function.FMath.*;
+import static edu.uta.futureye.function.FMath.C0;
+import static edu.uta.futureye.function.FMath.grad;
+import static edu.uta.futureye.function.FMath.r;
+import static edu.uta.futureye.function.FMath.s;
+import static edu.uta.futureye.function.FMath.x;
+import static edu.uta.futureye.function.FMath.y;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
-import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.SparseMatrix;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
@@ -17,38 +19,20 @@ import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.DOFOrder;
-import edu.uta.futureye.core.Edge;
-import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Face;
-import edu.uta.futureye.core.FaceLocal;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.Volume;
-import edu.uta.futureye.core.geometry.GeoEntity;
-import edu.uta.futureye.core.geometry.GeoEntity2D;
-import edu.uta.futureye.core.geometry.GeoEntity3D;
-import edu.uta.futureye.core.intf.WeakForm.ItemType;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.SingleVarFunc;
-import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
-import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTriangle;
-import edu.uta.futureye.lib.shapefun.SFLinearLocal2DRS;
-import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
-import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
-import edu.uta.futureye.util.container.NodeList;
-import edu.uta.futureye.util.container.VertexList;
 
 
 /**

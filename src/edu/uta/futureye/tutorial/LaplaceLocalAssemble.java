@@ -49,9 +49,6 @@ import edu.uta.futureye.util.container.ElementList;
  */
 
 public class LaplaceLocalAssemble {
-	public Mesh mesh; // mesh object
-	public Vector u; // solution vector
-
 	public void run() {
 		// 1.Read mesh
 		Mesh mesh = null;
@@ -118,9 +115,6 @@ public class LaplaceLocalAssemble {
 		// 7.Output results to an Techplot format file
 		MeshWriter writer = new MeshWriter(mesh);
 		writer.writeTechplot("./tutorial/Laplace2D.dat", u);
-
-		this.mesh = mesh;
-		this.u = u;
 	}
 
 	public static void main(String[] args) {
