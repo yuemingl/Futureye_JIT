@@ -76,11 +76,7 @@ public class LaplaceGlobalAssemble {
 				(u,v) -> grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
 			);
-
-		long startCompile = System.currentTimeMillis();
 		wf.compile();
-		System.out.println("Compile time: "
-				+ (System.currentTimeMillis() - startCompile));
 
 		// 5.Assembly process
 		AssemblerJIT assembler = new AssemblerJIT(wf);
