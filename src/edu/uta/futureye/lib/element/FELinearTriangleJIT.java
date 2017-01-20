@@ -8,11 +8,15 @@ import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
+import edu.uta.futureye.core.DOF;
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.util.container.VertexList;
 
 public class FELinearTriangleJIT implements FiniteElement {
 	public class TriAreaCoordR extends SingleVarFunc {
@@ -156,6 +160,20 @@ public class FELinearTriangleJIT implements FiniteElement {
 		FELinearTriangleJIT t = new FELinearTriangleJIT();
 		TriAreaCoordR r = t.new TriAreaCoordR();
 		System.out.println(r);
+	}
+	
+	public void assignTo(Element e) {
+		VertexList vertices = e.vertices();
+		for(int j=1;j<=vertices.size();j++) {
+			Vertex v = vertices.at(j);
+			//Assign shape function to DOF
+			DOF dof = new DOF(
+						j, //Local DOF index
+						v.globalNode().getIndex(), //Global DOF index, take global node index
+						null //Shape function is no longer used?  
+						);
+			e.addNodeDOF(j, dof);
+		}
 	}
 
 }

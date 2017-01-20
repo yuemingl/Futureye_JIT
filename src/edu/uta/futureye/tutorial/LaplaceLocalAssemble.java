@@ -69,19 +69,16 @@ public class LaplaceLocalAssemble {
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
-		// 3.Use element library to assign degrees of
+		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
 		ElementList eList = mesh.getElementList();
-		FELinearTriangle feLT = new FELinearTriangle();
-		for (int i = 1; i <= eList.size(); i++)
-			feLT.assignTo(eList.at(i));
-
-		// Finite element
 		FELinearTriangleJIT fet = new FELinearTriangleJIT();
+		for (int i = 1; i <= eList.size(); i++)
+			fet.assignTo(eList.at(i));
 
-		// Right hand side(RHS):
+		//4. Weak form
+		//Right hand side(RHS):
 		final MathFunc f = -2 * (x * x + y * y) + 36;
-
 		WeakFormJIT wf = new WeakFormJIT(fet, new LHSExpr() {
 			public MathFunc apply(MathFunc u, MathFunc v) {
 				return grad(u, "x", "y").dot(grad(v, "x", "y"));
