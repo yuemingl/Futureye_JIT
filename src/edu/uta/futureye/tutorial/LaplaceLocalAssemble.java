@@ -1,4 +1,4 @@
-package edu.uta.futureye.test;
+package edu.uta.futureye.tutorial;
 
 import static edu.uta.futureye.function.FMath.C0;
 import static edu.uta.futureye.function.FMath.grad;
@@ -7,9 +7,15 @@ import static edu.uta.futureye.function.FMath.y;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.SparseMatrixRowMajor;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
+import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
+import edu.uta.futureye.core.DOF;
+import edu.uta.futureye.core.DOFOrder;
+import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.LHSExpr;
@@ -17,19 +23,20 @@ import edu.uta.futureye.core.intf.RHSExpr;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
-import edu.uta.futureye.lib.element.AssemblerJIT;
+import edu.uta.futureye.lib.assembler.AssemblerJIT;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.element.FELinearTriangleJIT;
-import edu.uta.futureye.lib.element.WeakFormJIT;
-import edu.uta.futureye.util.MeshGenerator;
+import edu.uta.futureye.lib.weakform.WeakFormJIT;
 import edu.uta.futureye.util.Utils;
+import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 
-
 /**
- * Use assembleGlobal() for simple case
+ * Use assembleLocal() to get local stiff matrix and local load vector in an
+ * element This gives user the ability to assemble their own global stiff matrix
+ * and global load vector <blockquote>
  * 
- * <blockquote><pre>
+ * <pre>
  * Problem:
  *   -\Delta{u} = f
  *   u(x,y)=0, (x,y) \in \partial{\Omega}
@@ -38,27 +45,21 @@ import edu.uta.futureye.util.container.ElementList;
  *   f = 2 * pi * pi * sin ( pi * x ) * sin ( pi * y )
  * Solution:
  *   u = (x^2-9)*(y^2-9)
- * </blockquote></pre>
+ * </blockquote>
+ * </pre>
  * 
  * @author liuyueming
  */
 
-public class LaplaceTestJITForPaperRefactoredAssembeGlobal {
-	public Mesh mesh; //mesh object
-	public Vector u; //solution vector
-	
-	public void run(int nNodes) {
-		int n = 51;
-		boolean solveSystem = false;
+public class LaplaceLocalAssemble {
+	public Mesh mesh; // mesh object
+	public Vector u; // solution vector
 
+	public void run() {
 		// 1.Generate mesh
 		Mesh mesh = null;
-		if (solveSystem) {
-			MeshReader reader = new MeshReader("triangle.grd");
-			mesh = reader.read2DMesh();
-		} else {
-			mesh = MeshGenerator.rectangle(-3, 3, -3, 3, n, n);
-		}
+		MeshReader reader = new MeshReader("triangle.grd");
+		mesh = reader.read2DMesh();
 
 		// Compute geometry relationship between nodes and elements
 		mesh.computeNodeBelongsToElements();
@@ -79,7 +80,6 @@ public class LaplaceTestJITForPaperRefactoredAssembeGlobal {
 		FELinearTriangleJIT fet = new FELinearTriangleJIT();
 
 		// Right hand side(RHS):
-		// MathFunc f = 2.0 * PI * PI * sin ( PI * x ) * sin ( PI * y );
 		final MathFunc f = -2 * (x * x + y * y) + 36;
 
 		WeakFormJIT wf = new WeakFormJIT(fet, new LHSExpr() {
@@ -99,57 +99,49 @@ public class LaplaceTestJITForPaperRefactoredAssembeGlobal {
 
 		// 5.Assembly process
 		AssemblerJIT assembler = new AssemblerJIT(wf);
-		Matrix stiff = null;
-		Vector load = null;
+		int dim = mesh.getNodeList().size();
+		SparseMatrix stiff = new SparseMatrixRowMajor(dim, dim);
+		SparseVector load = new SparseVectorHashMap(dim);
 
-		long start = System.currentTimeMillis();
-		int NN = nNodes / ((n - 1) * (n - 1)); // 10000*512/eList.size();
-		if (solveSystem)
-			NN = 1;
-		for (int ii = 0; ii < NN; ii++) {
-			assembler.assembleGlobal(mesh);
-			stiff = assembler.getGlobalStiffMatrix();
-			load = assembler.getGlobalLoadVector();
+		int nDOFs = fet.getNumberOfDOFs();
+		for (Element e : eList) {
+			assembler.assembleLocal(e);
+			double[][] A = assembler.getLocalStiffMatrix();
+			double[] b = assembler.getLocalLoadVector();
+			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
+			for (int j = 0; j < nDOFs; j++) {
+				DOF dofI = DOFs.at(j + 1);
+				int nGlobalRow = dofI.getGlobalIndex();
+				for (int i = 0; i < nDOFs; i++) {
+					DOF dofJ = DOFs.at(i + 1);
+					int nGlobalCol = dofJ.getGlobalIndex();
+					stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
+				}
+				// Local load vector
+				load.add(nGlobalRow, b[j]);
+			}
 		}
-		System.out.println("Nodes=" + nNodes + ", Aassembly time: "
-				+ (System.currentTimeMillis() - start) + "ms");
 
-		if (solveSystem) {
-			// Boundary condition
-			Utils.imposeDirichletCondition(stiff, load, mesh, C0);
+		// Boundary condition
+		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
 
-			// 6.Solve linear system
-			SolverJBLAS solver = new SolverJBLAS();
-			Vector u = solver.solveDGESV(stiff, load);
-			System.out.println("u=");
-			for (int i = 1; i <= u.getDim(); i++)
-				System.out.println(String.format("%.3f ", u.get(i)));
+		// 6.Solve linear system
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
+		System.out.println("u=");
+		for (int i = 1; i <= u.getDim(); i++)
+			System.out.println(String.format("%.3f ", u.get(i)));
 
-			// 7.Output results to an Techplot format file
-			MeshWriter writer = new MeshWriter(mesh);
-			writer.writeTechplot("./tutorial/Laplace2D.dat", u);
+		// 7.Output results to an Techplot format file
+		MeshWriter writer = new MeshWriter(mesh);
+		writer.writeTechplot("./tutorial/Laplace2D.dat", u);
 
-			this.mesh = mesh;
-			this.u = u;
-		}
+		this.mesh = mesh;
+		this.u = u;
 	}
-	
-	public static void main(String[] args) {
-		LaplaceTestJITForPaperRefactoredAssembeGlobal ex1 = new LaplaceTestJITForPaperRefactoredAssembeGlobal();
-		ex1.run(10000);
-		ex1.run(100000);
-		ex1.run(10000 * 512);
-		ex1.run(1000000);
-		ex1.run(10000000);
-		/**
-		 * 
-compileWithASM, assemble globally
-Nodes=10000, Aassembly time: 152ms
-Nodes=100000, Aassembly time: 481ms
-Nodes=5120000, Aassembly time: 23915ms
-Nodes=1000000, Aassembly time: 4690ms
-Nodes=10000000, Aassembly time: 46628ms
 
-		 */
+	public static void main(String[] args) {
+		LaplaceLocalAssemble ex1 = new LaplaceLocalAssemble();
+		ex1.run();
 	}
 }

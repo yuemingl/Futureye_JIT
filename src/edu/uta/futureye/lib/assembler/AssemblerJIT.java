@@ -1,4 +1,4 @@
-package edu.uta.futureye.lib.element;
+package edu.uta.futureye.lib.assembler;
 
 import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
@@ -11,6 +11,7 @@ import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.function.operator.FOIntegrate;
+import edu.uta.futureye.lib.weakform.WeakFormJIT;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 

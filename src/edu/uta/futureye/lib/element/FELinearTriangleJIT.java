@@ -8,7 +8,6 @@ import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
-import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.SingleVarFunc;
@@ -92,14 +91,15 @@ public class FELinearTriangleJIT implements FiniteElement {
 		}
 	}
 
-	//Construct a function with the coordinate of points in an element as parameters
-	String[] argsOrder = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
 	FX x1 = new FX("x1");
 	FX x2 = new FX("x2");
 	FX x3 = new FX("x3");
 	FX y1 = new FX("y1");
 	FX y2 = new FX("y2");
 	FX y3 = new FX("y3");
+	//Construct a function with the coordinate of points in an element as parameters
+	String[] argsOrder = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
+	
 	MathFunc x;
 	MathFunc y;
 	Map<String, MathFunc> map;

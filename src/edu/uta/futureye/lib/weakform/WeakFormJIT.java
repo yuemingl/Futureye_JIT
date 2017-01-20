@@ -1,4 +1,4 @@
-package edu.uta.futureye.lib.element;
+package edu.uta.futureye.lib.weakform;
 
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public class WeakFormJIT {
 			vecRHS[j].setName("RHS"+j);
 		}
 	}
-	
+
 	public void compile() {
 		String[] argsOrder = fe.getArgsOrder();
 		jac.compileToStaticField(true);
