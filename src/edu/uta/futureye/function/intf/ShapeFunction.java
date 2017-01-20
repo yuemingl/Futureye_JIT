@@ -12,6 +12,10 @@ public interface ShapeFunction {
 	
 	/**
 	 * 关联形函数和单元
+	 * 当一个形函数与单元关联之后，就可以计算该形函数的函数值和导数值了
+	 * JIT编译后的函数：
+	 * 选项1:可以有一个成员函数保存该单元
+	 * 选项2:删除该函数，从参数直接传入单元坐标
 	 * @param e
 	 */
 	void assignElement(Element e);

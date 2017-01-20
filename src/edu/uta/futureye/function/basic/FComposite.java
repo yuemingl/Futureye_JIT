@@ -86,7 +86,7 @@ public class FComposite extends MultiVarFunc {
 		}
 		this.fInners = fInners2;
 		
-		this.setOuterVarActive();
+		this.setInnerVarActive();
 		// Default to use free variables in fInners
 //		this.setVarNames(nameList);
 //		this.setArgIdx(Utils.getIndexMap(nameList));
@@ -410,15 +410,17 @@ public class FComposite extends MultiVarFunc {
 	}
 	
 	@Override
-	public void setOuterVarActive() {
+	public MathFunc setOuterVarActive() {
 		this.isOuterVariablesActive = true;
 		this.setActiveVarByNames(this.getActiveVarNames());
+		return this;
 	}
 	
 	@Override
-	public void setInnerVarActive() {
+	public MathFunc setInnerVarActive() {
 		this.isOuterVariablesActive = false;
 		this.setActiveVarByNames(this.getActiveVarNames());
+		return this;
 	}
 	
 	@Override

@@ -16,7 +16,7 @@ import edu.uta.futureye.function.intf.VectorShapeFunction;
  * i     => <tt>dof.localIndex</tt>
  * v     => <tt>dof.shapeFun</tt>
  * j     => <tt>dof.globalIndex</tt>
- * w     => base function that constructed by combining
+ * w     => base function constructed by combining
  *          shape functions on neighboring elements
  * 
  * @author liuyueming

@@ -42,7 +42,7 @@ import edu.uta.futureye.util.ClassGenerator;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FuncClassLoader;
 
-public abstract class MathFuncBase implements MathFunc, Cloneable {
+public abstract class MathFuncBase implements MathFunc, Cloneable { 
 	
 	@Override
 	public abstract double apply(double ...args);
@@ -87,7 +87,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 			return this; //No compose
 		else {
 			MathFunc ret = new FComposite(this, fInners);
-			if(ret.isOuterVarActive())
+			if(this instanceof FComposite && this.isOuterVarActive())
 				ret.setOuterVarActive();
 			else
 				ret.setInnerVarActive();
@@ -517,10 +517,10 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 	public String toString() {
 		List<String> vars = this.getVarNames();
 		if(vars.size() == 0) {
-			if(getName().length() == 0)
-				return getExpr();
+			if(getName() == null || getName().length() == 0)
+				return "f() = " + getExpr();
 			else
-				return getName() + " = " + getExpr();
+				return getName() + "() = " + getExpr();
 		} else {
 			StringBuilder sb = new  StringBuilder();
 			sb.append("(");
@@ -557,12 +557,12 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 	}
 	
 	@Override
-	public void setOuterVarActive() {
+	public MathFunc setOuterVarActive() {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-	public void setInnerVarActive() {
+	public MathFunc setInnerVarActive() {
 		throw new UnsupportedOperationException();
 	}
 	

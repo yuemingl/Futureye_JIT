@@ -36,6 +36,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -43,6 +44,7 @@ import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2DRS;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
@@ -65,73 +67,6 @@ import edu.uta.futureye.util.container.VertexList;
  * @author liuyueming
  */
 public class LaplaceTestJIT3 {
-	public static double eps = 1e-5;
-	static double[] triW = {
-		0.06296959,
-	    0.06619708,
-	    0.06296959,
-	    0.06619708,
-	    0.06296959,
-	    0.06619708,
-	    0.11250000
-	};
-	static double[] triR = {
-	        0.10128651,
-	        0.47014206,
-	        0.79742699,
-	        0.47014206,
-	        0.10128651,
-	        0.05971587,
-	        0.33333333
-	    };
-	static double[] triS = {
-			0.10128651,
-			0.05971587,
-			0.10128651,
-			0.47014206,
-			0.79742699,
-			0.47014206,
-			0.33333333
-		};
-	public static double intOnTriangleRefElement(CompiledFunc integrand, double[] params, int paramsStart, int order) {
-		double rlt = 0.0;
-		if(order == 2) {
-			params[paramsStart] = 0.333333333333333;
-			params[paramsStart+1] = 0.333333333333333;
-			params[paramsStart+2] = 0.333333333333333;
-			rlt = 0.5*integrand.apply(params);
-		} else if(order == 3) {
-			params[paramsStart] = 0.5; params[paramsStart+1] = 0.5; params[paramsStart+2] = 0.0; 
-			double pv1 = integrand.apply(params);
-			params[paramsStart] = 0.0; params[paramsStart+1] = 0.5; params[paramsStart+2] = 0.5; 
-			double pv2 = integrand.apply(params);
-			params[paramsStart] = 0.5; params[paramsStart+1] = 0.0; params[paramsStart+2] = 0.5; 
-			double pv3 = integrand.apply(params);
-			rlt = 0.5*0.333333333333333*(pv1 + pv2 + pv3);
-		} else if(order == 4) {
-			double w123 = 25.0/48.0;
-			double w4 = -27.0/48.0;
-			
-			params[paramsStart] = 0.6; params[paramsStart+1] = 0.2; params[paramsStart+2] = 0.2; 
-			double pv1 = integrand.apply(params);
-			params[paramsStart] = 0.2; params[paramsStart+1] = 0.6; params[paramsStart+2] = 0.2; 
-			double pv2 = integrand.apply(params);
-			params[paramsStart] = 0.2; params[paramsStart+1] = 0.2; params[paramsStart+2] = 0.6; 
-			double pv3 = integrand.apply(params);
-			params[paramsStart] = 0.333333333333333; params[paramsStart+1] = 0.333333333333333; params[paramsStart+2] = 0.333333333333333; 
-			double pv4 = 0.5*integrand.apply(params);
-			
-			rlt = 0.5*w123*(pv1 + pv2 + pv3) + w4*pv4;
-		} else if(order == 5) {
-			for(int i=0;i<7;i++) {
-				params[paramsStart]   = triR[i]; 
-				params[paramsStart+1] = triS[i]; 
-				params[paramsStart+2] = 1.0-triR[i]-triS[i];
-				rlt += triW[i]*integrand.apply(params);
-			}
-		}
-		return rlt;
-	}
 	
 	public Mesh mesh;
 	public Vector u;
@@ -347,7 +282,8 @@ public class LaplaceTestJIT3 {
         //(3) Follow the idea from (2), but using the new feature lambda expression provided by Java 8, the expression of the weak form can be define concisely 
         //with all the advantages of method (2). Specifically, we define two functional interfaces of the weak form builder to accept 
         //the left hand side and right hand side of a weak form by providing two lambda expression by the users.
-		fet.makeWeakForm(
+		//Java 8:
+        fet.makeWeakForm(
 				(u,v) -> grad(u,"x","y").dot(grad(v,"x","y")), 
 				v -> f*v
 		);
@@ -375,9 +311,9 @@ public class LaplaceTestJIT3 {
 
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
-					A[j][i] = intOnTriangleRefElement(clhs[j][i], params, coords.length, 3);
+					A[j][i] = FOIntegrate.intOnTriangleRefElement(clhs[j][i], params, coords.length, 3);
 				}
-				b[j] = intOnTriangleRefElement(crhs[j], params, coords.length, 3);
+				b[j] = FOIntegrate.intOnTriangleRefElement(crhs[j], params, coords.length, 3);
 			}
 			
 			for(int j=0;j<nDOFs;j++) {
@@ -395,7 +331,7 @@ public class LaplaceTestJIT3 {
 		System.out.println("Aassembly time: "+(System.currentTimeMillis()-start)+"ms");
 
 		//Boundary condition
-		imposeDirichletCondition(stiff, load, mesh, C0);
+		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
 		
         //6.Solve linear system
         SolverJBLAS solver = new SolverJBLAS();
@@ -412,87 +348,6 @@ public class LaplaceTestJIT3 {
         this.u = u;
 	}
 	
-	public static void setDirichlet(Matrix stiff, Vector load, int matIndex, double value) {
-		int row = matIndex;
-		int col = matIndex;
-		stiff.set(row, col, 1.0);
-		load.set(row,value);
-		for(int r=1;r<=stiff.getRowDim();r++) {
-			if(r != row) {
-				load.add(r,-stiff.get(r, col)*value);
-				stiff.set(r, col, 0.0);
-			}
-		}
-		for(int c=1;c<=stiff.getColDim();c++) {
-			if(c != col) {
-				stiff.set(row, c, 0.0);
-			}
-		}
-	}
-	
-	public static void imposeDirichletCondition(Matrix stiff, Vector load, Mesh mesh, MathFunc diri) {
-		ElementList eList = mesh.getElementList();
-		for(int i=1;i<=eList.size();i++) {
-			Element e = eList.at(i);
-			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
-			for(int j=1;j<=DOFs.size();j++) {
-				DOF dof = DOFs.at(j);
-				GeoEntity ge = dof.getOwner();
-				if(ge instanceof Node) {
-					Node n = (Node)ge;
-					if(n.getNodeType() == NodeType.Dirichlet) {
-						Variable v = Variable.createFrom(diri, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
-						setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
-					}
-				} else if(ge instanceof EdgeLocal) {
-					//2D单元（面）其中的局部边上的自由度
-					EdgeLocal edge = (EdgeLocal)ge;
-					if(edge.getBorderType() == NodeType.Dirichlet) {
-						//TODO 以边的那个顶点取值？中点？
-						//Variable v = Variable.createFrom(fdiri, ?, 0);
-					}
-					
-				} else if(ge instanceof FaceLocal) {
-					//3D单元（体）其中的局部面上的自由度
-					FaceLocal face = (FaceLocal)ge;
-					if(face.getBorderType() == NodeType.Dirichlet) {
-						//TODO
-					}
-				} else if(ge instanceof Edge) {
-					//1D单元（线段）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
-					VertexList vs = ((GeoEntity2D) ge).getVertices();
-					for(int k=1;k<=vs.size();k++) {
-						Node n = vs.at(k).globalNode();
-						if(NodeType.Dirichlet == n.getNodeType()) {
-							Variable v = Variable.createFrom(diri, n, 0);
-							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
-						}
-					}
-				} else if(ge instanceof Face) {
-					//2D单元（面）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
-					
-					VertexList vs = ((GeoEntity2D) ge).getVertices();
-					for(int k=1;k<=vs.size();k++) {
-						Node n = vs.at(k).globalNode();
-						if(NodeType.Dirichlet == n.getNodeType()) {
-							Variable v = Variable.createFrom(diri, n, 0);
-							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
-						}
-					}
-				} else if(ge instanceof Volume) {
-					//3D单元（体）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
-					VertexList vs = ((GeoEntity3D) ge).getVertices();
-					for(int k=1;k<=vs.size();k++) {
-						Node n = vs.at(k).globalNode();
-						if(NodeType.Dirichlet == n.getNodeType()) {
-							Variable v = Variable.createFrom(diri, n, 0);
-							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
-						}
-					}
-				}
-			}
-		}
-	}	
     public static void main(String[] args) {
     	LaplaceTestJIT3 ex1 = new LaplaceTestJIT3();
     	ex1.run();

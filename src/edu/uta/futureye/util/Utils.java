@@ -12,13 +12,25 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import edu.uta.futureye.algebra.SpaceVector;
+import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.CoordinateTransform;
+import edu.uta.futureye.core.DOF;
+import edu.uta.futureye.core.DOFOrder;
+import edu.uta.futureye.core.Edge;
+import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Face;
+import edu.uta.futureye.core.FaceLocal;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeRefined;
+import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
+import edu.uta.futureye.core.Volume;
+import edu.uta.futureye.core.geometry.GeoEntity;
+import edu.uta.futureye.core.geometry.GeoEntity2D;
+import edu.uta.futureye.core.geometry.GeoEntity3D;
 import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
@@ -29,9 +41,11 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.util.container.DOFList;
+import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 import edu.uta.futureye.util.container.ObjIndex;
 import edu.uta.futureye.util.container.ObjList;
+import edu.uta.futureye.util.container.VertexList;
 
 public class Utils {
 	
@@ -914,4 +928,86 @@ public class Utils {
 		}
 		return x;
 	}
+	
+	public static void setDirichlet(Matrix stiff, Vector load, int matIndex, double value) {
+		int row = matIndex;
+		int col = matIndex;
+		stiff.set(row, col, 1.0);
+		load.set(row,value);
+		for(int r=1;r<=stiff.getRowDim();r++) {
+			if(r != row) {
+				load.add(r,-stiff.get(r, col)*value);
+				stiff.set(r, col, 0.0);
+			}
+		}
+		for(int c=1;c<=stiff.getColDim();c++) {
+			if(c != col) {
+				stiff.set(row, c, 0.0);
+			}
+		}
+	}
+	
+	public static void imposeDirichletCondition(Matrix stiff, Vector load, Mesh mesh, MathFunc diri) {
+		ElementList eList = mesh.getElementList();
+		for(int i=1;i<=eList.size();i++) {
+			Element e = eList.at(i);
+			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
+			for(int j=1;j<=DOFs.size();j++) {
+				DOF dof = DOFs.at(j);
+				GeoEntity ge = dof.getOwner();
+				if(ge instanceof Node) {
+					Node n = (Node)ge;
+					if(n.getNodeType() == NodeType.Dirichlet) {
+						Variable v = Variable.createFrom(diri, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
+						setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
+					}
+				} else if(ge instanceof EdgeLocal) {
+					//2D单元（面）其中的局部边上的自由度
+					EdgeLocal edge = (EdgeLocal)ge;
+					if(edge.getBorderType() == NodeType.Dirichlet) {
+						//TODO 以边的那个顶点取值？中点？
+						//Variable v = Variable.createFrom(fdiri, ?, 0);
+					}
+					
+				} else if(ge instanceof FaceLocal) {
+					//3D单元（体）其中的局部面上的自由度
+					FaceLocal face = (FaceLocal)ge;
+					if(face.getBorderType() == NodeType.Dirichlet) {
+						//TODO
+					}
+				} else if(ge instanceof Edge) {
+					//1D单元（线段）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
+					VertexList vs = ((GeoEntity2D) ge).getVertices();
+					for(int k=1;k<=vs.size();k++) {
+						Node n = vs.at(k).globalNode();
+						if(NodeType.Dirichlet == n.getNodeType()) {
+							Variable v = Variable.createFrom(diri, n, 0);
+							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
+						}
+					}
+				} else if(ge instanceof Face) {
+					//2D单元（面）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
+					
+					VertexList vs = ((GeoEntity2D) ge).getVertices();
+					for(int k=1;k<=vs.size();k++) {
+						Node n = vs.at(k).globalNode();
+						if(NodeType.Dirichlet == n.getNodeType()) {
+							Variable v = Variable.createFrom(diri, n, 0);
+							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
+						}
+					}
+				} else if(ge instanceof Volume) {
+					//3D单元（体）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
+					VertexList vs = ((GeoEntity3D) ge).getVertices();
+					for(int k=1;k<=vs.size();k++) {
+						Node n = vs.at(k).globalNode();
+						if(NodeType.Dirichlet == n.getNodeType()) {
+							Variable v = Variable.createFrom(diri, n, 0);
+							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
+						}
+					}
+				}
+			}
+		}
+	}	
 }

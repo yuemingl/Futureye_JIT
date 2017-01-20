@@ -67,12 +67,12 @@ public interface MathFunc {
 	/**
 	 * Set the outer variables of a composite function as active variables
 	 */
-	void setOuterVarActive();
+	MathFunc setOuterVarActive();
 	
 	/**
 	 * Set the inner variables of a composite function as active variables
 	 */
-	void setInnerVarActive();
+	MathFunc setInnerVarActive();
 	
 	/**
 	 * Return true if the outer variables of a composite function is active
