@@ -24,6 +24,8 @@ Mesh, solution contour and 3D view:
 ### Code ###
 
 ```java
+import ...
+
 public class LaplaceGlobalAssemble {
 	public void run() {
 		// 1.Read mesh
