@@ -27,7 +27,8 @@ import edu.uta.futureye.util.container.ElementList;
 
 
 /**
- * This file expression LHS by defining composite area coordinate variable r(x,y),s(x,y) with symbolic expression
+ * Use assembleGlobal() for simple case
+ * 
  * <blockquote><pre>
  * Problem:
  *   -\Delta{u} = f
@@ -48,7 +49,7 @@ public class LaplaceTestJITForPaperRefactoredAssembeGlobal {
 	
 	public void run(int nNodes) {
 		int n = 51;
-		boolean solveSystem = true;
+		boolean solveSystem = false;
 		
         //1.Generate mesh
 		Mesh mesh = null;
@@ -144,26 +145,14 @@ public class LaplaceTestJITForPaperRefactoredAssembeGlobal {
     	ex1.run(10000*512);
     	ex1.run(1000000);
     	ex1.run(10000000);
-    	ex1.run(100000000);
     	/**
-    	 * Nodes=10000, Aassembly time: 120ms
-Nodes=100000, Aassembly time: 249ms
-Nodes=1000000, Aassembly time: 1719ms
-Nodes=10000000, Aassembly time: 15709ms
-Nodes=100000000, Aassembly time: 147688ms
-
-
-Compile time: 130
-Nodes=10000, Aassembly time: 118ms
-Compile time: 23
-Nodes=100000, Aassembly time: 252ms
-Compile time: 27
-Nodes=1000000, Aassembly time: 1625ms
-Compile time: 25
-Nodes=10000000, Aassembly time: 15896ms
-Compile time: 18
-Nodes=100000000, Aassembly time: 142159ms
-
+    	 * 
+compileWithASM, assemble globally
+Nodes=10000, Aassembly time: 152ms
+Nodes=100000, Aassembly time: 481ms
+Nodes=5120000, Aassembly time: 23915ms
+Nodes=1000000, Aassembly time: 4690ms
+Nodes=10000000, Aassembly time: 46628ms
 
     	 */
     }

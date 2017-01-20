@@ -34,7 +34,8 @@ import edu.uta.futureye.util.container.ElementList;
 
 
 /**
- * This file expression LHS by defining composite area coordinate variable r(x,y),s(x,y) with symbolic expression
+ * Use assembleLocal() to get local stiff matrix and local load vector in an element
+ * This gives user the ability to assemble their own global stiff matrix and global load vector
  * <blockquote><pre>
  * Problem:
  *   -\Delta{u} = f
@@ -55,7 +56,7 @@ public class LaplaceTestJITForPaperRefactored {
 	
 	public void run(int nNodes) {
 		int n = 51;
-		boolean solveSystem = true;
+		boolean solveSystem = false;
 		
         //1.Generate mesh
 		Mesh mesh = null;
@@ -171,24 +172,26 @@ public class LaplaceTestJITForPaperRefactored {
     	ex1.run(10000000);
     	ex1.run(100000000);
     	/**
-    	 * Nodes=10000, Aassembly time: 120ms
+    	 * 
+Nodes=10000, Aassembly time: 120ms
 Nodes=100000, Aassembly time: 249ms
 Nodes=1000000, Aassembly time: 1719ms
 Nodes=10000000, Aassembly time: 15709ms
 Nodes=100000000, Aassembly time: 147688ms
 
-
-Compile time: 130
 Nodes=10000, Aassembly time: 118ms
-Compile time: 23
 Nodes=100000, Aassembly time: 252ms
-Compile time: 27
 Nodes=1000000, Aassembly time: 1625ms
-Compile time: 25
 Nodes=10000000, Aassembly time: 15896ms
-Compile time: 18
 Nodes=100000000, Aassembly time: 142159ms
 
+compileWithASM, assemble locally:
+Nodes=10000, Aassembly time: 57ms
+Nodes=100000, Aassembly time: 114ms
+Nodes=5120000, Aassembly time: 3817ms
+Nodes=1000000, Aassembly time: 846ms
+Nodes=10000000, Aassembly time: 6731ms
+Nodes=100000000, Aassembly time: 73792ms
 
     	 */
     }
