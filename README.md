@@ -29,11 +29,10 @@ public class LaplaceGlobalAssemble {
 	public Vector u; // solution vector
 
 	public void run() {
-		// 1.Generate mesh
+		// 1.Read mesh
 		Mesh mesh = null;
 		MeshReader reader = new MeshReader("grids/triangle.grd");
 		mesh = reader.read2DMesh();
-
 		// Compute geometry relationship between nodes and elements
 		mesh.computeNodeBelongsToElements();
 
@@ -63,11 +62,9 @@ public class LaplaceGlobalAssemble {
 		AssemblerJIT assembler = new AssemblerJIT(wf);
 		Matrix stiff = null;
 		Vector load = null;
-
 		assembler.assembleGlobal(mesh);
 		stiff = assembler.getGlobalStiffMatrix();
 		load = assembler.getGlobalLoadVector();
-
 		// Boundary condition
 		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
 
