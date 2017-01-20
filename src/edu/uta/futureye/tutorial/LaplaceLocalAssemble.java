@@ -78,15 +78,11 @@ public class LaplaceLocalAssemble {
 		//4. Weak form
 		//Right hand side(RHS):
 		final MathFunc f = -2 * (x * x + y * y) + 36;
-		WeakFormJIT wf = new WeakFormJIT(fet, new LHSExpr() {
-			public MathFunc apply(MathFunc u, MathFunc v) {
-				return grad(u, "x", "y").dot(grad(v, "x", "y"));
-			}
-		}, new RHSExpr() {
-			public MathFunc apply(MathFunc v) {
-				return f * v;
-			}
-		});
+		WeakFormJIT wf = new WeakFormJIT(
+				fet, 
+				(u,v) -> grad(u, "x", "y").dot(grad(v, "x", "y")), 
+				v -> f * v
+			);
 
 		long startCompile = System.currentTimeMillis();
 		wf.compile();
