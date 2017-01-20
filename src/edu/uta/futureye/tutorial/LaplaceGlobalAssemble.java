@@ -18,7 +18,6 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerJIT;
-import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.element.FELinearTriangleJIT;
 import edu.uta.futureye.lib.weakform.WeakFormJIT;
 import edu.uta.futureye.util.Utils;
