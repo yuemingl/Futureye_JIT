@@ -25,9 +25,6 @@ Mesh, solution contour and 3D view:
 
 ```java
 public class LaplaceGlobalAssemble {
-	public Mesh mesh; // mesh object
-	public Vector u; // solution vector
-
 	public void run() {
 		// 1.Read mesh
 		Mesh mesh = null;
@@ -60,11 +57,9 @@ public class LaplaceGlobalAssemble {
 
 		// 5.Assembly process
 		AssemblerJIT assembler = new AssemblerJIT(wf);
-		Matrix stiff = null;
-		Vector load = null;
 		assembler.assembleGlobal(mesh);
-		stiff = assembler.getGlobalStiffMatrix();
-		load = assembler.getGlobalLoadVector();
+		Matrix stiff = assembler.getGlobalStiffMatrix();
+		Vector load = assembler.getGlobalLoadVector();
 		// Boundary condition
 		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
 
@@ -78,9 +73,6 @@ public class LaplaceGlobalAssemble {
 		// 7.Output results to an Techplot format file
 		MeshWriter writer = new MeshWriter(mesh);
 		writer.writeTechplot("./tutorial/Laplace2D.dat", u);
-
-		this.mesh = mesh;
-		this.u = u;
 	}
 
 	public static void main(String[] args) {
