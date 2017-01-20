@@ -18,7 +18,7 @@ This toolkit can be used for various purposes:
 <img src='https://lh6.googleusercontent.com/_Cil2MFH7iLM/TN19jeWDEdI/AAAAAAAAABg/WI64bT_jUAY/s800/FutureEyeFirstTest2.png.jpg' />
 
 ### Solution ###
-Mesh, contour and 3D view:
+Mesh, solution contour and 3D view:
 <img src='https://lh5.googleusercontent.com/_Cil2MFH7iLM/TN19jH3fdUI/AAAAAAAAABc/bjKllifWW0g/s288/FutureEyeFirstTest.png.jpg' /><img src='https://lh3.googleusercontent.com/_Cil2MFH7iLM/TN19j0Dy4pI/AAAAAAAAABk/OTdlyX_Paio/s288/FutureEyeFirstTest3D.png.jpg' />
 
 ### Code ###
