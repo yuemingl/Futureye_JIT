@@ -53,11 +53,10 @@ public class LaplaceLocalAssemble {
 	public Vector u; // solution vector
 
 	public void run() {
-		// 1.Generate mesh
+		// 1.Read mesh
 		Mesh mesh = null;
-		MeshReader reader = new MeshReader("triangle.grd");
+		MeshReader reader = new MeshReader("grids/triangle.grd");
 		mesh = reader.read2DMesh();
-
 		// Compute geometry relationship between nodes and elements
 		mesh.computeNodeBelongsToElements();
 
@@ -88,7 +87,6 @@ public class LaplaceLocalAssemble {
 		int dim = mesh.getNodeList().size();
 		SparseMatrix stiff = new SparseMatrixRowMajor(dim, dim);
 		SparseVector load = new SparseVectorHashMap(dim);
-
 		int nDOFs = fet.getNumberOfDOFs();
 		for (Element e : eList) {
 			assembler.assembleLocal(e);
@@ -107,7 +105,6 @@ public class LaplaceLocalAssemble {
 				load.add(nGlobalRow, b[j]);
 			}
 		}
-
 		// Boundary condition
 		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
 
