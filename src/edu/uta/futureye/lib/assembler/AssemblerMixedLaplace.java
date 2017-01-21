@@ -5,19 +5,19 @@ import edu.uta.futureye.algebra.SparseBlockVector;
 import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.core.intf.WeakForm;
+import edu.uta.futureye.core.intf.AssemblerOld;
+import edu.uta.futureye.core.intf.WeakFormOld;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.util.container.ElementList;
 
-public class AssemblerMixedLaplace implements Assembler {
+public class AssemblerMixedLaplace implements AssemblerOld {
 	protected Mesh mesh;
-	protected WeakForm weakForm;
+	protected WeakFormOld weakForm;
 	protected SparseBlockMatrix globalStiff;
 	protected SparseBlockVector globalLoad;
 
-	public AssemblerMixedLaplace(Mesh mesh, WeakForm weakForm) {
+	public AssemblerMixedLaplace(Mesh mesh, WeakFormOld weakForm) {
 		this.mesh = mesh;
 		this.weakForm = weakForm;
 		

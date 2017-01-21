@@ -42,7 +42,7 @@ import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FEBilinearRectangleRegular;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.PropertiesReader;
@@ -762,7 +762,7 @@ public class VariationGaussNewtonDOTGeneral {
         
         //3.Use element library to assign degrees of freedom (DOF) to element
         ElementList eList = mesh.getElementList();
-        FELinearTriangle feLT = new FELinearTriangle();
+        FELinearTriangleOld feLT = new FELinearTriangleOld();
 //        FEBilinearRectangle feBR = new FEBilinearRectangle();
         FEBilinearRectangleRegular feBRR = new FEBilinearRectangleRegular();
         for(int i=1;i<=eList.size();i++) {

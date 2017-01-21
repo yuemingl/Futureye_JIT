@@ -15,7 +15,7 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
@@ -98,7 +98,7 @@ public class Laplace3DTest {
 					null //Robin: 6*y^2-54
 				);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Assemble...");
 		long begin = System.currentTimeMillis();
 		assembler.assemble();

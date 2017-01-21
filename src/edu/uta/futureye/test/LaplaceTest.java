@@ -17,7 +17,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
@@ -29,7 +29,7 @@ import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.assembler.AssemblerScalarFast;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.shapefun.SFBilinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFQuadraticLocal2DFast;
@@ -77,7 +77,7 @@ public class LaplaceTest {
 */		
 		//Use element library
 		ElementList eList = mesh.getElementList();
-		FELinearTriangle linearTriangle = new FELinearTriangle();
+		FELinearTriangleOld linearTriangle = new FELinearTriangleOld();
 		for(int i=1;i<=eList.size();i++)
 			linearTriangle.assignTo(eList.at(i));
 		
@@ -115,7 +115,7 @@ public class LaplaceTest {
 					FMath.C0 //Robin: 6*y^2-54
 				);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		long begin = System.currentTimeMillis();
 		assembler.assemble();
@@ -202,7 +202,7 @@ public class LaplaceTest {
 				new FC(0.05),null //Robin: d*u + k*u_n = g
 				); 	
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		long beg = System.currentTimeMillis();
 		System.out.println("Begin Assemble...");
 		assembler.assemble();
@@ -287,7 +287,7 @@ public class LaplaceTest {
 				null,
 				new FC(0.05),null //Robin: d*u + k*u_n = g
 				);
-		Assembler assembler = new AssemblerScalarFast(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalarFast(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
@@ -386,7 +386,7 @@ public class LaplaceTest {
 				new FC(0.05),null //Robin: d*u + k*u_n = g
 				); 
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
@@ -500,7 +500,7 @@ public class LaplaceTest {
 				null //Robin: 6*y^2-54
 				); 
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
@@ -562,7 +562,7 @@ public class LaplaceTest {
 			).A(FC.c(36.0))
 		);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		long begin = System.currentTimeMillis();
 		assembler.assemble();

@@ -25,7 +25,7 @@ import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.tutorial.T02Laplace;
 import edu.uta.futureye.util.Constant;

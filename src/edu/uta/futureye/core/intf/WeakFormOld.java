@@ -7,7 +7,7 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.intf.MathFunc;
 
-public interface WeakForm {
+public interface WeakFormOld {
 	static enum ItemType {Domain, Border};
 	
 	//--- Common approach providing weak form interfaces to assembler-----

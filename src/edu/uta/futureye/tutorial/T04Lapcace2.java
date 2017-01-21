@@ -12,13 +12,13 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.container.ElementList;
 
@@ -44,7 +44,7 @@ import edu.uta.futureye.util.container.ElementList;
 public class T04Lapcace2 {
 	public static void triangleTest() {
 		String meshName = "triangle";
-		MeshReader reader = new MeshReader(meshName+".grd");
+		MeshReader reader = new MeshReader("grids/"+meshName+".grd");
 		Mesh mesh = reader.read2DMesh();
 		mesh.computeNodeBelongsToElements();
 		
@@ -64,7 +64,7 @@ public class T04Lapcace2 {
 		//Asign degree of freedom to element
 		//Use element library
 		ElementList eList = mesh.getElementList();
-		FELinearTriangle linearTriangle = new FELinearTriangle();
+		FELinearTriangleOld linearTriangle = new FELinearTriangleOld();
 		for(int i=1;i<=eList.size();i++)
 			linearTriangle.assignTo(eList.at(i));
 		
@@ -92,7 +92,7 @@ public class T04Lapcace2 {
         weakForm.setF(-2*(x*x+y*y)+36);
         weakForm.setParam(C1, C0, C0, C0);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		long begin = System.currentTimeMillis();
 		assembler.assemble();

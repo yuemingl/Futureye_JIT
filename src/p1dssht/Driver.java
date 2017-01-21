@@ -9,7 +9,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -141,7 +141,7 @@ public class Driver {
     		//Pass k into the function.
     		weakForm.setParam(k,new FC(0.0),BCL,new FC(1.0)); //Parameters g and d are for Robin boundary condition d*u +  k*u_n = g, set null for Dirichlet condition
     		
-    		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+    		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
     		assembler.assemble();
     		
     		Matrix stiff = assembler.getStiffnessMatrix();

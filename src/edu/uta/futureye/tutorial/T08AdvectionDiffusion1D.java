@@ -10,7 +10,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.WeakForm;
+import edu.uta.futureye.core.intf.WeakFormOld;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -126,7 +126,7 @@ public class T08AdvectionDiffusion1D {
 		};
 		wfb.addParam("k", FC.c(k));
 		wfb.addParam("u", FC.c(u));
-		WeakForm wf = wfb.getScalarWeakForm();
+		WeakFormOld wf = wfb.getScalarWeakForm();
         
         //5.Assembly process
         AssemblerScalar assembler =

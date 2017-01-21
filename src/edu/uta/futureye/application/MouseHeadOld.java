@@ -19,7 +19,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
@@ -31,7 +31,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.assembler.AssemblerScalarFast;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormL22D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.Constant;
@@ -126,7 +126,7 @@ public class MouseHeadOld {
 				this.k, this.mu_a, FC.C0, this.k //d==k,q=0 (鍗筹細u_n + u =0)
 			);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveForwardNeumann");
 		assembler.assemble();
 		SparseMatrix stiff = assembler.getStiffnessMatrix();
@@ -149,7 +149,7 @@ public class MouseHeadOld {
 				this.k, this.mu_a, null, this.k //d==k,q=0 (鍗筹細u_n + u =0)
 			);
 		
-		Assembler assembler = new AssemblerScalarFast(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalarFast(mesh, weakForm);
 		System.out.println("Begin Assemble...solveForwardDirichlet");
 		assembler.assemble();
 		SparseMatrix stiff = assembler.getStiffnessMatrix();
@@ -179,7 +179,7 @@ public class MouseHeadOld {
 				this.k, new Vector2MathFunc(U)
 			);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakFormL2);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakFormL2);
 		System.out.println("Begin Assemble...solveParamInverse");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
@@ -895,7 +895,7 @@ public class MouseHeadOld {
 		extractBorderParamData(meshOmega1);
 		
 		//Use element library to assign degree of freedom (DOF) to element
-		FELinearTriangle linearTriangle = new FELinearTriangle();
+		FELinearTriangleOld linearTriangle = new FELinearTriangleOld();
 		ElementList eList0 = meshOmega0.getElementList();
 		for(int i=1;i<=eList0.size();i++)
 			linearTriangle.assignTo(eList0.at(i));
@@ -1117,7 +1117,7 @@ public class MouseHeadOld {
 			meshOmega2.computeNeighborNodes();
 			
 			//Use element library to assign degree of freedom (DOF) to element
-			FELinearTriangle linearTriangle = new FELinearTriangle();
+			FELinearTriangleOld linearTriangle = new FELinearTriangleOld();
 			ElementList eList2 = meshOmega2.getElementList();
 			for(int i=1;i<=eList2.size();i++)
 				linearTriangle.assignTo(eList2.at(i));

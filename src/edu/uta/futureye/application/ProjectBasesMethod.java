@@ -25,7 +25,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
@@ -86,7 +86,7 @@ public class ProjectBasesMethod {
 //        for(int i=1;i<=eList.size();i++) {
 //        	System.out.println(eList.at(i));
 //        }
-        FELinearTriangle feLT = new FELinearTriangle();
+        FELinearTriangleOld feLT = new FELinearTriangleOld();
         for(int i=1;i<=eList.size();i++)
             feLT.assignTo(eList.at(i));
   

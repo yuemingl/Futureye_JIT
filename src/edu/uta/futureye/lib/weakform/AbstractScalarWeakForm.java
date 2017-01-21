@@ -4,13 +4,13 @@ import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.intf.WeakForm;
+import edu.uta.futureye.core.intf.WeakFormOld;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.util.FutureyeException;
 
-public abstract class AbstractScalarWeakForm implements WeakForm {
+public abstract class AbstractScalarWeakForm implements WeakFormOld {
 	protected DOF trialDOF = null;
 	protected DOF testDOF = null;
 	protected ScalarShapeFunction u = null;

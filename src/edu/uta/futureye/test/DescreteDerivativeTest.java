@@ -7,7 +7,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -56,7 +56,7 @@ public class DescreteDerivativeTest {
 				new FC(0.05),null //Robin: d*u + k*u_n = g
 				); 	
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
 		Vector load = assembler.getLoadVector();

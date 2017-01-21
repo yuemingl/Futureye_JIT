@@ -16,7 +16,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormConvectionDiffusion;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
@@ -96,7 +96,7 @@ public class T07ConvectionDiffusion {
 		
 		//Use element library to assign degree of freedom (DOF) to element
 		ElementList eList = mesh.getElementList();
-		FELinearTriangle linearTriangle = new FELinearTriangle();
+		FELinearTriangleOld linearTriangle = new FELinearTriangleOld();
 		for(int i=1;i<=eList.size();i++)
 			linearTriangle.assignTo(eList.at(i));
 	}

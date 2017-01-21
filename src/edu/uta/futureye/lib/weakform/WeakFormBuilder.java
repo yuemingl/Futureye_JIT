@@ -5,7 +5,7 @@ import java.util.Map;
 
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.intf.WeakForm;
+import edu.uta.futureye.core.intf.WeakFormOld;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -126,8 +126,8 @@ public class WeakFormBuilder {
 		throw new FutureyeException("Override this function to implement your Weak Form!");
 	}
 	
-	public WeakForm getScalarWeakForm() {
-		WeakForm wf = new AbstractScalarWeakForm() {
+	public WeakFormOld getScalarWeakForm() {
+		WeakFormOld wf = new AbstractScalarWeakForm() {
 			@Override
 			public MathFunc leftHandSide(Element e, ItemType itemType) {
 				if(itemType==ItemType.Domain)  {
@@ -171,8 +171,8 @@ public class WeakFormBuilder {
 		return wf;
 	}
 	
-	public WeakForm getVectorWeakForm() {
-		WeakForm wf = new AbstractVectorWeakForm() {
+	public WeakFormOld getVectorWeakForm() {
+		WeakFormOld wf = new AbstractVectorWeakForm() {
 			@Override
 			public MathFunc leftHandSide(Element e, ItemType itemType) {
 				if(itemType==ItemType.Domain)  {
@@ -255,7 +255,7 @@ public class WeakFormBuilder {
 		wfb.addParam("d", FC.C1);
 		wfb.addParam("f", FX.x.M(FX.x));
 		wfb.addParam("q", FC.C0);
-		WeakForm wf = wfb.getScalarWeakForm();
+		WeakFormOld wf = wfb.getScalarWeakForm();
 		System.out.println(wf.getTrialDOF());
 
 	}

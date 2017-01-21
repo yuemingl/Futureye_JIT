@@ -8,7 +8,7 @@ import edu.uta.futureye.core.intf.LHSExpr;
 import edu.uta.futureye.core.intf.RHSExpr;
 import edu.uta.futureye.function.intf.MathFunc;
 
-public class WeakFormJIT {
+public class WeakForm {
 	FiniteElement fe;
 	LHSExpr lhsExpr;
 	RHSExpr rhsExpr;
@@ -21,7 +21,7 @@ public class WeakFormJIT {
 	CompiledFunc[][] clhs;
 	CompiledFunc[] crhs;
 
-	public WeakFormJIT(FiniteElement fe, LHSExpr lhsExpr, RHSExpr rhsExpr) {
+	public WeakForm(FiniteElement fe, LHSExpr lhsExpr, RHSExpr rhsExpr) {
 		this.fe = fe;
 		this.lhsExpr =  lhsExpr;
 		this.rhsExpr = rhsExpr;

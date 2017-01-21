@@ -4,7 +4,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.io.MeshReader;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 
@@ -31,7 +31,7 @@ public class NitschesMethodTest {
 		
 		//Use element library to assign degree of freedom (DOF) to element
 		ElementList eList = meshBig.getElementList();
-		FELinearTriangle linearTriangle = new FELinearTriangle();
+		FELinearTriangleOld linearTriangle = new FELinearTriangleOld();
 		for(int i=1;i<=eList.size();i++)
 			linearTriangle.assignTo(eList.at(i));
 		meshBig.computeNodeBelongsToElements();

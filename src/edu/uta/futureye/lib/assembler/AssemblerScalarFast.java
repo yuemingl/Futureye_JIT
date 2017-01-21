@@ -8,21 +8,21 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.Assembler;
-import edu.uta.futureye.core.intf.WeakForm;
+import edu.uta.futureye.core.intf.AssemblerOld;
+import edu.uta.futureye.core.intf.WeakFormOld;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
 
-public class AssemblerScalarFast implements Assembler{
+public class AssemblerScalarFast implements AssemblerOld{
 	protected Mesh mesh;
-	protected WeakForm weakForm;
+	protected WeakFormOld weakForm;
 	protected SparseMatrix globalStiff;
 	protected SparseVector globalLoad;
 
-	public AssemblerScalarFast(Mesh mesh, WeakForm weakForm) {
+	public AssemblerScalarFast(Mesh mesh, WeakFormOld weakForm) {
 		this.mesh = mesh;
 		this.weakForm = weakForm;
 		

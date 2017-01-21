@@ -18,7 +18,7 @@ import edu.uta.futureye.function.intf.VectorMathFunc;
  * @author liuyueming
  *
  */
-public interface Assembler {
+public interface AssemblerOld {
 	/**
 	 * Assemble element's contributions to global stiffness matrix and global load vector
 	 * <p> 

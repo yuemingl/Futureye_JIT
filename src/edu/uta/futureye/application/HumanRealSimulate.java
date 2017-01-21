@@ -20,7 +20,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.geometry.GeoEntity3D;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
@@ -142,7 +142,7 @@ public class HumanRealSimulate {
 				C(1./(3*this.mu_sp))//null
 			);
 		
-		Assembler assembler = new AssemblerScalar(meshOmega, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(meshOmega, weakForm);
 		System.out.println("Begin Assemble...");
 		long begin = System.currentTimeMillis();
 		assembler.assemble();

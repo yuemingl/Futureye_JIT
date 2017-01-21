@@ -91,7 +91,8 @@ public class SFLinearLocal1D extends MultiVarFunc  implements ScalarShapeFunctio
 		 * The default active variable names of a composite function is the inner variable names.
 		 * Shape function needs the outer variable names as the active variable names.
 		 */
-		funCompose.setActiveVarByNames(funOuter.getVarNames());
+		//funCompose.setActiveVarByNames(funOuter.getVarNames()); //this function doesn't set the flag
+		funCompose.setOuterVarActive();
 		funCompose.setArgIdx(Utils.getIndexMap(this.getVarNames()));
 	}
 	

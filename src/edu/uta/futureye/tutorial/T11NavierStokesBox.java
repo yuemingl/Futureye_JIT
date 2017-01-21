@@ -92,8 +92,8 @@ public class T11NavierStokesBox {
 		else
 			throw new FutureyeException("testCaseNo should be 1,2");
 		
-		MeshReader reader = new MeshReader(file+".grd");
-		MeshReader reader2 = new MeshReader(file+".grd");
+		MeshReader reader = new MeshReader("grids/"+file+".grd");
+		MeshReader reader2 = new MeshReader("grids/"+file+".grd");
 		mesh = reader.read2DMesh();
 		meshOld = reader2.read2DMesh();
 		mesh.nVertex = mesh.getNodeList().size();

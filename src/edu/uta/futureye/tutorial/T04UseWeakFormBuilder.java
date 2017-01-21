@@ -10,7 +10,7 @@ import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.WeakForm;
+import edu.uta.futureye.core.intf.WeakFormOld;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
@@ -20,7 +20,7 @@ import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FEBilinearRectangleRegular;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormBuilder;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.ObjList;
@@ -62,7 +62,7 @@ public class T04UseWeakFormBuilder {
         //3.Use element library to assign degrees of
         //  freedom (DOF) to element
         ElementList eList = mesh.getElementList();
-        FELinearTriangle feLT = new FELinearTriangle();
+        FELinearTriangleOld feLT = new FELinearTriangleOld();
         for(int i=1;i<=eList.size();i++)
             feLT.assignTo(eList.at(i));
 
@@ -282,7 +282,7 @@ public class T04UseWeakFormBuilder {
         //3.Use element library to assign degrees of
         //  freedom (DOF) to element
         ElementList eList = mesh.getElementList();
-        FELinearTriangle feLT = new FELinearTriangle();
+        FELinearTriangleOld feLT = new FELinearTriangleOld();
         for(int i=1;i<=eList.size();i++)
             feLT.assignTo(eList.at(i));
 
@@ -320,7 +320,7 @@ public class T04UseWeakFormBuilder {
         wfBuilder.addParam("c",C1);
         wfBuilder.addParam("d",C1);
         wfBuilder.addParam("g",x.M(x).A(y.M(y)));
-		WeakForm weakForm = wfBuilder.getScalarWeakForm();
+		WeakFormOld weakForm = wfBuilder.getScalarWeakForm();
 		
         //5.Assembly process
         AssemblerScalar assembler =

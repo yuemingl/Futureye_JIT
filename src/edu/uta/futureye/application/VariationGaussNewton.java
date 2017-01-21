@@ -28,7 +28,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormL22D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.container.DOFList;
@@ -125,7 +125,7 @@ public class VariationGaussNewton {
 
         //3.Use element library to assign degrees of
         //  freedom (DOF) to element
-        FELinearTriangle feLT = new FELinearTriangle();
+        FELinearTriangleOld feLT = new FELinearTriangleOld();
         for(int i=1;i<=eList.size();i++)
             feLT.assignTo(eList.at(i));
         

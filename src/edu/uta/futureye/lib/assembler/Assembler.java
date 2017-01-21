@@ -11,21 +11,21 @@ import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.function.operator.FOIntegrate;
-import edu.uta.futureye.lib.weakform.WeakFormJIT;
+import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 
-public class AssemblerJIT {
+public class Assembler {
 	double[][] A; // local stiff matrix
 	double[] b;   // local load vector
 	double[] params;
-	WeakFormJIT wf;
+	WeakForm wf;
 	int nDOFs;
 	
 	SparseMatrix gA; // global stiff matrix
 	SparseVector gb; // global load vector
 
-	public AssemblerJIT(WeakFormJIT wf) {
+	public Assembler(WeakForm wf) {
 		this.wf = wf;
 		nDOFs = wf.getFiniteElement().getNumberOfDOFs();
 		A = new double[nDOFs][nDOFs];

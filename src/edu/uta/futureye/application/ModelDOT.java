@@ -10,7 +10,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Refiner;
 import edu.uta.futureye.core.geometry.Point;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
@@ -180,7 +180,7 @@ public class ModelDOT {
 				this.k, this.mu_a, this.k.D(eps).M(diri), this.k.D(eps)
 			);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveMixedBorder");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();

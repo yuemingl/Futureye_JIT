@@ -7,7 +7,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
@@ -126,7 +126,7 @@ public class ModelDOTMult {
 		
 		//bugfix 2011-5-7两种方式结果不一样？
 		//Assembler assembler = new AssemblerScalarFast(mesh, weakForm);
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveMixedBorder");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();

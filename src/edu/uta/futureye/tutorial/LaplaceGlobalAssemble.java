@@ -15,9 +15,9 @@ import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
-import edu.uta.futureye.lib.assembler.AssemblerJIT;
-import edu.uta.futureye.lib.element.FELinearTriangleJIT;
-import edu.uta.futureye.lib.weakform.WeakFormJIT;
+import edu.uta.futureye.lib.assembler.Assembler;
+import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ElementList;
 
@@ -57,14 +57,14 @@ public class LaplaceGlobalAssemble {
 		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
 		ElementList eList = mesh.getElementList();
-		FELinearTriangleJIT fet = new FELinearTriangleJIT();
+		FELinearTriangle fet = new FELinearTriangle();
 		for (int i = 1; i <= eList.size(); i++)
 			fet.assignTo(eList.at(i));
 
 		//4. Weak form
 		//Right hand side(RHS):
 		final MathFunc f = -2 * (x * x + y * y) + 36;
-		WeakFormJIT wf = new WeakFormJIT(
+		WeakForm wf = new WeakForm(
 				fet, 
 				(u,v) -> grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
@@ -72,7 +72,7 @@ public class LaplaceGlobalAssemble {
 		wf.compile();
 
 		// 5.Assembly process
-		AssemblerJIT assembler = new AssemblerJIT(wf);
+		Assembler assembler = new Assembler(wf);
 		assembler.assembleGlobal(mesh);
 		Matrix stiff = assembler.getGlobalStiffMatrix();
 		Vector load = assembler.getGlobalLoadVector();

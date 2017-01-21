@@ -21,7 +21,7 @@ import edu.uta.futureye.core.NodeRefined;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Refiner;
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.core.intf.Assembler;
+import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
@@ -187,7 +187,7 @@ public class GCMModel {
 				this.k, this.mu_a, null, this.k //d==k,q=0 (即：u_n + u =0)
 			);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveForwardNeumann");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
@@ -243,7 +243,7 @@ public class GCMModel {
 		
 		//bugfix 2011-5-7两种方式结果不一样？
 		//Assembler assembler = new AssemblerScalarFast(mesh, weakForm);
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...solveForwardDirichlet");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
@@ -275,7 +275,7 @@ public class GCMModel {
 				this.k, new Vector2MathFunc(U)
 			);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakFormL2);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakFormL2);
 		System.out.println("Begin Assemble...solveParamInverse");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
@@ -304,7 +304,7 @@ public class GCMModel {
 				this.k, new Vector2MathFunc(U)
 			);
 		
-		Assembler assembler = new AssemblerScalar(mesh, weakFormL2);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakFormL2);
 		System.out.println("Begin Assemble...solveParamInverse");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();
@@ -372,7 +372,7 @@ public class GCMModel {
 		
 		//bugfix 2011-5-7两种方式结果不一样？
 		//Assembler assembler = new AssemblerScalarFast(mesh, weakForm);
-		Assembler assembler = new AssemblerScalar(mesh, weakForm);
+		AssemblerOld assembler = new AssemblerScalar(mesh, weakForm);
 		System.out.println("Begin Assemble...");
 		assembler.assemble();
 		Matrix stiff = assembler.getStiffnessMatrix();

@@ -29,7 +29,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
-import edu.uta.futureye.lib.element.FELinearTriangle;
+import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
@@ -242,7 +242,7 @@ public class LaplaceTestJIT3 {
         //3.Use element library to assign degrees of
         //  freedom (DOF) to element
         ElementList eList = mesh.getElementList();
-        FELinearTriangle feLT = new FELinearTriangle();
+        FELinearTriangleOld feLT = new FELinearTriangleOld();
         for(int i=1;i<=eList.size();i++)
             feLT.assignTo(eList.at(i));
 

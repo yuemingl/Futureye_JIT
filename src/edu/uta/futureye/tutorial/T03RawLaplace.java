@@ -37,7 +37,7 @@ import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 public class T03RawLaplace {
 	public static void triangle() {
 		//Read a triangle mesh from an input file
-		MeshReader reader = new MeshReader("triangle.grd");
+		MeshReader reader = new MeshReader("grids/triangle.grd");
 		Mesh mesh = reader.read2DMesh();
 		
 		//Geometry relationship
