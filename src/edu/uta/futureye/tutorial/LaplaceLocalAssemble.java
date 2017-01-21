@@ -26,7 +26,6 @@ import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
-import edu.uta.futureye.util.container.ElementList;
 
 /**
  * Use assembleLocal() to get local stiff matrix and local load vector in an

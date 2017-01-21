@@ -20,7 +20,6 @@ import edu.uta.futureye.lib.assembler.Assembler;
 import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.container.ElementList;
 
 /**
  * Use assembleGlobal() for simple case
