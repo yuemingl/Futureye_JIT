@@ -19,7 +19,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.element.FEBilinearRectangle;
+import edu.uta.futureye.lib.element.FEBilinearRectangleOld;
 import edu.uta.futureye.lib.element.FELinearTetrahedron;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace3D;

@@ -301,12 +301,12 @@ public class LaplaceTestJITForPaper {
 	
 	public void run(int nNodes) {
 		int n = 51;
-		boolean solveSystem = false;
+		boolean solveSystem = true;
 
 		// 1.Generate mesh
 		Mesh mesh = null;
 		if (solveSystem) {
-			MeshReader reader = new MeshReader("triangle.grd");
+			MeshReader reader = new MeshReader("grids/triangle.grd");
 			mesh = reader.read2DMesh();
 		} else {
 			mesh = MeshGenerator.rectangle(-3, 3, -3, 3, n, n);
@@ -383,12 +383,13 @@ public class LaplaceTestJITForPaper {
 				// put it in intOnTriangleRefElement?
 				fet.getJac().apply(params);
 
+				// 2=80.839
+				// 3=80.966
+				// 4=80.967
 				for (int j = 0; j < nDOFs; j++) {
 					for (int i = 0; i < nDOFs; i++) {
 						A[j][i] = FOIntegrate.intOnTriangleRefElement(
-								clhs[j][i], params, coords.length, 2);// 2=80.839
-																		// 3=80.966,
-																		// 4=80.967
+								clhs[j][i], params, coords.length, 2);
 					}
 					b[j] = FOIntegrate.intOnTriangleRefElement(crhs[j], params,
 							coords.length, 2);

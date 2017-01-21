@@ -14,7 +14,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.element.FEBilinearRectangle;
+import edu.uta.futureye.lib.element.FEBilinearRectangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.tutorial.Tools;
 import edu.uta.futureye.util.container.ElementList;
@@ -34,7 +34,7 @@ public class DescreteDerivativeTest {
 		mesh.markBorderNode(mapNTF);
 		//Use element library
 		ElementList eList = mesh.getElementList();
-		FEBilinearRectangle bilinearRectangle = new FEBilinearRectangle();
+		FEBilinearRectangleOld bilinearRectangle = new FEBilinearRectangleOld();
 		for(int i=1;i<=eList.size();i++)
 			bilinearRectangle.assignTo(eList.at(i));
 		

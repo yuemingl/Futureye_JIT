@@ -102,6 +102,7 @@ public class FOIntegrate{
 	 * @param order
 	 * @return Function
 	 */	
+	@SuppressWarnings("deprecation")
 	public static double intOnTriangleRefElement(MathFunc integrand, int order) {
 		double rlt = 0.0;
 		if(order == 2) {
@@ -147,6 +148,8 @@ public class FOIntegrate{
 				v.set(VN.t, 1.0-triR[i]-triS[i]);
 				rlt += triW[i]*integrand.apply(v);
 			}
+		} else {
+			System.out.println("ERROR: intOnTriangleRefElement() Not supported order = "+order);
 		}
 		return rlt;
 	}
@@ -159,6 +162,7 @@ public class FOIntegrate{
 	 * @param order
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public static double intOnLinearRefElement(MathFunc integrand, int order) {
 		double a1_1 = 0.0;
 		double h1_1 = 2.0;
@@ -228,6 +232,7 @@ public class FOIntegrate{
 	 * @param order
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public static double intOnRectangleRefElement(MathFunc integrand, int order) {
 		double a1_1 = 0.0;
 		double h1_1 = 4.0;
@@ -283,7 +288,7 @@ public class FOIntegrate{
 			for(int i=0;i<rltAry.length;i++) 
 				rlt += wa[i]*rltAry[i];
 		} else {
-			System.out.println("ERROR: intOnLinearRefElement() Not supported order = "+order);
+			System.out.println("ERROR: intOnRectangleRefElement() Not supported order = "+order);
 		}
 		
 		return rlt;
@@ -295,6 +300,7 @@ public class FOIntegrate{
 	 * @param order
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public static double intOnTetrahedraRefElement(MathFunc integrand, int order) {
 		double a1_1 = 0.25;
 		double h1_1 = 1;
@@ -317,17 +323,17 @@ public class FOIntegrate{
 				v.set(VN.s, a2[M24[i][1]]);
 				v.set(VN.t, a2[M24[i][2]]);
 				v.set("u", a2[M24[i][3]]);
-				rlt += h2*integrand.apply(v);			
+				rlt += h2*integrand.apply(v);
 			}
 		} else {
-			System.out.println("ERROR: intOnLinearRefElement() Not supported order = "+order);
+			System.out.println("ERROR: intOnTetrahedraRefElement() Not supported order = "+order);
 		}
 		
 		return rlt;
 	}
 	
 	public static double intOnHexahedraRefElement(MathFunc integrand, int order) {
-		Variable v = new Variable();
+//		Variable v = new Variable();
 		VariableArray valAry = new VariableArray();
 		double rlt = 0.0;
 		if(order == 2) {
@@ -463,7 +469,7 @@ public class FOIntegrate{
 			valAry.set("t", ta);
 			double[] rltAry = integrand.applyAll(valAry,new HashMap<Object, Object>());
 			for(int i=0;i<rltAry.length;i++) 
-				rlt += wa[i]*rltAry[i];		
+				rlt += wa[i]*rltAry[i];
 		}
 		return rlt;
 	}
@@ -507,4 +513,42 @@ public class FOIntegrate{
 		}
 		return rlt;
 	}
+	
+	/**
+	 * Integrate on 2D rectangle reference element [-1,1]*[-1,1]
+	 */
+	public static double intOnRectangleRefElement(CompiledFunc integrand, double[] params, int paramsStart, int order) {
+		double a1_1 = 0.0;
+		double h1_1 = 4.0;
+		double a2 = 0.577350269189626;
+		//double h2 = 1.0;
+		
+		double rlt = 0.0;
+		if(order == 1) {
+			params[paramsStart] = a1_1;
+			params[paramsStart+1] = a1_1;
+			rlt += h1_1*integrand.apply(params);
+		} else if(order == 2) {
+			params[paramsStart] = a2; params[paramsStart+1] = a2;
+			rlt += integrand.apply(params);
+			params[paramsStart] = -a2; params[paramsStart+1] = a2;
+			rlt += integrand.apply(params);
+			params[paramsStart] = a2; params[paramsStart+1] = -a2;
+			rlt += integrand.apply(params);
+			params[paramsStart] = -a2; params[paramsStart+1] = -a2;
+			rlt += integrand.apply(params);
+		} else if(order == 5) {
+			for(int i=0;i<order;i++) {
+				for(int j=0;j<order;j++) {
+					params[paramsStart] = a5[i]; params[paramsStart+1] = a5[j];
+					rlt += h5[i]*h5[j]*integrand.apply(params);
+				}
+			}
+		} else {
+			System.out.println("ERROR: intOnRectangleRefElement() Not supported order = "+order);
+		}
+		
+		return rlt;
+	}
+
 }

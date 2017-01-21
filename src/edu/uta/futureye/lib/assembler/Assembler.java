@@ -45,13 +45,24 @@ public class Assembler {
 
 		wf.getCompiledJac().apply(params);
 
-		for(int j=0; j<nDOFs; j++) {
-			for(int i=0; i<nDOFs; i++) {
-				A[j][i] = FOIntegrate.intOnTriangleRefElement(wf.getCompiledLHS()[j][i], 
-						params, coords.length, 2);//2=80.839 3=80.966, 4=80.967
+		if(wf.getFiniteElement().getNumberOfDOFs() == 3) {
+			for(int j=0; j<nDOFs; j++) {
+				for(int i=0; i<nDOFs; i++) {
+					A[j][i] = FOIntegrate.intOnTriangleRefElement(wf.getCompiledLHS()[j][i], 
+							params, coords.length, 2);//2=80.839 3=80.966, 4=80.967
+				}
+				b[j] = FOIntegrate.intOnTriangleRefElement(wf.getCompiledRHS()[j], 
+						params, coords.length, 2);
 			}
-			b[j] = FOIntegrate.intOnTriangleRefElement(wf.getCompiledRHS()[j], 
-					params, coords.length, 2);
+		} else if(wf.getFiniteElement().getNumberOfDOFs() == 4) {
+			for(int j=0; j<nDOFs; j++) {
+				for(int i=0; i<nDOFs; i++) {
+					A[j][i] = FOIntegrate.intOnRectangleRefElement(wf.getCompiledLHS()[j][i], 
+							params, coords.length, 2);
+				}
+				b[j] = FOIntegrate.intOnRectangleRefElement(wf.getCompiledRHS()[j], 
+						params, coords.length, 2);
+			}
 		}
 	}
 	

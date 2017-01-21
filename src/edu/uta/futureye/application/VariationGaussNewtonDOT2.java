@@ -20,7 +20,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.element.FEBilinearRectangle;
+import edu.uta.futureye.lib.element.FEBilinearRectangleOld;
 import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
@@ -207,7 +207,7 @@ public class VariationGaussNewtonDOT2 {
         //3.Use element library to assign degrees of
         //  freedom (DOF) to element
         ElementList eList = mesh.getElementList();
-        FEBilinearRectangle feLT = new FEBilinearRectangle();
+        FEBilinearRectangleOld feLT = new FEBilinearRectangleOld();
         for(int i=1;i<=eList.size();i++)
             feLT.assignTo(eList.at(i));
   

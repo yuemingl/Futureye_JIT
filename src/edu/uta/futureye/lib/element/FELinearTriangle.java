@@ -4,6 +4,14 @@ package edu.uta.futureye.lib.element;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.DALOAD;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUSH;
 import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
@@ -26,6 +34,8 @@ public class FELinearTriangle implements FiniteElement {
 
 		@Override
 		public double apply(double... args) {
+			//this.argIdx is wrong if we don't define BCEL bytecodeGen
+			//
 			return args[this.argIdx];
 		}
 		
@@ -55,7 +65,16 @@ public class FELinearTriangle implements FiniteElement {
 			mv.visitLdcInsn(argsMap.get(varName));
 			mv.visitInsn(Opcodes.DALOAD);
 		}
-
+		
+		@Override
+		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
+				ConstantPoolGen cp, InstructionFactory factory, 
+				InstructionList il, Map<String, Integer> argsMap, 
+				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
+			il.append(new ALOAD(argsStartPos));
+			il.append(new PUSH(cp, argsMap.get(this.getName())));
+			return il.append(new DALOAD());
+		}
 	}
 	public class TriAreaCoordS extends SingleVarFunc {
 		public TriAreaCoordS() {
@@ -92,6 +111,16 @@ public class FELinearTriangle implements FiniteElement {
 			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
 			mv.visitLdcInsn(argsMap.get(varName));
 			mv.visitInsn(Opcodes.DALOAD);
+		}
+		
+		@Override
+		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
+				ConstantPoolGen cp, InstructionFactory factory, 
+				InstructionList il, Map<String, Integer> argsMap, 
+				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
+			il.append(new ALOAD(argsStartPos));
+			il.append(new PUSH(cp, argsMap.get(this.getName())));
+			return il.append(new DALOAD());
 		}
 	}
 

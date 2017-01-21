@@ -19,6 +19,7 @@ import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
+import edu.uta.futureye.lib.element.FEBilinearRectangleOld;
 import edu.uta.futureye.lib.element.FEBilinearRectangleRegular;
 import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormBuilder;
@@ -161,10 +162,10 @@ public class T04UseWeakFormBuilder {
         //3.Use element library to assign degrees of
         //  freedom (DOF) to element
         ElementList eList = mesh.getElementList();
-		//FEBilinearRectangle bilinearRectangle = new FEBilinearRectangle();
+		FEBilinearRectangleOld bilinearRectangle = new FEBilinearRectangleOld();
         //If the boundary of element parallel with coordinate use this one instead.
         //It will be faster than the old one.
-		FEBilinearRectangleRegular bilinearRectangle = new FEBilinearRectangleRegular();
+		//FEBilinearRectangleRegular bilinearRectangle = new FEBilinearRectangleRegular();
         for(int i=1;i<=eList.size();i++)
         	bilinearRectangle.assignTo(eList.at(i));		
 		
@@ -343,9 +344,9 @@ public class T04UseWeakFormBuilder {
         writer.writeTechplot("./tutorial/UseWeakFormBuilder3.dat", u);
 	}
 	public static void main(String[] args) {
-		triangleMesh();
+		//triangleMesh();
 		rectangleTest();
-		testPrarmeters();
+		//testPrarmeters();
 	}
 		
 }

@@ -12,7 +12,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.element.FEBilinearRectangle;
+import edu.uta.futureye.lib.element.FEBilinearRectangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.container.ElementList;
 
@@ -128,7 +128,7 @@ public class ModelPoissonEx {
 		
 		
 		//Use element library to assign degree of freedom (DOF) to element
-		FEBilinearRectangle fe = new FEBilinearRectangle();
+		FEBilinearRectangleOld fe = new FEBilinearRectangleOld();
 		ElementList eList = meshSmall.getElementList();
 		for(int i=1;i<=eList.size();i++)
 			fe.assignTo(eList.at(i));
@@ -159,7 +159,7 @@ public class ModelPoissonEx {
 		model.c = FC.c(10.0);
 		
 		//Use element library to assign degree of freedom (DOF) to element
-		FEBilinearRectangle fe = new FEBilinearRectangle();
+		FEBilinearRectangleOld fe = new FEBilinearRectangleOld();
 		ElementList eList = meshSmall.getElementList();
 		for(int i=1;i<=eList.size();i++)
 			fe.assignTo(eList.at(i));
@@ -191,7 +191,7 @@ public class ModelPoissonEx {
 		model.c = FC.c(10.0);
 		
 		//Use element library to assign degree of freedom (DOF) to element
-		FEBilinearRectangle fe = new FEBilinearRectangle();
+		FEBilinearRectangleOld fe = new FEBilinearRectangleOld();
 		ElementList eList = meshSmall.getElementList();
 		for(int i=1;i<=eList.size();i++)
 			fe.assignTo(eList.at(i));
