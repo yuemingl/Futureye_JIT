@@ -63,10 +63,9 @@ public class LaplaceLocalAssemble {
 
 		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
-		ElementList eList = mesh.getElementList();
 		FELinearTriangle fet = new FELinearTriangle();
-		for (int i = 1; i <= eList.size(); i++)
-			fet.assignTo(eList.at(i));
+		for(Element e : mesh.getElementList())
+			fet.assignTo(e);
 
 		//4. Weak form
 		//Right hand side(RHS):
@@ -84,7 +83,7 @@ public class LaplaceLocalAssemble {
 		SparseMatrix stiff = new SparseMatrixRowMajor(dim, dim);
 		SparseVector load = new SparseVectorHashMap(dim);
 		int nDOFs = fet.getNumberOfDOFs();
-		for (Element e : eList) {
+		for (Element e : mesh.getElementList()) {
 			assembler.assembleLocal(e);
 			double[][] A = assembler.getLocalStiffMatrix();
 			double[] b = assembler.getLocalLoadVector();

@@ -17,7 +17,7 @@ import edu.uta.futureye.util.FutureyeException;
  *
  * @param <T>
  */
-public class ObjList<T> implements Iterable<T>{
+public class ObjList<T> implements Iterable<T> {
 	protected List<T> objs = new ArrayList<T>();
 	
 	public ObjList() {

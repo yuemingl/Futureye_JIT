@@ -10,6 +10,7 @@ import java.util.HashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
+import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -56,10 +57,9 @@ public class LaplaceGlobalAssemble {
 
 		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
-		ElementList eList = mesh.getElementList();
 		FELinearTriangle fet = new FELinearTriangle();
-		for (int i = 1; i <= eList.size(); i++)
-			fet.assignTo(eList.at(i));
+		for(Element e : mesh.getElementList())
+			fet.assignTo(e);
 
 		//4. Weak form
 		//Right hand side(RHS):

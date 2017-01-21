@@ -1,6 +1,5 @@
 package edu.uta.futureye.algebra.intf;
 
-import edu.uta.futureye.io.MatlabMatFileWriter;
 
 /**
  * <blockquote><pre>
