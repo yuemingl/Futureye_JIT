@@ -64,8 +64,9 @@ public class SFBilinearLocal2DRegular extends MultiVarFunc implements ScalarShap
 			return;
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
+		varNames = new String[2];
+		varNames[0] = "r";
+		varNames[1] = "s";
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
@@ -74,7 +75,7 @@ public class SFBilinearLocal2DRegular extends MultiVarFunc implements ScalarShap
 		//r = r(x,y)
 		//s = s(x,y)
 		for(final String varName : varNames) {
-			fInners.put(varName, new MultiVarFunc(innerVarNames.toList()) {
+			fInners.put(varName, new MultiVarFunc(varName, innerVarNames.toList()) {
 				
 				public MathFunc diff(String var) {
 					double x1 = e.nodes.at(1).coord(1);
@@ -148,9 +149,8 @@ public class SFBilinearLocal2DRegular extends MultiVarFunc implements ScalarShap
 				}
 
 				@Override
-				public double apply(Variable v) {
-					// TODO Auto-generated method stub
-					return 0;
+				public double apply(double... args) {
+					throw new UnsupportedOperationException();
 				}
 			});
 		}
