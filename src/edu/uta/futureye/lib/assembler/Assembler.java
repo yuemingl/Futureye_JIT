@@ -3,8 +3,6 @@ package edu.uta.futureye.lib.assembler;
 import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
-import edu.uta.futureye.algebra.intf.SparseMatrix;
-import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.DOFOrder;
@@ -19,18 +17,33 @@ public class Assembler {
 	double[][] A; // local stiff matrix
 	double[] b;   // local load vector
 	double[] params;
-	WeakForm wf;
+	WeakForm domainWF;
+	WeakForm boundaryWF;
 	int nDOFs;
 	
-	SparseMatrix gA; // global stiff matrix
-	SparseVector gb; // global load vector
+	Matrix gA; // global stiff matrix
+	Vector gb; // global load vector
 
-	public Assembler(WeakForm wf) {
-		this.wf = wf;
-		nDOFs = wf.getFiniteElement().getNumberOfDOFs();
+	public Assembler(WeakForm domainWeakForm) {
+		this.domainWF = domainWeakForm;
+		nDOFs = domainWF.getFiniteElement().getNumberOfDOFs();
 		A = new double[nDOFs][nDOFs];
 		b = new double[nDOFs];
-		params = new double[wf.getFiniteElement().getArgsOrder().length];
+		params = new double[domainWF.getFiniteElement().getArgsOrder().length];
+	}
+	
+	/**
+	 * 
+	 * @param domainWeakForm
+	 * @param boundaryWeakForm
+	 */
+	public Assembler(WeakForm domainWeakForm, WeakForm boundaryWeakForm) {
+		this.domainWF = domainWeakForm;
+		this.boundaryWF = boundaryWeakForm;
+		nDOFs = domainWF.getFiniteElement().getNumberOfDOFs();
+		A = new double[nDOFs][nDOFs];
+		b = new double[nDOFs];
+		params = new double[domainWF.getFiniteElement().getArgsOrder().length];
 	}
 	
 	/**
@@ -43,37 +56,52 @@ public class Assembler {
 		double[] coords = e.getNodeCoords();
 		System.arraycopy(coords, 0, params, 0, coords.length);
 
-		wf.getCompiledJac().apply(params);
+		domainWF.getCompiledJac().apply(params);
 
-		if(wf.getFiniteElement().getNumberOfDOFs() == 3) {
+		if(domainWF.getFiniteElement().getNumberOfDOFs() == 3) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
-					A[j][i] = FOIntegrate.intOnTriangleRefElement(wf.getCompiledLHS()[j][i], 
+					A[j][i] = FOIntegrate.intOnTriangleRefElement(domainWF.getCompiledLHS()[j][i], 
 							params, coords.length, 2);//2=80.839 3=80.966, 4=80.967
 				}
-				b[j] = FOIntegrate.intOnTriangleRefElement(wf.getCompiledRHS()[j], 
+				b[j] = FOIntegrate.intOnTriangleRefElement(domainWF.getCompiledRHS()[j], 
 						params, coords.length, 2);
 			}
-		} else if(wf.getFiniteElement().getNumberOfDOFs() == 4) {
+		} else if(domainWF.getFiniteElement().getNumberOfDOFs() == 4) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
-					A[j][i] = FOIntegrate.intOnRectangleRefElement(wf.getCompiledLHS()[j][i], 
+					A[j][i] = FOIntegrate.intOnRectangleRefElement(domainWF.getCompiledLHS()[j][i], 
 							params, coords.length, 2);
 				}
-				b[j] = FOIntegrate.intOnRectangleRefElement(wf.getCompiledRHS()[j], 
+				b[j] = FOIntegrate.intOnRectangleRefElement(domainWF.getCompiledRHS()[j], 
 						params, coords.length, 2);
 			}
 		}
 	}
 	
 	/**
-	 * Assemble on a given mesh
+	 * Assemble stiff matrix and load vector on a given mesh
 	 * @param mesh
 	 */
 	public void assembleGlobal(Mesh mesh) {
 		int dim = mesh.getNodeList().size();
 		gA = new SparseMatrixRowMajor(dim,dim);
 		gb = new SparseVectorHashMap(dim);
+		assembleGlobal(mesh, gA, gb);
+	}
+	
+	/**
+	 * Assemble stiff matrix and load vector on a given mesh
+	 * into parameter stiff and load.
+	 * 
+	 * Several assemblers can be chained by using this method
+	 * to assemble stiff matrix and load vector
+	 * 
+	 * @param mesh
+	 * @param stiff
+	 * @param load
+	 */
+	public void assembleGlobal(Mesh mesh, Matrix stiff, Vector load) {
 		ElementList eList = mesh.getElementList();
 		
 		for(Element e : eList) {
@@ -85,12 +113,15 @@ public class Assembler {
 				for(int i=0;i<nDOFs;i++) {
 					DOF dofJ = DOFs.at(i+1);
 					int nGlobalCol = dofJ.getGlobalIndex();
-					gA.add(nGlobalRow, nGlobalCol, A[j][i]);
+					stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
 				}
 				//Local load vector
-				gb.add(nGlobalRow, b[j]);
+				load.add(nGlobalRow, b[j]);
 			}
 		}
+		//update gA and gb
+		this.gA = stiff;
+		this.gb = load;
 	}
 	
 	public double[][] getLocalStiffMatrix() {

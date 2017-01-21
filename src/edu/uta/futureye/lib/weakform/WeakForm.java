@@ -55,11 +55,11 @@ public class WeakForm {
 		crhs = new CompiledFunc[nDOFs];
 		for(int j=0; j<nDOFs; j++) {
 			for(int i=0; i<nDOFs; i++) {
-				//clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
-				clhs[j][i] = matLHS[j][i].compile(argsOrder);
+				clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
+				//clhs[j][i] = matLHS[j][i].compile(argsOrder);
 			}
-			//crhs[j] = vecRHS[j].compileWithASM(argsOrder);
-			crhs[j] = vecRHS[j].compile(argsOrder);
+			crhs[j] = vecRHS[j].compileWithASM(argsOrder);
+			//crhs[j] = vecRHS[j].compile(argsOrder);
 		}
 	}
 	

@@ -246,4 +246,10 @@ public class FEBilinearRectangle implements FiniteElement {
 		}
 	}
 
+	@Override
+	public FiniteElement getBoundaryFE() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
