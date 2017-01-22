@@ -149,7 +149,7 @@ public class T04UseWeakFormBuilder {
 
 			@Override
 			public double apply(double... args) {
-				if(3.0-args[this.argIdx[0]] < 0.01)
+				if(Math.abs(3.0-args[this.argIdx[0]]) < 0.01)
 					return 1.0; //this is Robin condition
 				else
 					return -1.0;

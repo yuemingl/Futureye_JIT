@@ -270,7 +270,7 @@ public class AssemblerScalar implements AssemblerOld {
 			ElementList beList = e.getBorderElements();
 			for(int n=1;n<=beList.size();n++) {
 				Element be = beList.at(n);
-				
+
 				//Check node type
 				NodeType nodeType = be.getBorderNodeType();
 				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
@@ -278,12 +278,12 @@ public class AssemblerScalar implements AssemblerOld {
 					weakForm.preProcess(be);
 					DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
 					int nBeDOF = beDOFs.size();
-					
+
 					//形函数计算需要和单元关联
 					for(int i=1;i<=nBeDOF;i++) {
 						beDOFs.at(i).getSSF().assignElement(be);
 					}
-					
+
 					//所有自由度双循环
 					for(int i=1;i<=nBeDOF;i++) {
 						DOF dofI = beDOFs.at(i);

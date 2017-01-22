@@ -86,10 +86,10 @@ public class Assembler {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnRectangleRefElement(domainWF.getCompiledLHS()[j][i], 
-							params, coords.length, 2);
+							params, coords.length, 5);
 				}
 				b[j] = FOIntegrate.intOnRectangleRefElement(domainWF.getCompiledRHS()[j], 
-						params, coords.length, 2);
+						params, coords.length, 5);
 			}
 		}
 
@@ -117,10 +117,10 @@ public class Assembler {
 						for(int i=0;i<nBeDOFs;i++) {
 							beA[j][i] = FOIntegrate.intOnLinearRefElement(boundaryWF.getCompiledLHS()[j][i], 
 									beParams, beCoords.length, 5);
+							System.out.println(beA[j][i]+"***");
 						}
 						beb[j] = FOIntegrate.intOnLinearRefElement(boundaryWF.getCompiledRHS()[j], 
 								beParams, beCoords.length, 5);
-						System.out.println(beb[j]+"***");
 					}
 				}
 			}
@@ -181,7 +181,7 @@ public class Assembler {
 							DOF beDOFI = beDOFs.at(j+1);
 							int nGlobalRow = beDOFI.getGlobalIndex();
 							for(int i=0;i<nBeDOFs;i++) {
-								DOF beDOFJ = DOFs.at(i+1);
+								DOF beDOFJ = beDOFs.at(i+1);
 								int nGlobalCol = beDOFJ.getGlobalIndex();
 								stiff.add(nGlobalRow, nGlobalCol, beA[j][i]);
 							}
