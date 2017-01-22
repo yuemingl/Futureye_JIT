@@ -15,14 +15,11 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.Assembler;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
-import edu.uta.futureye.lib.element.FELinearTriangle;
 import edu.uta.futureye.lib.weakform.WeakForm;
-import edu.uta.futureye.lib.weakform.WeakFormBuilder.Type;
 import edu.uta.futureye.util.Utils;
 
 /**
@@ -30,13 +27,13 @@ import edu.uta.futureye.util.Utils;
  * Solve
  *   -k*\Delta{u} = f  in \Omega
  *   u(x,y) = 0,       on boundary x=3.0 of \Omega
- *   u_n + u = 0.01,   on other boundary of \Omega
+ *   k*u_n + u = 0.01,   on other boundary of \Omega
  * where
  *   \Omega = [-3,3]*[-3,3]
  *   k = 2
  *   f = -4*(x^2+y^2)+72
  *   u_n = \frac{\partial{u}}{\partial{n}}
- *   n: outer unit normal of \Omega
+ *   n: outer unit normal vector of \Omega
  * </blockquote></pre>
  */
 
@@ -54,7 +51,7 @@ public class LaplaceTestRectangle {
 		mapNTF.put(NodeType.Robin, new MultiVarFunc("Robin", "x","y"){
 			@Override
 			public double apply(double... args) {
-				if(3.0-args[this.argIdx[0]] < 0.01)
+				if(Math.abs(3.0-args[this.argIdx[0]]) < 0.01)
 					return 1.0; //this is Robin condition
 				else
 					return -1.0;
@@ -70,42 +67,26 @@ public class LaplaceTestRectangle {
 		for(Element e : mesh.getElementList())
 			fet.assignTo(e);
 
-//		public MathFunc makeExpression(Element e, Type type) {
-//			ScalarShapeFunction u = getScalarTrial();
-//			ScalarShapeFunction v = getScalarTest();
-//			//Call param() to get parameters, do NOT define functions here 
-//			//except for constant functions (or class FC). Because functions 
-//			//will be transformed to local coordinate system by param()
-//			MathFunc fk = getParam("k",e);
-//			MathFunc ff = getParam("f",e);
-//			switch(type) {
-//				case LHS_Domain:
-//					// k*(u_x*v_x + u_y*v_y) in \Omega
-//					return fk.M(grad(u, "x","y").dot(grad(v, "x","y")));
-//					//return fk.M( u._d("x").M(v._d("x")) .A (u._d("y").M(v._d("y"))) );
-//				case LHS_Border:
-//					// k*u*v on Robin boundary
-//					return fk.M(u.M(v));
-//				case RHS_Domain:
-//					return ff.M(v);
-//				case RHS_Border:
-//					return v.M(0.01);
-//				default:
-//					return null;
-//			}
-//		}
-		//4. Weak form
+		//4. Weak forms
 		//Right hand side(RHS):
 		final MathFunc f = - 4*(x*x + y*y) + 72;
+		//Weak form in the domain
 		WeakForm wf = new WeakForm(
 				fet, 
 				(u,v) -> 2*grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
 			);
 		wf.compile();
+		//Weak form on the boundary (robin condition)
+		WeakForm bwf = new WeakForm(
+				fet.getBoundaryFE(), //boundary finite element
+				(u,v) -> 2*u*v, 
+				v -> 0.01 * v
+			);
+		bwf.compile();
 
 		// 5.Assembly process
-		Assembler assembler = new Assembler(wf);
+		Assembler assembler = new Assembler(wf, bwf);
 		assembler.assembleGlobal(mesh);
 		Matrix stiff = assembler.getGlobalStiffMatrix();
 		Vector load = assembler.getGlobalLoadVector();

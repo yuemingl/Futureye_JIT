@@ -403,7 +403,7 @@ public class AssemblerScalar implements AssemblerOld {
 						weakForm.setDOF(null, dofI);
 						MathFunc rhsBr = weakForm.rightHandSide(be, WeakFormOld.ItemType.Border);
 						double rhsBrVal = weakForm.integrate(be, rhsBr);
-						localLoadBorder.add(nLocalRow, rhsBrVal);						
+						localLoadBorder.add(nLocalRow, rhsBrVal);
 					}
 				}
 			}

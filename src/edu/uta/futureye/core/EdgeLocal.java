@@ -66,9 +66,9 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
 	 * @param nVVFComponent
 	 * @return
 	 */
-    public NodeType getBorderType(int nVVFComponent) {                 
+    public NodeType getBorderType(int nVVFComponent) {
     	NodeType nt1 = this.beginNode().getNodeType(nVVFComponent);
-    	NodeType nt2 = this.endNode().getNodeType(nVVFComponent);                       
+    	NodeType nt2 = this.endNode().getNodeType(nVVFComponent);
     	if(nt1 == nt2) return nt1;
     	else {
     		//TODO Exception?
@@ -200,7 +200,7 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
 			DOF dof = new DOF(
 						dofIndex,
 						eDOFList.at(j).globalIndex,
-						eDOFList.at(j).getSF().restrictTo(dofIndex)
+						eDOFList.at(j).getSF()==null?null:eDOFList.at(j).getSF().restrictTo(dofIndex)
 					);
 			dof.setVVFComponent(eDOFList.at(j).getVVFComponent());
 			be.addNodeDOF(1, dof);//DOFs on first node
@@ -212,7 +212,7 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
 			DOF dof = new DOF(
 						dofIndex,
 						eDOFList.at(j).globalIndex,
-						eDOFList.at(j).getSF().restrictTo(dofIndex)
+						eDOFList.at(j).getSF()==null?null:eDOFList.at(j).getSF().restrictTo(dofIndex)
 					);
 			dof.setVVFComponent(eDOFList.at(j).getVVFComponent());
 			be.addNodeDOF(2, dof);//DOFs on second node

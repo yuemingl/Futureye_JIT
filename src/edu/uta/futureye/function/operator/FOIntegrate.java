@@ -551,4 +551,65 @@ public class FOIntegrate{
 		return rlt;
 	}
 
+	public static double intOnLinearRefElement(CompiledFunc integrand, double[] params, int paramsStart, int order) {
+		double a1_1 = 0.0;
+		double h1_1 = 2.0;
+		
+		double a2_1 = - 0.577350269189626;
+		double a2_2 = - a2_1;
+		double h2_1 = 1.0;
+		double h2_2 = h2_1;
+		
+		double a3_1 = - 0.774596669241483;
+		double a3_2 = 0.0;
+		double a3_3 = - a3_1;
+		double h3_1 = 0.555555555555556;
+		double h3_2 = 0.888888888888889;
+		double h3_3 = h3_1;
+		
+		double a4_1 = - 0.861136311594953;
+		double a4_2 = - 0.339981043584856;
+		double a4_3 = - a4_2;
+		double a4_4 = - a4_1;
+		double h4_1 = 0.347854845137454;
+		double h4_2 = 0.652145154862546;
+		double h4_3 = h4_2;
+		double h4_4 = h4_1;
+		
+		double rlt = 0.0;
+		if(order == 1) {
+			params[paramsStart] = a1_1;
+			rlt += h1_1*integrand.apply(params);
+		} else if(order == 2) {
+			params[paramsStart] = a2_1;
+			rlt += h2_1*integrand.apply(params);
+			params[paramsStart] = a2_2;
+			rlt += h2_2*integrand.apply(params);
+		} else if(order == 3) {
+			params[paramsStart] = a3_1;
+			rlt += h3_1*integrand.apply(params);
+			params[paramsStart] = a3_2;
+			rlt += h3_2*integrand.apply(params);
+			params[paramsStart] = a3_3;
+			rlt += h3_3*integrand.apply(params);
+		} else if(order == 4) {
+			params[paramsStart] = a4_1;
+			rlt += h4_1*integrand.apply(params);
+			params[paramsStart] = a4_2;
+			rlt += h4_2*integrand.apply(params);
+			params[paramsStart] = a4_3;
+			rlt += h4_3*integrand.apply(params);
+			params[paramsStart] = a4_4;
+			rlt += h4_4*integrand.apply(params);
+		} else if(order == 5) {
+			for(int i=0;i<order;i++) {
+				params[paramsStart] = a5[i];
+				rlt += h5[i]*integrand.apply(params);
+			}
+		} else {
+			System.out.println("ERROR: intOnLinearRefElement() Not supported order = "+order);
+		}
+		return rlt;
+	}
+
 }

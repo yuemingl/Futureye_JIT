@@ -1659,9 +1659,10 @@ public class Element {
 	 * in way like [x1,x2,x3,y1,y2,y3]
 	 */
 	public double[] getNodeCoords() {
-		double[] rlt = new double[nodes.size()*eleDim];
+		int dim = nodes.at(1).dim;
+		double[] rlt = new double[nodes.size()*dim];
 		int index = 0;
-		for(int j=0; j<eleDim; j++) {
+		for(int j=0; j<dim; j++) {
 			for(Node n : nodes) {
 				rlt[index++] = n.coords[j];
 			}

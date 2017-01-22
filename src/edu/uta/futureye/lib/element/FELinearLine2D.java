@@ -21,36 +21,49 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.FMath;
+import static edu.uta.futureye.function.FMath.*;
 import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.container.VertexList;
 
-public class FELinearTriangle implements FiniteElement {
-	public class TriAreaCoordR extends SingleVarFunc {
-		public TriAreaCoordR() {
+/**
+ * Linear line element in a 2D space
+ * 
+ */
+public class FELinearLine2D implements FiniteElement {
+	public class LineCoordR extends SingleVarFunc {
+		public LineCoordR() {
 			super("r", "r");
 		}
 
 		@Override
 		public double apply(double... args) {
-			//this.argIdx is wrong if we don't define BCEL bytecodeGen
-			//
 			return args[this.argIdx];
 		}
 		
-//		r_x = (y2-y3)/jac;
-//		r_y = (x3-x2)/jac;
+		/**
+		 *  x = x1*N1 + x2*N2
+		 *    = x1*(1-r)/2 + x2*(1+r)/2
+		 *    = [ x1+x2 + (x2-x1)*r ]/2
+		 *  =>
+		 *  r = [2*x - (x1+x2)]/(x2-x1) 
+		 *  r_x = 2/(x2-x1)
+		 */
 		@Override
 		public MathFunc diff(String varName) {
 			if(varName.equals("r"))
 				return FMath.C1;
 			if(varName.equals("x"))
-				return (y2-y3)/jac;
-			else if(varName.equals("y"))
-				return (x3-x2)/jac;
+				return 2.0/(x2-x1); //=1/jac
+			if(varName.equals("y"))
+				return 2.0/(y2-y1); //=1/jac
 			else
 				return FMath.C0;
+		}
+
+		public String toString() {
+			return this.varName;
 		}
 		
 		public String getExpr() {
@@ -62,10 +75,11 @@ public class FELinearTriangle implements FiniteElement {
 				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
 				String clsName) {
 			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-			mv.visitLdcInsn(argsMap.get(varName));
+			Integer argIdx = argsMap.get(varName);
+			if(argIdx == null) throw new RuntimeException("Index of "+varName+" is null!");
+			mv.visitLdcInsn(argIdx);
 			mv.visitInsn(Opcodes.DALOAD);
 		}
-		
 		@Override
 		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
 				ConstantPoolGen cp, InstructionFactory factory, 
@@ -75,88 +89,53 @@ public class FELinearTriangle implements FiniteElement {
 			il.append(new PUSH(cp, argsMap.get(this.getName())));
 			return il.append(new DALOAD());
 		}
-	}
-	public class TriAreaCoordS extends SingleVarFunc {
-		public TriAreaCoordS() {
-			super("s", "s");
-		}
 
-		@Override
-		public double apply(double... args) {
-			return args[this.argIdx];
-		}
-		
-//		s_x = (y3-y1)/jac;
-//		s_y = (x1-x3)/jac;
-		@Override
-		public MathFunc diff(String varName) {
-			if(varName.equals("s"))
-				return FMath.C1;
-			if(varName.equals("x"))
-				return (y3-y1)/jac;
-			else if(varName.equals("y"))
-				return (x1-x3)/jac;
-			else
-				return FMath.C0;
-		}
-		
-		public String getExpr() {
-			return this.varName;
-		}
-		
-		@Override
-		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
-				String clsName) {
-			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-			mv.visitLdcInsn(argsMap.get(varName));
-			mv.visitInsn(Opcodes.DALOAD);
-		}
-		
-		@Override
-		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
-				ConstantPoolGen cp, InstructionFactory factory, 
-				InstructionList il, Map<String, Integer> argsMap, 
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
-			il.append(new ALOAD(argsStartPos));
-			il.append(new PUSH(cp, argsMap.get(this.getName())));
-			return il.append(new DALOAD());
-		}
 	}
-
+	
 	FX x1 = new FX("x1");
 	FX x2 = new FX("x2");
-	FX x3 = new FX("x3");
 	FX y1 = new FX("y1");
 	FX y2 = new FX("y2");
-	FX y3 = new FX("y3");
+	LineCoordR r = new LineCoordR();
 	//Construct a function with the coordinate of points in an element as parameters
-	String[] argsOrder = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
+	String[] argsOrder = new String[]{x1,x2,y1,y2,r};
 	
 	MathFunc x;
 	MathFunc y;
 	Map<String, MathFunc> map;
-	public int nDOFs = 3;
-	MathFunc[] shapeFuncs = new MathFunc[3];
+	public int nDOFs = 2;
+	MathFunc[] shapeFuncs = new MathFunc[nDOFs];
 	MathFunc jac;
 
-	public FELinearTriangle() {
-		TriAreaCoordR r = new TriAreaCoordR();
-		TriAreaCoordS s = new TriAreaCoordS();
+	public FELinearLine2D() {
+		/**
+		 * shape functions
+		 * 
+		 *  1-----2  -->r
+		 * -1  0  1
+		 * 
+		 * N1 = (1-r)/2
+		 * N2 = (1+r)/2
+		 * 
+		 * @param funID = 1,2
+		 * 
+		 */
+		shapeFuncs[0] = (1-r)/2;
+		shapeFuncs[1] = (1+r)/2;
+
+		//coordinate transform
+		x = x1*shapeFuncs[0] + x2*shapeFuncs[1];
+		y = y1*shapeFuncs[0] + y2*shapeFuncs[1];
 		
-		//shape functions
-		shapeFuncs[0] = r;
-		shapeFuncs[1] = s;
-		shapeFuncs[2] = 1 - r - s;
-		
-		x = x1*r + x2*s + x3*(1-r-s);
-		y = y1*r + y2*s + y3*(1-r-s);
 		map = new HashMap<String, MathFunc>();
 		map.put("x", x);
-		map.put("y", y);
-		// Jacobian Matrix = (r[0] r[1]) = (x_r, x_s)
-		//                   (r[2] r[3])   (y_r, y_s)
-		jac = x.diff("r")*y.diff("s") - y.diff("r")*x.diff("s");
+		
+		/**  
+		 *  Compute 1D determinant of Jacobian matrix
+		 *  1D: det(Jac) = x_r
+		 *  2D boundary: det(Jac)= sqrt(x_r^2 + y_r^2)
+		 */
+		jac = sqrt(pow(x.diff("r"),2) + pow(y.diff("r"),2));
 	}
 
 	@Override
@@ -184,13 +163,6 @@ public class FELinearTriangle implements FiniteElement {
 		return this.jac;
 	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		FELinearTriangle t = new FELinearTriangle();
-		TriAreaCoordR r = t.new TriAreaCoordR();
-		System.out.println(r);
-	}
-	
 	public void assignTo(Element e) {
 		VertexList vertices = e.vertices();
 		for(int j=1;j<=vertices.size();j++) {
@@ -207,7 +179,7 @@ public class FELinearTriangle implements FiniteElement {
 
 	@Override
 	public FiniteElement getBoundaryFE() {
-		return new FELinearLine2D();
+		return null;
 	}
 
 }
