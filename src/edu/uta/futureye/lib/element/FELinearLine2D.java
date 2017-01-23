@@ -166,6 +166,7 @@ public class FELinearLine2D implements FiniteElement {
 
 	public void assignTo(Element e) {
 		VertexList vertices = e.vertices();
+		e.clearAllDOF();
 		for(int j=1;j<=vertices.size();j++) {
 			Vertex v = vertices.at(j);
 			//Assign shape function to DOF

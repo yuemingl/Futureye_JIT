@@ -7,21 +7,31 @@ import static edu.uta.futureye.function.FMath.y;
 
 import java.util.HashMap;
 
+import edu.uta.futureye.algebra.SparseMatrixRowMajor;
+import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
+import edu.uta.futureye.algebra.intf.SparseMatrix;
+import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
+import edu.uta.futureye.bytecode.CompiledFunc;
+import edu.uta.futureye.core.DOF;
+import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.Assembler;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
 import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.Utils;
+import edu.uta.futureye.util.container.DOFList;
+import edu.uta.futureye.util.container.ElementList;
 
 /**
  * <blockquote><pre>
@@ -106,8 +116,112 @@ public class LaplaceTestRectangle {
 		writer.writeTechplot("./tutorial/Laplace2DRectangle.dat", u);
 	}
 
+	
+	/**
+	 * Use two assemblers
+	 */
+	public void run2() {
+		// 1.Read mesh
+		MeshReader reader = new MeshReader("grids/rectangle.grd");
+		Mesh mesh = reader.read2DMesh();
+		// Compute geometry relationship between nodes and elements
+		mesh.computeNodeBelongsToElements();
+
+		// 2.Mark border types
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+		//Robin type on boundary x=3.0 of \Omega
+		mapNTF.put(NodeType.Robin, new MultiVarFunc("Robin", "x","y"){
+			@Override
+			public double apply(double... args) {
+				if(Math.abs(3.0-args[this.argIdx[0]]) < 0.01)
+					return 1.0; //this is Robin condition
+				else
+					return -1.0;
+			}
+		});
+		//Dirichlet type on other boundary of \Omega
+		mapNTF.put(NodeType.Dirichlet, null);
+		mesh.markBorderNode(mapNTF);
+
+		// 3.Use finite element library to assign degrees of
+		// freedom (DOF) to element
+		FEBilinearRectangle fet = new FEBilinearRectangle();
+		for(Element e : mesh.getElementList())
+			fet.assignTo(e);
+
+		//4. Weak forms
+		//Right hand side(RHS):
+		final MathFunc f = - 4*(x*x + y*y) + 72;
+		//Weak form in the domain
+		WeakForm wf = new WeakForm(
+				fet, 
+				(u,v) -> 2*grad(u, "x", "y").dot(grad(v, "x", "y")), 
+				v -> f * v
+			);
+		wf.compile();
+		//Weak form on the boundary (robin condition)
+		WeakForm bwf = new WeakForm(
+				fet.getBoundaryFE(), //boundary finite element
+				(u,v) -> 2*u*v, 
+				v -> 0.01 * v
+			);
+		bwf.compile();
+
+		// 5.Assembly process
+		Assembler domainAssembler = new Assembler(wf);
+		domainAssembler.assembleGlobal(mesh);
+		Matrix stiff = domainAssembler.getGlobalStiffMatrix();
+		Vector load = domainAssembler.getGlobalLoadVector();
+		
+		Assembler boundaryAssembler = new Assembler(bwf);
+		for (Element e : mesh.getElementList()) {
+			if(e.isBorderElement()) {
+				ElementList beList = e.getBorderElements();
+				for(int n=1;n<=beList.size();n++) {
+					//Boundary element
+					Element be = beList.at(n);
+					//Check node type
+					NodeType nodeType = be.getBorderNodeType();
+					if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
+						//Associate boundary finite element to the boundary element
+						bwf.getFiniteElement().assignTo(be);
+						//Assemble locally
+						boundaryAssembler.assembleLocal(be);
+						double[][] beA = boundaryAssembler.getLocalStiffMatrix();
+						double[] beb = boundaryAssembler.getLocalLoadVector();
+						DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
+						for (int j = 0; j < beDOFs.size(); j++) {
+							DOF dofI = beDOFs.at(j + 1);
+							int nGlobalRow = dofI.getGlobalIndex();
+							for (int i = 0; i < beDOFs.size(); i++) {
+								DOF dofJ = beDOFs.at(i + 1);
+								int nGlobalCol = dofJ.getGlobalIndex();
+								stiff.add(nGlobalRow, nGlobalCol, beA[j][i]);
+							}
+							// Local load vector
+							load.add(nGlobalRow, beb[j]);
+						}
+					}
+				}
+			}
+		}
+		// Boundary condition
+		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
+
+		// 6.Solve linear system
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector u = solver.solveDGESV(stiff, load);
+		System.out.println("u=");
+		for (int i = 1; i <= u.getDim(); i++)
+			System.out.println(String.format("%.3f ", u.get(i)));
+
+		// 7.Output results to an Techplot format file
+		MeshWriter writer = new MeshWriter(mesh);
+		writer.writeTechplot("./tutorial/Laplace2DRectangle.dat", u);
+	}
 	public static void main(String[] args) {
 		LaplaceTestRectangle ex1 = new LaplaceTestRectangle();
-		ex1.run();
+		//ex1.run();
+		ex1.run2();
 	}
 }

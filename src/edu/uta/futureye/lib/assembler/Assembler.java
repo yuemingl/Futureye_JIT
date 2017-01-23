@@ -73,7 +73,16 @@ public class Assembler {
 
 		domainWF.getCompiledJac().apply(params);
 
-		if(domainWF.getFiniteElement().getNumberOfDOFs() == 3) {
+		if(domainWF.getFiniteElement().getNumberOfDOFs() == 2) {
+		for(int j=0;j<nDOFs;j++) {
+			for(int i=0;i<nDOFs;i++) {
+				A[j][i] = FOIntegrate.intOnLinearRefElement(domainWF.getCompiledLHS()[j][i], 
+						params, coords.length, 5);
+			}
+			b[j] = FOIntegrate.intOnLinearRefElement(domainWF.getCompiledRHS()[j], 
+					params, coords.length, 5);
+		}
+		} else if(domainWF.getFiniteElement().getNumberOfDOFs() == 3) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnTriangleRefElement(domainWF.getCompiledLHS()[j][i], 
