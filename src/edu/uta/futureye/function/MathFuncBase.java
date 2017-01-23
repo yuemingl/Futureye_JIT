@@ -87,10 +87,11 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 			return this; //No compose
 		else {
 			MathFunc ret = new FComposite(this, fInners);
-			if(this instanceof FComposite && this.isOuterVarActive())
-				ret.setOuterVarActive();
-			else
-				ret.setInnerVarActive();
+//this is not have to be a composite function. so, this is useless
+//			if(this instanceof FComposite && this.isOuterVarActive())
+//				ret.setOuterVarActive();
+//			else
+//				ret.setInnerVarActive();
 			return ret;
 		}
 	}

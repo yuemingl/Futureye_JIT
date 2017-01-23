@@ -196,6 +196,9 @@ public class FComposite extends MultiVarFunc {
 						rltOuter = rltOuter.compose(fInners);
 						//No need. see MathFuncBase.compose()
 						//rltOuter.setOuterVarActive();
+						//we need this
+						if(this.isOuterVarActive())
+							rltOuter.setOuterVarActive();
 					}
 					MathFunc rltInner = fInner.diff(varName);
 					//f_x * x_r + f_y * y_r
