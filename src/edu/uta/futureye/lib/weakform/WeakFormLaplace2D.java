@@ -85,6 +85,7 @@ public class WeakFormLaplace2D extends AbstractScalarWeakForm {
 			if(g_c != null) fc = Utils.interpolateOnElement(g_c, e);
 			//if(g_f != null) ff = Utils.interpolateOnElement(g_f, e); //T02Laplace 80.824
 			if(g_f != null) { //T02Laplace 80.839
+				//TODO do not work for rectangle element!!!
 				Map<String, MathFunc> fInners = new HashMap<String, MathFunc>();
 				fInners.put("x", 
 						r.M(e.nodes.at(1).coord(1))+

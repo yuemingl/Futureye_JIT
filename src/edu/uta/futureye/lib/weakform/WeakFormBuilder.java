@@ -56,6 +56,7 @@ public class WeakFormBuilder {
 			throw new FutureyeException("Can NOT find the parameter "+fName+"!");
 		MathFunc ff = Utils.interpolateOnElement(f,e);
 		return ff;
+//		return f;
 	}
 	
 	public ScalarShapeFunction getScalarTrial() {

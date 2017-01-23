@@ -117,7 +117,6 @@ public class Assembler {
 						for(int i=0;i<nBeDOFs;i++) {
 							beA[j][i] = FOIntegrate.intOnLinearRefElement(boundaryWF.getCompiledLHS()[j][i], 
 									beParams, beCoords.length, 5);
-							System.out.println(beA[j][i]+"***");
 						}
 						beb[j] = FOIntegrate.intOnLinearRefElement(boundaryWF.getCompiledRHS()[j], 
 								beParams, beCoords.length, 5);

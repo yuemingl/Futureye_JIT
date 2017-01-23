@@ -23,6 +23,8 @@ import edu.uta.futureye.lib.element.FEBilinearRectangleOld;
 import edu.uta.futureye.lib.element.FEBilinearRectangleRegular;
 import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.lib.weakform.WeakFormBuilder;
+import edu.uta.futureye.lib.weakform.WeakFormLaplace;
+import edu.uta.futureye.lib.weakform.WeakFormLaplace2D;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.ObjList;
 
@@ -162,13 +164,12 @@ public class T04UseWeakFormBuilder {
         //3.Use element library to assign degrees of
         //  freedom (DOF) to element
         ElementList eList = mesh.getElementList();
-		FEBilinearRectangleOld bilinearRectangle = new FEBilinearRectangleOld();
+		//FEBilinearRectangleOld bilinearRectangle = new FEBilinearRectangleOld();
         //If the boundary of element parallel with coordinate use this one instead.
         //It will be faster than the old one.
-		//FEBilinearRectangleRegular bilinearRectangle = new FEBilinearRectangleRegular();
+		FEBilinearRectangleRegular bilinearRectangle = new FEBilinearRectangleRegular();
         for(int i=1;i<=eList.size();i++)
-        	bilinearRectangle.assignTo(eList.at(i));		
-		
+        	bilinearRectangle.assignTo(eList.at(i));
 		
         //4.Weak form. We use WeakFormBuilder to define weak form
 		WeakFormBuilder wfb = new WeakFormBuilder() {
@@ -205,6 +206,13 @@ public class T04UseWeakFormBuilder {
         //Right hand side(RHS): f = -4*(x^2+y^2)+72
         wfb.addParam("f",x.M(x).A(y.M(y)).M(-4.0).A(72.0));
 		
+//        WeakFormLaplace weakForm = new WeakFormLaplace();
+//        weakForm.setF(x.M(x).A(y.M(y)).M(-4.0).A(72.0));
+//        weakForm.setParam(C(2.0), C0, C(0.01), C1);
+//        AssemblerScalar assembler =
+//                new AssemblerScalar(mesh, weakForm);
+
+        
         //5.Assembly process
         AssemblerScalar assembler =
                 new AssemblerScalar(mesh, wfb.getScalarWeakForm());

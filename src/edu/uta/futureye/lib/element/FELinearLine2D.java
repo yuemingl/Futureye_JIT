@@ -120,8 +120,8 @@ public class FELinearLine2D implements FiniteElement {
 		 * @param funID = 1,2
 		 * 
 		 */
-		shapeFuncs[0] = (1-r)/2;
-		shapeFuncs[1] = (1+r)/2;
+		shapeFuncs[0] = 0.5*(1-r);
+		shapeFuncs[1] = 0.5*(1+r);
 
 		//coordinate transform
 		x = x1*shapeFuncs[0] + x2*shapeFuncs[1];
@@ -136,6 +136,7 @@ public class FELinearLine2D implements FiniteElement {
 		 *  2D boundary: det(Jac)= sqrt(x_r^2 + y_r^2)
 		 */
 		jac = sqrt(pow(x.diff("r"),2) + pow(y.diff("r"),2));
+		//jac = sqrt(x.diff("r")*x.diff("r") + y.diff("r")*y.diff("r"));
 	}
 
 	@Override

@@ -173,6 +173,8 @@ public class SFBilinearLocal2DRegular extends MultiVarFunc implements ScalarShap
 		funCompose = FC.c(this.coef).M(
 					funOuter.compose(fInners)
 				);
+		funCompose.setOuterVarActive();
+		funCompose.setArgIdx(Utils.getIndexMap(this.getVarNames()));
 	}
 
 	public SFBilinearLocal2DRegular(int funID,double coef) {
@@ -228,7 +230,6 @@ public class SFBilinearLocal2DRegular extends MultiVarFunc implements ScalarShap
 
 	@Override
 	public double apply(double... args) {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.funCompose.apply(args);
 	}
 }

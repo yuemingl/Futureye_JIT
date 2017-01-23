@@ -529,18 +529,23 @@ public class FOIntegrate{
 			params[paramsStart+1] = a1_1;
 			rlt += h1_1*integrand.apply(params);
 		} else if(order == 2) {
-			params[paramsStart] = a2; params[paramsStart+1] = a2;
+			params[paramsStart] = a2; 
+			params[paramsStart+1] = a2;
 			rlt += integrand.apply(params);
-			params[paramsStart] = -a2; params[paramsStart+1] = a2;
+			params[paramsStart] = -a2; 
+			params[paramsStart+1] = a2;
 			rlt += integrand.apply(params);
-			params[paramsStart] = a2; params[paramsStart+1] = -a2;
+			params[paramsStart] = a2; 
+			params[paramsStart+1] = -a2;
 			rlt += integrand.apply(params);
-			params[paramsStart] = -a2; params[paramsStart+1] = -a2;
+			params[paramsStart] = -a2; 
+			params[paramsStart+1] = -a2;
 			rlt += integrand.apply(params);
 		} else if(order == 5) {
 			for(int i=0;i<order;i++) {
 				for(int j=0;j<order;j++) {
-					params[paramsStart] = a5[i]; params[paramsStart+1] = a5[j];
+					params[paramsStart] = a5[i]; 
+					params[paramsStart+1] = a5[j];
 					rlt += h5[i]*h5[j]*integrand.apply(params);
 				}
 			}
