@@ -27,6 +27,7 @@ import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.Assembler;
+import edu.uta.futureye.lib.assembler.BasicAssembler;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
 import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.Utils;
@@ -168,12 +169,12 @@ public class LaplaceTestRectangle {
 		bwf.compile();
 
 		// 5.Assembly process
-		Assembler domainAssembler = new Assembler(wf);
+		BasicAssembler domainAssembler = new BasicAssembler(wf);
 		domainAssembler.assembleGlobal(mesh);
 		Matrix stiff = domainAssembler.getGlobalStiffMatrix();
 		Vector load = domainAssembler.getGlobalLoadVector();
 		
-		Assembler boundaryAssembler = new Assembler(bwf);
+		BasicAssembler boundaryAssembler = new BasicAssembler(bwf);
 		for (Element e : mesh.getElementList()) {
 			if(e.isBorderElement()) {
 				ElementList beList = e.getBorderElements();
@@ -221,7 +222,7 @@ public class LaplaceTestRectangle {
 	}
 	public static void main(String[] args) {
 		LaplaceTestRectangle ex1 = new LaplaceTestRectangle();
-		//ex1.run();
-		ex1.run2();
+		ex1.run();    //23.518
+		//ex1.run2(); //23.518
 	}
 }
