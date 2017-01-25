@@ -32,21 +32,17 @@ public class Assembler {
 	}
 	
 	/**
-	 * Assemble on a give element
+	 * Assemble local stiff and load on a give element
 	 * @param e
 	 */
 	public void assembleLocal(Element e) {
 		domainAss.assembleLocal(e);
 		if(e.isBorderElement()) {
-			ElementList beList = e.getBorderElements();
-			for(int n=1;n<=beList.size();n++) {
-				//Boundary element
-				Element be = beList.at(n);
-	
+			for(Element be : e.getBorderElements()) {
 				//Check node type
 				NodeType nodeType = be.getBorderNodeType();
 				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
-					//Associate boundary finite element to the boundary element
+					//Associate boundary FiniteElement object to the boundary element
 					this.boundaryAss.weakForm.getFiniteElement().assignTo(be);
 						this.boundaryAss.assembleLocal(be);
 				}
@@ -80,41 +76,32 @@ public class Assembler {
 		ElementList eList = mesh.getElementList();
 		
 		for(Element e : eList) {
+			
 			assembleLocal(e);
+			
 			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
 			for(int j=0;j<DOFs.size();j++) {
-				DOF dofI = DOFs.at(j+1);
-				int nGlobalRow = dofI.getGlobalIndex();
+				DOF dofJ = DOFs.at(j+1);
 				for(int i=0;i<DOFs.size();i++) {
-					DOF dofJ = DOFs.at(i+1);
-					int nGlobalCol = dofJ.getGlobalIndex();
-					stiff.add(nGlobalRow, nGlobalCol, this.domainAss.A[j][i]);
+					DOF dofI = DOFs.at(i+1);
+					stiff.add(dofJ.getGlobalIndex(), dofI.getGlobalIndex(), this.domainAss.A[j][i]);
 				}
-				//Local load vector
-				load.add(nGlobalRow, this.domainAss.b[j]);
+				load.add(dofJ.getGlobalIndex(), this.domainAss.b[j]);
 			}
 			
-			if(e.isBorderElement()) {
-				ElementList beList = e.getBorderElements();
-				for(int n=1;n<=beList.size();n++) {
-					//Boundary element
-					Element be = beList.at(n);
-
-					//Check node type
-					NodeType nodeType = be.getBorderNodeType();
-					if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
-						DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
-						for(int j=0;j<beDOFs.size();j++) {
-							DOF beDOFI = beDOFs.at(j+1);
-							int nGlobalRow = beDOFI.getGlobalIndex();
-							for(int i=0;i<beDOFs.size();i++) {
-								DOF beDOFJ = beDOFs.at(i+1);
-								int nGlobalCol = beDOFJ.getGlobalIndex();
-								stiff.add(nGlobalRow, nGlobalCol, this.boundaryAss.A[j][i]);
-							}
-							//Local load vector
-							load.add(nGlobalRow, this.boundaryAss.b[j]);
+			// Use BasicAssembler to assemble boundary elements
+			for(Element be : e.getBorderElements()) {
+				//Check node type
+				NodeType nodeType = be.getBorderNodeType();
+				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
+					DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
+					for(int j=0;j<beDOFs.size();j++) {
+						DOF beDOFJ = beDOFs.at(j+1);
+						for(int i=0;i<beDOFs.size();i++) {
+							DOF beDOFI = beDOFs.at(i+1);
+							stiff.add(beDOFJ.getGlobalIndex(), beDOFI.getGlobalIndex(), this.boundaryAss.A[j][i]);
 						}
+						load.add(beDOFJ.getGlobalIndex(), this.boundaryAss.b[j]);
 					}
 				}
 			}

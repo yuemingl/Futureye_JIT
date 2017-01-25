@@ -7,32 +7,25 @@ import static edu.uta.futureye.function.FMath.y;
 
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.SparseMatrixRowMajor;
-import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
-import edu.uta.futureye.algebra.intf.SparseMatrix;
-import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
-import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.Assembler;
 import edu.uta.futureye.lib.assembler.BasicAssembler;
+import edu.uta.futureye.lib.assembler.DomainBoundaryAssembler;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
 import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.DOFList;
-import edu.uta.futureye.util.container.ElementList;
 
 /**
  * <blockquote><pre>
@@ -98,7 +91,8 @@ public class LaplaceTestRectangle {
 		bwf.compile();
 
 		// 5.Assembly process
-		Assembler assembler = new Assembler(wf, bwf);
+		//Assembler assembler = new Assembler(wf, bwf);
+		DomainBoundaryAssembler assembler = new DomainBoundaryAssembler(wf, bwf);
 		assembler.assembleGlobal(mesh);
 		Matrix stiff = assembler.getGlobalStiffMatrix();
 		Vector load = assembler.getGlobalLoadVector();
@@ -173,35 +167,30 @@ public class LaplaceTestRectangle {
 		domainAssembler.assembleGlobal(mesh);
 		Matrix stiff = domainAssembler.getGlobalStiffMatrix();
 		Vector load = domainAssembler.getGlobalLoadVector();
-		
 		BasicAssembler boundaryAssembler = new BasicAssembler(bwf);
 		for (Element e : mesh.getElementList()) {
-			if(e.isBorderElement()) {
-				ElementList beList = e.getBorderElements();
-				for(int n=1;n<=beList.size();n++) {
-					//Boundary element
-					Element be = beList.at(n);
-					//Check node type
-					NodeType nodeType = be.getBorderNodeType();
-					if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
-						//Associate boundary finite element to the boundary element
-						bwf.getFiniteElement().assignTo(be);
-						//Assemble locally
-						boundaryAssembler.assembleLocal(be);
-						double[][] beA = boundaryAssembler.getLocalStiffMatrix();
-						double[] beb = boundaryAssembler.getLocalLoadVector();
-						DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
-						for (int j = 0; j < beDOFs.size(); j++) {
-							DOF dofI = beDOFs.at(j + 1);
-							int nGlobalRow = dofI.getGlobalIndex();
-							for (int i = 0; i < beDOFs.size(); i++) {
-								DOF dofJ = beDOFs.at(i + 1);
-								int nGlobalCol = dofJ.getGlobalIndex();
-								stiff.add(nGlobalRow, nGlobalCol, beA[j][i]);
-							}
-							// Local load vector
-							load.add(nGlobalRow, beb[j]);
+			// Use BasicAssembler to assemble boundary elements
+			for(Element be : e.getBorderElements()) {
+				// Check node type
+				NodeType nodeType = be.getBorderNodeType();
+				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
+					// Associate the boundary FiniteElement object to the boundary element
+					bwf.getFiniteElement().assignTo(be);
+					
+					// Assemble locally on boundary element
+					boundaryAssembler.assembleLocal(be);
+					double[][] beA = boundaryAssembler.getLocalStiffMatrix();
+					double[] beb = boundaryAssembler.getLocalLoadVector();
+					
+					// Get all local DOF of the boundary element for local-global indexing
+					DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
+					for (int j = 0; j < beDOFs.size(); j++) {
+						DOF dofJ = beDOFs.at(j + 1);
+						for (int i = 0; i < beDOFs.size(); i++) {
+							DOF dofI = beDOFs.at(i + 1);
+							stiff.add(dofJ.getGlobalIndex(), dofI.getGlobalIndex(), beA[j][i]);
 						}
+						load.add(dofJ.getGlobalIndex(), beb[j]);
 					}
 				}
 			}
@@ -223,6 +212,6 @@ public class LaplaceTestRectangle {
 	public static void main(String[] args) {
 		LaplaceTestRectangle ex1 = new LaplaceTestRectangle();
 		ex1.run();    //23.518
-		//ex1.run2(); //23.518
+		ex1.run2(); //23.518
 	}
 }
