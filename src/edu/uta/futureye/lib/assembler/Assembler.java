@@ -36,16 +36,17 @@ public class Assembler {
 	 * @param e
 	 */
 	public void assembleLocal(Element e) {
+		// Assemble on domain element
 		domainAss.assembleLocal(e);
-		if(e.isBorderElement()) {
-			for(Element be : e.getBorderElements()) {
-				//Check node type
-				NodeType nodeType = be.getBorderNodeType();
-				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
-					//Associate boundary FiniteElement object to the boundary element
-					this.boundaryAss.weakForm.getFiniteElement().assignTo(be);
-						this.boundaryAss.assembleLocal(be);
-				}
+		
+		// Assemble on boundary element
+		for(Element be : e.getBorderElements()) {
+			//Check node type
+			NodeType nodeType = be.getBorderNodeType();
+			if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
+				//Associate boundary FiniteElement object to the boundary element
+				this.boundaryAss.weakForm.getFiniteElement().assignTo(be);
+					this.boundaryAss.assembleLocal(be);
 			}
 		}
 	}
@@ -77,8 +78,10 @@ public class Assembler {
 		
 		for(Element e : eList) {
 			
+			// Assemble locally
 			assembleLocal(e);
 			
+			// Get local-global indexing
 			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
 			for(int j=0;j<DOFs.size();j++) {
 				DOF dofJ = DOFs.at(j+1);
@@ -94,6 +97,7 @@ public class Assembler {
 				//Check node type
 				NodeType nodeType = be.getBorderNodeType();
 				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
+					// Get local-global indexing
 					DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
 					for(int j=0;j<beDOFs.size();j++) {
 						DOF beDOFJ = beDOFs.at(j+1);
