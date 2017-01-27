@@ -2,6 +2,7 @@ package edu.uta.futureye.function;
 
 import static org.apache.bcel.Constants.ACC_PUBLIC;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -327,7 +328,12 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 
 			byte[] bcode = cgen.dump();
 			if (writeFile) {
-				FileOutputStream fos = new FileOutputStream(genClassName + ".class");
+				File dir = new File("gen_classes");
+				if(!dir.exists()) {
+					dir.mkdir();
+				}
+
+				FileOutputStream fos = new FileOutputStream("gen_classes/"+genClassName + ".class");
 				fos.write(bcode);
 				fos.close();
 			}
