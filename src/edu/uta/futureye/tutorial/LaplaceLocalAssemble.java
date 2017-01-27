@@ -63,7 +63,7 @@ public class LaplaceLocalAssemble {
 		// 3. Linear triangular finite element
 		FELinearTriangle feTri = new FELinearTriangle();
 
-		// 4. Weak form
+		// 4. Weak form definition
 		final MathFunc f = -2 * (x * x + y * y) + 36; //Right hand side (RHS)
 		WeakForm wf = new WeakForm(
 				feTri, 
@@ -72,7 +72,7 @@ public class LaplaceLocalAssemble {
 			);
 		wf.compile();
 
-		// 5. Assembly process
+		// 5. Assembly and boundary condition(s)
 		Assembler assembler = new Assembler(wf);
 		int dim = mesh.getNodeList().size();
 		SparseMatrix stiff = new SparseMatrixRowMajor(dim, dim);
@@ -97,7 +97,7 @@ public class LaplaceLocalAssemble {
 				load.add(nGlobalRow, b[j]);
 			}
 		}
-		// Boundary condition
+		// Apply zero Dirichlet boundary condition
 		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
 
 		// 6. Solve linear system
@@ -107,7 +107,7 @@ public class LaplaceLocalAssemble {
 		for (int i = 1; i <= u.getDim(); i++)
 			System.out.println(String.format("%.3f ", u.get(i)));
 
-		// 7. Output results to an Techplot format file
+		// 7. Output the result to a file with Techplot format
 		MeshWriter writer = new MeshWriter(mesh);
 		writer.writeTechplot("./tutorial/Laplace2D.dat", u);
 	}

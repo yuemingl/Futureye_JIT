@@ -53,34 +53,31 @@ public class LaplaceGlobalAssemble {
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
-		// 3. Linear triangular finite element
-		FELinearTriangle feTri = new FELinearTriangle();
-
-		// 4. Weak form
+		// 3. Weak form definition
 		final MathFunc f = -2 * (x * x + y * y) + 36; //Right hand side (RHS)
 		WeakForm wf = new WeakForm(
-				feTri, 
+				new FELinearTriangle(), // Linear triangular finite element
 				(u,v) -> grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
 			);
 		wf.compile();
 
-		// 5. Assembly process
+		// 4. Assembly and boundary condition(s)
 		Assembler assembler = new Assembler(wf);
 		assembler.assembleGlobal(mesh);
 		Matrix stiff = assembler.getGlobalStiffMatrix();
 		Vector load = assembler.getGlobalLoadVector();
-		// Boundary condition
+		// Apply zero Dirichlet boundary condition
 		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
 
-		// 6. Solve linear system
+		// 5. Solve the linear system
 		SolverJBLAS solver = new SolverJBLAS();
 		Vector u = solver.solveDGESV(stiff, load);
 		System.out.println("u=");
 		for (int i = 1; i <= u.getDim(); i++)
 			System.out.println(String.format("%.3f ", u.get(i)));
 
-		// 7. Output results to an Techplot format file
+		// 6. Output the result to a file with Techplot format
 		MeshWriter writer = new MeshWriter(mesh);
 		writer.writeTechplot("./tutorial/Laplace2D.dat", u);
 	}

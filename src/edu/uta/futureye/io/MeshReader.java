@@ -70,7 +70,7 @@ public class MeshReader {
 							list.add(mesh.getNodeList().at(Integer.valueOf(line[5])));
 							list.add(mesh.getNodeList().at(Integer.valueOf(line[6])));
 							Element ele = new Element(list);
-							mesh.addElement(ele);						
+							mesh.addElement(ele);
 						}
 					}
 				}
