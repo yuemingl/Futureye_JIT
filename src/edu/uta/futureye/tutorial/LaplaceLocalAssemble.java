@@ -49,40 +49,38 @@ import edu.uta.futureye.util.container.DOFList;
 
 public class LaplaceLocalAssemble {
 	public void run() {
-		// 1.Read mesh
+		// 1. Read in mesh
 		MeshReader reader = new MeshReader("grids/triangle.grd");
 		Mesh mesh = reader.read2DMesh();
 		// Compute geometry relationship between nodes and elements
 		mesh.computeNodeBelongsToElements();
 
-		// 2.Mark border types
+		// 2. Mark boundary types
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
-		// 3.Use finite element library to assign degrees of
-		// freedom (DOF) to element
-		FELinearTriangle fet = new FELinearTriangle();
-		for(Element e : mesh.getElementList())
-			fet.assignTo(e);
+		// 3. Linear triangular finite element
+		FELinearTriangle feTri = new FELinearTriangle();
 
-		//4. Weak form
-		//Right hand side(RHS):
-		final MathFunc f = -2 * (x * x + y * y) + 36;
+		// 4. Weak form
+		final MathFunc f = -2 * (x * x + y * y) + 36; //Right hand side (RHS)
 		WeakForm wf = new WeakForm(
-				fet, 
+				feTri, 
 				(u,v) -> grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
 			);
 		wf.compile();
 
-		// 5.Assembly process
+		// 5. Assembly process
 		Assembler assembler = new Assembler(wf);
 		int dim = mesh.getNodeList().size();
 		SparseMatrix stiff = new SparseMatrixRowMajor(dim, dim);
 		SparseVector load = new SparseVectorHashMap(dim);
-		int nDOFs = fet.getNumberOfDOFs();
+		int nDOFs = feTri.getNumberOfDOFs();
 		for (Element e : mesh.getElementList()) {
+			// Associate FiniteElement object with Element object
+			feTri.assignTo(e);
 			assembler.assembleLocal(e);
 			double[][] A = assembler.getLocalStiffMatrix();
 			double[] b = assembler.getLocalLoadVector();
@@ -102,14 +100,14 @@ public class LaplaceLocalAssemble {
 		// Boundary condition
 		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
 
-		// 6.Solve linear system
+		// 6. Solve linear system
 		SolverJBLAS solver = new SolverJBLAS();
 		Vector u = solver.solveDGESV(stiff, load);
 		System.out.println("u=");
 		for (int i = 1; i <= u.getDim(); i++)
 			System.out.println(String.format("%.3f ", u.get(i)));
 
-		// 7.Output results to an Techplot format file
+		// 7. Output results to an Techplot format file
 		MeshWriter writer = new MeshWriter(mesh);
 		writer.writeTechplot("./tutorial/Laplace2D.dat", u);
 	}

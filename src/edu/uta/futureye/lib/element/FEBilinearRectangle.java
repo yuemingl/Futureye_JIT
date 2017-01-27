@@ -233,6 +233,7 @@ public class FEBilinearRectangle implements FiniteElement {
 	}
 
 	public void assignTo(Element e) {
+		e.clearAllDOF();
 		VertexList vertices = e.vertices();
 		for(int j=1;j<=vertices.size();j++) {
 			Vertex v = vertices.at(j);

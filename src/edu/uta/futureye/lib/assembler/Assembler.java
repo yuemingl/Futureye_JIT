@@ -98,6 +98,9 @@ public class Assembler {
 	public void assembleGlobal(Element e, Matrix stiff, Vector load) {
 		// Assemble locally
 		assembleLocal(e);
+		
+		// Associate FiniteElement object with Element object
+		this.assembler.weakForm.getFiniteElement().assignTo(e);
 
 		// Get local-global indexing
 		DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);

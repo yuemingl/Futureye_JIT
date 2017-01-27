@@ -105,9 +105,7 @@ public class DomainBoundaryAssemblerRaw {
 				//Check node type
 				NodeType nodeType = be.getBorderNodeType();
 				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
-					//Associate boundary finite element to the boundary element
-					this.boundaryWF.getFiniteElement().assignTo(be);
-					
+
 					double[] beCoords = be.getNodeCoords();
 					System.arraycopy(beCoords, 0, beParams, 0, beCoords.length);
 
@@ -156,6 +154,10 @@ public class DomainBoundaryAssemblerRaw {
 		
 		for(Element e : eList) {
 			assembleLocal(e);
+
+			// Associate FiniteElement object with Element object
+			this.domainWF.getFiniteElement().assignTo(e);
+
 			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
 			for(int j=0;j<nDOFs;j++) {
 				DOF dofI = DOFs.at(j+1);
@@ -178,6 +180,10 @@ public class DomainBoundaryAssemblerRaw {
 					//Check node type
 					NodeType nodeType = be.getBorderNodeType();
 					if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
+						
+						// Associate FiniteElement object with Element object
+						this.boundaryWF.getFiniteElement().assignTo(be);
+
 						DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
 						for(int j=0;j<nBeDOFs;j++) {
 							DOF beDOFI = beDOFs.at(j+1);

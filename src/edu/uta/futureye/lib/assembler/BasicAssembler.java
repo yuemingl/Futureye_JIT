@@ -36,7 +36,7 @@ public class BasicAssembler {
 	 * @param e
 	 */
 	public void assembleLocal(Element e) {
-		//e.adjustVerticeToCounterClockwise();
+		e.adjustVerticeToCounterClockwise();
 
 		double[] coords = e.getNodeCoords();
 		System.arraycopy(coords, 0, params, 0, coords.length);
@@ -100,9 +100,12 @@ public class BasicAssembler {
 	 */
 	public void assembleGlobal(Mesh mesh, Matrix stiff, Vector load) {
 		ElementList eList = mesh.getElementList();
-		
 		for(Element e : eList) {
 			assembleLocal(e);
+			
+			// Associate FiniteElement object with Element object
+			this.weakForm.getFiniteElement().assignTo(e);
+
 			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
 			for(int j=0;j<nDOFs;j++) {
 				DOF dofI = DOFs.at(j+1);

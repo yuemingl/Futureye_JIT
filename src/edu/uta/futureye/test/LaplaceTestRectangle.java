@@ -69,8 +69,8 @@ public class LaplaceTestRectangle {
 		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
 		FEBilinearRectangle fet = new FEBilinearRectangle();
-		for(Element e : mesh.getElementList())
-			fet.assignTo(e);
+//		for(Element e : mesh.getElementList())
+//			fet.assignTo(e);
 
 		//4. Weak forms
 		//Right hand side(RHS):
@@ -141,8 +141,8 @@ public class LaplaceTestRectangle {
 		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
 		FEBilinearRectangle fet = new FEBilinearRectangle();
-		for(Element e : mesh.getElementList())
-			fet.assignTo(e);
+//		for(Element e : mesh.getElementList())
+//			fet.assignTo(e);
 
 		//4. Weak forms
 		//Right hand side(RHS):
@@ -240,8 +240,8 @@ public class LaplaceTestRectangle {
 		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
 		FEBilinearRectangle fet = new FEBilinearRectangle();
-		for(Element e : mesh.getElementList())
-			fet.assignTo(e);
+//		for(Element e : mesh.getElementList())
+//			fet.assignTo(e);
 
 		//4. Weak forms
 		//Right hand side(RHS):
@@ -297,7 +297,7 @@ public class LaplaceTestRectangle {
 	public static void main(String[] args) {
 		LaplaceTestRectangle ex1 = new LaplaceTestRectangle();
 //		ex1.run();    //23.518
-//		ex1.run2(); //23.518
-		ex1.run3(); //23.518
+		ex1.run2(); //23.518
+//		ex1.run3(); //23.518
 	}
 }
