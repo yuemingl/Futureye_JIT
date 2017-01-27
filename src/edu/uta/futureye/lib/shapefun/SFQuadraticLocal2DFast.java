@@ -53,7 +53,7 @@ public class SFQuadraticLocal2DFast extends MultiVarFunc implements ScalarShapeF
 	protected class SF123456 extends MultiVarFunc {
 		int funIndex;
 		public SF123456(int funIndex) {
-			super(SFQuadraticLocal2DFast.this.varNames);
+			super(funIndex+"", SFQuadraticLocal2DFast.this.varNames);
 			this.funIndex = funIndex;
 		}
 		@Override
@@ -150,6 +150,11 @@ public class SFQuadraticLocal2DFast extends MultiVarFunc implements ScalarShapeF
 			};
 			return s[funIndex];
 		}
+		@Override
+		public double apply(double... args) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
  	}	
 	
 	
@@ -161,9 +166,9 @@ public class SFQuadraticLocal2DFast extends MultiVarFunc implements ScalarShapeF
 			System.exit(-1);
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
-		varNames.add("t");
+		varNames[0] = "r";
+		varNames[1] = "s";
+		varNames[2] = "t";
 		innerVarNames = new ObjList<String>("x","y");
 		
 		funOuter = new SF123456(funIndex);
@@ -242,6 +247,12 @@ public class SFQuadraticLocal2DFast extends MultiVarFunc implements ScalarShapeF
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public double apply(double... args) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
@@ -43,7 +44,7 @@ public class SFQuadraticLocal1D extends MultiVarFunc implements ScalarShapeFunct
 			System.exit(-1);			
 		}
 		
-		varNames.add("r");
+		varNames[0] = "r";
 		innerVarNames = new ObjList<String>("x");
 		
 		//复合函数
@@ -52,7 +53,7 @@ public class SFQuadraticLocal1D extends MultiVarFunc implements ScalarShapeFunct
 		/*
 		 *  r_x = 2/(x2-x1)  
 		 */
-		fInners.put("r", new MultiVarFunc(innerVarNames.toList()) {	
+		fInners.put("r", new MultiVarFunc("r", innerVarNames.toList()) {	
 			public MathFunc diff(String var) {
 				if(var.contains("x")) {
 					VertexList vl = e.vertices();
@@ -72,6 +73,12 @@ public class SFQuadraticLocal1D extends MultiVarFunc implements ScalarShapeFunct
 				// TODO Auto-generated method stub
 				return 0;
 			}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
 		});
 		
 		
@@ -85,7 +92,7 @@ public class SFQuadraticLocal1D extends MultiVarFunc implements ScalarShapeFunct
 		else if(funIndex == 1)
 			funOuter = fr.M(new FAxpb("r",0.5,0.5));
 		else if(funIndex == 2)
-			funOuter = FC.C1.S(fr.M(fr));
+			funOuter = FMath.C1.S(fr.M(fr));
 		
 		funCompose = funOuter.compose(fInners);
 	}
@@ -118,5 +125,11 @@ public class SFQuadraticLocal1D extends MultiVarFunc implements ScalarShapeFunct
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public double apply(double... args) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

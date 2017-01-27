@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FAxpb;
@@ -67,24 +68,24 @@ public class SFSerendipity2D extends MultiVarFunc implements ScalarShapeFunction
 			return;
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
+		varNames[0] = "r";
+		varNames[1] = "s";
 		innerVarNames = new ObjList<String>("x","y");
 		
 		//复合函数
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
-			fInners.put(varName, new MultiVarFunc(innerVarNames.toList()) {
+			fInners.put(varName, new MultiVarFunc(varName, innerVarNames.toList()) {
 				public MathFunc diff(String var) {
 					if(varName.equals("r")) {
 						if(var.equals("x"))
 							return y_s.D(jac);
 						if(var.equals("y"))
-							return FC.C0.S(x_s.D(jac));
+							return FMath.C0.S(x_s.D(jac));
 					} else if(varName.equals("s")) {
 						if(var.equals("x"))
-							return FC.C0.S(y_r.D(jac));
+							return FMath.C0.S(y_r.D(jac));
 						if(var.equals("y"))
 							return x_r.D(jac);
 					}
@@ -93,6 +94,12 @@ public class SFSerendipity2D extends MultiVarFunc implements ScalarShapeFunction
 
 				@Override
 				public double apply(Variable v) {
+					// TODO Auto-generated method stub
+					return 0;
+				}
+
+				@Override
+				public double apply(double... args) {
 					// TODO Auto-generated method stub
 					return 0;
 				}
@@ -116,13 +123,13 @@ public class SFSerendipity2D extends MultiVarFunc implements ScalarShapeFunction
 		else if(funIndex == 3)
 			funOuter = FC.c(-0.25).M(f1mx).M(f1py).M(f1px.S(fy));
 		else if(funIndex == 4)
-			funOuter = FC.c(0.5).M(f1my).M(FC.C1.S(fx.M(fx)));
+			funOuter = FC.c(0.5).M(f1my).M(FMath.C1.S(fx.M(fx)));
 		else if(funIndex == 5)
-			funOuter = FC.c(0.5).M(f1px).M(FC.C1.S(fy.M(fy)));
+			funOuter = FC.c(0.5).M(f1px).M(FMath.C1.S(fy.M(fy)));
 		else if(funIndex == 6)
-			funOuter = FC.c(0.5).M(f1py).M(FC.C1.S(fx.M(fx)));
+			funOuter = FC.c(0.5).M(f1py).M(FMath.C1.S(fx.M(fx)));
 		else if(funIndex == 7)
-			funOuter = FC.c(0.5).M(f1mx).M(FC.C1.S(fy.M(fy)));
+			funOuter = FC.c(0.5).M(f1mx).M(FMath.C1.S(fy.M(fy)));
 
 		//使用复合函数构造形函数
 		funCompose = funOuter.compose(fInners);		
@@ -175,5 +182,11 @@ public class SFSerendipity2D extends MultiVarFunc implements ScalarShapeFunction
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public double apply(double... args) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

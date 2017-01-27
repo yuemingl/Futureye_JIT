@@ -1,7 +1,6 @@
 package edu.uta.futureye.lib.shapefun;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.uta.futureye.core.CoordinateTransform;
@@ -179,11 +178,16 @@ public class SFTrilinearLocal3D extends MultiVarFunc implements ScalarShapeFunct
 		public String toString() {
 			return rst+"_"+xyz;
 		}
+		@Override
+		public double apply(double... args) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
 	}
 	
 	static class FOuter extends MultiVarFunc {
 		int funIndex;
-		FOuter(List<String> varNames, int funIndex) {
+		FOuter(String[] varNames, int funIndex) {
 			this.varNames = varNames;
 			this.funIndex = funIndex;
 		}
@@ -224,12 +228,19 @@ public class SFTrilinearLocal3D extends MultiVarFunc implements ScalarShapeFunct
 //					cr,cs,ct);
 			return String.format("N%d", funIndex+1);
 		}
+
+		@Override
+		public double apply(double... args) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
 	}
 	
 	static class FOuter_d extends MultiVarFunc {
 		int funIndex;
 		String var;
-		FOuter_d(List<String> varNames, String var, int funIndex) {
+		public FOuter_d(String[] varNames, String var, int funIndex) {
+			this.varNames = varNames;
 			this.funIndex = funIndex;
 			this.var = var;
 		}
@@ -288,6 +299,11 @@ public class SFTrilinearLocal3D extends MultiVarFunc implements ScalarShapeFunct
 			else
 				throw new FutureyeException("");
 		}
+		@Override
+		public double apply(double... args) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
 	}
 	
 	/**
@@ -306,16 +322,16 @@ public class SFTrilinearLocal3D extends MultiVarFunc implements ScalarShapeFunct
 			return;
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
-		varNames.add("t");
+		varNames[0] = "r";
+		varNames[1] = "s";
+		varNames[2] = "t";
 		innerVarNames = new ObjList<String>("x","y","z");
 		
 		//复合函数
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
-			fInners.put(varName, new MultiVarFunc(innerVarNames.toList()) {
+			fInners.put(varName, new MultiVarFunc(varName, innerVarNames.toList()) {
 				
 				//r_x,r_y,r_z, s_x,s_y,s_z, t_x,t_y,t_z
 				public MathFunc diff(String var) {
@@ -355,6 +371,12 @@ from the above 9 equations, we have:
 
 				@Override
 				public double apply(Variable v) {
+					// TODO Auto-generated method stub
+					return 0;
+				}
+
+				@Override
+				public double apply(double... args) {
 					// TODO Auto-generated method stub
 					return 0;
 				}
@@ -458,5 +480,11 @@ from the above 9 equations, we have:
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public double apply(double... args) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

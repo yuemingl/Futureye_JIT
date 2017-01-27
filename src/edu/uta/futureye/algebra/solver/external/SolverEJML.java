@@ -1,7 +1,7 @@
 package edu.uta.futureye.algebra.solver.external;
 
-import org.ejml.alg.dense.decomposition.lu.LUDecompositionAlt;
-import org.ejml.alg.dense.linsol.lu.LinearSolverLu;
+import org.ejml.alg.dense.decomposition.lu.LUDecompositionAlt_D64;
+import org.ejml.alg.dense.linsol.lu.LinearSolverLu_D64;
 import org.ejml.data.DenseMatrix64F;
 
 import edu.uta.futureye.algebra.FullMatrix;
@@ -23,13 +23,13 @@ public class SolverEJML {
 		
 		long begin,end;
 		begin = System.currentTimeMillis();
-		LUDecompositionAlt lu = new LUDecompositionAlt();
+		LUDecompositionAlt_D64 lu = new LUDecompositionAlt_D64();
 		lu.decompose(AA);
 		end = System.currentTimeMillis();
 		System.out.println("EJML LU="+(end-begin)+"ms");
 		
 		begin = System.currentTimeMillis();
-		LinearSolverLu solver = new LinearSolverLu(lu);
+		LinearSolverLu_D64 solver = new LinearSolverLu_D64(lu);
 		DenseMatrix64F XX = new DenseMatrix64F(BB.numRows,BB.numCols);
 		solver.solve(BB, XX);
 		end = System.currentTimeMillis();

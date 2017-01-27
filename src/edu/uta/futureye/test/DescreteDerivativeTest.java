@@ -73,7 +73,7 @@ public class DescreteDerivativeTest {
 	    
 	    Vector ux = Tools.computeDerivative(mesh, u, "x");
 	    writer.writeTechplot("descrete_derivative_test_ux.dat", ux);
-	    Vector ux2 = edu.uta.futureye.application.Tools.computeDerivative(mesh, u, "x");
+	    Vector ux2 = edu.uta.futureye.util.Tools.computeDerivative(mesh, u, "x");
 	    writer.writeTechplot("descrete_derivative_test_ux2.dat", ux2);
 	    
 	}

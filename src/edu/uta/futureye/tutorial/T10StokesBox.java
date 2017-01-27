@@ -153,6 +153,12 @@ public class T10StokesBox {
 						else
 							return 0.0;
 					}
+
+					@Override
+					public double apply(double... args) {
+						// TODO Auto-generated method stub
+						return 0;
+					}
 				});
 		diri.set(2, C0);
 		diri.set(3, C0);

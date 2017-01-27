@@ -7,6 +7,7 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -90,6 +91,12 @@ public class T07ConvectionDiffusion {
 				else
 					return 0;
 			}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
 		});
 		mapNTF.put(NodeType.Robin, null);
 		mesh.markBorderNode(mapNTF);
@@ -102,10 +109,10 @@ public class T07ConvectionDiffusion {
 	}
 	
 	public Vector solverOneStep(int step, MathFunc c_n) {
-		weakForm.setF(FC.C0);
-		weakForm.setParam(FC.C1, FC.C1, c_n, Dt);
+		weakForm.setF(FMath.C0);
+		weakForm.setParam(FMath.C1, FMath.C1, c_n, Dt);
 		weakForm.setConvectionVelocity(v);
-		weakForm.setRobin(FC.C0, FC.C1);
+		weakForm.setRobin(FMath.C0, FMath.C1);
 		
 		//Assemble
 		AssemblerScalar assembler = new AssemblerScalar(mesh, weakForm);
@@ -141,8 +148,14 @@ public class T07ConvectionDiffusion {
 				double y = v.get("y");
 				return 2*(3.0-Math.abs(y));
 			}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
 		});
-		v.set(2, FC.C0);
+		v.set(2, FMath.C0);
 		
 		Tools.plotFunction(mesh, outputFolder, String.format("v1.dat"), v.get(1));
 		Tools.plotFunction(mesh, outputFolder, String.format("v2.dat"), v.get(2));
@@ -160,6 +173,12 @@ public class T07ConvectionDiffusion {
 					return 40.0;
 				else
 					return 0.0;
+			}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
 			}
 		};
 		

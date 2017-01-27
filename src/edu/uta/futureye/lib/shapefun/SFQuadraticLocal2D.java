@@ -15,6 +15,7 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
 
 /**
@@ -55,8 +56,8 @@ public class SFQuadraticLocal2D extends MultiVarFunc implements ScalarShapeFunct
 			System.exit(-1);
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
+		varNames[0] = "r";
+		varNames[1] = "s";
 		//varNames.add("t");
 		innerVarNames = new ObjList<String>("x","y");
 		
@@ -64,7 +65,7 @@ public class SFQuadraticLocal2D extends MultiVarFunc implements ScalarShapeFunct
 		Map<String, MathFunc> fInners = new HashMap<String, MathFunc>(4);
 		
 		for(final String varName : varNames) {
-			fInners.put(varName, new MultiVarFunc(innerVarNames.toList()) {
+			fInners.put(varName, new MultiVarFunc(varName, innerVarNames.toList()) {
 				
 				protected CoordinateTransform trans = new CoordinateTransform(2);
 				
@@ -108,10 +109,10 @@ public class SFQuadraticLocal2D extends MultiVarFunc implements ScalarShapeFunct
 						if(var.equals("x"))
 							return y_s.D(jac);
 						if(var.equals("y"))
-							return FC.C0.S(x_s.D(jac));
+							return FMath.C0.S(x_s.D(jac));
 					} else if(varName.equals("s")) {
 						if(var.equals("x"))
-							return FC.C0.S(y_r.D(jac));
+							return FMath.C0.S(y_r.D(jac));
 						if(var.equals("y"))
 							return x_r.D(jac);
 					} 
@@ -136,19 +137,25 @@ public class SFQuadraticLocal2D extends MultiVarFunc implements ScalarShapeFunct
 					// TODO Auto-generated method stub
 					return 0;
 				}
+
+				@Override
+				public double apply(double... args) {
+					// TODO Auto-generated method stub
+					return 0;
+				}
 			});
 		}
 		
 		MathFunc fr = new FX("r");
 		MathFunc fs = new FX("s");
 		MathFunc ft = //new FX("t");
-				FC.C1.S(fr.A(fs));
+				FMath.C1.S(fr.A(fs));
 				
 				
 		MathFunc f2rm1 = new FAxpb("r",2.0,-1.0);
 		MathFunc f2sm1 = new FAxpb("s",2.0,-1.0);
 		MathFunc f2tm1 = //new FAxpb("t",2.0,-1.0);
-				FC.C1.S(FMath.linearCombination(2.0, fr, 2.0, fs));
+				FMath.C1.S(FMath.linearCombination(2.0, fr, 2.0, fs));
 
 
 //		Map<String, Function> fInner_t = new HashMap<String, Function>(4);
@@ -179,10 +186,16 @@ public class SFQuadraticLocal2D extends MultiVarFunc implements ScalarShapeFunct
 //		independentVarNames.add("r");
 //		independentVarNames.add("s");
 //		funOuter.setVarNames(independentVarNames);
-		funOuter.setVarNames(varNames);
+//		funOuter.setVarNames(varNames);
 		//使用复合函数构造形函数
 		funCompose = funOuter.compose(fInners);
-		
+		/**
+		 * The default active variable names of a composite function is the inner variable names.
+		 * Shape function needs the outer variable names as the active variable names.
+		 */
+		funCompose.setActiveVarByNames(funOuter.getVarNames());
+		funCompose.setArgIdx(Utils.getIndexMap(this.getVarNames()));
+
 	}
 
 	@Override
@@ -227,6 +240,12 @@ public class SFQuadraticLocal2D extends MultiVarFunc implements ScalarShapeFunct
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public double apply(double... args) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

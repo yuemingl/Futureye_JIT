@@ -1,7 +1,7 @@
 package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.application.Tools;
+import edu.uta.futureye.util.Tools;
 import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;

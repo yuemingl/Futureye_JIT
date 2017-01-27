@@ -7,6 +7,7 @@ import edu.uta.futureye.algebra.SparseBlockVector;
 import edu.uta.futureye.algebra.solver.Solver;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -47,6 +48,12 @@ public class T09PlaneElasticDam {
       		else
       			return 0;
       	}
+
+		@Override
+		public double apply(double... args) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
       });
       mapNTF.put(NodeType.Dirichlet, new MultiVarFunc("x","y"){
       	@Override
@@ -57,6 +64,12 @@ public class T09PlaneElasticDam {
       		else
       			return 0;
       	}
+
+		@Override
+		public double apply(double... args) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
       });
       //注意：位移向量的每个分量都需要制定边界条件
       mesh.markBorderNode(new ObjIndex(1,2),mapNTF);
@@ -87,15 +100,21 @@ public class T09PlaneElasticDam {
       WeakFormElasticIsoPlaneStress2D weakForm = new WeakFormElasticIsoPlaneStress2D();
       SpaceVectorFunction b = new SpaceVectorFunction(2);
       SpaceVectorFunction t = new SpaceVectorFunction(2);
-      b.set(1,FC.C0);
-      b.set(2,FC.C0);
-      t.set(1,FC.C0);
+      b.set(1,FMath.C0);
+      b.set(2,FMath.C0);
+      t.set(1,FMath.C0);
       t.set(2,new MultiVarFunc("x","y"){
         	@Override
           	public double apply(Variable v) {
           		double y = v.get("y");
           		return -(10.0-y);
           	}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
           });
       weakForm.setF(b,t);
 
@@ -107,8 +126,8 @@ public class T09PlaneElasticDam {
       SparseBlockVector load = assembler.getLoadVector();
       //Boundary condition
       SpaceVectorFunction diri = new SpaceVectorFunction(2);
-      diri.set(1,FC.C0);
-      diri.set(2,FC.C0);
+      diri.set(1,FMath.C0);
+      diri.set(2,FMath.C0);
       assembler.imposeDirichletCondition(diri);
 
       //6.Solve linear system

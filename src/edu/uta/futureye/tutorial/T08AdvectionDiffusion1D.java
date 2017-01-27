@@ -11,6 +11,7 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.WeakFormOld;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -146,6 +147,12 @@ public class T08AdvectionDiffusion1D {
         		else
         			return 0.0;
         	}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
         });
 
         //6.Solve linear system
@@ -187,7 +194,7 @@ public class T08AdvectionDiffusion1D {
         WeakFormAdvectionDiffusion1D wf = new WeakFormAdvectionDiffusion1D();
         wf.setParam(FC.c(k));
         wf.setConvectionVelocity(FC.c(u));
-        wf.setF(FC.C0);
+        wf.setF(FMath.C0);
         //5.Assembly process
         AssemblerScalar assembler =
                 new AssemblerScalar(mesh, wf);
@@ -206,6 +213,12 @@ public class T08AdvectionDiffusion1D {
         		else
         			return 0.0;
         	}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
         });
 
         //6.Solve linear system

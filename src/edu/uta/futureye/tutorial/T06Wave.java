@@ -192,6 +192,12 @@ public class T06Wave {
 				else
 					return 0.0;
 			}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
 			
 //[-100,100]x[-100,100]
 //			@Override

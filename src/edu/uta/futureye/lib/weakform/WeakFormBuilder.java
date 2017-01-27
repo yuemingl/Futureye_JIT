@@ -6,6 +6,7 @@ import java.util.Map;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.intf.WeakFormOld;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -251,11 +252,11 @@ public class WeakFormBuilder {
 				}
 			}			
 		};
-		wfb.addParam("k", FC.C1);
-		wfb.addParam("c", FC.C0);
-		wfb.addParam("d", FC.C1);
+		wfb.addParam("k", FMath.C1);
+		wfb.addParam("c", FMath.C0);
+		wfb.addParam("d", FMath.C1);
 		wfb.addParam("f", FX.x.M(FX.x));
-		wfb.addParam("q", FC.C0);
+		wfb.addParam("q", FMath.C0);
 		WeakFormOld wf = wfb.getScalarWeakForm();
 		System.out.println(wf.getTrialDOF());
 

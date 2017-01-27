@@ -1,4 +1,4 @@
-package edu.uta.futureye.application;
+package edu.uta.futureye.util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

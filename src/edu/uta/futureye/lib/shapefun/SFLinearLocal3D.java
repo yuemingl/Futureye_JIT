@@ -61,10 +61,10 @@ public class SFLinearLocal3D extends MultiVarFunc
 			return;
 		}
 		
-		varNames.add("r");
-		varNames.add("s");
-		varNames.add("t");
-		varNames.add("u");
+		varNames[0] = "r";
+		varNames[1] = "s";
+		varNames[2] = "t";
+		varNames[3] = "u";
 		innerVarNames = new ObjList<String>("x","y","z");
 		
 	}
@@ -139,7 +139,7 @@ public class SFLinearLocal3D extends MultiVarFunc
 			//u=1-r-s-t
 			if(funIndex == 3)
 				return new FC(-1.0);
-			if(var.equals(varNames.get(funIndex)))
+			if(var.equals(varNames[funIndex]))
 				return new FC(1.0);
 			else
 				return new FC(0.0);
@@ -200,11 +200,16 @@ public class SFLinearLocal3D extends MultiVarFunc
 	}
 
 	public String toString() {
-		return varNames.get(funIndex);
+		return varNames[funIndex];
 	}
 
 	@Override
 	public ObjList<String> innerVarNames() {
 		return innerVarNames;
+	}
+
+	@Override
+	public double apply(double... args) {
+		throw new UnsupportedOperationException();
 	}
 }

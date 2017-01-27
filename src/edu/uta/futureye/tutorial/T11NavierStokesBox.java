@@ -8,7 +8,7 @@ import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.SchurComplementStokesSolver;
-import edu.uta.futureye.application.DataReader;
+import edu.uta.futureye.util.DataReader;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;

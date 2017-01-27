@@ -151,6 +151,12 @@ public class T10Stokes {
 				else
 					return 0;
 			}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
 		});
 		//uv其他边界
 		mapNTF_uv.put(NodeType.Neumann, null);
@@ -173,6 +179,12 @@ public class T10Stokes {
 					return 1;
 				else
 					return 0;
+			}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
 			}
 		});
 		//p其他边界
@@ -232,6 +244,12 @@ public class T10Stokes {
 //						//all
 						else
 							return 0.0;
+					}
+
+					@Override
+					public double apply(double... args) {
+						// TODO Auto-generated method stub
+						return 0;
 					}
 				});
 		diri.set(2, C0);

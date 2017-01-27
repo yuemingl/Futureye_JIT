@@ -8,9 +8,10 @@ import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.SchurComplementStokesSolver;
-import edu.uta.futureye.application.DataReader;
+import edu.uta.futureye.util.DataReader;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
@@ -120,6 +121,12 @@ public class T11NavierStokesCylinder3D {
 					return 1;
 				return 0;
 			}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
 		});
 		//Neumann boundary of u
 		mapNTF_u.put(NodeType.Neumann, null);
@@ -134,6 +141,12 @@ public class T11NavierStokesCylinder3D {
 				//right side p=0
 				if(Math.abs(x-2.2) < Constant.meshEps)
 					return 1;
+				return 0;
+			}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
 				return 0;
 			}
 		});
@@ -184,10 +197,16 @@ public class T11NavierStokesCylinder3D {
 						else
 							return 0.0;
 					}
+
+					@Override
+					public double apply(double... args) {
+						// TODO Auto-generated method stub
+						return 0;
+					}
 				});
-		diri.set(2, FC.C0);
-		diri.set(3, FC.C0);
-		diri.set(4, FC.C0);		
+		diri.set(2, FMath.C0);
+		diri.set(3, FMath.C0);
+		diri.set(4, FMath.C0);		
 	}
 	
 	/**
@@ -213,10 +232,16 @@ public class T11NavierStokesCylinder3D {
 				else
 					return 0.0;
 					}
+
+			@Override
+			public double apply(double... args) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
 				});
-		diri.set(2, FC.C0);
-		diri.set(3, FC.C0);
-		diri.set(4, FC.C0);		
+		diri.set(2, FMath.C0);
+		diri.set(3, FMath.C0);
+		diri.set(4, FMath.C0);		
 	}
 
 	/**
@@ -248,16 +273,22 @@ public class T11NavierStokesCylinder3D {
 						else
 							return 0.0;
 					}
+
+					@Override
+					public double apply(double... args) {
+						// TODO Auto-generated method stub
+						return 0;
+					}
 				});
-		diri.set(2, FC.C0);
-		diri.set(3, FC.C0);
-		diri.set(4, FC.C0);	
+		diri.set(2, FMath.C0);
+		diri.set(3, FMath.C0);
+		diri.set(4, FMath.C0);	
 	}
 	
 	public SparseBlockVector nonlinearIter(int time, int nIter, SpaceVectorFunction uk) {
 		//Right hand side(RHS): f = (0,0)'
 		if(time==0)
-			weakForm.setF(new SpaceVectorFunction(FC.C0,FC.C0,FC.C0));
+			weakForm.setF(new SpaceVectorFunction(FMath.C0,FMath.C0,FMath.C0));
 		else
 			weakForm.setF(new SpaceVectorFunction(
 					uk.get(1).D(dt),
@@ -283,8 +314,8 @@ public class T11NavierStokesCylinder3D {
 	}
 	
 	public SparseBlockVector nonlinearIterSteady(int nIter, SpaceVectorFunction uk) {
-		weakForm.setF(new SpaceVectorFunction(FC.C0,FC.C0,FC.C0));
-		weakForm.setParam(FC.c(nu),U,FC.C0);
+		weakForm.setF(new SpaceVectorFunction(FMath.C0,FMath.C0,FMath.C0));
+		weakForm.setParam(FC.c(nu),U,FMath.C0);
 		
 		assembler = new AssemblerVector(mesh, weakForm,fe);
 		System.out.println("Begin Assemble...");
@@ -330,9 +361,9 @@ public class T11NavierStokesCylinder3D {
 			U.set(2, new Vector2MathFunc(vecV));
 			U.set(3, new Vector2MathFunc(vecW));
 		} else {
-			U.set(1, FC.C0);
-			U.set(2, FC.C0);
-			U.set(3, FC.C0);
+			U.set(1, FMath.C0);
+			U.set(2, FMath.C0);
+			U.set(3, FMath.C0);
 		}
 		SparseBlockVector u = null;
 		if(bSteady) System.out.println(">>>>>>>>>>>>>>>>>>>steady");

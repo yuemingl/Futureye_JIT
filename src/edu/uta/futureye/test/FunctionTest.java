@@ -5,7 +5,7 @@ import java.util.List;
 
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.application.Tools;
+import edu.uta.futureye.util.Tools;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
