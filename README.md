@@ -8,7 +8,7 @@ FuturEye_JIT is suitable for various purposes:
 
 *Teaching: The feature of close relation to the mathematical theory of FEM helps the students to understand basic FEM concepts, e.g. shape functions, Jacobian and the assembly process.
 
-*Research: FuturEye helps researchers quickly develop and test their models, experiment with data and algorithms. e.g. new equations, new finite elements and new solution methods without concerning too much about programming basic components in FEM.
+*Research: FuturEye_JIT helps researchers quickly develop and test their models, experiment with data and algorithms. e.g. new equations, new finite elements and new solution methods without concerning too much about programming basic components in FEM.
 
 *Engineering: Futureye_JIT is designed to be robust and efficient. Industry level of applications can be easily built with it. 
 
