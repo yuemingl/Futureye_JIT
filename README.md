@@ -4,7 +4,7 @@ FuturEye_JIT provides a mathematically appealing way for building functions and 
 
 The basic components in FEM are abstracted out, such as node, element, mesh, degree of freedom and shape function. The data structure and operation of these classes are encapsulated properly. The classes that different from other existing object-oriented FEM software or libraries are the function classes. The behavior of the function classes in Futureye_JIT is very similar to that in the human readable mathematical context. For example algebra of functions, function derivatives and composition of functions. Especially in FEM environment, shape functions, Jacobin of coordinate transforms and numerical integration are all based on the function classes. This feature leads to a more close integration between the mathematical theory and computer implementation. FuturEye_JIT is designed to solve 1D, 2D and 3D PED problems with scalar or vector valued unknowns. It is motivated by solving PDE based inverse problem in the application of optical tomography where the word 'FuturEye' came from.
 
-FuturEye_JIT can be used for various purposes:
+FuturEye_JIT is suitable for various purposes:
 
 *Teaching: The feature of close relation to the mathematical theory of FEM helps the students to understand basic FEM concepts, e.g. shape functions, Jacobian and the assembly process.
 
