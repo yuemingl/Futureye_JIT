@@ -25,6 +25,7 @@ import static edu.uta.futureye.function.FMath.C0;
  */
 public class FC extends MathFuncBase {
 	protected double val;
+	protected String name;
 	
 	//Constants cache
 	protected static Map<Double, FC> cs = new HashMap<Double, FC>();
@@ -112,17 +113,21 @@ public class FC extends MathFuncBase {
 	
 	@Override
 	public String getName() {
+		if(null != this.name)
+			return this.name;
 		return String.valueOf(val);
 	}
 
 	@Override
 	public MathFunc setName(String name) {
-		throw new UnsupportedOperationException();
+		this.name = name;
+		return this;
 	}
 
 	@Override
 	public MathFunc setVarNames(List<String> varNames) {
-		throw new UnsupportedOperationException();
+		return this;
+		//throw new UnsupportedOperationException();
 	}
 
 	@Override
