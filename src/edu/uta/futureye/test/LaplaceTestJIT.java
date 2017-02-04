@@ -210,9 +210,9 @@ public class LaplaceTestJIT {
 			// 4=80.967
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
-					A[j][i] = FOIntegrate.intOnTriangleRefElement(clhs[j][i], params, coords.length, 2);
+					A[j][i] = FOIntegrate.intOnTriangleRefElement(clhs[j][i], null, null, params, coords.length, 2);
 				}
-				b[j] = FOIntegrate.intOnTriangleRefElement(crhs[j], params, coords.length, 2);
+				b[j] = FOIntegrate.intOnTriangleRefElement(crhs[j], null, null, params, coords.length, 2);
 			}
 			
 			for(int j=0;j<nDOFs;j++) {

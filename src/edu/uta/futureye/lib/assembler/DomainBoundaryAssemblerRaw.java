@@ -71,28 +71,28 @@ public class DomainBoundaryAssemblerRaw {
 		for(int j=0;j<nDOFs;j++) {
 			for(int i=0;i<nDOFs;i++) {
 				A[j][i] = FOIntegrate.intOnLinearRefElement(domainWF.getCompiledLHS()[j][i], 
-						params, coords.length, 5);
+						null, null, params, coords.length, 5);
 			}
 			b[j] = FOIntegrate.intOnLinearRefElement(domainWF.getCompiledRHS()[j], 
-					params, coords.length, 5);
+					null, null, params, coords.length, 5);
 		}
 		} else if(domainWF.getFiniteElement().getNumberOfDOFs() == 3) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnTriangleRefElement(domainWF.getCompiledLHS()[j][i], 
-							params, coords.length, 2);//Laplace Test: 2=80.839 3=80.966, 4=80.967
+							null, null, params, coords.length, 2);//Laplace Test: 2=80.839 3=80.966, 4=80.967
 				}
 				b[j] = FOIntegrate.intOnTriangleRefElement(domainWF.getCompiledRHS()[j], 
-						params, coords.length, 2);
+						null, null, params, coords.length, 2);
 			}
 		} else if(domainWF.getFiniteElement().getNumberOfDOFs() == 4) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnRectangleRefElement(domainWF.getCompiledLHS()[j][i], 
-							params, coords.length, 5);
+							null, null, params, coords.length, 5);
 				}
 				b[j] = FOIntegrate.intOnRectangleRefElement(domainWF.getCompiledRHS()[j], 
-						params, coords.length, 5);
+						null, null, params, coords.length, 5);
 			}
 		}
 
@@ -117,10 +117,10 @@ public class DomainBoundaryAssemblerRaw {
 					for(int j=0;j<nBeDOFs;j++) {
 						for(int i=0;i<nBeDOFs;i++) {
 							beA[j][i] = FOIntegrate.intOnLinearRefElement(boundaryWF.getCompiledLHS()[j][i], 
-									beParams, beCoords.length, 5);
+									null, null, beParams, beCoords.length, 5);
 						}
 						beb[j] = FOIntegrate.intOnLinearRefElement(boundaryWF.getCompiledRHS()[j], 
-								beParams, beCoords.length, 5);
+								null, null, beParams, beCoords.length, 5);
 					}
 				}
 			}

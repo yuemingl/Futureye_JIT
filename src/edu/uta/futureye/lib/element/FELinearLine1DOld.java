@@ -14,10 +14,10 @@ import edu.uta.futureye.util.container.VertexList;
  * @author liuyueming
  *
  */
-public class FELinear1D implements FiniteElementType {
+public class FELinearLine1DOld implements FiniteElementType {
 	protected static SFLinearLocal1D[] shapeFun = new SFLinearLocal1D[2];
 	
-	public FELinear1D() {
+	public FELinearLine1DOld() {
 		shapeFun[0] = new SFLinearLocal1D(1);
 		shapeFun[1] = new SFLinearLocal1D(2);
 	}

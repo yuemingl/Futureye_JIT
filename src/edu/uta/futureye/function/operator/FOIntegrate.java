@@ -3,6 +3,8 @@ package edu.uta.futureye.function.operator;
 import java.util.HashMap;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.VN;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
@@ -474,33 +476,35 @@ public class FOIntegrate{
 		return rlt;
 	}
 	
-	public static double intOnTriangleRefElement(CompiledFunc integrand, double[] params, int paramsStart, int order) {
+	public static double intOnTriangleRefElement(CompiledFunc integrand,
+			Element element, Node node, double[] params, int paramsStart, 
+			int order) {
 		double rlt = 0.0;
 		if(order == 2) {
 			params[paramsStart] = 0.333333333333333;
 			params[paramsStart+1] = 0.333333333333333;
 			params[paramsStart+2] = 0.333333333333333;
-			rlt = 0.5*integrand.apply(params);
+			rlt = 0.5*integrand.apply(element, node, params);
 		} else if(order == 3) {
 			params[paramsStart] = 0.5; params[paramsStart+1] = 0.5; params[paramsStart+2] = 0.0; 
-			double pv1 = integrand.apply(params);
+			double pv1 = integrand.apply(element, node, params);
 			params[paramsStart] = 0.0; params[paramsStart+1] = 0.5; params[paramsStart+2] = 0.5; 
-			double pv2 = integrand.apply(params);
+			double pv2 = integrand.apply(element, node, params);
 			params[paramsStart] = 0.5; params[paramsStart+1] = 0.0; params[paramsStart+2] = 0.5; 
-			double pv3 = integrand.apply(params);
+			double pv3 = integrand.apply(element, node, params);
 			rlt = 0.5*0.333333333333333*(pv1 + pv2 + pv3);
 		} else if(order == 4) {
 			double w123 = 25.0/48.0;
 			double w4 = -27.0/48.0;
 			
 			params[paramsStart] = 0.6; params[paramsStart+1] = 0.2; params[paramsStart+2] = 0.2; 
-			double pv1 = integrand.apply(params);
+			double pv1 = integrand.apply(element, node, params);
 			params[paramsStart] = 0.2; params[paramsStart+1] = 0.6; params[paramsStart+2] = 0.2; 
-			double pv2 = integrand.apply(params);
+			double pv2 = integrand.apply(element, node, params);
 			params[paramsStart] = 0.2; params[paramsStart+1] = 0.2; params[paramsStart+2] = 0.6; 
-			double pv3 = integrand.apply(params);
+			double pv3 = integrand.apply(element, node, params);
 			params[paramsStart] = 0.333333333333333; params[paramsStart+1] = 0.333333333333333; params[paramsStart+2] = 0.333333333333333; 
-			double pv4 = 0.5*integrand.apply(params);
+			double pv4 = 0.5*integrand.apply(element, node, params);
 			
 			rlt = 0.5*w123*(pv1 + pv2 + pv3) + w4*pv4;
 		} else if(order == 5) {
@@ -508,7 +512,7 @@ public class FOIntegrate{
 				params[paramsStart]   = triR[i]; 
 				params[paramsStart+1] = triS[i]; 
 				params[paramsStart+2] = 1.0-triR[i]-triS[i];
-				rlt += triW[i]*integrand.apply(params);
+				rlt += triW[i]*integrand.apply(element, node, params);
 			}
 		}
 		return rlt;
@@ -516,8 +520,12 @@ public class FOIntegrate{
 	
 	/**
 	 * Integrate on 2D rectangle reference element [-1,1]*[-1,1]
+	 * @param element TODO
+	 * @param node TODO
 	 */
-	public static double intOnRectangleRefElement(CompiledFunc integrand, double[] params, int paramsStart, int order) {
+	public static double intOnRectangleRefElement(CompiledFunc integrand,
+			Element element, Node node, double[] params, int paramsStart,
+			int order) {
 		double a1_1 = 0.0;
 		double h1_1 = 4.0;
 		double a2 = 0.577350269189626;
@@ -527,26 +535,26 @@ public class FOIntegrate{
 		if(order == 1) {
 			params[paramsStart] = a1_1;
 			params[paramsStart+1] = a1_1;
-			rlt += h1_1*integrand.apply(params);
+			rlt += h1_1*integrand.apply(element, node, params);
 		} else if(order == 2) {
 			params[paramsStart] = a2; 
 			params[paramsStart+1] = a2;
-			rlt += integrand.apply(params);
+			rlt += integrand.apply(element, node, params);
 			params[paramsStart] = -a2; 
 			params[paramsStart+1] = a2;
-			rlt += integrand.apply(params);
+			rlt += integrand.apply(element, node, params);
 			params[paramsStart] = a2; 
 			params[paramsStart+1] = -a2;
-			rlt += integrand.apply(params);
+			rlt += integrand.apply(element, node, params);
 			params[paramsStart] = -a2; 
 			params[paramsStart+1] = -a2;
-			rlt += integrand.apply(params);
+			rlt += integrand.apply(element, node, params);
 		} else if(order == 5) {
 			for(int i=0;i<order;i++) {
 				for(int j=0;j<order;j++) {
 					params[paramsStart] = a5[i]; 
 					params[paramsStart+1] = a5[j];
-					rlt += h5[i]*h5[j]*integrand.apply(params);
+					rlt += h5[i]*h5[j]*integrand.apply(element, node, params);
 				}
 			}
 		} else {
@@ -556,7 +564,9 @@ public class FOIntegrate{
 		return rlt;
 	}
 
-	public static double intOnLinearRefElement(CompiledFunc integrand, double[] params, int paramsStart, int order) {
+	public static double intOnLinearRefElement(CompiledFunc integrand, 
+			Element element, Node node, double[] params, int paramsStart,
+			int order) {
 		double a1_1 = 0.0;
 		double h1_1 = 2.0;
 		
@@ -584,32 +594,32 @@ public class FOIntegrate{
 		double rlt = 0.0;
 		if(order == 1) {
 			params[paramsStart] = a1_1;
-			rlt += h1_1*integrand.apply(params);
+			rlt += h1_1*integrand.apply(element, node, params);
 		} else if(order == 2) {
 			params[paramsStart] = a2_1;
-			rlt += h2_1*integrand.apply(params);
+			rlt += h2_1*integrand.apply(element, node, params);
 			params[paramsStart] = a2_2;
-			rlt += h2_2*integrand.apply(params);
+			rlt += h2_2*integrand.apply(element, node, params);
 		} else if(order == 3) {
 			params[paramsStart] = a3_1;
-			rlt += h3_1*integrand.apply(params);
+			rlt += h3_1*integrand.apply(element, node, params);
 			params[paramsStart] = a3_2;
-			rlt += h3_2*integrand.apply(params);
+			rlt += h3_2*integrand.apply(element, node, params);
 			params[paramsStart] = a3_3;
-			rlt += h3_3*integrand.apply(params);
+			rlt += h3_3*integrand.apply(element, node, params);
 		} else if(order == 4) {
 			params[paramsStart] = a4_1;
-			rlt += h4_1*integrand.apply(params);
+			rlt += h4_1*integrand.apply(element, node, params);
 			params[paramsStart] = a4_2;
-			rlt += h4_2*integrand.apply(params);
+			rlt += h4_2*integrand.apply(element, node, params);
 			params[paramsStart] = a4_3;
-			rlt += h4_3*integrand.apply(params);
+			rlt += h4_3*integrand.apply(element, node, params);
 			params[paramsStart] = a4_4;
-			rlt += h4_4*integrand.apply(params);
+			rlt += h4_4*integrand.apply(element, node, params);
 		} else if(order == 5) {
 			for(int i=0;i<order;i++) {
 				params[paramsStart] = a5[i];
-				rlt += h5[i]*integrand.apply(params);
+				rlt += h5[i]*integrand.apply(element, node, params);
 			}
 		} else {
 			System.out.println("ERROR: intOnLinearRefElement() Not supported order = "+order);

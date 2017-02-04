@@ -16,7 +16,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
-import edu.uta.futureye.lib.element.FELinear1D;
+import edu.uta.futureye.lib.element.FELinearLine1DOld;
 import edu.uta.futureye.lib.weakform.WeakFormLaplace;
 import edu.uta.futureye.tutorial.Tools;
 import edu.uta.futureye.util.Constant;
@@ -125,7 +125,7 @@ public class Driver {
 
         //Use element library to assign degree of freedom (DOF) to element
         ElementList eList = mesh.getElementList();
-        FELinear1D feLT = new FELinear1D();
+        FELinearLine1DOld feLT = new FELinearLine1DOld();
         for(int i=1;i<=eList.size();i++)
         	feLT.assignTo(eList.at(i));
 
