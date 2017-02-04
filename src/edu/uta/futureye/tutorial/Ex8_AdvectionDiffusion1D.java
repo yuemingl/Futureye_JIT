@@ -1,24 +1,30 @@
 package edu.uta.futureye.tutorial;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
+import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.intf.WeakFormOld;
 import edu.uta.futureye.function.FMath;
+import edu.uta.futureye.function.MathFuncBase;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.SingleVarFunc;
+import edu.uta.futureye.function.UserDefFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.io.MeshWriter;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.assembler.BasicAssembler;
 import edu.uta.futureye.lib.element.FELinearLine1D;
@@ -107,11 +113,34 @@ public class Ex8_AdvectionDiffusion1D {
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
+		MathFunc upwindCoef = new UserDefFunc() {
+			//@Override
+			public double apply(AssembleParam ap, double... args) {
+				DOF dof = ap.element.getAllNodeDOFList().at(ap.testDOFIdx);
+				Node node1 = dof.getNodeOwner();
+				int index = ap.element.getLocalIndex(node1);
+				Node node2 = null;
+				if(index == 1) {
+					node2 = ap.element.nodes.at(2);
+				} else {
+					node2 = ap.element.nodes.at(1);
+				}
+				double coord1 = node1.coord(1);
+				double coord2 = node2.coord(1);
+				double upwindWeight = 0.0;
+				if((coord2-coord1)*u > 0) {
+					upwindWeight = -0.1;
+				} else {
+					upwindWeight = 0.1;
+				}
+				return upwindWeight;
+			}
+		};
 		// Weak form definition
 		WeakForm wf = new WeakForm(
 				new FELinearLine1D(),
-				(c, v, e) -> k * c.diff("x") * v.diff("x") + u * c.diff("x") * v,
-				(v, e)    -> C0
+				(c, v) -> k * c.diff("x") * v.diff("x") + u * c.diff("x") * (v + upwindCoef),
+				(v)    -> C0
 				);
 		wf.compile();
 

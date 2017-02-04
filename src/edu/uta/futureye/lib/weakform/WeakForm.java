@@ -5,9 +5,7 @@ import java.util.Map;
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.core.intf.LHSExpr;
-import edu.uta.futureye.core.intf.LHSExprWithElement;
 import edu.uta.futureye.core.intf.RHSExpr;
-import edu.uta.futureye.core.intf.RHSExprWithElement;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public class WeakForm {
@@ -46,31 +44,7 @@ public class WeakForm {
 			vecRHS[j].setName("RHS"+j);
 		}
 	}
-	
-	public WeakForm(FiniteElement fe, LHSExprWithElement lhsExpr, RHSExprWithElement rhsExpr) {
-		this.fe = fe;
-//		this.lhsExpr =  lhsExpr;
-//		this.rhsExpr = rhsExpr;
-		this.jac = fe.getJacobian();
- 
-		int nDOFs = this.fe.getNumberOfDOFs();
-		MathFunc[] shapeFuncs = fe.getShapeFunctions();
-		Map<String, MathFunc> map = fe.getCoordTransMap();
-		matLHS = new MathFunc[nDOFs][nDOFs];
-		vecRHS = new MathFunc[nDOFs];
 
-		for(int j=0; j<nDOFs; j++) {
-			MathFunc v = shapeFuncs[j];
-			for(int i=0; i<nDOFs; i++) {
-				MathFunc u = shapeFuncs[i];
-				matLHS[j][i] = lhsExpr.apply(u, v).compose(map)*jac;
-				matLHS[j][i].setName("LHS"+i+""+j);
-			}
-			vecRHS[j] = rhsExpr.apply(v).compose(map)*jac;
-			vecRHS[j].setName("RHS"+j);
-		}
-	}
-	
 	public void compile() {
 		String[] argsOrder = fe.getArgsOrder();
 		jac.compileToStaticField(true);
