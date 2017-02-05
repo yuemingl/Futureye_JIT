@@ -1,6 +1,8 @@
 	package edu.uta.futureye.util;
 
-import static org.apache.bcel.Constants.*;
+import static org.apache.bcel.Constants.ACC_PUBLIC;
+import static org.apache.bcel.Constants.ACC_STATIC;
+import static org.apache.bcel.Constants.ACC_SUPER;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,18 +13,12 @@ import java.util.Map.Entry;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.Type;
 
-import com.sun.org.apache.xpath.internal.operations.Variable;
-
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.basic.FComposite;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FBinaryOp;
@@ -42,7 +38,7 @@ public class BytecodeUtils {
 		}
 		list.add(func);
 	}
-	
+
 	public static Map<MathFunc, Integer> getFuncRefsMap(MathFunc func) {
 		List<MathFunc> list = new ArrayList<MathFunc>();
 		postOrder(func, list);
@@ -52,10 +48,9 @@ public class BytecodeUtils {
 		}
 		return map;
 	}
-	
+
 	public static ClassGen genClass(MathFunc func, String[] varNames, String funcClsName, 
 			boolean writeClassFile, boolean staticMethod) {
-		
 		String packageName = "edu.uta.futureye.bytecode";
 		String clsName = funcClsName;
 		String fullClsName = packageName+"."+clsName;
@@ -64,7 +59,6 @@ public class BytecodeUtils {
 		ConstantPoolGen cp = cg.getConstantPool(); // cg creates constant pool
 		InstructionList il = new InstructionList();
 		InstructionFactory factory = new InstructionFactory(cg);
-		
 
 		short acc_flags = ACC_PUBLIC;
 		if(staticMethod)
@@ -79,7 +73,7 @@ public class BytecodeUtils {
 				"apply",                       //method name
 				fullClsName,                   //class name
 				il, cp);
-		
+
 		HashMap<String, Integer> argsMap = new HashMap<String, Integer>();
 		if(varNames == null || varNames.length == 0) {
 			List<String> args = func.getVarNames();
@@ -104,15 +98,15 @@ public class BytecodeUtils {
 		//since the call of 'setArgIdx()' may change the expression tree
 		//TODO the call of 'setArgIdx()' in 'bytecodeGen()' may be not necessary
 		func.setArgIdx(argsMap);
-		
+
 		Map<MathFunc, Integer> refsMap = getFuncRefsMap(func);
-		
+
 		if(staticMethod)
 			func.bytecodeGen(clsName, mg, cp, factory, il, argsMap, BytecodeConst.argIdx, refsMap);
 		else
 			func.bytecodeGen(clsName, mg, cp, factory, il, argsMap, BytecodeConst.argIdx+1, refsMap);
 		il.append(InstructionConstants.DRETURN);
-		
+
 //	Test
 //		FieldGen fg = new FieldGen(ACC_PUBLIC, new ArrayType(Type.getType(MathFunc.class), 1), "funcRefs", cp);
 //		il.append(InstructionConstants.ALOAD_0);
@@ -128,12 +122,11 @@ public class BytecodeUtils {
 //		il.append(new IADD());
 //		il.append(new PUTFIELD(cp.addFieldref(name, "_counter", "I")));
 //		mg.getInstructionList().insert(il);
-		
-		
+
 		mg.setMaxStack();
 		cg.addMethod(mg.getMethod());
 		il.dispose(); // Allow instruction handles to be reused
-		
+
 		cg.addEmptyConstructor(ACC_PUBLIC);
 		if(writeClassFile) {
 			try {
@@ -142,8 +135,6 @@ public class BytecodeUtils {
 				System.err.println(e);
 			}
 		}
-		
-		
 		return cg;
 	}
 }

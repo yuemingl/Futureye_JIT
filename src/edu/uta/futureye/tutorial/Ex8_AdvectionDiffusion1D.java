@@ -1,8 +1,8 @@
 package edu.uta.futureye.tutorial;
 
+import static edu.uta.futureye.function.FMath.C0;
+
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
@@ -13,31 +13,16 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.intf.WeakFormOld;
-import edu.uta.futureye.function.FMath;
-import edu.uta.futureye.function.MathFuncBase;
-import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.UserDefFunc;
-import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssembleParam;
-import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.assembler.BasicAssembler;
 import edu.uta.futureye.lib.element.FELinearLine1D;
-import edu.uta.futureye.lib.element.FELinearLine1DOld;
 import edu.uta.futureye.lib.weakform.WeakForm;
-import edu.uta.futureye.lib.weakform.WeakFormAdvectionDiffusion1D;
-import edu.uta.futureye.lib.weakform.WeakFormBuilder;
 import edu.uta.futureye.util.Constant;
-import edu.uta.futureye.util.MathEx;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
-import static edu.uta.futureye.function.FMath.*;
 
 /**
  * <blockquote><pre>
@@ -199,7 +184,7 @@ public class Ex8_AdvectionDiffusion1D {
 		// basic relationship between nodes and elements
 		mesh.computeNodeBelongsToElements();
 
-		Vector c1 = solve(mesh, L, N, 1.0, 10);
+		Vector c1 = solve(mesh, L, N, 1.0, 20);
 //		Vector c2 = solve(mesh, L, N, 1.0, 20);
 //		Vector c2upwind = solveUpwind(mesh, L, N, 1.0, 20);
 //		Vector c3 = solve(mesh, L, N, 1.0, 50);

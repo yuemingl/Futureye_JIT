@@ -86,6 +86,7 @@ public class AssemblerScalar implements AssemblerOld {
 		}
 		
 		int nPS = nEle/nProgress;
+		if(nPS == 0) nPS = 1;
 		int nProgressPrint = 0;
 		for(int i=1; i<=nEle; i++) {
 			eList.at(i).adjustVerticeToCounterClockwise();

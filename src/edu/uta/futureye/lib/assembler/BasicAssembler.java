@@ -37,6 +37,9 @@ public class BasicAssembler {
 	 */
 	public void assembleLocal(Element e) {
 		e.adjustVerticeToCounterClockwise();
+		
+		// Associate FiniteElement object with Element object
+		this.weakForm.getFiniteElement().assignTo(e);
 
 		double[] coords = e.getNodeCoords();
 		System.arraycopy(coords, 0, params, 0, coords.length);
@@ -47,28 +50,28 @@ public class BasicAssembler {
 		for(int j=0;j<nDOFs;j++) {
 			for(int i=0;i<nDOFs;i++) {
 				A[j][i] = FOIntegrate.intOnLinearRefElement(weakForm.getCompiledLHS()[j][i], 
-						new AssembleParam(e, i, j), params, coords.length, 5);
+						new AssembleParam(e, i+1, j+1), params, coords.length, 5);
 			}
 			b[j] = FOIntegrate.intOnLinearRefElement(weakForm.getCompiledRHS()[j], 
-					new AssembleParam(e, -1, j), params, coords.length, 5);
+					new AssembleParam(e, -1, j+1), params, coords.length, 5);
 		}
 		} else if(weakForm.getFiniteElement().getNumberOfDOFs() == 3) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnTriangleRefElement(weakForm.getCompiledLHS()[j][i], 
-							new AssembleParam(e, i, j), params, coords.length, 2);//Laplace Test: 2=80.839 3=80.966, 4=80.967
+							new AssembleParam(e, i+1, j+1), params, coords.length, 2);//Laplace Test: 2=80.839 3=80.966, 4=80.967
 				}
 				b[j] = FOIntegrate.intOnTriangleRefElement(weakForm.getCompiledRHS()[j], 
-						new AssembleParam(e, -1, j), params, coords.length, 2);
+						new AssembleParam(e, -1, j+1), params, coords.length, 2);
 			}
 		} else if(weakForm.getFiniteElement().getNumberOfDOFs() == 4) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnRectangleRefElement(weakForm.getCompiledLHS()[j][i], 
-							new AssembleParam(e, i, j), params, coords.length, 5);
+							new AssembleParam(e, i+1, j+1), params, coords.length, 5);
 				}
 				b[j] = FOIntegrate.intOnRectangleRefElement(weakForm.getCompiledRHS()[j], 
-						new AssembleParam(e, -1, j), params, coords.length, 5);
+						new AssembleParam(e, -1, j+1), params, coords.length, 5);
 			}
 		}
 	}

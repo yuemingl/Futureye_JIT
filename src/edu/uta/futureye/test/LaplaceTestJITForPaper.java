@@ -390,10 +390,10 @@ public class LaplaceTestJITForPaper {
 				for (int j = 0; j < nDOFs; j++) {
 					for (int i = 0; i < nDOFs; i++) {
 						A[j][i] = FOIntegrate.intOnTriangleRefElement(
-								clhs[j][i], new AssembleParam(e, i, j), params, coords.length, 2);
+								clhs[j][i], new AssembleParam(e, i+1, j+1), params, coords.length, 2);
 					}
 					b[j] = FOIntegrate.intOnTriangleRefElement(
-							crhs[j], new AssembleParam(e, -1, j), params, coords.length, 2);
+							crhs[j], new AssembleParam(e, -1, j+1), params, coords.length, 2);
 				}
 
 				if (solveSystem) {
