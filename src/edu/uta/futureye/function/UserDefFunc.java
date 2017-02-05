@@ -3,9 +3,8 @@ package edu.uta.futureye.function;
 import java.util.List;
 import java.util.Map;
 
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 
 public class UserDefFunc extends MathFuncBase {
 	@Override
@@ -59,7 +58,7 @@ public class UserDefFunc extends MathFuncBase {
 	}
 
 	@Override
-	public double apply(Element e, Node n, double... args) {
+	public double apply(AssembleParam ap, double... args) {
 		return apply(args);
 	}
 }

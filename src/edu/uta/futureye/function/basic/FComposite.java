@@ -33,7 +33,9 @@ import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.test.BytecodeTest;
+import edu.uta.futureye.util.BytecodeConst;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.FuncClassLoader;
 import edu.uta.futureye.util.FutureyeException;
@@ -101,19 +103,19 @@ public class FComposite extends MultiVarFunc {
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return apply(null, args);
 	}
 
 	@Override
-	public double apply(Element e, Node n, double... args) {
+	public double apply(AssembleParam ap, double... args) {
 		if(this.isOuterVariablesActive) {
-			return fOuter.apply(e, n, args);
+			return fOuter.apply(ap, args);
 		} else {
 			List<String> vn = fOuter.getVarNames();
 			double[] newArgs = new double[vn.size()];
 			for(int i=0; i<vn.size(); i++) {
 				MathFunc fInner = fInners.get(vn.get(i));
-				newArgs[i] = fInner.apply(e, n, args);
+				newArgs[i] = fInner.apply(ap, args);
 			}
 			return fOuter.apply(newArgs);
 		}
@@ -278,7 +280,7 @@ public class FComposite extends MultiVarFunc {
 					for(int i=0; i<args.size(); i++) {
 						fArgsMap.put(args[i], argsMap.get(args[i]));
 					}
-					f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
+					f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, BytecodeConst.argOutIdx, funcRefsMap);
 				} else {
 					//il.append(new PUSH(cp, 0.0)); //pad 0.0 for undefined variables in fInners map
 					//bugfix
@@ -344,7 +346,7 @@ public class FComposite extends MultiVarFunc {
 				for(int i=0; i<args.size(); i++) {
 					fArgsMap.put(args[i], argsMap.get(args[i]));
 				}
-				f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, 3, funcRefsMap);
+				f.bytecodeGen(clsName, mg, cp, factory, il, fArgsMap, BytecodeConst.argOutIdx, funcRefsMap);
 				il.append(new DASTORE());
 			}
 			
@@ -443,7 +445,7 @@ public class FComposite extends MultiVarFunc {
 			fOuter.bytecodeGen(mv, argsMap, argsStartPos, funcRefsMap, clsName);
 		} else {
 			//TODO find a way to determine aryArgOuterLVTIdx and put the variable in LVT
-			int aryArgOuterLVTIdx = 4;//???
+			int aryArgOuterLVTIdx = 3;//???
 			
 			//define a local variable 
 			//double[] aryArgOuter = new double[size];

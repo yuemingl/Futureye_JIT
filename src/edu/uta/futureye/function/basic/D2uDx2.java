@@ -2,11 +2,11 @@ package edu.uta.futureye.function.basic;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.util.FutureyeException;
 
 /**
@@ -124,13 +124,13 @@ public class D2uDx2 extends MultiVarFunc implements ElementDependentFunction {
 		*/
 	}
 	@Override
-	public double apply(Element e, Node n, double... args) {
+	public double apply(AssembleParam ap, double... args) {
 		throw new FutureyeException("unsupported error!");
 	}
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return apply(null, args);
 	}
 
 	public String toString() {

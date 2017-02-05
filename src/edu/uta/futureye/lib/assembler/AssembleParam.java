@@ -8,4 +8,18 @@ public class AssembleParam {
 	public int trialDOFIdx;
 	public int testDOFIdx;
 	public Node node;
+	
+	public AssembleParam(Element e, int i, int j) {
+		this.element = e;
+		this.trialDOFIdx = i;
+		this.testDOFIdx = j;
+	}
+	
+	public AssembleParam(Element e, int i, int j, Node n) {
+		this.element = e;
+		this.trialDOFIdx = i;
+		this.testDOFIdx = j;
+		this.node = n;
+	}
+
 }

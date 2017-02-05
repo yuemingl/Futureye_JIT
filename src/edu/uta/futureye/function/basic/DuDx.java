@@ -11,6 +11,7 @@ import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
@@ -157,10 +158,10 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 	}
 
 	@Override
-	public double apply(Element e, Node n, double... args) {
-		Element newEle = e;
+	public double apply(AssembleParam ap, double... args) {
+		Element newEle = ap.element;
 		if(newEle != null) {
-			Element ve = e;
+			Element ve = ap.element;
 			//3D?
 			if(ve.nodes.size()==2 && ve.getGeoEntity() instanceof Edge) {
 				//find the cell that includes this edge
@@ -182,14 +183,14 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 			}
 			
 		
-			int N = e.nodes.size();
+			int N = ap.element.nodes.size();
 			double[] f = new double[N];
 			for(int i=1;i<=N;i++) {
-				Node node = e.nodes.at(i);
+				Node node = ap.element.nodes.at(i);
 				Variable var = Variable.createFrom(u, node, node.globalIndex);
 				f[i-1] = u.apply(var);
 			}
-			double[] a = Utils.computeBilinearFunctionCoef(e.nodes.toArray(new Point[0]), f);
+			double[] a = Utils.computeBilinearFunctionCoef(ap.element.nodes.toArray(new Point[0]), f);
 			//d(a1 + a2*x + a3*y + a4*x*y)/dx
 			//d(a1 + a2*x + a3*y + a4*x*y)/dy
 			MathFunc du = null;
@@ -204,14 +205,14 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 			if(varNames==null || varNames.length==0) {
 				throw new FutureyeException("varNames should be specified in parameter 'u'.");
 			}
-			if(n.getIndex() != 0) {
-				Node node = mesh.getNodeList().at(n.getIndex());
+			if(ap.node.getIndex() != 0) {
+				Node node = mesh.getNodeList().at(ap.node.getIndex());
 				for(int i=0;i<varNames.length;i++) {
 					vv.set(varNames[i],node.coord(i+1));
 				}
 				return du.apply(vv);
 			} else {
-				return du.apply(e, n, args);	
+				return du.apply(ap, args);	
 			}
 			
 		} else {
@@ -219,12 +220,12 @@ public class DuDx extends MultiVarFunc implements ElementDependentFunction {
 				Vector du2 = Tools.computeDerivativeFast(mesh, u.vec, x);
 				fdu2 = new Vector2MathFunc(du2);
 			}
-			return fdu2.apply(e, n, args);
+			return fdu2.apply(ap, args);
 		}
 	}
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return apply(null, args);
 	}
 }

@@ -18,6 +18,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.Type;
+
 import com.sun.org.apache.xpath.internal.operations.Variable;
 
 import edu.uta.futureye.core.Element;
@@ -25,6 +26,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.basic.FComposite;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FBinaryOp;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 
 public class BytecodeUtils {
 	public static void postOrder(MathFunc func, List<MathFunc> list) {
@@ -68,14 +70,14 @@ public class BytecodeUtils {
 		if(staticMethod)
 			acc_flags |= ACC_STATIC;
 		MethodGen mg = new MethodGen(acc_flags, // access flags
-				Type.DOUBLE, // return type
-				new Type[] { // argument types
-					Type.getType(Element.class),
-					Type.getType(Node.class),
-					new ArrayType(Type.DOUBLE, 1) 
-				}, 
-				new String[] { "e", "n", "args" }, // arg names
-				"apply", fullClsName, // method, class
+				Type.DOUBLE,                    // return type
+				new Type[] {                    // argument types
+					Type.getType(AssembleParam.class),
+					new ArrayType(Type.DOUBLE, 1)
+				},
+				new String[] { "ap", "args" }, // argument names
+				"apply",                       //method name
+				fullClsName,                   //class name
 				il, cp);
 		
 		HashMap<String, Integer> argsMap = new HashMap<String, Integer>();
@@ -106,9 +108,9 @@ public class BytecodeUtils {
 		Map<MathFunc, Integer> refsMap = getFuncRefsMap(func);
 		
 		if(staticMethod)
-			func.bytecodeGen(clsName, mg, cp, factory, il, argsMap, 2, refsMap);
+			func.bytecodeGen(clsName, mg, cp, factory, il, argsMap, BytecodeConst.argIdx, refsMap);
 		else
-			func.bytecodeGen(clsName, mg, cp, factory, il, argsMap, 3, refsMap);
+			func.bytecodeGen(clsName, mg, cp, factory, il, argsMap, BytecodeConst.argIdx+1, refsMap);
 		il.append(InstructionConstants.DRETURN);
 		
 //	Test

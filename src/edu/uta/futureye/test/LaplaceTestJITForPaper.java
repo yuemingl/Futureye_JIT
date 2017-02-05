@@ -41,6 +41,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.lib.element.FELinearTriangleOld;
 import edu.uta.futureye.util.MeshGenerator;
 import edu.uta.futureye.util.Utils;
@@ -389,10 +390,10 @@ public class LaplaceTestJITForPaper {
 				for (int j = 0; j < nDOFs; j++) {
 					for (int i = 0; i < nDOFs; i++) {
 						A[j][i] = FOIntegrate.intOnTriangleRefElement(
-								clhs[j][i], null, null, params, coords.length, 2);
+								clhs[j][i], new AssembleParam(e, i, j), params, coords.length, 2);
 					}
-					b[j] = FOIntegrate.intOnTriangleRefElement(crhs[j], null,
-							null, params, coords.length, 2);
+					b[j] = FOIntegrate.intOnTriangleRefElement(
+							crhs[j], new AssembleParam(e, -1, j), params, coords.length, 2);
 				}
 
 				if (solveSystem) {

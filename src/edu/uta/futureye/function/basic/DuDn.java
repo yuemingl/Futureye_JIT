@@ -4,13 +4,13 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Face;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.ElementDependentFunction;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.util.FutureyeException;
 
 /**
@@ -84,9 +84,9 @@ public class DuDn extends MultiVarFunc implements ElementDependentFunction {
 	}
 
 	@Override
-	public double apply(Element e, Node n, double... args) {
+	public double apply(AssembleParam ap, double... args) {
 		MathFunc rlt = null;
-		this.setElement(e);
+		this.setElement(ap.element);
 		if(u != null) {
 			//u is passed into constructor
 			rlt = FMath.grad(u).dot(norm);
@@ -107,11 +107,11 @@ public class DuDn extends MultiVarFunc implements ElementDependentFunction {
 			throw new FutureyeException(
 					"Error: u="+u+", this.norm.getDim()="+this.norm.getDim());
 		}
-		return rlt.apply(e, n, args);
+		return rlt.apply(ap, args);
 	}
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return apply(null, args);
 	}
 }

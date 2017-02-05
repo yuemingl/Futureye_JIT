@@ -14,12 +14,12 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ObjList;
@@ -143,8 +143,8 @@ public class SFLinearLocal2DRS  extends MultiVarFunc
 	}
 	
 	@Override
-	public double apply(Element e, Node n, double ...args) {
-		return funCompose.apply(e, n, args);
+	public double apply(AssembleParam ap, double ...args) {
+		return funCompose.apply(ap, args);
 	}
 	
 	@Override

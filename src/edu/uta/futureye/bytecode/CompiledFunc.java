@@ -1,33 +1,32 @@
 package edu.uta.futureye.bytecode;
 
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 
 /**
- * Represents a compiled function from an object of MathFunc
+ * This class represents a compiled function from an object of MathFunc
  *
  */
 public abstract class CompiledFunc {
+	//references to MathFunc objects
 	protected MathFunc[] funcRefs;
 
 	/**
 	 * This function should be implemented during compilation
-	 * @param e
-	 * @param n
-	 * @param args
+	 * @param ap - This parameter is supposed to be passed into the function during assembling process
+	 * @param args - arguments defined in MathFunc
 	 * @return
 	 */
-	public abstract double apply(Element e, Node n, double ...args);
+	public abstract double apply(AssembleParam ap, double ...args);
 	
 	/**
 	 * A simplified method for applying a function without 
-	 * parameters Element and Node
+	 * parameters AssembleParam
 	 * @param args
 	 * @return
 	 */
 	public double apply(double ...args) {
-		return apply(null, null, args);
+		return apply(null, args);
 	}
 	
 	/**

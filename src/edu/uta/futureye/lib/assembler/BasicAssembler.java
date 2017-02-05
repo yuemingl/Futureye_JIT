@@ -47,28 +47,28 @@ public class BasicAssembler {
 		for(int j=0;j<nDOFs;j++) {
 			for(int i=0;i<nDOFs;i++) {
 				A[j][i] = FOIntegrate.intOnLinearRefElement(weakForm.getCompiledLHS()[j][i], 
-						null, null, params, coords.length, 5);
+						new AssembleParam(e, i, j), params, coords.length, 5);
 			}
 			b[j] = FOIntegrate.intOnLinearRefElement(weakForm.getCompiledRHS()[j], 
-					null, null, params, coords.length, 5);
+					new AssembleParam(e, -1, j), params, coords.length, 5);
 		}
 		} else if(weakForm.getFiniteElement().getNumberOfDOFs() == 3) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnTriangleRefElement(weakForm.getCompiledLHS()[j][i], 
-							null, null, params, coords.length, 2);//Laplace Test: 2=80.839 3=80.966, 4=80.967
+							new AssembleParam(e, i, j), params, coords.length, 2);//Laplace Test: 2=80.839 3=80.966, 4=80.967
 				}
 				b[j] = FOIntegrate.intOnTriangleRefElement(weakForm.getCompiledRHS()[j], 
-						null, null, params, coords.length, 2);
+						new AssembleParam(e, -1, j), params, coords.length, 2);
 			}
 		} else if(weakForm.getFiniteElement().getNumberOfDOFs() == 4) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnRectangleRefElement(weakForm.getCompiledLHS()[j][i], 
-							null, null, params, coords.length, 5);
+							new AssembleParam(e, i, j), params, coords.length, 5);
 				}
 				b[j] = FOIntegrate.intOnRectangleRefElement(weakForm.getCompiledRHS()[j], 
-						null, null, params, coords.length, 5);
+						new AssembleParam(e, -1, j), params, coords.length, 5);
 			}
 		}
 	}

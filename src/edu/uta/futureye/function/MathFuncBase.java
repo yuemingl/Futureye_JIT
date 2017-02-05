@@ -29,7 +29,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
-import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FComposite;
@@ -38,6 +37,8 @@ import edu.uta.futureye.function.operator.FAdd;
 import edu.uta.futureye.function.operator.FDiv;
 import edu.uta.futureye.function.operator.FMul;
 import edu.uta.futureye.function.operator.FSub;
+import edu.uta.futureye.lib.assembler.AssembleParam;
+import edu.uta.futureye.util.BytecodeConst;
 import edu.uta.futureye.util.BytecodeUtils;
 import edu.uta.futureye.util.ClassGenerator;
 import edu.uta.futureye.util.Constant;
@@ -49,7 +50,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 	public abstract double apply(double ...args);
 	
 	@Override
-	public double apply(Element e, Node n, double... args) {
+	public double apply(AssembleParam ap, double... args) {
 		return apply(args);
 	}
 
@@ -57,7 +58,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 	@Override
 	public double apply(Variable v) {
 		Node n = new Node(v.getIndex());
-		return apply(v.getElement(), n, v.getVarValues());
+		return apply(new AssembleParam(v.getElement(),-1,-1), v.getVarValues());
 	}
 	
 	@Deprecated
@@ -193,18 +194,16 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 		FieldGen fg = new FieldGen(ACC_PUBLIC, new ArrayType(Type.getType(MathFunc.class), 1), "funcRefs", cp);
 		//System.out.println(fg.getSignature());
 		int idxFuncRefs = cp.addFieldref("edu.uta.futureye.bytecode.CompiledFunc", "funcRefs", fg.getSignature());
-		
+
 		il.append(new ALOAD(0));
 		il.append(new GETFIELD(idxFuncRefs));
 		il.append(new PUSH(cp, funcRefsMap.get(this)));
 		il.append(new AALOAD());
-		il.append(new ALOAD(1));
-		il.append(new ALOAD(2));
-		il.append(new ALOAD(3));
+		il.append(new ALOAD(BytecodeConst.assembleParamIdx+1));
+		il.append(new ALOAD(BytecodeConst.argIdx+1));
 		return  il.append(factory.createInvoke("edu.uta.futureye.function.intf.MathFunc", "apply",
 				Type.DOUBLE, new Type[] {
-					Type.getType(Element.class),
-					Type.getType(Node.class),
+					Type.getType(AssembleParam.class),
 					new ArrayType(Type.DOUBLE, 1)
 				}, 
 				Constants.INVOKEINTERFACE));
@@ -258,20 +257,13 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 			// Generate the function for the root expression
 			Label startMatchesLabel = new Label();
 			Label endMatchesLabel = new Label();
-			org.objectweb.asm.Type retType = org.objectweb.asm.Type
-					.getType(double.class);
-			org.objectweb.asm.Type param1 = org.objectweb.asm.Type
-					.getType(Element.class);
-			org.objectweb.asm.Type param2 = org.objectweb.asm.Type
-					.getType(Node.class);
-			org.objectweb.asm.Type param3 = org.objectweb.asm.Type
-					.getType(double[].class);
+			org.objectweb.asm.Type retType = org.objectweb.asm.Type.getType(double.class);
+			org.objectweb.asm.Type param1 = org.objectweb.asm.Type.getType(AssembleParam.class);
+			org.objectweb.asm.Type param2 = org.objectweb.asm.Type.getType(double[].class);
 			mv = cgen.startMethod(Opcodes.ACC_PUBLIC, methodName,
-					org.objectweb.asm.Type.getMethodDescriptor(retType, 
-							param1, param2, param3));
+					org.objectweb.asm.Type.getMethodDescriptor(retType, param1, param2));
 			cgen.startCode(mv, startMatchesLabel);
-			
-			
+
 			HashMap<String, Integer> argsMap = new HashMap<String, Integer>();
 			if(varNames == null || varNames.length == 0) {
 				List<String> args = this.getVarNames();
@@ -295,7 +287,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 			Map<MathFunc, Integer> refsMap = BytecodeUtils.getFuncRefsMap(this);
 			
 			if (this.compileToStaticField) {
-				this.bytecodeGen(mv, argsMap, 3, refsMap, genClassName); //3 for args: double apply(Element e, Node n, double ...args);
+				this.bytecodeGen(mv, argsMap, 2, refsMap, genClassName); //2 for args: double apply(Element e, Node n, double ...args);
 				staticFieldName = "var_" + this.getName();
 				FieldVisitor fv = cgen.getClassWriter().visitField(
 						Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, staticFieldName, "D", "D", 0.0);
@@ -309,18 +301,13 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 				
 				this.isCompiledToStaticFiled = true;
 			} else {
-				this.bytecodeGen(mv, argsMap, 3, refsMap, genClassName); //3 for args: double apply(Element e, Node n, double ...args);
+				this.bytecodeGen(mv, argsMap, 2, refsMap, genClassName); //2 for args: double apply(Element e, Node n, double ...args);
 			}
 			mv.visitInsn(retType.getOpcode(Opcodes.IRETURN));
 			
-			mv.visitLocalVariable("this", "L" + genClassName + ";", null,
-					startMatchesLabel, endMatchesLabel, 0);
-			mv.visitLocalVariable("element", param1.getDescriptor(), null,
-					startMatchesLabel, endMatchesLabel, 1);
-			mv.visitLocalVariable("node", param2.getDescriptor(), null,
-					startMatchesLabel, endMatchesLabel, 2);
-			mv.visitLocalVariable("args", param3.getDescriptor(), null,
-					startMatchesLabel, endMatchesLabel, 3);
+			mv.visitLocalVariable("this", "L" + genClassName + ";", null, startMatchesLabel, endMatchesLabel, 0);
+			mv.visitLocalVariable("ap", param1.getDescriptor(),     null, startMatchesLabel, endMatchesLabel, 1);
+			mv.visitLocalVariable("args", param2.getDescriptor(),   null, startMatchesLabel, endMatchesLabel, 2);
 			mv.visitMaxs(-1, -1); // Auto generated
 			cgen.endCode(mv, endMatchesLabel);
 

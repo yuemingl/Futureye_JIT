@@ -1,11 +1,10 @@
 package edu.uta.futureye.function.basic;
 
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.util.Constant;
 
 /**
@@ -39,7 +38,7 @@ public class FAx extends SingleVarFunc {
 	}
 
 	@Override
-	public double apply(Element e, Node n, double... args) {
+	public double apply(AssembleParam ap, double... args) {
 		return a*args[argIdx];
 	}
 

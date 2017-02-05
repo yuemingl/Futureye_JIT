@@ -3,10 +3,9 @@ package edu.uta.futureye.function.basic;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.PairDoubleInteger;
 import edu.uta.futureye.util.container.ObjList;
@@ -36,15 +35,15 @@ public class DiscreteIndexFunction extends MultiVarFunc {
 	}
 
 	@Override
-	public double apply(Element e, Node n, double... args) {
-		if(n.getIndex()<=0) 
-			throw new FutureyeException("v.getIndex()="+n.getIndex());
-		return data.get(n.getIndex());
+	public double apply(AssembleParam ap, double... args) {
+		if(ap.node.getIndex()<=0) 
+			throw new FutureyeException("v.getIndex()="+ap.node.getIndex());
+		return data.get(ap.node.getIndex());
 	}
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return apply(null, args);
 	}
 
 }

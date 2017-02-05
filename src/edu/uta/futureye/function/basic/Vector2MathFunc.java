@@ -13,6 +13,7 @@ import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
@@ -213,8 +214,8 @@ public class Vector2MathFunc extends MultiVarFunc {
 	
 
 	@Override
-	public double apply(Element ee, Node n, double... args) {
-		int index = n.getIndex();
+	public double apply(AssembleParam ap, double... args) {
+		int index = ap.node.getIndex();
 		int nDim = vec.getDim();
 		if(mesh == null) { //完全依靠index来求值
 			if(index > 0 && index <= nDim)
@@ -265,7 +266,7 @@ public class Vector2MathFunc extends MultiVarFunc {
 								"Try to use setDefaultFunction(Function fun) to extend the evaluation outside of the mesh domain.");
 					}
 					else
-						return this.defaultFunction.apply(ee, n, args);
+						return this.defaultFunction.apply(ap, args);
 				}
 				double[] f = new double[e.nodes.size()];
 				for(int i=1;i<=e.nodes.size();i++) {
@@ -292,7 +293,7 @@ public class Vector2MathFunc extends MultiVarFunc {
 
 	@Override
 	public double apply(double... args) {
-		return apply(null, null, args);
+		return apply(null, args);
 	}
 
 	

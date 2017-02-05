@@ -12,10 +12,9 @@ import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 
 public class FDiv extends FBinaryOp {
 	public FDiv(MathFunc left, MathFunc right) {
@@ -29,8 +28,8 @@ public class FDiv extends FBinaryOp {
 	
 	
 	@Override
-	public double apply(Element e, Node n, double... args) {
-		return arg1.apply(e,n,args) / arg2.apply(e, n, args);
+	public double apply(AssembleParam ap, double... args) {
+		return arg1.apply(ap,args) / arg2.apply(ap, args);
 	}
 	
 	@Override

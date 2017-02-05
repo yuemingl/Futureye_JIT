@@ -1,15 +1,6 @@
 package edu.uta.futureye.function;
 
-import static edu.uta.futureye.function.FMath.exp;
-import static edu.uta.futureye.function.FMath.log;
-import static edu.uta.futureye.function.FMath.log10;
-import static edu.uta.futureye.function.FMath.max;
-import static edu.uta.futureye.function.FMath.min;
-import static edu.uta.futureye.function.FMath.x;
-import static edu.uta.futureye.function.FMath.y;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

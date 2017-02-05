@@ -16,10 +16,9 @@ import org.apache.bcel.generic.MethodGen;
 import org.objectweb.asm.MethodVisitor;
 
 import edu.uta.futureye.bytecode.CompiledFunc;
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
+import edu.uta.futureye.lib.assembler.AssembleParam;
 
 /**
  * Mathematical function interface
@@ -113,12 +112,11 @@ public interface MathFunc {
 	
 	/**
 	 * 
-	 * @param e
-	 * @param n
+	 * @param ap
 	 * @param args
 	 * @return
 	 */
-	double apply(Element e, Node n, double ...args);
+	double apply(AssembleParam ap, double ...args);
 	
 	/**
 	 * Return function value at variable v with cache enabled
