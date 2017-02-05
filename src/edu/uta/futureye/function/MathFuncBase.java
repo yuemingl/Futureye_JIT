@@ -208,12 +208,23 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 				}, 
 				Constants.INVOKEINTERFACE));
 	}
-	
+
 	@Override
 	public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
 			int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
 			String clsName) {
-		throw new RuntimeException("Unimplementd method!");
+		mv.visitVarInsn(org.objectweb.asm.Opcodes.ALOAD, 0);
+		mv.visitFieldInsn(Opcodes.GETFIELD, ClassGenerator.getASMName(CompiledFunc.class), "funcRefs", 
+				org.objectweb.asm.Type.getType(MathFunc[].class).getDescriptor());
+		mv.visitLdcInsn(funcRefsMap.get(this));
+		mv.visitInsn(org.objectweb.asm.Opcodes.AALOAD);
+		mv.visitVarInsn(org.objectweb.asm.Opcodes.ALOAD, BytecodeConst.assembleParamIdx+1);
+		mv.visitVarInsn(org.objectweb.asm.Opcodes.ALOAD, BytecodeConst.argIdx+1);
+		mv.visitMethodInsn(org.objectweb.asm.Opcodes.INVOKEINTERFACE, 
+				ClassGenerator.getASMName(MathFunc.class), "apply", "("+
+						org.objectweb.asm.Type.getType(AssembleParam.class).getDescriptor()+
+						org.objectweb.asm.Type.getType(double[].class).getDescriptor()+
+						")D", true);
 	}
 	
 	@Override
@@ -227,6 +238,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 		ClassGen genClass = BytecodeUtils.genClass(this, varNames, clsName, true, false);
 		CompiledFunc func = fcl.newInstance(genClass);
 		
+		// Set funcRefs field in CompiledFunc
 		List<MathFunc> list = new ArrayList<MathFunc>();
 		BytecodeUtils.postOrder(this, list);
 		func.setFuncRefs(list.toArray(new MathFunc[0]));
@@ -329,6 +341,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 
 			CompiledFunc func = (CompiledFunc) c.newInstance();
 
+			// Set funcRefs field in CompiledFunc
 			List<MathFunc> list = new ArrayList<MathFunc>();
 			BytecodeUtils.postOrder(this, list);
 			func.setFuncRefs(list.toArray(new MathFunc[0]));
