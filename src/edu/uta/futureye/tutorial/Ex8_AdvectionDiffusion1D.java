@@ -21,6 +21,7 @@ import edu.uta.futureye.lib.assembler.BasicAssembler;
 import edu.uta.futureye.lib.element.FELinearLine1D;
 import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.Constant;
+import edu.uta.futureye.util.MathEx;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.NodeList;
 
@@ -82,6 +83,53 @@ public class Ex8_AdvectionDiffusion1D {
 		
 	}
 	
+	public static Vector solve(Mesh mesh, 
+			final double L, final int N, double k, double u) {
+		// Mark border types
+		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
+		mapNTF.put(NodeType.Dirichlet, null);
+		mesh.markBorderNode(mapNTF);
+
+		// Weak form definition
+		WeakForm wf = new WeakForm(
+				new FELinearLine1D(),
+				(c, v) -> k * c.diff("x") * v.diff("x") + u * c.diff("x") * v,
+				(v)    -> C0
+				);
+		wf.compile();
+
+		// Assembly and boundary condition(s)
+		BasicAssembler assembler = new BasicAssembler(wf);
+		assembler.assembleGlobal(mesh);
+		Matrix stiff = assembler.getGlobalStiffMatrix();
+		Vector load = assembler.getGlobalLoadVector();
+		// Boundary condition
+		Utils.imposeDirichletCondition(stiff, load, mesh, 
+			new SingleVarFunc("diri","x") {
+				@Override
+				public double apply(double... args) {
+					double x = args[0];
+					if (Math.abs(x) < Constant.meshEps)
+						return 0.0;
+					else if (Math.abs(x - L) < Constant.meshEps)
+						return 1.0;
+					else
+						return 0.0;
+				}
+		});
+
+		// Solve linear system
+		SolverJBLAS solver = new SolverJBLAS();
+		Vector c = solver.solveDGESV(stiff, load);
+		System.out.println("c=");
+		for (int i = 1; i <= c.getDim(); i++)
+			System.out.println(String.format("%.3f", c.get(i)));
+
+		System.out.println("Grid Peclet number=" + (u * L / N) / (2 * k));
+
+		return c;
+	}
+	
 	/**
 	 * 
 	 * @param mesh
@@ -91,7 +139,7 @@ public class Ex8_AdvectionDiffusion1D {
 	 * @param u flow velocity
 	 * @return
 	 */
-	public static Vector solve(Mesh mesh, 
+	public static Vector solveUpwind(Mesh mesh, 
 			final double L, final int N, double k, double u) {
 		// Mark border types
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
@@ -124,6 +172,7 @@ public class Ex8_AdvectionDiffusion1D {
 		// Weak form definition
 		WeakForm wf = new WeakForm(
 				new FELinearLine1D(),
+				//the convection term is weighted with a modified test function
 				(c, v) -> k * c.diff("x") * v.diff("x") + u * c.diff("x") * (v + upwindCoef),
 				(v)    -> C0
 				);
@@ -169,6 +218,9 @@ public class Ex8_AdvectionDiffusion1D {
 			double x = mesh.getNodeList().at(i).coord(1);
 			cReal.set(i, (1.0-Math.exp(Pe*x/L))/(1-Math.exp(Pe)));
 		}
+		System.out.println("Exact solution:");
+		for(int i=1; i<=cReal.getDim(); i++)
+			System.out.println((String.format("%.3f", cReal.get(i))));
 		return cReal;
 	}
 	
@@ -177,39 +229,25 @@ public class Ex8_AdvectionDiffusion1D {
 	 */
 	public static void main(String[] args) {
 		// 1.Generate mesh which just stores nodes and elements
-		double L = 1.0;
-		int N = 10; // =10 25
+		double L = 1.0;   // Solution domain: [0, L]
+		int N = 10;       // Number of elements: 10 25
+		double h = L/N;
 		Mesh mesh = getMesh(L, N);
-		Mesh meshExact = getMesh(L, 5 * N);
-		// basic relationship between nodes and elements
+		// Compute the basic relationship between nodes and elements
 		mesh.computeNodeBelongsToElements();
 
-		Vector c1 = solve(mesh, L, N, 1.0, 20);
-//		Vector c2 = solve(mesh, L, N, 1.0, 20);
-//		Vector c2upwind = solveUpwind(mesh, L, N, 1.0, 20);
-//		Vector c3 = solve(mesh, L, N, 1.0, 50);
-//		Vector c3upwind = solveUpwind(mesh, L, N, 1.0, 50);
-//
-//		Vector ce1 = exactSolution(meshExact, L, 5 * N, 1.0, 10);
-//		Vector ce2 = exactSolution(meshExact, L, 5 * N, 1.0, 20);
-//		Vector ce3 = exactSolution(meshExact, L, 5 * N, 1.0, 50);
-//
-//		// Optimal upwind method
-//		double k = 1.0;
-//		double u = 50;
-//		double h = L / N;
-//		double alpha = u * h / (2 * k);
-//		double k_tidle = (u * h / 2) * (MathEx.coth(alpha) - 1 / alpha);
-//		System.out.println("k_tidle=" + k_tidle);
-//		Vector c31 = solve(mesh, L, N, k + k_tidle, u);
-//
-//		// 7.Output results to an Techplot format file
-//		MeshWriter writer = new MeshWriter(mesh);
-//		MeshWriter writerEx = new MeshWriter(meshExact);
-//		writer.writeTechplot("./tutorial/AdvectionDiffusion1D.dat", c1, c2,
-//				c2upwind, c3, c3upwind, c31);
-//		writerEx.writeTechplot("./tutorial/AdvectionDiffusion1Dexact.dat", ce1,
-//				ce2, ce3);
+		double u = 20.0; //velocity
+		Vector ctrue      = exactSolution(mesh, L, N, 1.0, u);
+
+		Vector c1       = solve        (mesh, L, N, 1.0, u);
+		Vector c2 = solveUpwind  (mesh, L, N, 1.0, u);
+
+		// Optimal upwind method
+		double k = 1.0;
+		double alpha = u * h / (2 * k);
+		double k_tidle = (u * h / 2) * (MathEx.coth(alpha) - 1 / alpha);
+		System.out.println("k_tidle=" + k_tidle);
+		Vector c3 = solve(mesh, L, N, k + k_tidle, u);
 	}
 
 }
