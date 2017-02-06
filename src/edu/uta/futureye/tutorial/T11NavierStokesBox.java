@@ -25,7 +25,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
-import edu.uta.futureye.lib.element.FEBilinearV_ConstantP;
+import edu.uta.futureye.lib.element.FEBilinearV_ConstantPOld;
 import edu.uta.futureye.lib.element.FEQuadraticV_LinearP;
 import edu.uta.futureye.lib.element.FiniteElementType;
 import edu.uta.futureye.lib.weakform.WeakFormNavierStokes2D;
@@ -146,7 +146,7 @@ public class T11NavierStokesBox {
 		if(testCaseNo == 1)
 			fe = new FEQuadraticV_LinearP();
 		else if(testCaseNo == 2 || testCaseNo == 3)
-			fe = new FEBilinearV_ConstantP();
+			fe = new FEBilinearV_ConstantPOld();
 		fe.initDOFIndexGenerator(mesh);
 		for(int i=1;i<=eList.size();i++) {
 			fe.assignTo(eList.at(i));

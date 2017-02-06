@@ -8,10 +8,12 @@ import edu.uta.futureye.core.intf.LHSExpr;
 import edu.uta.futureye.core.intf.LHSVecExpr;
 import edu.uta.futureye.core.intf.RHSExpr;
 import edu.uta.futureye.core.intf.RHSVecExpr;
+import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.intf.MathFunc;
+import edu.uta.futureye.function.intf.VectorMathFunc;
 
-public class WeakForm {
-	FiniteElement fe;
+public class VecWeakForm {
+	VecFiniteElement fe;
 //	LHSExpr lhsExpr;
 //	RHSExpr rhsExpr;
 	
@@ -23,28 +25,18 @@ public class WeakForm {
 	CompiledFunc[][] clhs;
 	CompiledFunc[] crhs;
 
-	public WeakForm(FiniteElement fe, LHSExpr lhsExpr, RHSExpr rhsExpr) {
+	public VecWeakForm(VecFiniteElement fe, LHSVecExpr lhsExpr, RHSVecExpr rhsExpr) {
 		this.fe = fe;
 //		this.lhsExpr =  lhsExpr;
 //		this.rhsExpr = rhsExpr;
 		this.jac = fe.getJacobian();
  
 		int nDOFs = this.fe.getNumberOfDOFs();
-		MathFunc[] shapeFuncs = fe.getShapeFunctions();
+		VectorMathFunc[] shapeFuncs = fe.getShapeFunctions();
 		Map<String, MathFunc> map = fe.getCoordTransMap();
 		matLHS = new MathFunc[nDOFs][nDOFs];
 		vecRHS = new MathFunc[nDOFs];
 
-		for(int j=0; j<nDOFs; j++) {
-			MathFunc v = shapeFuncs[j];
-			for(int i=0; i<nDOFs; i++) {
-				MathFunc u = shapeFuncs[i];
-				matLHS[j][i] = lhsExpr.apply(u, v).compose(map)*jac;
-				matLHS[j][i].setName("LHS"+i+""+j);
-			}
-			vecRHS[j] = rhsExpr.apply(v).compose(map)*jac;
-			vecRHS[j].setName("RHS"+j);
-		}
 	}
 
 	public void compile() {
@@ -77,7 +69,7 @@ public class WeakForm {
 		return this.cjac;
 	}
 	
-	public FiniteElement getFiniteElement() {
+	public VecFiniteElement getFiniteElement() {
 		return this.fe;
 	}
 }
