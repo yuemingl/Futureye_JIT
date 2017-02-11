@@ -293,7 +293,10 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 				sb.delete(sb.length()-1, sb.length());
 				sb.append(")");
 				//func.setArgIdx(argsMap); //No need, this is for user defined apply() method not for compile()
-				System.out.println("JIT compileWithASM: "+this.getName()+sb.toString()+" = "+this.getExpr());
+				String expr = this.getExpr();
+				if(expr.length()>50)
+					expr = expr.substring(0,50);
+				System.out.println("JIT compileWithASM: "+this.getName()+sb.toString()+" = "+expr);
 			}
 
 			Map<MathFunc, Integer> refsMap = BytecodeUtils.getFuncRefsMap(this);
