@@ -72,8 +72,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 		return this;
 	}
 	
-	@Override
-	public VectorMathFunc add(VectorMathFunc v) {
+	public VectorMathFunc inc(VectorMathFunc v) {
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = data[i-1].A(v.get(i));
 		}
@@ -81,8 +80,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 		return this;
 	}
 	
-	@Override
-	public VectorMathFunc add(double a, VectorMathFunc g) {
+	public VectorMathFunc inc(double a, VectorMathFunc g) {
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = data[i-1].A(g.get(i).M(a));
 		}

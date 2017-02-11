@@ -118,7 +118,7 @@ public interface VectorMathFunc {
 	 * 
 	 * @param <code>\vec{g}(x)=(g1(x), g2(x), ..., gn(x))</code>
 	 */
-	VectorMathFunc add(VectorMathFunc g);
+	//VectorMathFunc add(VectorMathFunc g);
 	
 	/**
 	 * <code>\vec{f}(x) = \vec{f}(x) + a*\vec{g}(x)</code>
@@ -324,5 +324,79 @@ public interface VectorMathFunc {
 	 * @param name
 	 */
 	VectorMathFunc setFName(String name);
+	
+	//////////////Operator overloading support through Java-OO//////////////////
+	/**
+	 * Operator overloading support:
+	 * 
+	 * MathFunc a = 5;
+	 * 
+	 */
+	VectorMathFunc valueOf(int v);
+	VectorMathFunc valueOf(long v);
+	VectorMathFunc valueOf(float v) ;
+	VectorMathFunc valueOf(double v);
+	
+	/**
+	 * Operator overload support:
+	 * a+b
+	 */
+	VectorMathFunc add(VectorMathFunc other);
+	VectorMathFunc add(int other);
+	VectorMathFunc addRev(int other);
+	VectorMathFunc add(long other);
+	VectorMathFunc addRev(long other);
+	VectorMathFunc add(float other);
+	VectorMathFunc addRev(float other);
+	VectorMathFunc add(double other);
+	VectorMathFunc addRev(double other);
+	
+	/**
+	 * Operator overload support:
+	 * a-b
+	 */
+	VectorMathFunc subtract(VectorMathFunc other);
+	VectorMathFunc subtract(int other);
+	VectorMathFunc subtractRev(int other);
+	VectorMathFunc subtract(long other);
+	VectorMathFunc subtractRev(long other);
+	VectorMathFunc subtract(float other);
+	VectorMathFunc subtractRev(float other);
+	VectorMathFunc subtract(double other);
+	VectorMathFunc subtractRev(double other);
+	
+	/**
+	 * Operator overload support:
+	 * a*b
+	 */
+	VectorMathFunc multiply(VectorMathFunc other);
+	VectorMathFunc multiply(int other);
+	VectorMathFunc multiplyRev(int other);
+	VectorMathFunc multiply(long other);
+	VectorMathFunc multiplyRev(long other);
+	VectorMathFunc multiply(float other);
+	VectorMathFunc multiplyRev(float other);
+	VectorMathFunc multiply(double other);
+	VectorMathFunc multiplyRev(double other);
+	
+	/**
+	 * Operator overload support:
+	 * a/b
+	 */
+	VectorMathFunc divide(VectorMathFunc other);
+	VectorMathFunc divide(int other);
+	VectorMathFunc divideRev(int other);
+	VectorMathFunc divide(long other);
+	VectorMathFunc divideRev(long other);
+	VectorMathFunc divide(float other);
+	VectorMathFunc divideRev(float other);
+	VectorMathFunc divide(double other);
+	VectorMathFunc divideRev(double other);
+	
+	/**
+	 * Operator overload support:
+	 * -a
+	 */
+	VectorMathFunc negate();
 	
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import edu.uta.futureye.algebra.SpaceVector;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
@@ -118,7 +119,7 @@ public abstract class VectorMathFuncBase implements VectorMathFunc {
 	}
 	
 	@Override
-	public VectorMathFunc add(VectorMathFunc g) {
+	public VectorMathFunc inc(VectorMathFunc g) {
 		for(int i=1; i<=dim; i++) {
 			this.set(i,this.get(i).A(g.get(i)));
 		}
@@ -127,7 +128,7 @@ public abstract class VectorMathFuncBase implements VectorMathFunc {
 	}
 	
 	@Override
-	public VectorMathFunc add(double a, VectorMathFunc g) {
+	public VectorMathFunc inc(double a, VectorMathFunc g) {
 		for(int i=1; i<=dim; i++) {
 			this.set(i,this.get(i).A(g.get(i).M(a)));
 		}
@@ -294,5 +295,145 @@ public abstract class VectorMathFuncBase implements VectorMathFunc {
 		} else 
 			return getFName();
 	}
+	//////////////Operator overloading support through Java-OO//////////////////
+
+	public VectorMathFunc valueOf(int v) {
+		SpaceVectorFunction f = new SpaceVectorFunction(1);
+		f.set(1, new FC(v));
+		return f;
+	}
+	public VectorMathFunc valueOf(long v) {
+		SpaceVectorFunction f = new SpaceVectorFunction(1);
+		f.set(1, new FC(v));
+		return f;
+	}
+	public VectorMathFunc valueOf(float v) {
+		SpaceVectorFunction f = new SpaceVectorFunction(1);
+		f.set(1, new FC(v));
+		return f;
+	}
+	public VectorMathFunc valueOf(double v) {
+		SpaceVectorFunction f = new SpaceVectorFunction(1);
+		f.set(1, new FC(v));
+		return f;
+	}
+
+	public VectorMathFunc add(VectorMathFunc other) {
+		return this.A(other);
+	}
+	public VectorMathFunc add(int other) {
+		return this.A(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc addRev(int other) {
+		return this.A(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc add(long other) {
+		return this.A(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc addRev(long other) {
+		return this.A(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}	
+	public VectorMathFunc add(float other) {
+		return this.A(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc addRev(float other) {
+		return this.A(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}	
+	public VectorMathFunc add(double other) {
+		return this.A(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc addRev(double other) {
+		return this.A(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
 	
+	public VectorMathFunc subtract(VectorMathFunc other) {
+		return this.S(other);
+	}
+	public VectorMathFunc subtract(int other) {
+		return this.S(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc subtractRev(int other) {
+		return new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)).S(this);
+	}
+	public VectorMathFunc subtract(long other) {
+		return this.S(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc subtractRev(long other) {
+		return new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)).S(this);
+	}	
+	public VectorMathFunc subtract(float other) {
+		return this.S(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc subtractRev(float other) {
+		return new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)).S(this);
+	}
+	public VectorMathFunc subtract(double other) {
+		return this.S(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc subtractRev(double other) {
+		return new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)).S(this);
+	}
+	
+	public VectorMathFunc multiply(VectorMathFunc other) {
+		return this.M(other);
+	}
+	public VectorMathFunc multiply(int other) {
+		return this.M(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc multiplyRev(int other) {
+		return this.M(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc multiply(long other) {
+		return this.M(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc multiplyRev(long other) {
+		return this.M(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc multiply(float other) {
+		return this.M(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc multiplyRev(float other) {
+		return this.M(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc multiply(double other) {
+		return this.M(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc multiplyRev(double other) {
+		return this.M(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	
+	public VectorMathFunc divide(VectorMathFunc other) {
+		return this.D(other);
+	}	
+	public VectorMathFunc divide(int other) {
+		return this.D(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc divideRev(int other) {
+		return new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)).D(this);
+	}
+	public VectorMathFunc divide(long other) {
+		return this.D(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc divideRev(long other) {
+		return new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)).D(this);
+	}
+	public VectorMathFunc divide(float other) {
+		return this.D(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc divideRev(float other) {
+		return new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)).D(this);
+	}
+	public VectorMathFunc divide(double other) {
+		return this.D(new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)));
+	}
+	public VectorMathFunc divideRev(double other) {
+		return new SpaceVectorFunction(new SpaceVector(this.dim).setAll(other)).D(this);
+	}
+	
+	public VectorMathFunc negate() {
+		return new SpaceVectorFunction(new SpaceVector(this.dim).setAll(0)).S(this);
+	};
+	
+	/////////////////////////////////////////////////////////////
+		
 }
