@@ -42,11 +42,21 @@ public interface VecFiniteElement {
 	 * 
 	 * @param e
 	 */
-	void assignTo(Element e);
+	//remove this function to assembler since the local to global index of DOF is better handled in assembler
+	//void assignTo(Element e);
 	
 	/**
 	 * Return the boundary FiniteElement object associated with the current VecFiniteElement object
 	 * @return
 	 */
 	VecFiniteElement getBoundaryFE();
+	
+	/**
+	 * check if the dot product of two vector valued shape functions equals 0 by
+	 * providing the inedx of DOF.
+	 * @param idx1
+	 * @param idx2
+	 * @return
+	 */
+	boolean isDOFCoupled(int idx1, int idx2);
 }
