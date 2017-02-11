@@ -118,7 +118,7 @@ public interface VectorMathFunc {
 	 * 
 	 * @param <code>\vec{g}(x)=(g1(x), g2(x), ..., gn(x))</code>
 	 */
-	//VectorMathFunc add(VectorMathFunc g);
+	VectorMathFunc inc(VectorMathFunc g);
 	
 	/**
 	 * <code>\vec{f}(x) = \vec{f}(x) + a*\vec{g}(x)</code>
@@ -126,7 +126,7 @@ public interface VectorMathFunc {
 	 * @param a
 	 * @param <code>\vec{g}(x)=(g1(x), g2(x), ..., gn(x))</code>
 	 */
-	VectorMathFunc add(double a, VectorMathFunc g);
+	VectorMathFunc inc(double a, VectorMathFunc g);
 	
 	/**
 	 * <code>\vec{f}(x) = a*\vec{f}(x)</code>
