@@ -119,6 +119,12 @@ public class BytecodeTest {
 		System.out.println(sin.compile().apply(Math.PI/8, 3*Math.PI/8));
 	}
 	
+	public static void test9() {
+		MathFunc f = FMath.C0*FMath.C0;
+		System.out.println(f);
+		System.out.println(f.compile().apply());
+	}
+
 	public static void main(String[] args) {
 		test1();
 		test2();
@@ -128,6 +134,7 @@ public class BytecodeTest {
 		test6();
 		test7();
 		test8();
+		test9();
 	}
 
 }
