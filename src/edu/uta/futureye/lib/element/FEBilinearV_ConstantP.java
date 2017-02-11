@@ -1,6 +1,9 @@
 package edu.uta.futureye.lib.element;
 
 
+import static edu.uta.futureye.function.FMath.C0;
+import static edu.uta.futureye.function.FMath.C1;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,10 +19,6 @@ import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
-import edu.uta.futureye.core.DOF;
-import edu.uta.futureye.core.Element;
-import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.SingleVarFunc;
@@ -27,8 +26,6 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
-import edu.uta.futureye.util.container.VertexList;
-import static edu.uta.futureye.function.FMath.*;
 
 /**
  * 2D Q1/P0 Element
@@ -188,8 +185,8 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 	MathFunc x;
 	MathFunc y;
 	Map<String, MathFunc> map;
-	public int nDOFs = 4;
-	VectorMathFunc[] shapeFuncs = new VectorMathFunc[4+4+1];
+	public int nDOFs = 4+4+1;
+	VectorMathFunc[] shapeFuncs = new VectorMathFunc[nDOFs];
 	MathFunc jac;
 
 	public FEBilinearV_ConstantP() {
@@ -211,15 +208,14 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 		 * N3 = (1+r)*(1+s)/4
 		 * N4 = (1-r)*(1+s)/4
 		 */
-		MathFunc[] bilinearSF = new MathFunc[4];
-		bilinearSF[0] = (1-r)*(1-s)/4;
-		bilinearSF[1] = (1+r)*(1-s)/4;
-		bilinearSF[2] = (1+r)*(1+s)/4;
-		bilinearSF[3] = (1-r)*(1+s)/4;
+		MathFunc N1 = (1-r)*(1-s)/4;
+		MathFunc N2 = (1+r)*(1-s)/4;
+		MathFunc N3 = (1+r)*(1+s)/4;
+		MathFunc N4 = (1-r)*(1+s)/4;
 
 		//coordinate transform
-		x = x1*bilinearSF[0] + x2*bilinearSF[1] + x3*bilinearSF[2] + x4*bilinearSF[3];
-		y = y1*bilinearSF[0] + y2*bilinearSF[1] + y3*bilinearSF[2] + y4*bilinearSF[3];
+		x = x1*N1 + x2*N2 + x3*N3 + x4*N4;
+		y = y1*N1 + y2*N2 + y3*N3 + y4*N4;
 		
 		map = new HashMap<String, MathFunc>();
 		map.put("x", x);
@@ -228,19 +224,15 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 		//                   (r[2] r[3])   (y_r, y_s)
 		jac = x.diff("r")*y.diff("s") - y.diff("r")*x.diff("s");
 		
-		
-		shapeFuncs[0] = new SpaceVectorFunction(bilinearSF[0], C0, C0);
-		shapeFuncs[1] = new SpaceVectorFunction(bilinearSF[1], C0, C0);
-		shapeFuncs[2] = new SpaceVectorFunction(bilinearSF[2], C0, C0);
-		shapeFuncs[3] = new SpaceVectorFunction(bilinearSF[3], C0, C0);
-		shapeFuncs[4] = new SpaceVectorFunction(C0, bilinearSF[0], C0);
-		shapeFuncs[5] = new SpaceVectorFunction(C0, bilinearSF[1], C0);
-		shapeFuncs[6] = new SpaceVectorFunction(C0, bilinearSF[2], C0);
-		shapeFuncs[7] = new SpaceVectorFunction(C0, bilinearSF[3], C0);
+		shapeFuncs[0] = new SpaceVectorFunction(N1, C0, C0);
+		shapeFuncs[1] = new SpaceVectorFunction(N2, C0, C0);
+		shapeFuncs[2] = new SpaceVectorFunction(N3, C0, C0);
+		shapeFuncs[3] = new SpaceVectorFunction(N4, C0, C0);
+		shapeFuncs[4] = new SpaceVectorFunction(C0, N1, C0);
+		shapeFuncs[5] = new SpaceVectorFunction(C0, N2, C0);
+		shapeFuncs[6] = new SpaceVectorFunction(C0, N3, C0);
+		shapeFuncs[7] = new SpaceVectorFunction(C0, N4, C0);
 		shapeFuncs[8] = new SpaceVectorFunction(C0, C0, C1);
-		
-		
-		
 	}
 
 	@Override
@@ -268,24 +260,68 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 		return this.jac;
 	}
 
-	public void assignTo(Element e) {
-		e.clearAllDOF();
-		VertexList vertices = e.vertices();
-		for(int j=1;j<=vertices.size();j++) {
-			Vertex v = vertices.at(j);
-			//Assign shape function to DOF
-			DOF dof = new DOF(
-						j, //Local DOF index
-						v.globalNode().getIndex(), //Global DOF index, take global node index
-						null //Shape function is no longer used?  
-						);
-			e.addNodeDOF(j, dof);
-		}
+//	//???
+//	// we need total number of nodes in the mesh to assign global index for u[2]
+	
+	//DOF contains local-global index 
+	// no shape functions now.
+	
+//	public void assignTo(Element e) {
+//		e.clearAllDOF();
+//		if(nTotalNodes == -1 || nDOF_p == -1) {
+//			FutureyeException ex = new FutureyeException("Call initDOFIndex() first!");
+//			ex.printStackTrace();
+//			System.exit(-1);
+//		}
+//		//单元结点数
+//		int nNode = e.nodes.size();
+//		//Assign shape function to DOF
+//		for(int j=1;j<=nNode;j++) {
+//			//Asign shape function to DOF
+//			DOF dof_u1 = new DOF(
+//					j,//Local DOF index
+//					//Global DOF index, take global node index
+//					e.nodes.at(j).globalIndex,
+//					null
+//					         );
+//			dof_u1.setVVFComponent(1);
+//			DOF dof_u2 = new DOF(
+//					nNode+j,//Local DOF index
+//					//Global DOF index, take this.nTotalNodes + global node index
+//					this.nTotalNodes+e.nodes.at(j).globalIndex,
+//					null
+//					         );
+//			dof_u2.setVVFComponent(2);
+//			e.addNodeDOF(j, dof_u1);
+//			//e.addNodeDOF(j, dof_u2); //???bug???
+//			e.addNodeDOF(nNode+j, dof_u2);
+//		}
+//		
+//		//Assign shape function to DOF
+//		DOF dof = new DOF(
+//					2*nNode+1, //Local DOF index
+//					//this.nTotalNodes*2+nDOF_p, //Global DOF index for Pressure
+//					this.nTotalNodes*2+this.nDOF_p, //Global DOF index for Pressure
+//					shapeFun[2*nNode] //Shape function 
+//					);
+//		this.nDOF_p++;
+//		dof.setVVFComponent(3);	
+//		e.addVolumeDOF(dof);
+//	}
+
+	@Override
+	public VecFiniteElement getBoundaryFE() {
+		return new FELinearV_ConstantPLine2D();
 	}
 
 	@Override
-	public FiniteElement getBoundaryFE() {
-		return new FELinearLine2D();
+	public boolean isDOFCoupled(int idx1, int idx2) {
+		if(idx1 == 8 || idx2 == 8)
+			return true;
+		if(idx1 <= 3 && idx2 >= 4)
+			return false;
+		if(idx2 <= 3 && idx1 >= 4)
+			return false;
+		return true;
 	}
-
 }

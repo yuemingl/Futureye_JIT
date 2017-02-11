@@ -7,7 +7,7 @@ import edu.uta.futureye.lib.shapefun.QuadraticV_LinearP;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.VertexList;
 
-public class FEQuadraticV_LinearP implements FiniteElementType {
+public class FEQuadraticV_LinearPOld implements FiniteElementType {
 	protected static QuadraticV_LinearP[] shapeFun = new QuadraticV_LinearP[15];
 	protected int nTotalNodes = -1;
 	//p自由度计数器
@@ -24,7 +24,7 @@ public class FEQuadraticV_LinearP implements FiniteElementType {
 			return 3;
 	}
 	
-	public FEQuadraticV_LinearP() {
+	public FEQuadraticV_LinearPOld() {
 		for(int i=0;i<15;i++)
 			shapeFun[i] = new QuadraticV_LinearP(i+1);
 	}
@@ -58,8 +58,10 @@ public class FEQuadraticV_LinearP implements FiniteElementType {
 					shapeFun[nNode+j-1]//Shape function 
 					         );
 			dof_u2.setVVFComponent(2);
+			//????bug???
 			e.addNodeDOF(j, dof_u1);
 			e.addNodeDOF(j, dof_u2);
+			///////////???
 		}
 		VertexList vertices = e.vertices();
 		for(int j=1;j<=vertices.size();j++) {

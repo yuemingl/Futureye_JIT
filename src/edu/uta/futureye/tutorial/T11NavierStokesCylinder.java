@@ -32,7 +32,7 @@ import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
 import edu.uta.futureye.lib.element.FEBilinearV_ConstantPOld;
 import edu.uta.futureye.lib.element.FEQuadraticV_ConstantP;
-import edu.uta.futureye.lib.element.FEQuadraticV_LinearP;
+import edu.uta.futureye.lib.element.FEQuadraticV_LinearPOld;
 import edu.uta.futureye.lib.element.FiniteElementType;
 import edu.uta.futureye.lib.weakform.WeakFormNavierStokes2D;
 import edu.uta.futureye.util.Constant;
@@ -200,7 +200,7 @@ public class T11NavierStokesCylinder {
 
 		//Use element library to assign degree of freedom (DOF) to element
 		if(testCaseNo == 1)
-			fe = new FEQuadraticV_LinearP();//Quadratic Velocity - Linear Pressure Element
+			fe = new FEQuadraticV_LinearPOld();//Quadratic Velocity - Linear Pressure Element
 		else if(testCaseNo == 2)
 			fe = new FEQuadraticV_ConstantP();
 		else if(testCaseNo == 3)

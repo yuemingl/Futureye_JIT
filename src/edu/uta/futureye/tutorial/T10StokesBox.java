@@ -19,7 +19,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
-import edu.uta.futureye.lib.element.FEQuadraticV_LinearP;
+import edu.uta.futureye.lib.element.FEQuadraticV_LinearPOld;
 import edu.uta.futureye.lib.weakform.WeakFormStokes;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.ElementList;
@@ -119,7 +119,7 @@ public class T10StokesBox {
 			System.out.println(i+"  " + eList.at(i));
 		}
 		
-		FEQuadraticV_LinearP fe = new FEQuadraticV_LinearP();
+		FEQuadraticV_LinearPOld fe = new FEQuadraticV_LinearPOld();
 		fe.initDOFIndexGenerator(mesh);
 		for(int i=1;i<=eList.size();i++) {
 			fe.assignTo(eList.at(i));

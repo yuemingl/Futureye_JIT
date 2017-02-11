@@ -26,7 +26,7 @@ import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
 import edu.uta.futureye.lib.element.FEBilinearV_ConstantPOld;
-import edu.uta.futureye.lib.element.FEQuadraticV_LinearP;
+import edu.uta.futureye.lib.element.FEQuadraticV_LinearPOld;
 import edu.uta.futureye.lib.element.FiniteElementType;
 import edu.uta.futureye.lib.weakform.WeakFormNavierStokes2D;
 import edu.uta.futureye.util.Constant;
@@ -144,7 +144,7 @@ public class T11NavierStokesBox {
 
 		//Use element library to assign degree of freedom (DOF) to element
 		if(testCaseNo == 1)
-			fe = new FEQuadraticV_LinearP();
+			fe = new FEQuadraticV_LinearPOld();
 		else if(testCaseNo == 2 || testCaseNo == 3)
 			fe = new FEBilinearV_ConstantPOld();
 		fe.initDOFIndexGenerator(mesh);
