@@ -1,41 +1,27 @@
 package edu.uta.futureye.tutorial;
 
+import static edu.uta.futureye.function.FMath.C0;
+import static edu.uta.futureye.function.FMath.C1;
+import static edu.uta.futureye.function.FMath.grad;
+
 import java.util.HashMap;
 
-import edu.uta.futureye.algebra.SparseBlockMatrix;
-import edu.uta.futureye.algebra.SparseBlockVector;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.algebra.solver.SchurComplementStokesSolver;
-import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Edge;
-import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.core.Node;
-import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
-import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.function.FMath;
-import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.UserDefFunc;
-import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssembleParam;
-import edu.uta.futureye.lib.assembler.AssemblerVector;
-import edu.uta.futureye.lib.element.FELinearLine1D;
-import edu.uta.futureye.lib.element.FEQuadraticV_LinearP;
+import edu.uta.futureye.lib.assembler.BasicVecAssembler;
+import edu.uta.futureye.lib.element.FEBilinearV_ConstantP;
 import edu.uta.futureye.lib.weakform.VecWeakForm;
-import edu.uta.futureye.lib.weakform.WeakForm;
-import edu.uta.futureye.lib.weakform.WeakFormStokes;
-import edu.uta.futureye.util.Constant;
-import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.ObjIndex;
-import edu.uta.futureye.util.container.ObjList;
-import static edu.uta.futureye.function.FMath.*;
 
 
 
@@ -72,37 +58,11 @@ public class Ex10_StokesBox {
 	public static void box() {
 		//Read a triangle mesh from an input file
 		//[-3,3]*[-3,3]
-		String file = "stokes_box";
+		String file = "grids/rectangle";
 		
 		MeshReader reader = new MeshReader(file+".grd");
-		MeshReader reader2 = new MeshReader(file+".grd");
 		Mesh mesh = reader.read2DMesh();
-		Mesh meshOld = reader2.read2DMesh();
 		mesh.nVertex = mesh.getNodeList().size();
-		
-		//Add nodes for quadratic element
-		for(int i=1;i<=mesh.getElementList().size();i++) {
-			Element e = mesh.getElementList().at(i);
-			e.adjustVerticeToCounterClockwise();
-			ObjList<EdgeLocal> edges = e.edges();
-			int nNode = e.nodes.size();
-			for(int j=1;j<=edges.size();j++) {
-				EdgeLocal edge = edges.at(j);
-				Vertex l = edge.beginVertex();
-				Vertex r = edge.endVertex();
-				double cx = (l.coord(1)+r.coord(1))/2.0;
-				double cy = (l.coord(2)+r.coord(2))/2.0;
-				Node node = new Node(mesh.getNodeList().size()+1, cx,cy);
-				Node findNode = mesh.findNode(node);
-				if(findNode == null) {
-					edge.addEdgeNode(new NodeLocal(++nNode,node));
-					mesh.addNode(node);
-				} else {
-					edge.addEdgeNode(new NodeLocal(++nNode,findNode));
-				}
-			}
-			e.applyChange();
-		}
 		
 		//Geometry relationship
 		mesh.computeNodeBelongsToElements();
@@ -128,34 +88,31 @@ public class Ex10_StokesBox {
 		for(int i=1;i<=eList.size();i++) {
 			System.out.println(i+"  " + eList.at(i));
 		}
-		
-		FEQuadraticV_LinearP fe = new FEQuadraticV_LinearP();
-		fe.initDOFIndexGenerator(mesh);
-		for(int i=1;i<=eList.size();i++) {
-			fe.assignTo(eList.at(i));
-			//eList.at(i).printDOFInfo();
-		}
 
+		FEBilinearV_ConstantP fe = new FEBilinearV_ConstantP();
+		
 		// Weak form definition
 		MathFunc k = C1;
 		VectorMathFunc f = new SpaceVectorFunction(C0, C0);
 		VecWeakForm wf = new VecWeakForm(
-				new FELinearLine1D(),//TODO
-				(u, v) -> 
+				fe,
+				(u, v) ->
 					//  (v1_x,k*u1_x) + (v1_y,k*u1_y) 
 					//+ (v2_x,k*u2_x) + (v2_y,k*u2_y) 
 					//- (v1_x+v2_y,p) 
 					//+ (q,u1_x+u2_y)
-				    //where p=u[3]; q=v[3]
+					//where p=u[3]; q=v[3]
 					  k * grad(u[1],"x","y" ).dot(grad(v[1],"x","y"))
 					+ k * grad(u[2],"x","y" ).dot(grad(v[2],"x","y"))
-					- div(v)*u[3]
-					+ v[3]*div(u),
-				(v)-> dot(v, f)
+					- (v[1].diff("x")+v[2].diff("y"))*u[3]
+					+ v[3]*(u[1].diff("x")+u[2].diff("y")),
+				(v)-> v[1]*f[1] + v[2]*f[2]
 				);
 		wf.compile();
 		
 		VectorMathFunc d = new SpaceVectorFunction(2);
+		d.set(1, C0);
+		d.set(2, C0);
 		VectorMathFunc normal = new SpaceVectorFunction(2); //normal vector
 		normal.set(1, new UserDefFunc() {
 			//@Override
@@ -176,68 +133,65 @@ public class Ex10_StokesBox {
 			}
 		});
 		VecWeakForm wfb = new VecWeakForm(
-				new FELinearLine1D(), //TODO
+				fe.getBoundaryFE(),
 				(u, v) -> d[1]*u[1]*v[1] + d[2]*u[2]*v[2],
-				(v)    -> v[3]*dot(normal,v)
+				(v)    -> v[3]*(normal[1]*v[1]+normal[2]*v[2])
 				);
 		wfb.compile();
 		
-		//Stokes weak form
-		WeakFormStokes weakForm = new WeakFormStokes();
 		
-		//Right hand side(RHS): f = (0,0)'
-		weakForm.setF(new SpaceVectorFunction(C0,C0));
-		weakForm.setParam(C1);
-		//Robin:  k*u_n + d*u - p\vec{n} = 0
-		VectorMathFunc d = new SpaceVectorFunction(2);
-		d.set(1, C0);
-		d.set(2, C0);
-		weakForm.setRobin(d);
-		
-		//Assemble
-		AssemblerVector assembler = new AssemblerVector(mesh, weakForm,fe);
-		assembler.assemble();
-		SparseBlockMatrix stiff = assembler.getStiffnessMatrix();
-		SparseBlockVector load = assembler.getLoadVector();
-		VectorMathFunc diri = new SpaceVectorFunction(3);
-		diri.set(1, new MultiVarFunc("x","y") {
-					@Override
-					public double apply(Variable v) {
-						double y = v.get("y");
-						if(Math.abs(y-3.0)<Constant.meshEps)
-							return 1.0;
-						else
-							return 0.0;
-					}
-
-					@Override
-					public double apply(double... args) {
-						// TODO Auto-generated method stub
-						return 0;
-					}
-				});
-		diri.set(2, C0);
-		diri.set(3, C0);
-		assembler.imposeDirichletCondition(diri);
-		load.getBlock(1).print();
-		load.getBlock(2).print();
-		load.getBlock(3).print();
-		
-		SchurComplementStokesSolver solver = 
-			new SchurComplementStokesSolver(stiff,load);
-		
-		SparseBlockVector u = solver.solve2D();
-		
-		//没有指定压强，不同的求解器可能会差一个常数
-		System.out.println("u=");
-		for(int i=1;i<=u.getDim();i++) {
-			System.out.println(String.format("%.3f", u.get(i)));
+		BasicVecAssembler assembler = new BasicVecAssembler(wf);
+		for(Element e : mesh.getElementList()) {
+			assembler.assembleLocal(e);
+			double[][] A= assembler.getLocalStiffMatrix();
+			System.out.println(A[0][0]);
+			assembler.getLocalLoadVector();
 		}
-	    
-		Tools.plotVector(mesh, outputFolder, String.format("%s_uv.dat",file), 
-				u.getBlock(1), u.getBlock(2));
-		Tools.plotVector(meshOld, outputFolder, String.format("%s_p.dat",file), 
-				u.getBlock(3));
+//		
+//		//Assemble
+//		AssemblerVector assembler = new AssemblerVector(mesh, weakForm,fe);
+//		assembler.assemble();
+//		SparseBlockMatrix stiff = assembler.getStiffnessMatrix();
+//		SparseBlockVector load = assembler.getLoadVector();
+//		VectorMathFunc diri = new SpaceVectorFunction(3);
+//		diri.set(1, new MultiVarFunc("x","y") {
+//					@Override
+//					public double apply(Variable v) {
+//						double y = v.get("y");
+//						if(Math.abs(y-3.0)<Constant.meshEps)
+//							return 1.0;
+//						else
+//							return 0.0;
+//					}
+//
+//					@Override
+//					public double apply(double... args) {
+//						// TODO Auto-generated method stub
+//						return 0;
+//					}
+//				});
+//		diri.set(2, C0);
+//		diri.set(3, C0);
+//		assembler.imposeDirichletCondition(diri);
+//		load.getBlock(1).print();
+//		load.getBlock(2).print();
+//		load.getBlock(3).print();
+//		
+//		SchurComplementStokesSolver solver = 
+//			new SchurComplementStokesSolver(stiff,load);
+//		
+//		SparseBlockVector u = solver.solve2D();
+//		
+//		//没有指定压强，不同的求解器可能会差一个常数
+//		System.out.println("u=");
+//		for(int i=1;i<=u.getDim();i++) {
+//			System.out.println(String.format("%.3f", u.get(i)));
+//		}
+//	    
+//		Tools.plotVector(mesh, outputFolder, String.format("%s_uv.dat",file), 
+//				u.getBlock(1), u.getBlock(2));
+//		Tools.plotVector(meshOld, outputFolder, String.format("%s_p.dat",file), 
+//				u.getBlock(3));
 		
 	}
 	
