@@ -247,9 +247,10 @@ public class SpaceVector implements Vector {
 	}
 
 	@Override
-	public void setAll(double value) {
+	public Vector setAll(double value) {
 		for(int i=dim; --i>=0;)
 			this.data[i] = value;
+		return this;
 	}
 
 	/**

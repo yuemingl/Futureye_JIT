@@ -295,10 +295,11 @@ public class SparseVectorHashMap implements SparseVector {
 	}
 	
 	@Override
-	public void setAll(double value) {
+	public Vector setAll(double value) {
 		for(Entry<Integer, Double> e : this.data.entrySet()) {
 			e.setValue(value);
 		}
+		return this;
 	}
 	
 	@Override

@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import edu.uta.futureye.algebra.SparseVectorHashMap.SVEntry;
 import edu.uta.futureye.algebra.intf.BlockVector;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
@@ -209,10 +208,11 @@ public class SparseBlockVector implements BlockVector<SparseVector>, SparseVecto
 	}
 	
 	@Override
-	public void setAll(double value) {
+	public Vector setAll(double value) {
 		for(Entry<Integer, SparseVector> e : this.data.entrySet()) {
 			e.getValue().setAll(value);
 		}
+		return this;
 	}
 
 	public String toString() {

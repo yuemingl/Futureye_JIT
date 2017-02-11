@@ -73,8 +73,9 @@ public interface Vector {
 	 * 将向量的所有值置为<tt>value</tt>
 	 * 
 	 * @param value
+	 * @return TODO
 	 */
-	void setAll(double value);
+	Vector setAll(double value);
 	
 	/**
 	 * <code>x(index) += value</code>
