@@ -4,7 +4,6 @@ import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Vertex;
-import edu.uta.futureye.lib.shapefun.SFLinearLocal2D;
 import edu.uta.futureye.lib.shapefun.SFLinearLocal2DRS;
 import edu.uta.futureye.util.container.VertexList;
 

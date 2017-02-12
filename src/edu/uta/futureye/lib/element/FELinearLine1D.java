@@ -21,7 +21,6 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.FMath;
-import static edu.uta.futureye.function.FMath.*;
 import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -125,7 +124,7 @@ public class FELinearLine1D implements FiniteElement {
 		map = new HashMap<String, MathFunc>();
 		map.put("x", x);
 		
-		/**  
+		/**
 		 *  Compute 1D determinant of Jacobian matrix
 		 *  1D: det(Jac) = x_r
 		 *  2D boundary: det(Jac)= sqrt(x_r^2 + y_r^2)
