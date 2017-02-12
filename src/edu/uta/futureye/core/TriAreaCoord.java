@@ -90,7 +90,7 @@ public class TriAreaCoord {
 		return 1 - r - s;
 	}
 	
-	public MathFunc Jacobian() {
+	public MathFunc getJacobian() {
 		return this.jac;
 	}
 	

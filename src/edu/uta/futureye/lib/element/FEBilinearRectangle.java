@@ -13,7 +13,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.container.VertexList;
 
 /**
- * Bilinear shape functions on a rectangle
+ * Bilinear shape functions on a rectangle element
  * 
  *  s
  *  ^

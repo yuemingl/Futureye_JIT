@@ -63,7 +63,7 @@ public class FELinearTriangle implements FiniteElement {
 	
 	@Override
 	public MathFunc getJacobian() {
-		return this.coord.Jacobian();
+		return this.coord.getJacobian();
 	}
 
 	public void assignTo(Element e) {

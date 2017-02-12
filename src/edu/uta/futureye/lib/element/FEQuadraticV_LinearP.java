@@ -18,6 +18,7 @@ import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
+import edu.uta.futureye.core.TriAreaCoord;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.SingleVarFunc;
@@ -27,7 +28,8 @@ import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 
 /**
- * P2/P1
+ * P2/P1 on triangle element
+ * 
  * -Continuous quadratic velocity
  * -Piecewise linear pressure
  * 
@@ -88,124 +90,29 @@ import edu.uta.futureye.function.intf.VectorMathFunc;
  * @author liuyueming
  */
 public class FEQuadraticV_LinearP implements VecFiniteElement {
-	public class TriAreaCoordR extends SingleVarFunc {
-		public TriAreaCoordR() {
-			super("r", "r");
-		}
-
-		@Override
-		public double apply(double... args) {
-			//this.argIdx is wrong if we don't define BCEL bytecodeGen
-			//
-			return args[this.argIdx];
-		}
-		
-//		r_x = (y2-y3)/jac;
-//		r_y = (x3-x2)/jac;
-		@Override
-		public MathFunc diff(String varName) {
-			if(varName.equals("r"))
-				return FMath.C1;
-			if(varName.equals("x"))
-				return (y2-y3)/jac;
-			else if(varName.equals("y"))
-				return (x3-x2)/jac;
-			else
-				return FMath.C0;
-		}
-		
-		public String getExpr() {
-			return this.varName;
-		}
-
-		@Override
-		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
-				String clsName) {
-			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-			mv.visitLdcInsn(argsMap.get(varName));
-			mv.visitInsn(Opcodes.DALOAD);
-		}
-		
-		@Override
-		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
-				ConstantPoolGen cp, InstructionFactory factory, 
-				InstructionList il, Map<String, Integer> argsMap, 
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
-			il.append(new ALOAD(argsStartPos));
-			il.append(new PUSH(cp, argsMap.get(this.getName())));
-			return il.append(new DALOAD());
-		}
-	}
-	public class TriAreaCoordS extends SingleVarFunc {
-		public TriAreaCoordS() {
-			super("s", "s");
-		}
-
-		@Override
-		public double apply(double... args) {
-			return args[this.argIdx];
-		}
-		
-//		s_x = (y3-y1)/jac;
-//		s_y = (x1-x3)/jac;
-		@Override
-		public MathFunc diff(String varName) {
-			if(varName.equals("s"))
-				return FMath.C1;
-			if(varName.equals("x"))
-				return (y3-y1)/jac;
-			else if(varName.equals("y"))
-				return (x1-x3)/jac;
-			else
-				return FMath.C0;
-		}
-		
-		public String getExpr() {
-			return this.varName;
-		}
-		
-		@Override
-		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
-				String clsName) {
-			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-			mv.visitLdcInsn(argsMap.get(varName));
-			mv.visitInsn(Opcodes.DALOAD);
-		}
-		
-		@Override
-		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
-				ConstantPoolGen cp, InstructionFactory factory, 
-				InstructionList il, Map<String, Integer> argsMap, 
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
-			il.append(new ALOAD(argsStartPos));
-			il.append(new PUSH(cp, argsMap.get(this.getName())));
-			return il.append(new DALOAD());
-		}
-	}
-
-	FX x1 = new FX("x1");
-	FX x2 = new FX("x2");
-	FX x3 = new FX("x3");
-	FX y1 = new FX("y1");
-	FX y2 = new FX("y2");
-	FX y3 = new FX("y3");
-	//Construct a function with the coordinate of points in an element as parameters
-	///???what is the variable 't' here?
-	String[] argsOrder = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
+	TriAreaCoord coord;
 	
-	MathFunc x;
-	MathFunc y;
-	Map<String, MathFunc> map;
+	//Construct a function with the coordinate of points in an element as parameters
+	String[] argsOrder;
+	
 	public int nDOFs = 6+6+3;
 	VectorMathFunc[] shapeFuncs = new VectorMathFunc[nDOFs];
-	MathFunc jac;
 
 	public FEQuadraticV_LinearP() {
-		TriAreaCoordR r = new TriAreaCoordR();
-		TriAreaCoordS s = new TriAreaCoordS();
-		MathFunc t = 1 - r - s;
+		FX x1 = new FX("x1");
+		FX x2 = new FX("x2");
+		FX x3 = new FX("x3");
+		FX y1 = new FX("y1");
+		FX y2 = new FX("y2");
+		FX y3 = new FX("y3");
+
+		this.coord = new TriAreaCoord(x1, x2, x3, y1, y2, y3);
+		
+		MathFunc r = coord.getCoordR();
+		MathFunc s = coord.getCoordS();
+		MathFunc t = coord.getCoordT();
+		
+		argsOrder = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
 		
 		//shape functions
 		MathFunc NV1 = (2*r-1)*r;
@@ -219,17 +126,6 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 		MathFunc NP2 = s;
 		MathFunc NP3 = t;
 
-		//define coordinate transform using area coordinate
-		x = x1*r + x2*s + x3*t;
-		y = y1*r + y2*s + y3*t;
-		
-		map = new HashMap<String, MathFunc>();
-		map.put("x", x);
-		map.put("y", y);
-		// Jacobian Matrix = (r[0] r[1]) = (x_r, x_s)
-		//                   (r[2] r[3])   (y_r, y_s)
-		jac = x.diff("r")*y.diff("s") - y.diff("r")*x.diff("s");
-		
 		shapeFuncs[0]  = new SpaceVectorFunction(NV1, C0, C0);
 		shapeFuncs[1]  = new SpaceVectorFunction(NV2, C0, C0);
 		shapeFuncs[2]  = new SpaceVectorFunction(NV3, C0, C0);
@@ -259,7 +155,7 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 
 	@Override
 	public Map<String, MathFunc> getCoordTransMap() {
-		return this.map;
+		return this.coord.getCoordTransMap();
 	}
 
 	@Override
@@ -269,7 +165,7 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 	
 	@Override
 	public MathFunc getJacobian() {
-		return this.jac;
+		return this.coord.getJacobian();
 	}
 
 	@Override

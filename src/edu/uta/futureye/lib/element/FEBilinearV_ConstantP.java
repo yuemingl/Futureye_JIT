@@ -4,24 +4,10 @@ package edu.uta.futureye.lib.element;
 import static edu.uta.futureye.function.FMath.C0;
 import static edu.uta.futureye.function.FMath.C1;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.DALOAD;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.PUSH;
-import org.objectweb.asm.MethodVisitor;
-
-import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
-
+import edu.uta.futureye.core.RectAreaCoord;
 import edu.uta.futureye.core.intf.VecFiniteElement;
-import edu.uta.futureye.function.FMath;
-import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -64,174 +50,46 @@ import edu.uta.futureye.function.intf.VectorMathFunc;
  * N8 =   (0, NV4, 0)'
  * N9 =   (0, 0, NP)'
  *
- * @author liuyueming
  */
 public class FEBilinearV_ConstantP implements VecFiniteElement {
-	public class RectAreaCoordR extends SingleVarFunc {
-		public RectAreaCoordR() {
-			super("r", "r");
-		}
-
-		@Override
-		public double apply(double... args) {
-			return args[this.argIdx];
-		}
-		
-		@Override
-		public MathFunc diff(String varName) {
-			if(varName.equals("r"))
-				return FMath.C1;
-			if(varName.equals("x"))
-				return y.diff("s")/jac;
-			else if(varName.equals("y"))
-				return -x.diff("s")/jac;
-			else
-				return FMath.C0;
-		}
-
-		public String toString() {
-			return this.varName;
-		}
-		
-		public String getExpr() {
-			return this.varName;
-		}
-
-		@Override
-		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
-				String clsName) {
-			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-			Integer argIdx = argsMap.get(varName);
-			if(argIdx == null) throw new RuntimeException("Index of "+varName+" is null!");
-			mv.visitLdcInsn(argIdx);
-			mv.visitInsn(Opcodes.DALOAD);
-		}
-		@Override
-		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
-				ConstantPoolGen cp, InstructionFactory factory, 
-				InstructionList il, Map<String, Integer> argsMap, 
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
-			il.append(new ALOAD(argsStartPos));
-			il.append(new PUSH(cp, argsMap.get(this.getName())));
-			return il.append(new DALOAD());
-		}
-
-	}
-	public class RectAreaCoordS extends SingleVarFunc {
-		public RectAreaCoordS() {
-			super("s", "s");
-		}
-
-		@Override
-		public double apply(double... args) {
-			return args[this.argIdx];
-		}
-		
-		@Override
-		public MathFunc diff(String varName) {
-			if(varName.equals("s"))
-				return FMath.C1;
-			if(varName.equals("x"))
-				return -y.diff("r")/jac;
-			else if(varName.equals("y"))
-				return x.diff("r")/jac;
-			else
-				return FMath.C0;
-		}
-
-		public String toString() {
-			return this.varName;
-		}
-
-		public String getExpr() {
-			return this.varName;
-		}
-
-		@Override
-		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
-				String clsName) {
-			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-			Integer argIdx = argsMap.get(varName);
-			if(argIdx == null) throw new RuntimeException("Index of "+varName+" is null!");
-			mv.visitLdcInsn(argIdx);
-			mv.visitInsn(Opcodes.DALOAD);
-		}
-		@Override
-		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
-				ConstantPoolGen cp, InstructionFactory factory, 
-				InstructionList il, Map<String, Integer> argsMap, 
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
-			il.append(new ALOAD(argsStartPos));
-			il.append(new PUSH(cp, argsMap.get(this.getName())));
-			return il.append(new DALOAD());
-		}
-	}
-
-	FX x1 = new FX("x1");
-	FX x2 = new FX("x2");
-	FX x3 = new FX("x3");
-	FX x4 = new FX("x4");
-	FX y1 = new FX("y1");
-	FX y2 = new FX("y2");
-	FX y3 = new FX("y3");
-	FX y4 = new FX("y4");
-	RectAreaCoordR r = new RectAreaCoordR();
-	RectAreaCoordS s = new RectAreaCoordS();
-	//Construct a function with the coordinate of points in an element as parameters
-	String[] argsOrder = new String[]{x1,x2,x3,x4,y1,y2,y3,y4,r,s};
+	RectAreaCoord coord;
 	
-	MathFunc x;
-	MathFunc y;
-	Map<String, MathFunc> map;
+	//Construct a function with the coordinate of points in an element as parameters
+	String[] argsOrder;
+	
 	public int nDOFs = 4+4+1;
 	VectorMathFunc[] shapeFuncs = new VectorMathFunc[nDOFs];
-	MathFunc jac;
 
 	public FEBilinearV_ConstantP() {
-		/**
-		 * shape functions
-		 *  s
-		 *  ^
-		 *  |
-		 *  |
-		 * 
-		 *  4-----3
-		 *  |     |
-		 *  |     |
-		 *  1-----2  --> r
-		 * -1  0  1
-		 *
-		 * N1 = (1-r)*(1-s)/4
-		 * N2 = (1+r)*(1-s)/4
-		 * N3 = (1+r)*(1+s)/4
-		 * N4 = (1-r)*(1+s)/4
-		 */
-		MathFunc N1 = (1-r)*(1-s)/4;
-		MathFunc N2 = (1+r)*(1-s)/4;
-		MathFunc N3 = (1+r)*(1+s)/4;
-		MathFunc N4 = (1-r)*(1+s)/4;
+		FX x1 = new FX("x1");
+		FX x2 = new FX("x2");
+		FX x3 = new FX("x3");
+		FX x4 = new FX("x4");
+		FX y1 = new FX("y1");
+		FX y2 = new FX("y2");
+		FX y3 = new FX("y3");
+		FX y4 = new FX("y4");
+		
+		this.coord = new RectAreaCoord(x1,x2,x3,x4,y1,y2,y3,y4);
+		
+		MathFunc r = coord.getCoordR();
+		MathFunc s = coord.getCoordS();
+		
+		this.argsOrder = new String[]{x1,x2,x3,x4,y1,y2,y3,y4,r,s};
+		
+		MathFunc NV1 = (1-r)*(1-s)/4;
+		MathFunc NV2 = (1+r)*(1-s)/4;
+		MathFunc NV3 = (1+r)*(1+s)/4;
+		MathFunc NV4 = (1-r)*(1+s)/4;
 
-		//coordinate transform
-		x = x1*N1 + x2*N2 + x3*N3 + x4*N4;
-		y = y1*N1 + y2*N2 + y3*N3 + y4*N4;
-		
-		map = new HashMap<String, MathFunc>();
-		map.put("x", x);
-		map.put("y", y);
-		// Jacobian Matrix = (r[0] r[1]) = (x_r, x_s)
-		//                   (r[2] r[3])   (y_r, y_s)
-		jac = x.diff("r")*y.diff("s") - y.diff("r")*x.diff("s");
-		
-		shapeFuncs[0] = new SpaceVectorFunction(N1, C0, C0);
-		shapeFuncs[1] = new SpaceVectorFunction(N2, C0, C0);
-		shapeFuncs[2] = new SpaceVectorFunction(N3, C0, C0);
-		shapeFuncs[3] = new SpaceVectorFunction(N4, C0, C0);
-		shapeFuncs[4] = new SpaceVectorFunction(C0, N1, C0);
-		shapeFuncs[5] = new SpaceVectorFunction(C0, N2, C0);
-		shapeFuncs[6] = new SpaceVectorFunction(C0, N3, C0);
-		shapeFuncs[7] = new SpaceVectorFunction(C0, N4, C0);
+		shapeFuncs[0] = new SpaceVectorFunction(NV1, C0, C0);
+		shapeFuncs[1] = new SpaceVectorFunction(NV2, C0, C0);
+		shapeFuncs[2] = new SpaceVectorFunction(NV3, C0, C0);
+		shapeFuncs[3] = new SpaceVectorFunction(NV4, C0, C0);
+		shapeFuncs[4] = new SpaceVectorFunction(C0, NV1, C0);
+		shapeFuncs[5] = new SpaceVectorFunction(C0, NV2, C0);
+		shapeFuncs[6] = new SpaceVectorFunction(C0, NV3, C0);
+		shapeFuncs[7] = new SpaceVectorFunction(C0, NV4, C0);
 		shapeFuncs[8] = new SpaceVectorFunction(C0, C0, C1);
 	}
 
@@ -247,7 +105,7 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 
 	@Override
 	public Map<String, MathFunc> getCoordTransMap() {
-		return this.map;
+		return this.coord.getCoordTransMap();
 	}
 
 	@Override
@@ -257,7 +115,7 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 	
 	@Override
 	public MathFunc getJacobian() {
-		return this.jac;
+		return this.coord.getJacobian();
 	}
 
 //	//???
