@@ -4,7 +4,9 @@ import static edu.uta.futureye.function.FMath.C0;
 
 import java.util.Map;
 
+import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Line2DCoord;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -137,5 +139,24 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public int getGlobalIndex(Mesh mesh, Element e, int localIndex) {
+		if(localIndex>=1 && localIndex <= 3) {
+			return e.nodes.at(localIndex).globalIndex;
+		} else if(localIndex>=4 && localIndex<=6) {
+			int nNode = mesh.getNodeList().size();
+			return nNode + e.nodes.at(localIndex-3).globalIndex;
+		} else if(localIndex>=7 && localIndex<=8) {
+			int nNode = mesh.getNodeList().size();
+			return 2*nNode + e.vertices().at(localIndex-8).globalNode().globalIndex;
+		} else {
+			throw new RuntimeException("local index = "+localIndex+". It should be in 1...8");
+		}
+	}
 
+	@Override
+	public int getTotalNumberOfDOFs(Mesh mesh) {
+		throw new UnsupportedOperationException("Call FEQuadraticV_LinearP.getTotalNumberOfDOFs() intstead");
+	}
 }

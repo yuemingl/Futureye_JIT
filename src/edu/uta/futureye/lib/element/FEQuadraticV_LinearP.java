@@ -3,25 +3,12 @@ package edu.uta.futureye.lib.element;
 
 import static edu.uta.futureye.function.FMath.C0;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.DALOAD;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.PUSH;
-import org.objectweb.asm.MethodVisitor;
-
-import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
-
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.TriAreaCoord;
 import edu.uta.futureye.core.intf.VecFiniteElement;
-import edu.uta.futureye.function.FMath;
-import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -182,5 +169,26 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 		if(idx2 <= 3 && idx1 >= 4)
 			return false;
 		return true;
+	}
+
+	@Override
+	public int getGlobalIndex(Mesh mesh, Element e, int localIndex) {
+		if(localIndex>=1 && localIndex <= 6) {
+			return e.nodes.at(localIndex).globalIndex;
+		} else if(localIndex>=7 && localIndex<=12) {
+			int nNode = mesh.getNodeList().size();
+			return nNode + e.nodes.at(localIndex-6).globalIndex;
+		} else if(localIndex>=13 && localIndex<=15) {
+			int nNode = mesh.getNodeList().size();
+			return 2*nNode + e.vertices().at(localIndex-12).globalNode().globalIndex;
+		} else {
+			throw new RuntimeException("local index = "+localIndex+". It should be in 1...15");
+		}
+	}
+
+	@Override
+	public int getTotalNumberOfDOFs(Mesh mesh) {
+		int nNode  = mesh.getNodeList().size();
+		return 3*nNode;
 	}
 }
