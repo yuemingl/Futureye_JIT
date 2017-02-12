@@ -5,7 +5,9 @@ import static edu.uta.futureye.function.FMath.C1;
 
 import java.util.Map;
 
+import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Line2DCoord;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -82,6 +84,26 @@ public class FELinearV_ConstantPLine2D implements VecFiniteElement {
 		if(idx2 <= 1 && idx1 >=2)
 			return false;
 		return true;
+	}
+
+	@Override
+	public int getGlobalIndex(Mesh mesh, Element e, int localIndex) {
+		if(localIndex>=1 && localIndex <= 2) {
+			return e.vertices().at(localIndex).globalNode().getIndex();
+		} else if(localIndex>=3 && localIndex<=4) {
+			int nNode = mesh.getNodeList().size();
+			return nNode + e.vertices().at(localIndex-4).globalNode().getIndex();
+		} else if(localIndex == 5) {
+			int nNode = mesh.getNodeList().size();
+			return 2*nNode + e.parent.globalIndex;
+		} else {
+			throw new RuntimeException("local index should be in 1...9");
+		}
+	}
+
+	@Override
+	public int getTotalNumberOfDOFs(Mesh mesh) {
+		throw new UnsupportedOperationException("Call FEBilinearV_ConstantP.getTotalNumberOfDOFs() intstead");
 	}
 
 }

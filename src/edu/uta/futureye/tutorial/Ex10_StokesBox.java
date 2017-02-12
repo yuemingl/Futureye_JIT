@@ -141,13 +141,20 @@ public class Ex10_StokesBox {
 		
 		
 		BasicVecAssembler assembler = new BasicVecAssembler(wf);
-		for(Element e : mesh.getElementList()) {
-			assembler.assembleLocal(e);
-			double[][] A= assembler.getLocalStiffMatrix();
-			System.out.println(A[0][0]);
-			assembler.getLocalLoadVector();
-		}
-//		
+		assembler.assembleGlobal(mesh);
+
+		BasicVecAssembler boundaryAssembler = new BasicVecAssembler(wfb);
+		
+//		boundaryAssembler.assembleGlobal(mesh, 
+//				assembler.getGlobalStiffMatrix(), assembler.getGlobalLoadVector());
+
+//		for(Element e : mesh.getElementList()) {
+//			assembler.assembleLocal(e);
+//			double[][] A= assembler.getLocalStiffMatrix();
+//			System.out.println(A[0][0]);
+//			assembler.getLocalLoadVector();
+//		}
+////		
 //		//Assemble
 //		AssemblerVector assembler = new AssemblerVector(mesh, weakForm,fe);
 //		assembler.assemble();

@@ -180,9 +180,10 @@ public class EdgeLocal extends GeoEntity1D<NodeLocal> {
 //		return be;
 //	}
 	
-	public Element changeToElement() {
+	public Element changeToElement(Element parentElement) {
 		//要使用全局边(Edge)，局部边(EdgeLocal)的结点编号不一定是正确的。
 		Element be = new Element(this.buildEdge());
+		be.parent = parentElement;
 		Edge edge = (Edge)be.geoEntity;
 		ObjList<NodeLocal> edgeNodes = this.getEdgeNodes();
 		VertexList vertices = this.getVertices();

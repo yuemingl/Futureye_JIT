@@ -1324,7 +1324,7 @@ public class Element {
 			ObjList<EdgeLocal> edges = entity.getEdges();
 			for(int i=1;i<=edges.size();i++) {
 				if(edges.at(i).isBorderEdge())
-					el.add(edges.at(i).changeToElement());
+					el.add(edges.at(i).changeToElement(this));
 			}
 		} else if(this.eleDim == 3) {
 			GeoEntity3D<FaceLocal,EdgeLocal,NodeLocal> entity = 
@@ -1604,7 +1604,7 @@ public class Element {
 	 * 自适应网格加密用来保存从该单元加密出来的子网格单元
 	 */
 	public ElementList childs = null;
-	public Element parent = null;
+	public Element parent = null; //this field is also used to store the parent element of a border element
 	//加密层次
 	protected int level = 1;
 	

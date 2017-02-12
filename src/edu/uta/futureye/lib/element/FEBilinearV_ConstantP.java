@@ -6,6 +6,8 @@ import static edu.uta.futureye.function.FMath.C1;
 
 import java.util.Map;
 
+import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.RectAreaCoord;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
@@ -118,54 +120,6 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 		return this.coord.getJacobian();
 	}
 
-//	//???
-//	// we need total number of nodes in the mesh to assign global index for u[2]
-	
-	//DOF contains local-global index 
-	// no shape functions now.
-	
-//	public void assignTo(Element e) {
-//		e.clearAllDOF();
-//		if(nTotalNodes == -1 || nDOF_p == -1) {
-//			FutureyeException ex = new FutureyeException("Call initDOFIndex() first!");
-//			ex.printStackTrace();
-//			System.exit(-1);
-//		}
-//		//单元结点数
-//		int nNode = e.nodes.size();
-//		//Assign shape function to DOF
-//		for(int j=1;j<=nNode;j++) {
-//			//Asign shape function to DOF
-//			DOF dof_u1 = new DOF(
-//					j,//Local DOF index
-//					//Global DOF index, take global node index
-//					e.nodes.at(j).globalIndex,
-//					null
-//					         );
-//			dof_u1.setVVFComponent(1);
-//			DOF dof_u2 = new DOF(
-//					nNode+j,//Local DOF index
-//					//Global DOF index, take this.nTotalNodes + global node index
-//					this.nTotalNodes+e.nodes.at(j).globalIndex,
-//					null
-//					         );
-//			dof_u2.setVVFComponent(2);
-//			e.addNodeDOF(j, dof_u1);
-//			//e.addNodeDOF(j, dof_u2); //???bug???
-//			e.addNodeDOF(nNode+j, dof_u2);
-//		}
-//		
-//		//Assign shape function to DOF
-//		DOF dof = new DOF(
-//					2*nNode+1, //Local DOF index
-//					//this.nTotalNodes*2+nDOF_p, //Global DOF index for Pressure
-//					this.nTotalNodes*2+this.nDOF_p, //Global DOF index for Pressure
-//					shapeFun[2*nNode] //Shape function 
-//					);
-//		this.nDOF_p++;
-//		dof.setVVFComponent(3);	
-//		e.addVolumeDOF(dof);
-//	}
 
 	@Override
 	public VecFiniteElement getBoundaryFE() {
@@ -181,5 +135,26 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 		if(idx2 <= 3 && idx1 >= 4)
 			return false;
 		return true;
+	}
+	
+	public int getGlobalIndex(Mesh mesh, Element e, int localIndex) {
+		if(localIndex>=1 && localIndex <= 4) {
+			return e.vertices().at(localIndex).globalNode().getIndex();
+		} else if(localIndex>=5 && localIndex<=8) {
+			int nNode = mesh.getNodeList().size();
+			return nNode + e.vertices().at(localIndex-4).globalNode().getIndex();
+		} else if(localIndex == 9) {
+			int nNode = mesh.getNodeList().size();
+			return 2*nNode + e.globalIndex;
+		} else {
+			throw new RuntimeException("local index = "+localIndex+". It should be in 1...9");
+		}
+	}
+
+	@Override
+	public int getTotalNumberOfDOFs(Mesh mesh) {
+		int nNode  = mesh.getNodeList().size();
+		int nElement = mesh.getElementList().size();
+		return 2*nNode+nElement;
 	}
 }

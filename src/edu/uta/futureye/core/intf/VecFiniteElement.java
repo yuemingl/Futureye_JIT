@@ -3,6 +3,7 @@ package edu.uta.futureye.core.intf;
 import java.util.Map;
 
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VectorMathFunc;
 
@@ -59,4 +60,20 @@ public interface VecFiniteElement {
 	 * @return
 	 */
 	boolean isDOFCoupled(int idx1, int idx2);
+	
+	/**
+	 * Get the global index of a DEF
+	 * @param mesh
+	 * @param e
+	 * @param localIndex
+	 * @return
+	 */
+	public int getGlobalIndex(Mesh mesh, Element e, int localIndex);
+	
+	/**
+	 * Get the total number of DOFs on a given mesh for this finite element
+	 * @param mesh
+	 * @return
+	 */
+	public int getTotalNumberOfDOFs(Mesh mesh);
 }

@@ -4,13 +4,11 @@ import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.core.DOF;
-import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.lib.weakform.VecWeakForm;
-import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 
 public class BasicVecAssembler {
@@ -82,9 +80,11 @@ public class BasicVecAssembler {
 	 * @param mesh
 	 */
 	public void assembleGlobal(Mesh mesh) {
-		int dim = mesh.getNodeList().size();
+		int dim = this.weakForm.getFiniteElement().getTotalNumberOfDOFs(mesh);
+		
 		gA = new SparseMatrixRowMajor(dim,dim);
 		gb = new SparseVectorHashMap(dim);
+		
 		assembleGlobal(mesh, gA, gb);
 	}
 	
@@ -101,16 +101,15 @@ public class BasicVecAssembler {
 	 */
 	public void assembleGlobal(Mesh mesh, Matrix stiff, Vector load) {
 		ElementList eList = mesh.getElementList();
+		VecFiniteElement fe = this.weakForm.getFiniteElement();
 		for(Element e : eList) {
 			assembleLocal(e);
 			
-			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
 			for(int j=0;j<nDOFs;j++) {
-				DOF dofI = DOFs.at(j+1);
-				int nGlobalRow = dofI.getGlobalIndex();
+				int nGlobalRow = fe.getGlobalIndex(mesh, e, j+1);
 				for(int i=0;i<nDOFs;i++) {
-					DOF dofJ = DOFs.at(i+1);
-					int nGlobalCol = dofJ.getGlobalIndex();
+					int nGlobalCol = fe.getGlobalIndex(mesh, e, i+1);
+					System.out.println("(j,i)=("+j+","+i+"); global=("+nGlobalRow+","+nGlobalCol+")");
 					stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
 				}
 				//Local load vector
