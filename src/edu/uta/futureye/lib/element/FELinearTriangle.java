@@ -16,7 +16,7 @@ public class FELinearTriangle implements FiniteElement {
 	TriAreaCoord coord;
 	
 	//Construct a function with the coordinate of points in an element as parameters
-	String[] argsOrder;// = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
+	String[] argsOrder;
 	
 	public int nDOFs = 3;
 	MathFunc[] shapeFuncs = new MathFunc[nDOFs];
@@ -29,16 +29,16 @@ public class FELinearTriangle implements FiniteElement {
 		FX y2 = new FX("y2");
 		FX y3 = new FX("y3");
 		
-		coord = new TriAreaCoord(x1, x2, x3, y1, y2, y3);
+		this.coord = new TriAreaCoord(x1, x2, x3, y1, y2, y3);
 		MathFunc r = coord.getCoordR();
 		MathFunc s = coord.getCoordS();
 		
-		argsOrder = new String[]{x1, x2, x3, y1, y2, y3, r, s, "t"};
+		this.argsOrder = new String[]{x1, x2, x3, y1, y2, y3, r, s, "t"};
 		
 		//shape functions
-		shapeFuncs[0] = r;
-		shapeFuncs[1] = s;
-		shapeFuncs[2] = 1 - r - s;
+		this.shapeFuncs[0] = r;
+		this.shapeFuncs[1] = s;
+		this.shapeFuncs[2] = 1 - r - s;
 	}
 
 	@Override

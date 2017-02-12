@@ -1,28 +1,13 @@
 package edu.uta.futureye.lib.element;
 
 
-import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.DALOAD;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.PUSH;
-import org.objectweb.asm.MethodVisitor;
-
-import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Line2DCoord;
 import edu.uta.futureye.core.Vertex;
 import edu.uta.futureye.core.intf.FiniteElement;
-import edu.uta.futureye.function.FMath;
-import static edu.uta.futureye.function.FMath.*;
-import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.util.container.VertexList;
@@ -30,113 +15,38 @@ import edu.uta.futureye.util.container.VertexList;
 /**
  * Linear line element in a 2D space
  * 
+ * shape functions
+ * 
+ *  1-----2  -->r
+ * -1  0  1
+ * 
+ * N1 = (1-r)/2
+ * N2 = (1+r)/2
+ * 
  */
 public class FELinearLine2D implements FiniteElement {
-	public class LineCoordR extends SingleVarFunc {
-		public LineCoordR() {
-			super("r", "r");
-		}
-
-		@Override
-		public double apply(double... args) {
-			return args[this.argIdx];
-		}
-		
-		/**
-		 *  x = x1*N1 + x2*N2
-		 *    = x1*(1-r)/2 + x2*(1+r)/2
-		 *    = [ x1+x2 + (x2-x1)*r ]/2
-		 *  =>
-		 *  r = [2*x - (x1+x2)]/(x2-x1) 
-		 *  r_x = 2/(x2-x1)
-		 */
-		@Override
-		public MathFunc diff(String varName) {
-			if(varName.equals("r"))
-				return FMath.C1;
-			if(varName.equals("x"))
-				return 2.0/(x2-x1); //=1/jac
-			if(varName.equals("y"))
-				return 2.0/(y2-y1); //=1/jac
-			else
-				return FMath.C0;
-		}
-
-		public String toString() {
-			return this.varName;
-		}
-		
-		public String getExpr() {
-			return this.varName;
-		}
-
-		@Override
-		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
-				String clsName) {
-			mv.visitIntInsn(Opcodes.ALOAD, argsStartPos);
-			Integer argIdx = argsMap.get(varName);
-			if(argIdx == null) throw new RuntimeException("Index of "+varName+" is null!");
-			mv.visitLdcInsn(argIdx);
-			mv.visitInsn(Opcodes.DALOAD);
-		}
-		@Override
-		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
-				ConstantPoolGen cp, InstructionFactory factory, 
-				InstructionList il, Map<String, Integer> argsMap, 
-				int argsStartPos, Map<MathFunc, Integer> funcRefsMap) {
-			il.append(new ALOAD(argsStartPos));
-			il.append(new PUSH(cp, argsMap.get(this.getName())));
-			return il.append(new DALOAD());
-		}
-
-	}
 	
-	FX x1 = new FX("x1");
-	FX x2 = new FX("x2");
-	FX y1 = new FX("y1");
-	FX y2 = new FX("y2");
-	LineCoordR r = new LineCoordR();
+	Line2DCoord coord;
+	
 	//Construct a function with the coordinate of points in an element as parameters
-	String[] argsOrder = new String[]{x1,x2,y1,y2,r};
+	String[] argsOrder;
 	
-	MathFunc x;
-	MathFunc y;
-	Map<String, MathFunc> map;
 	public int nDOFs = 2;
 	MathFunc[] shapeFuncs = new MathFunc[nDOFs];
-	MathFunc jac;
 
 	public FELinearLine2D() {
-		/**
-		 * shape functions
-		 * 
-		 *  1-----2  -->r
-		 * -1  0  1
-		 * 
-		 * N1 = (1-r)/2
-		 * N2 = (1+r)/2
-		 * 
-		 * @param funID = 1,2
-		 * 
-		 */
-		shapeFuncs[0] = 0.5*(1-r);
-		shapeFuncs[1] = 0.5*(1+r);
+		FX x1 = new FX("x1");
+		FX x2 = new FX("x2");
+		FX y1 = new FX("y1");
+		FX y2 = new FX("y2");
 
-		//coordinate transform
-		x = x1*shapeFuncs[0] + x2*shapeFuncs[1];
-		y = y1*shapeFuncs[0] + y2*shapeFuncs[1];
+		this.coord = new Line2DCoord(x1,x2,y1,y2);
+		MathFunc r = coord.getCoordR();
 		
-		map = new HashMap<String, MathFunc>();
-		map.put("x", x);
+		this.argsOrder = new String[]{x1,x2,y1,y2,r};
 		
-		/**  
-		 *  Compute 1D determinant of Jacobian matrix
-		 *  1D: det(Jac) = x_r
-		 *  2D boundary: det(Jac)= sqrt(x_r^2 + y_r^2)
-		 */
-		jac = sqrt(pow(x.diff("r"),2) + pow(y.diff("r"),2));
-		//jac = sqrt(x.diff("r")*x.diff("r") + y.diff("r")*y.diff("r"));
+		this.shapeFuncs[0] = 0.5*(1-r);
+		this.shapeFuncs[1] = 0.5*(1+r);
 	}
 
 	@Override
@@ -151,7 +61,7 @@ public class FELinearLine2D implements FiniteElement {
 
 	@Override
 	public Map<String, MathFunc> getCoordTransMap() {
-		return this.map;
+		return this.coord.getCoordTransMap();
 	}
 
 	@Override
@@ -161,7 +71,7 @@ public class FELinearLine2D implements FiniteElement {
 	
 	@Override
 	public MathFunc getJacobian() {
-		return this.jac;
+		return this.coord.getJacobian();
 	}
 
 	public void assignTo(Element e) {
@@ -183,5 +93,4 @@ public class FELinearLine2D implements FiniteElement {
 	public FiniteElement getBoundaryFE() {
 		return null;
 	}
-
 }
