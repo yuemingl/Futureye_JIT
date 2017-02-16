@@ -4,14 +4,15 @@ import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.container.DOFList;
 
 public class Assembler {
+	Mesh mesh;
 	BasicAssembler assembler;
 	
 	Matrix gA;
@@ -19,8 +20,9 @@ public class Assembler {
 	
 	Assembler parentAssembler;
 	
-	public Assembler(WeakForm weakForm) {
-		this.assembler = new BasicAssembler(weakForm);
+	public Assembler(Mesh mesh, WeakForm weakForm) {
+		this.mesh = mesh;
+		this.assembler = new BasicAssembler(mesh, weakForm);
 	}
 
 	/**
@@ -30,7 +32,7 @@ public class Assembler {
 	 */
 	public Assembler(Assembler parent, WeakForm weakForm) {
 		this.parentAssembler = parent;
-		this.assembler = new BasicAssembler(weakForm);
+		this.assembler = new BasicAssembler(mesh, weakForm);
 	}
 	
 	/**
@@ -41,8 +43,7 @@ public class Assembler {
 		// Assemble on domain element
 		assembler.assembleLocal(e);
 	}
-	
-	
+
 	/**
 	 * Assemble stiff matrix and load vector on a given mesh
 	 * @param mesh
@@ -61,12 +62,12 @@ public class Assembler {
 	 * Assemble stiff matrix and load vector on a given mesh
 	 * @param mesh
 	 */
-	public void assembleGlobal(Mesh mesh) {
-		int dim = mesh.getNodeList().size();
+	public void assembleGlobal() {
+		int dim = this.assembler.weakForm.getFiniteElement().getTotalNumberOfDOFs(mesh);
 		if(null == this.parentAssembler) {
 			gA = new SparseMatrixRowMajor(dim,dim);
 			gb = new SparseVectorHashMap(dim);
-			assembleGlobal(mesh, gA, gb);
+			assembleGlobal(gA, gb);
 		} else {
 			throw new RuntimeException("Call assembleGlobal(Mesh mesh) in root assembler only!");
 		}
@@ -83,7 +84,7 @@ public class Assembler {
 	 * @param stiff
 	 * @param load
 	 */
-	public void assembleGlobal(Mesh mesh, Matrix stiff, Vector load) {
+	public void assembleGlobal(Matrix stiff, Vector load) {
 		for(Element e : mesh.getElementList()) {
 			this.assembleGlobal(e, stiff, load);
 		}
@@ -99,18 +100,17 @@ public class Assembler {
 		// Assemble locally
 		assembleLocal(e);
 		
-		// Associate FiniteElement object with Element object
-		this.assembler.weakForm.getFiniteElement().assignTo(e);
+		FiniteElement fe = this.assembler.weakForm.getFiniteElement();
+		int nDOFs = fe.getNumberOfDOFs();
 
 		// Get local-global indexing
-		DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
-		for(int j=0;j<DOFs.size();j++) {
-			DOF dofJ = DOFs.at(j+1);
-			for(int i=0;i<DOFs.size();i++) {
-				DOF dofI = DOFs.at(i+1);
-				stiff.add(dofJ.getGlobalIndex(), dofI.getGlobalIndex(), this.assembler.A[j][i]);
+		for(int j=0;j<nDOFs;j++) {
+			int globalIdxJ = fe.getGlobalIndex(mesh, e, j+1);
+			for(int i=0;i<nDOFs;i++) {
+				int globalIdxI = fe.getGlobalIndex(mesh, e, i+1);
+				stiff.add(globalIdxJ, globalIdxI, this.assembler.A[j][i]);
 			}
-			load.add(dofJ.getGlobalIndex(), this.assembler.b[j]);
+			load.add(globalIdxJ, this.assembler.b[j]);
 		}
 		//update gA and gb
 		this.gA = stiff;
@@ -120,7 +120,7 @@ public class Assembler {
 	public double[][] getLocalStiffMatrix() {
 		return this.assembler.getLocalStiffMatrix();
 	}
-	
+
 	public double[] getLocalLoadVector() {
 		return this.assembler.getLocalLoadVector();
 	}

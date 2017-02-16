@@ -5,15 +5,11 @@ import java.util.Map;
 import edu.uta.futureye.bytecode.CompiledFunc;
 import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.core.intf.LHSExpr;
-import edu.uta.futureye.core.intf.LHSVecExpr;
 import edu.uta.futureye.core.intf.RHSExpr;
-import edu.uta.futureye.core.intf.RHSVecExpr;
 import edu.uta.futureye.function.intf.MathFunc;
 
 public class WeakForm {
 	FiniteElement fe;
-//	LHSExpr lhsExpr;
-//	RHSExpr rhsExpr;
 	
 	MathFunc jac;
 	MathFunc[][] matLHS;
@@ -25,13 +21,11 @@ public class WeakForm {
 
 	public WeakForm(FiniteElement fe, LHSExpr lhsExpr, RHSExpr rhsExpr) {
 		this.fe = fe;
-//		this.lhsExpr =  lhsExpr;
-//		this.rhsExpr = rhsExpr;
-		this.jac = fe.getJacobian();
+		this.jac = fe.getCoordTrans().getJacobian();
  
 		int nDOFs = this.fe.getNumberOfDOFs();
 		MathFunc[] shapeFuncs = fe.getShapeFunctions();
-		Map<String, MathFunc> map = fe.getCoordTransMap();
+		Map<String, MathFunc> map = fe.getCoordTrans().getCoordTransMap();
 		matLHS = new MathFunc[nDOFs][nDOFs];
 		vecRHS = new MathFunc[nDOFs];
 

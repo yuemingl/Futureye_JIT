@@ -4,17 +4,17 @@ import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.core.DOF;
-import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.lib.weakform.WeakForm;
-import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 
 public class BasicAssembler {
+	public Mesh mesh;
 	public WeakForm weakForm;
+	
 	public double[][] A; // domain local stiff matrix
 	public double[] b;   // domain local load vector
 	double[] params;
@@ -23,7 +23,7 @@ public class BasicAssembler {
 	Matrix gA; // global stiff matrix
 	Vector gb; // global load vector
 
-	public BasicAssembler(WeakForm weakForm) {
+	public BasicAssembler(Mesh mesh, WeakForm weakForm) {
 		this.weakForm = weakForm;
 		nDOFs = weakForm.getFiniteElement().getNumberOfDOFs();
 		A = new double[nDOFs][nDOFs];
@@ -38,15 +38,14 @@ public class BasicAssembler {
 	public void assembleLocal(Element e) {
 		e.adjustVerticeToCounterClockwise();
 		
-		// Associate FiniteElement object with Element object
-		this.weakForm.getFiniteElement().assignTo(e);
-
+		FiniteElement fe = this.weakForm.getFiniteElement();
+		
 		double[] coords = e.getNodeCoords();
 		System.arraycopy(coords, 0, params, 0, coords.length);
 
 		weakForm.getCompiledJac().apply(params);
 
-		if(weakForm.getFiniteElement().getNumberOfDOFs() == 2) {
+		if(fe.getNumberOfDOFs() == 2) {
 		for(int j=0;j<nDOFs;j++) {
 			for(int i=0;i<nDOFs;i++) {
 				A[j][i] = FOIntegrate.intOnLinearRefElement(weakForm.getCompiledLHS()[j][i], 
@@ -55,7 +54,7 @@ public class BasicAssembler {
 			b[j] = FOIntegrate.intOnLinearRefElement(weakForm.getCompiledRHS()[j], 
 					new AssembleParam(e, -1, j+1), params, coords.length, 5);
 		}
-		} else if(weakForm.getFiniteElement().getNumberOfDOFs() == 3) {
+		} else if(fe.getNumberOfDOFs() == 3) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnTriangleRefElement(weakForm.getCompiledLHS()[j][i], 
@@ -64,7 +63,7 @@ public class BasicAssembler {
 				b[j] = FOIntegrate.intOnTriangleRefElement(weakForm.getCompiledRHS()[j], 
 						new AssembleParam(e, -1, j+1), params, coords.length, 2);
 			}
-		} else if(weakForm.getFiniteElement().getNumberOfDOFs() == 4) {
+		} else if(fe.getNumberOfDOFs() == 4) {
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnRectangleRefElement(weakForm.getCompiledLHS()[j][i], 
@@ -77,21 +76,21 @@ public class BasicAssembler {
 	}
 	
 	/**
-	 * Assemble global stiff matrix and load vector on a given mesh
+	 * Assemble global stiff matrix and load vector on the given mesh
 	 * new matrix and vector are allocated. Use <tt>getGlobalStiffMatrix()</tt> and
 	 * <tt>getGlobalLoadVector()</tt> to access them.
 	 * 
 	 * @param mesh
 	 */
-	public void assembleGlobal(Mesh mesh) {
-		int dim = mesh.getNodeList().size();
+	public void assembleGlobal() {
+		int dim = this.weakForm.getFiniteElement().getTotalNumberOfDOFs(mesh);
 		gA = new SparseMatrixRowMajor(dim,dim);
 		gb = new SparseVectorHashMap(dim);
-		assembleGlobal(mesh, gA, gb);
+		assembleGlobal(gA, gb);
 	}
 	
 	/**
-	 * Assemble stiff matrix and load vector on a given mesh
+	 * Assemble stiff matrix and load vector on the given mesh
 	 * into parameter stiff and load.
 	 * 
 	 * Several assemblers can be chained by using this method
@@ -101,21 +100,17 @@ public class BasicAssembler {
 	 * @param stiff
 	 * @param load
 	 */
-	public void assembleGlobal(Mesh mesh, Matrix stiff, Vector load) {
+	public void assembleGlobal(Matrix stiff, Vector load) {
 		ElementList eList = mesh.getElementList();
 		for(Element e : eList) {
 			assembleLocal(e);
 			
-			// Associate FiniteElement object with Element object
-			this.weakForm.getFiniteElement().assignTo(e);
+			FiniteElement fe  = this.weakForm.getFiniteElement();
 
-			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
 			for(int j=0;j<nDOFs;j++) {
-				DOF dofI = DOFs.at(j+1);
-				int nGlobalRow = dofI.getGlobalIndex();
+				int nGlobalRow = fe.getGlobalIndex(mesh, e, j+1);
 				for(int i=0;i<nDOFs;i++) {
-					DOF dofJ = DOFs.at(i+1);
-					int nGlobalCol = dofJ.getGlobalIndex();
+					int nGlobalCol = fe.getGlobalIndex(mesh, e, i+1);
 					stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
 				}
 				//Local load vector
