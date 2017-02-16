@@ -1,51 +1,62 @@
 package edu.uta.futureye.core.intf;
 
-import java.util.Map;
-
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.function.intf.MathFunc;
 
+/**
+ * An interface of a finite element which provides the information about
+ * degree of freedoms, shape functions, local-to-global index and boundary elements.
+ * A user defined finite element should implements all the functions in this 
+ * interface.
+ *
+ */
 public interface FiniteElement {
 	/**
-	 * Return the number of Degree of Freedom (DOF) of this finite element
+	 * Return the number of degree of freedoms (DOFs) of this finite element
 	 * @return
 	 */
 	int getNumberOfDOFs();
-	
+
 	/**
-	 * Return all the expression of shape functions
+	 * Return all the shape functions of this finite element
 	 * @return
 	 */
 	MathFunc[] getShapeFunctions();
-	
+
 	/**
-	 * Return the coordinate transformation map between physical coordinate and reference coordinate
-	 * @return
-	 */
-	Map<String, MathFunc> getCoordTransMap();
-	
-	/**
-	 * Return the order of all the arguments
+	 * Return the order of all the arguments in a string array
 	 * @return
 	 */
 	String[] getArgsOrder();
-	
+
 	/**
-	 * Return the Jacobian expression
+	 * Get the global index of a degree of freedom (DOF) by giving the local index
+	 * @param mesh
+	 * @param e
+	 * @param localIndex
 	 * @return
 	 */
-	MathFunc getJacobian();
-	
+	int getGlobalIndex(Mesh mesh, Element e, int localIndex);
+
 	/**
-	 * Associate this FiniteElement object to an Element object which contains geometry information
-	 * 
-	 * @param e
+	 * Get the total number of degree of freedoms (DOFs) on a given mesh for this finite element
+	 * @param mesh
+	 * @return
 	 */
-	void assignTo(Element e);
-	
+	int getTotalNumberOfDOFs(Mesh mesh);
+
 	/**
-	 * Return the boundary FiniteElement object associated with the current FiniteElement object
+	 * Returns the boundary FiniteElement object associated with this FiniteElement object.
+	 * For example, a boundary finite element is an element on a line for a 2D element.
+	 * For a 3D element, the boundary finite element is an element on a 2D face.
 	 * @return
 	 */
 	FiniteElement getBoundaryFE();
+	
+	/**
+	 * Return the coordinate transformation object used in this finite element
+	 * @return
+	 */
+	CoordTrans getCoordTrans();
 }

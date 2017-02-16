@@ -1,12 +1,9 @@
 package edu.uta.futureye.lib.element;
 
-
-import java.util.Map;
-
-import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
+import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.RectAreaCoord;
-import edu.uta.futureye.core.Vertex;
+import edu.uta.futureye.core.intf.CoordTrans;
 import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -74,38 +71,28 @@ public class FEBilinearRectangle implements FiniteElement {
 	}
 
 	@Override
-	public Map<String, MathFunc> getCoordTransMap() {
-		return this.coord.getCoordTransMap();
-	}
-
-	@Override
 	public String[] getArgsOrder() {
 		return this.argsOrder;
 	}
 	
 	@Override
-	public MathFunc getJacobian() {
-		return this.coord.getJacobian();
-	}
-
-	public void assignTo(Element e) {
-		e.clearAllDOF();
-		VertexList vertices = e.vertices();
-		for(int j=1;j<=vertices.size();j++) {
-			Vertex v = vertices.at(j);
-			//Assign shape function to DOF
-			DOF dof = new DOF(
-						j, //Local DOF index
-						v.globalNode().getIndex(), //Global DOF index, take global node index
-						null //Shape function is no longer used?  
-						);
-			e.addNodeDOF(j, dof);
-		}
-	}
-
-	@Override
 	public FiniteElement getBoundaryFE() {
 		return new FELinearLine2D();
 	}
 
+	@Override
+	public int getGlobalIndex(Mesh mesh, Element e, int localIndex) {
+		VertexList vertices = e.vertices();
+		return vertices.at(localIndex).globalNode().globalIndex;
+	}
+
+	@Override
+	public int getTotalNumberOfDOFs(Mesh mesh) {
+		return mesh.getNodeList().size();
+	}
+
+	@Override
+	public CoordTrans getCoordTrans() {
+		return this.coord;
+	}
 }
