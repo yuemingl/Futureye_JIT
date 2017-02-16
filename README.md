@@ -58,21 +58,21 @@ public class LaplaceGlobalAssemble {
 		mesh.markBorderNode(mapNTF);
 
 		// 3. Weak form definition
+		FiniteElement fe = new FELinearTriangle(); // Linear triangular finite element
 		final MathFunc f = -2 * (x * x + y * y) + 36; //Right hand side (RHS)
-		WeakForm wf = new WeakForm(
-				new FELinearTriangle(), // Linear triangular finite element
+		WeakForm wf = new WeakForm(fe,
 				(u,v) -> grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
 			);
 		wf.compile();
 
 		// 4. Assembly and boundary condition(s)
-		Assembler assembler = new Assembler(wf);
-		assembler.assembleGlobal(mesh);
+		Assembler assembler = new Assembler(mesh, wf);
+		assembler.assembleGlobal();
 		Matrix stiff = assembler.getGlobalStiffMatrix();
 		Vector load = assembler.getGlobalLoadVector();
 		// Apply zero Dirichlet boundary condition
-		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
+		Utils.imposeDirichletCondition(stiff, load, fe, mesh, C0);
 
 		// 5. Solve the linear system
 		SolverJBLAS solver = new SolverJBLAS();
