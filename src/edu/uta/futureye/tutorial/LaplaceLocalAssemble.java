@@ -60,37 +60,29 @@ public class LaplaceLocalAssemble {
 		mapNTF.put(NodeType.Dirichlet, null);
 		mesh.markBorderNode(mapNTF);
 
-		// 3. Linear triangular finite element
-		FELinearTriangle feTri = new FELinearTriangle();
-
-		// 4. Weak form definition
+		// 3. Weak form definition
+		FELinearTriangle fe = new FELinearTriangle(); //Linear triangular finite element
 		final MathFunc f = -2 * (x * x + y * y) + 36; //Right hand side (RHS)
-		WeakForm wf = new WeakForm(
-				feTri, 
+		WeakForm wf = new WeakForm(fe, 
 				(u,v) -> grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
 			);
 		wf.compile();
 
 		// 5. Assembly and boundary condition(s)
-		Assembler assembler = new Assembler(wf);
+		Assembler assembler = new Assembler(mesh, wf);
 		int dim = mesh.getNodeList().size();
 		SparseMatrix stiff = new SparseMatrixRowMajor(dim, dim);
 		SparseVector load = new SparseVectorHashMap(dim);
-		int nDOFs = feTri.getNumberOfDOFs();
+		int nDOFs = fe.getNumberOfDOFs();
 		for (Element e : mesh.getElementList()) {
-			// Associate FiniteElement object with Element object
-			feTri.assignTo(e);
 			assembler.assembleLocal(e);
 			double[][] A = assembler.getLocalStiffMatrix();
 			double[] b = assembler.getLocalLoadVector();
-			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
 			for (int j = 0; j < nDOFs; j++) {
-				DOF dofI = DOFs.at(j + 1);
-				int nGlobalRow = dofI.getGlobalIndex();
+				int nGlobalRow = fe.getGlobalIndex(mesh, e, j+1);
 				for (int i = 0; i < nDOFs; i++) {
-					DOF dofJ = DOFs.at(i + 1);
-					int nGlobalCol = dofJ.getGlobalIndex();
+					int nGlobalCol = fe.getGlobalIndex(mesh, e, i+1);
 					stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
 				}
 				// Local load vector
@@ -98,7 +90,7 @@ public class LaplaceLocalAssemble {
 			}
 		}
 		// Apply zero Dirichlet boundary condition
-		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
+		Utils.imposeDirichletCondition(stiff, load, fe, mesh, C0);
 
 		// 6. Solve linear system
 		SolverJBLAS solver = new SolverJBLAS();

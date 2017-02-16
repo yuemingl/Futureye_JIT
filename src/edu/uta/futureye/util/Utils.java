@@ -32,6 +32,7 @@ import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.core.geometry.GeoEntity2D;
 import edu.uta.futureye.core.geometry.GeoEntity3D;
 import edu.uta.futureye.core.geometry.Point;
+import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
@@ -946,68 +947,83 @@ public class Utils {
 			}
 		}
 	}
-	
-	public static void imposeDirichletCondition(Matrix stiff, Vector load, Mesh mesh, MathFunc diri) {
+
+	public static void imposeDirichletCondition(Matrix stiff, Vector load, FiniteElement fe, Mesh mesh, MathFunc diri) {
 		ElementList eList = mesh.getElementList();
 		for(int i=1;i<=eList.size();i++) {
-			Element e = eList.at(i);
-			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
-			for(int j=1;j<=DOFs.size();j++) {
-				DOF dof = DOFs.at(j);
-				GeoEntity ge = dof.getOwner();
-				if(ge instanceof Node) {
-					Node n = (Node)ge;
-					if(n.getNodeType() == NodeType.Dirichlet) {
-						Variable v = Variable.createFrom(diri, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
-						setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
-					}
-				} else if(ge instanceof EdgeLocal) {
-					//2D单元（面）其中的局部边上的自由度
-					EdgeLocal edge = (EdgeLocal)ge;
-					if(edge.getBorderType() == NodeType.Dirichlet) {
-						//TODO 以边的那个顶点取值？中点？
-						//Variable v = Variable.createFrom(fdiri, ?, 0);
-					}
-					
-				} else if(ge instanceof FaceLocal) {
-					//3D单元（体）其中的局部面上的自由度
-					FaceLocal face = (FaceLocal)ge;
-					if(face.getBorderType() == NodeType.Dirichlet) {
-						//TODO
-					}
-				} else if(ge instanceof Edge) {
-					//1D单元（线段）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
-					VertexList vs = ((GeoEntity2D) ge).getVertices();
-					for(int k=1;k<=vs.size();k++) {
-						Node n = vs.at(k).globalNode();
-						if(NodeType.Dirichlet == n.getNodeType()) {
-							Variable v = Variable.createFrom(diri, n, 0);
-							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
-						}
-					}
-				} else if(ge instanceof Face) {
-					//2D单元（面）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
-					
-					VertexList vs = ((GeoEntity2D) ge).getVertices();
-					for(int k=1;k<=vs.size();k++) {
-						Node n = vs.at(k).globalNode();
-						if(NodeType.Dirichlet == n.getNodeType()) {
-							Variable v = Variable.createFrom(diri, n, 0);
-							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
-						}
-					}
-				} else if(ge instanceof Volume) {
-					//3D单元（体）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
-					VertexList vs = ((GeoEntity3D) ge).getVertices();
-					for(int k=1;k<=vs.size();k++) {
-						Node n = vs.at(k).globalNode();
-						if(NodeType.Dirichlet == n.getNodeType()) {
-							Variable v = Variable.createFrom(diri, n, 0);
-							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
-						}
-					}
+			NodeList nodes = eList.at(i).nodes;
+			for(int j=1; j<=nodes.size(); j++) {
+				Node n = nodes.at(j);
+				if(n.getNodeType() == NodeType.Dirichlet) {
+					Variable v = Variable.createFrom(diri, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
+					setDirichlet(stiff, load, fe.getGlobalIndex(mesh, eList.at(i), j),diri.apply(v));
 				}
 			}
 		}
-	}	
+	}
+	
+//	public static void imposeDirichletCondition(Matrix stiff, Vector load, Mesh mesh, MathFunc diri) {
+//		ElementList eList = mesh.getElementList();
+//		for(int i=1;i<=eList.size();i++) {
+//			Element e = eList.at(i);
+//			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
+//			for(int j=1;j<=DOFs.size();j++) {
+//				DOF dof = DOFs.at(j);
+//				GeoEntity ge = dof.getOwner();
+//				if(ge instanceof Node) {
+//					Node n = (Node)ge;
+//					if(n.getNodeType() == NodeType.Dirichlet) {
+//						Variable v = Variable.createFrom(diri, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
+//						setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
+//					}
+//				} else if(ge instanceof EdgeLocal) {
+//					//2D单元（面）其中的局部边上的自由度
+//					EdgeLocal edge = (EdgeLocal)ge;
+//					if(edge.getBorderType() == NodeType.Dirichlet) {
+//						//TODO 以边的那个顶点取值？中点？
+//						//Variable v = Variable.createFrom(fdiri, ?, 0);
+//					}
+//					
+//				} else if(ge instanceof FaceLocal) {
+//					//3D单元（体）其中的局部面上的自由度
+//					FaceLocal face = (FaceLocal)ge;
+//					if(face.getBorderType() == NodeType.Dirichlet) {
+//						//TODO
+//					}
+//				} else if(ge instanceof Edge) {
+//					//1D单元（线段）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
+//					VertexList vs = ((GeoEntity2D) ge).getVertices();
+//					for(int k=1;k<=vs.size();k++) {
+//						Node n = vs.at(k).globalNode();
+//						if(NodeType.Dirichlet == n.getNodeType()) {
+//							Variable v = Variable.createFrom(diri, n, 0);
+//							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
+//						}
+//					}
+//				} else if(ge instanceof Face) {
+//					//2D单元（面）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
+//					
+//					VertexList vs = ((GeoEntity2D) ge).getVertices();
+//					for(int k=1;k<=vs.size();k++) {
+//						Node n = vs.at(k).globalNode();
+//						if(NodeType.Dirichlet == n.getNodeType()) {
+//							Variable v = Variable.createFrom(diri, n, 0);
+//							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
+//						}
+//					}
+//				} else if(ge instanceof Volume) {
+//					//3D单元（体）上的自由度，其Dirichlet边界用结点来计算推出，而不需要专门标记单元
+//					VertexList vs = ((GeoEntity3D) ge).getVertices();
+//					for(int k=1;k<=vs.size();k++) {
+//						Node n = vs.at(k).globalNode();
+//						if(NodeType.Dirichlet == n.getNodeType()) {
+//							Variable v = Variable.createFrom(diri, n, 0);
+//							setDirichlet(stiff, load, dof.getGlobalIndex(),diri.apply(v));
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+
 }
