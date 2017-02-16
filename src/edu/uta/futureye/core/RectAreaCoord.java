@@ -15,13 +15,15 @@ import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
+import edu.uta.futureye.core.intf.CoordTrans;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 
 /**
- * Rectangle area coordinate
+ * Rectangle area coordinate r,s (bilinear).
  *
+ * Remark: 
  * How to get the derivative: r_x, r_y, s_x, s_y:
  * 
  * f(x,y) = g(r,s)
@@ -31,7 +33,7 @@ import edu.uta.futureye.function.intf.MathFunc;
  * for (1), let f=x and f=y we get tow equations, solve them:
  * (x_r x_s)   (r_x)   (1)
  * (y_r y_s) * (s_x) = (0)
-
+ *
  * similarly, for (2):
  * (x_r x_s)   (r_y)   (0)
  * (y_r y_s) * (s_y) = (1)
@@ -44,7 +46,7 @@ import edu.uta.futureye.function.intf.MathFunc;
  *  (s_x s_y)
  *
  */
-public class RectAreaCoord {
+public class RectAreaCoord implements CoordTrans {
 	MathFunc x1;
 	MathFunc x2;
 	MathFunc x3;
@@ -84,10 +86,10 @@ public class RectAreaCoord {
 		this.y2 = y2;
 		this.y3 = y3;
 		this.y4 = y4;
-		
+
 		this.r = new RectAreaCoordR();
 		this.s = new RectAreaCoordS();
-		
+
 		MathFunc N1 = (1-r)*(1-s)/4;
 		MathFunc N2 = (1+r)*(1-s)/4;
 		MathFunc N3 = (1+r)*(1+s)/4;
@@ -105,19 +107,26 @@ public class RectAreaCoord {
 		//                   (r[2] r[3])   (y_r, y_s)
 		this.jac = x.diff("r")*y.diff("s") - y.diff("r")*x.diff("s");
 	}
-	
+
 	public MathFunc getCoordR() {
 		return this.r;
 	}
-	
+
 	public MathFunc getCoordS() {
 		return this.s;
 	}
 
+	@Override
+	public MathFunc[] getCoords() {
+		return new MathFunc[]{r, s};
+	}
+
+	@Override
 	public MathFunc getJacobian() {
 		return this.jac;
 	}
 	
+	@Override
 	public HashMap<String, MathFunc> getCoordTransMap() {
 		return this.map;
 	}
@@ -212,6 +221,7 @@ public class RectAreaCoord {
 			mv.visitLdcInsn(argIdx);
 			mv.visitInsn(Opcodes.DALOAD);
 		}
+
 		@Override
 		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
 				ConstantPoolGen cp, InstructionFactory factory, 

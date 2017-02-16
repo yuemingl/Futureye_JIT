@@ -15,32 +15,31 @@ import org.objectweb.asm.MethodVisitor;
 
 import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
+import edu.uta.futureye.core.intf.CoordTrans;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 
 /**
- * Triangular area coordinate
- * r,s,t
- * t=1-r-s
- * @author yueming.liu
- *
+ * Triangular area coordinate r,s,t
+ * where t=1-r-s
+ * 
  */
-public class TriAreaCoord {
+public class TriAreaCoord implements CoordTrans {
 	MathFunc x1;
 	MathFunc x2;
 	MathFunc x3;
 	MathFunc y1;
 	MathFunc y2;
 	MathFunc y3;
-	
+
 	TriAreaCoordR r;
 	TriAreaCoordS s;
-	
+
 	MathFunc x;
 	MathFunc y;
 	HashMap<String, MathFunc> map;
-	
+
 	MathFunc jac;
 
 	/**
@@ -59,29 +58,29 @@ public class TriAreaCoord {
 		this.y1 = y1;
 		this.y2 = y2;
 		this.y3 = y3;
-		
+
 		this.r = new TriAreaCoordR();
 		this.s = new TriAreaCoordS();
-		
+
 		this.x = x1*r + x2*s + x3*(1-r-s);
 		this.y = y1*r + y2*s + y3*(1-r-s);
 		this.map = new HashMap<String, MathFunc>();
 		this.map.put("x", x);
 		this.map.put("y", y);
-		
+
 		// Jacobian Matrix = (r[0] r[1]) = (x_r, x_s)
 		//                   (r[2] r[3])   (y_r, y_s)
 		this.jac = x.diff("r")*y.diff("s") - y.diff("r")*x.diff("s");
 	}
-	
+
 	public MathFunc getCoordR() {
 		return this.r;
 	}
-	
+
 	public MathFunc getCoordS() {
 		return this.s;
 	}
-	
+
 	/**
 	 * 
 	 * @return 1-r-s
@@ -89,27 +88,34 @@ public class TriAreaCoord {
 	public MathFunc getCoordT() {
 		return 1 - r - s;
 	}
-	
+
+	@Override
+	public MathFunc[] getCoords() {
+		return new MathFunc[]{r, s};
+	}
+
+	@Override
 	public MathFunc getJacobian() {
 		return this.jac;
 	}
-	
+
+	@Override
 	public HashMap<String, MathFunc> getCoordTransMap() {
 		return this.map;
 	}
-	
+
 	public class TriAreaCoordR extends SingleVarFunc {
 		public TriAreaCoordR() {
 			super("r", "r");
 		}
-	
+
 		@Override
 		public double apply(double... args) {
 			//this.argIdx is wrong if we don't define BCEL bytecodeGen
 			//
 			return args[this.argIdx];
 		}
-		
+
 		@Override
 		public MathFunc diff(String varName) {
 			if(varName.equals("r"))
@@ -121,15 +127,15 @@ public class TriAreaCoord {
 			else
 				return FMath.C0;
 		}
-		
+
 		public String getExpr() {
 			return this.varName;
 		}
-		
+
 		public String toString() {
 			return this.varName;
 		}
-	
+
 		@Override
 		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
 				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
@@ -138,7 +144,7 @@ public class TriAreaCoord {
 			mv.visitLdcInsn(argsMap.get(varName));
 			mv.visitInsn(Opcodes.DALOAD);
 		}
-		
+
 		@Override
 		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
 				ConstantPoolGen cp, InstructionFactory factory, 
@@ -149,14 +155,17 @@ public class TriAreaCoord {
 			return il.append(new DALOAD());
 		}
 	}
+
 	public class TriAreaCoordS extends SingleVarFunc {
 		public TriAreaCoordS() {
 			super("s", "s");
 		}
+
 		@Override
 		public double apply(double... args) {
 			return args[this.argIdx];
 		}
+
 		@Override
 		public MathFunc diff(String varName) {
 			if(varName.equals("s"))
@@ -168,15 +177,15 @@ public class TriAreaCoord {
 			else
 				return FMath.C0;
 		}
-		
+
 		public String getExpr() {
 			return this.varName;
 		}
-		
+
 		public String toString() {
 			return this.varName;
 		}
-		
+
 		@Override
 		public void bytecodeGen(MethodVisitor mv, Map<String, Integer> argsMap,
 				int argsStartPos, Map<MathFunc, Integer> funcRefsMap,
@@ -185,7 +194,7 @@ public class TriAreaCoord {
 			mv.visitLdcInsn(argsMap.get(varName));
 			mv.visitInsn(Opcodes.DALOAD);
 		}
-		
+
 		@Override
 		public InstructionHandle bytecodeGen(String clsName, MethodGen mg, 
 				ConstantPoolGen cp, InstructionFactory factory, 

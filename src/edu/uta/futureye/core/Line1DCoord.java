@@ -1,8 +1,5 @@
 package edu.uta.futureye.core;
 
-import static edu.uta.futureye.function.FMath.pow;
-import static edu.uta.futureye.function.FMath.sqrt;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,51 +21,42 @@ import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 
 /**
- * 2D line local coordinate.
+ * 1D line local coordinate.
  * 
  */
-public class Line2DCoord implements CoordTrans {
+public class Line1DCoord implements CoordTrans {
 	MathFunc x1;
 	MathFunc x2;
-	MathFunc y1;
-	MathFunc y2;
 
 	MathFunc r;
 
 	MathFunc x;
-	MathFunc y;
 	HashMap<String, MathFunc> map;
 
 	MathFunc jac;
 
-	public Line2DCoord(MathFunc x1, MathFunc x2, MathFunc y1, MathFunc y2) {
+	public Line1DCoord(MathFunc x1, MathFunc x2) {
 		this.x1 = x1;
 		this.x2 = x2;
-		this.y1 = y1;
-		this.y2 = y2;
-		
-		this.r = new Line2DCoordR();
+
+		this.r = new Line1DCoordR();
 		
 		MathFunc N1 = (1-r)/2;
 		MathFunc N2 = (1+r)/2;
 
 		//coordinate transform
 		this.x = x1*N1 + x2*N2;
-		this.y = y1*N1 + y2*N2;
 
 		this.map = new HashMap<String, MathFunc>();
 		this.map.put("x", x);
-		this.map.put("y", y);
-		
-		/**  
+
+		/**
 		 *  Compute 1D determinant of Jacobian matrix
 		 *  1D: det(Jac) = x_r
-		 *  2D boundary: det(Jac)= sqrt(x_r^2 + y_r^2)
 		 */
-		jac = sqrt(pow(x.diff("r"),2) + pow(y.diff("r"),2));
-		//jac = sqrt(x.diff("r")*x.diff("r") + y.diff("r")*y.diff("r"));
+		jac = x.diff("r");
 	}
-	
+
 	public MathFunc getCoordR() {
 		return this.r;
 	}
@@ -88,8 +76,8 @@ public class Line2DCoord implements CoordTrans {
 		return this.map;
 	}
 
-	public class Line2DCoordR extends SingleVarFunc {
-		public Line2DCoordR() {
+	public class Line1DCoordR extends SingleVarFunc {
+		public Line1DCoordR() {
 			super("r", "r");
 		}
 
@@ -112,17 +100,15 @@ public class Line2DCoord implements CoordTrans {
 				return FMath.C1;
 			if(varName.equals("x"))
 				return 2.0/(x2-x1); //=1/jac
-			if(varName.equals("y"))
-				return 2.0/(y2-y1); //=1/jac
 			else
 				return FMath.C0;
 		}
 
-		public String getExpr() {
+		public String toString() {
 			return this.varName;
 		}
 		
-		public String toString() {
+		public String getExpr() {
 			return this.varName;
 		}
 
