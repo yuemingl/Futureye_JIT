@@ -8,7 +8,6 @@ import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
-import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
@@ -159,6 +158,7 @@ public class Ex8_AdvectionDiffusion1D {
 //				} else {
 //					node2 = ap.element.nodes.at(1);
 //				}
+				//TODO: better way to find out the nodes associated with the local index of DOF
 				Node node1 = ap.element.nodes.at(ap.testDOFIdx);
 				Node node2 = ap.element.nodes.at(ap.testDOFIdx==1?2:1);
 				double coord1 = node1.coord(1);
