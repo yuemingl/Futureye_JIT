@@ -13,6 +13,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.SingleVarFunc;
 import edu.uta.futureye.function.UserDefFunc;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -91,20 +92,20 @@ public class Ex8_AdvectionDiffusion1D {
 		mesh.markBorderNode(mapNTF);
 
 		// Weak form definition
-		WeakForm wf = new WeakForm(
-				new FELinearLine1D(),
+		FiniteElement fe = new FELinearLine1D();
+		WeakForm wf = new WeakForm(fe,
 				(c, v) -> k * c.diff("x") * v.diff("x") + u * c.diff("x") * v,
 				(v)    -> C0
 				);
 		wf.compile();
 
 		// Assembly and boundary condition(s)
-		BasicAssembler assembler = new BasicAssembler(wf);
-		assembler.assembleGlobal(mesh);
+		BasicAssembler assembler = new BasicAssembler(mesh, wf);
+		assembler.assembleGlobal();
 		Matrix stiff = assembler.getGlobalStiffMatrix();
 		Vector load = assembler.getGlobalLoadVector();
 		// Boundary condition
-		Utils.imposeDirichletCondition(stiff, load, mesh, 
+		Utils.imposeDirichletCondition(stiff, load, fe, mesh, 
 			new SingleVarFunc("diri","x") {
 				@Override
 				public double apply(double... args) {
@@ -149,15 +150,17 @@ public class Ex8_AdvectionDiffusion1D {
 		MathFunc upwindCoef = new UserDefFunc() {
 			//@Override
 			public double apply(AssembleParam ap, double... args) {
-				DOF dof = ap.element.getAllNodeDOFList().at(ap.testDOFIdx);
-				Node node1 = dof.getNodeOwner();
-				int index = ap.element.getLocalIndex(node1);
-				Node node2 = null;
-				if(index == 1) {
-					node2 = ap.element.nodes.at(2);
-				} else {
-					node2 = ap.element.nodes.at(1);
-				}
+//				DOF dof = ap.element.getAllNodeDOFList().at(ap.testDOFIdx);
+//				Node node1 = dof.getNodeOwner();
+//				int index = ap.element.getLocalIndex(node1);
+//				Node node2 = null;
+//				if(index == 1) {
+//					node2 = ap.element.nodes.at(2);
+//				} else {
+//					node2 = ap.element.nodes.at(1);
+//				}
+				Node node1 = ap.element.nodes.at(ap.testDOFIdx);
+				Node node2 = ap.element.nodes.at(ap.testDOFIdx==1?2:1);
 				double coord1 = node1.coord(1);
 				double coord2 = node2.coord(1);
 				double upwindWeight = 0.0;
@@ -170,8 +173,8 @@ public class Ex8_AdvectionDiffusion1D {
 			}
 		};
 		// Weak form definition
-		WeakForm wf = new WeakForm(
-				new FELinearLine1D(),
+		FiniteElement fe = new FELinearLine1D();
+		WeakForm wf = new WeakForm(fe,
 				//the convection term is weighted with a modified test function
 				(c, v) -> k * c.diff("x") * v.diff("x") + u * c.diff("x") * (v + upwindCoef),
 				(v)    -> C0
@@ -179,12 +182,12 @@ public class Ex8_AdvectionDiffusion1D {
 		wf.compile();
 
 		// Assembly and boundary condition(s)
-		BasicAssembler assembler = new BasicAssembler(wf);
-		assembler.assembleGlobal(mesh);
+		BasicAssembler assembler = new BasicAssembler(mesh, wf);
+		assembler.assembleGlobal();
 		Matrix stiff = assembler.getGlobalStiffMatrix();
 		Vector load = assembler.getGlobalLoadVector();
 		// Boundary condition
-		Utils.imposeDirichletCondition(stiff, load, mesh, 
+		Utils.imposeDirichletCondition(stiff, load, fe, mesh,
 			new SingleVarFunc("diri","x") {
 				@Override
 				public double apply(double... args) {
