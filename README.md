@@ -100,15 +100,8 @@ Upwind technique for 1D convection diffusion problem is supported by using user 
 		MathFunc upwindCoef = new UserDefFunc() {
 			//@Override
 			public double apply(AssembleParam ap, double... args) {
-				DOF dof = ap.element.getAllNodeDOFList().at(ap.testDOFIdx);
-				Node node1 = dof.getNodeOwner();
-				int index = ap.element.getLocalIndex(node1);
-				Node node2 = null;
-				if(index == 1) {
-					node2 = ap.element.nodes.at(2);
-				} else {
-					node2 = ap.element.nodes.at(1);
-				}
+				Node node1 = ap.element.nodes.at(ap.testDOFIdx);
+				Node node2 = ap.element.nodes.at(ap.testDOFIdx==1?2:1);
 				double coord1 = node1.coord(1);
 				double coord2 = node2.coord(1);
 				double upwindWeight = 0.0;
