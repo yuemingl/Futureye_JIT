@@ -24,6 +24,7 @@ public class BasicAssembler {
 	Vector gb; // global load vector
 
 	public BasicAssembler(Mesh mesh, WeakForm weakForm) {
+		this.mesh = mesh;
 		this.weakForm = weakForm;
 		nDOFs = weakForm.getFiniteElement().getNumberOfDOFs();
 		A = new double[nDOFs][nDOFs];

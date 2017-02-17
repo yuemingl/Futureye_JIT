@@ -25,10 +25,9 @@ public class DomainBoundaryAssembler {
 	 * @param domainWeakForm
 	 * @param boundaryWeakForm
 	 */
-	public DomainBoundaryAssembler(WeakForm domainWeakForm, WeakForm boundaryWeakForm) {
-		this.domainAss = new BasicAssembler(domainWeakForm);
-		this.boundaryAss = new BasicAssembler(boundaryWeakForm);
-		
+	public DomainBoundaryAssembler(Mesh mesh, WeakForm domainWeakForm, WeakForm boundaryWeakForm) {
+		this.domainAss = new BasicAssembler(mesh, domainWeakForm);
+		this.boundaryAss = new BasicAssembler(mesh, boundaryWeakForm);
 	}
 	
 	/**
@@ -38,15 +37,12 @@ public class DomainBoundaryAssembler {
 	public void assembleLocal(Element e) {
 		// Assemble on domain element
 		domainAss.assembleLocal(e);
-		
 		// Assemble on boundary element
 		for(Element be : e.getBorderElements()) {
 			//Check node type
 			NodeType nodeType = be.getBorderNodeType();
 			if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
-				//Associate boundary FiniteElement object to the boundary element
-				this.boundaryAss.weakForm.getFiniteElement().assignTo(be);
-					this.boundaryAss.assembleLocal(be);
+				this.boundaryAss.assembleLocal(be);
 			}
 		}
 	}

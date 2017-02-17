@@ -10,11 +10,10 @@ import java.util.HashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.external.SolverJBLAS;
-import edu.uta.futureye.core.DOF;
-import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.io.MeshReader;
@@ -25,7 +24,6 @@ import edu.uta.futureye.lib.assembler.DomainBoundaryAssemblerRaw;
 import edu.uta.futureye.lib.element.FEBilinearRectangle;
 import edu.uta.futureye.lib.weakform.WeakForm;
 import edu.uta.futureye.util.Utils;
-import edu.uta.futureye.util.container.DOFList;
 
 /**
  * <blockquote><pre>
@@ -68,7 +66,7 @@ public class LaplaceTestRectangle {
 
 		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
-		FEBilinearRectangle fet = new FEBilinearRectangle();
+		FEBilinearRectangle fe = new FEBilinearRectangle();
 //		for(Element e : mesh.getElementList())
 //			fet.assignTo(e);
 
@@ -76,15 +74,14 @@ public class LaplaceTestRectangle {
 		//Right hand side(RHS):
 		final MathFunc f = - 4*(x*x + y*y) + 72;
 		//Weak form in the domain
-		WeakForm wf = new WeakForm(
-				fet, 
+		WeakForm wf = new WeakForm(fe, 
 				(u,v) -> 2*grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
 			);
 		wf.compile();
 		//Weak form on the boundary (robin condition)
 		WeakForm bwf = new WeakForm(
-				fet.getBoundaryFE(), //boundary finite element
+				fe.getBoundaryFE(), //boundary finite element
 				(u,v) -> 2*u*v, 
 				v -> 0.01 * v
 			);
@@ -97,7 +94,7 @@ public class LaplaceTestRectangle {
 		Matrix stiff = assembler.getGlobalStiffMatrix();
 		Vector load = assembler.getGlobalLoadVector();
 		// Boundary condition
-		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
+		Utils.imposeDirichletCondition(stiff, load, fe, mesh, C0);
 
 		// 6.Solve linear system
 		SolverJBLAS solver = new SolverJBLAS();
@@ -140,7 +137,7 @@ public class LaplaceTestRectangle {
 
 		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
-		FEBilinearRectangle fet = new FEBilinearRectangle();
+		FEBilinearRectangle fe = new FEBilinearRectangle();
 //		for(Element e : mesh.getElementList())
 //			fet.assignTo(e);
 
@@ -148,55 +145,53 @@ public class LaplaceTestRectangle {
 		//Right hand side(RHS):
 		final MathFunc f = - 4*(x*x + y*y) + 72;
 		//Weak form in the domain
-		WeakForm wf = new WeakForm(
-				fet, 
+		WeakForm wf = new WeakForm(fe, 
 				(u,v) -> 2*grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
 			);
 		wf.compile();
 		//Weak form on the boundary (robin condition)
-		WeakForm bwf = new WeakForm(
-				fet.getBoundaryFE(), //boundary finite element
+		FiniteElement beFE = fe.getBoundaryFE();
+		WeakForm bwf = new WeakForm(beFE, //boundary finite element
 				(u,v) -> 2*u*v, 
 				v -> 0.01 * v
 			);
 		bwf.compile();
 
 		// 5.Assembly process
-		BasicAssembler domainAssembler = new BasicAssembler(wf);
-		domainAssembler.assembleGlobal(mesh);
+		BasicAssembler domainAssembler = new BasicAssembler(mesh, wf);
+		// Assemble on the elements
+		domainAssembler.assembleGlobal();
 		Matrix stiff = domainAssembler.getGlobalStiffMatrix();
 		Vector load = domainAssembler.getGlobalLoadVector();
-		BasicAssembler boundaryAssembler = new BasicAssembler(bwf);
+		// Assemble on the boundary elements
+		BasicAssembler boundaryAssembler = new BasicAssembler(mesh, bwf);
+		int beNumDOFs = fe.getBoundaryFE().getNumberOfDOFs();
 		for (Element e : mesh.getElementList()) {
 			// Use BasicAssembler to assemble boundary elements
 			for(Element be : e.getBorderElements()) {
 				// Check node type
 				NodeType nodeType = be.getBorderNodeType();
 				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
-					// Associate the boundary FiniteElement object to the boundary element
-					bwf.getFiniteElement().assignTo(be);
-					
 					// Assemble locally on boundary element
 					boundaryAssembler.assembleLocal(be);
 					double[][] beA = boundaryAssembler.getLocalStiffMatrix();
 					double[] beb = boundaryAssembler.getLocalLoadVector();
 					
 					// Get all local DOF of the boundary element for local-global indexing
-					DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
-					for (int j = 0; j < beDOFs.size(); j++) {
-						DOF dofJ = beDOFs.at(j + 1);
-						for (int i = 0; i < beDOFs.size(); i++) {
-							DOF dofI = beDOFs.at(i + 1);
-							stiff.add(dofJ.getGlobalIndex(), dofI.getGlobalIndex(), beA[j][i]);
+					for (int j = 0; j < beNumDOFs; j++) {
+						int nGlobalRow = beFE.getGlobalIndex(mesh, be, j+1);
+						for (int i = 0; i < beNumDOFs; i++) {
+							int nGlobalCol = beFE.getGlobalIndex(mesh, be, i+1);
+							stiff.add(nGlobalRow, nGlobalCol, beA[j][i]);
 						}
-						load.add(dofJ.getGlobalIndex(), beb[j]);
+						load.add(nGlobalRow, beb[j]);
 					}
 				}
 			}
 		}
 		// Boundary condition
-		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
+		Utils.imposeDirichletCondition(stiff, load, fe, mesh, C0);
 
 		// 6.Solve linear system
 		SolverJBLAS solver = new SolverJBLAS();
@@ -239,7 +234,7 @@ public class LaplaceTestRectangle {
 
 		// 3.Use finite element library to assign degrees of
 		// freedom (DOF) to element
-		FEBilinearRectangle fet = new FEBilinearRectangle();
+		FEBilinearRectangle fe = new FEBilinearRectangle();
 //		for(Element e : mesh.getElementList())
 //			fet.assignTo(e);
 
@@ -247,23 +242,22 @@ public class LaplaceTestRectangle {
 		//Right hand side(RHS):
 		final MathFunc f = - 4*(x*x + y*y) + 72;
 		//Weak form in the domain
-		WeakForm wf = new WeakForm(
-				fet, 
+		WeakForm wf = new WeakForm(fe, 
 				(u,v) -> 2*grad(u, "x", "y").dot(grad(v, "x", "y")), 
 				v -> f * v
 			);
 		wf.compile();
 		//Weak form on the boundary (robin condition)
 		WeakForm bwf = new WeakForm(
-				fet.getBoundaryFE(), //boundary finite element
+				fe.getBoundaryFE(), //boundary finite element
 				(u,v) -> 2*u*v, 
 				v -> 0.01 * v
 			);
 		bwf.compile();
 
 		// 5.Assembly process
-		Assembler domainAssembler = new Assembler(wf);
-		domainAssembler.assembleGlobal(mesh);
+		Assembler domainAssembler = new Assembler(mesh, wf);
+		domainAssembler.assembleGlobal();
 		Assembler boundaryAssembler = new Assembler(domainAssembler, bwf);
 		for (Element e : mesh.getElementList()) {
 			// Use BasicAssembler to assemble boundary elements
@@ -271,8 +265,6 @@ public class LaplaceTestRectangle {
 				// Check node type
 				NodeType nodeType = be.getBorderNodeType();
 				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
-					// Associate the boundary FiniteElement object to the boundary element
-					bwf.getFiniteElement().assignTo(be);
 					// Assemble boundary element into global stiff matrix and load vector
 					boundaryAssembler.assembleGlobal(be);
 				}
@@ -281,7 +273,7 @@ public class LaplaceTestRectangle {
 		Matrix stiff = boundaryAssembler.getGlobalStiffMatrix();
 		Vector load = boundaryAssembler.getGlobalLoadVector();
 		// Boundary condition
-		Utils.imposeDirichletCondition(stiff, load, mesh, C0);
+		Utils.imposeDirichletCondition(stiff, load, fe, mesh, C0);
 
 		// 6.Solve linear system
 		SolverJBLAS solver = new SolverJBLAS();
@@ -296,8 +288,8 @@ public class LaplaceTestRectangle {
 	}
 	public static void main(String[] args) {
 		LaplaceTestRectangle ex1 = new LaplaceTestRectangle();
-//		ex1.run();    //23.518
+		ex1.run();  //23.518
 		ex1.run2(); //23.518
-//		ex1.run3(); //23.518
+		ex1.run3(); //23.518
 	}
 }

@@ -4,12 +4,10 @@ import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.lib.weakform.WeakForm;
-import edu.uta.futureye.util.container.DOFList;
 
 public class Assembler {
 	Mesh mesh;

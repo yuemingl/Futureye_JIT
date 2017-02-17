@@ -5,14 +5,12 @@ import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.bytecode.CompiledFunc;
-import edu.uta.futureye.core.DOF;
-import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.function.operator.FOIntegrate;
 import edu.uta.futureye.lib.weakform.WeakForm;
-import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 
 public class DomainBoundaryAssemblerRaw {
@@ -152,19 +150,16 @@ public class DomainBoundaryAssemblerRaw {
 	public void assembleGlobal(Mesh mesh, Matrix stiff, Vector load) {
 		ElementList eList = mesh.getElementList();
 		
+		FiniteElement fe = this.domainWF.getFiniteElement();
+		FiniteElement bfe = fe.getBoundaryFE();
+		
 		for(Element e : eList) {
 			assembleLocal(e);
 
-			// Associate FiniteElement object with Element object
-			this.domainWF.getFiniteElement().assignTo(e);
-
-			DOFList DOFs = e.getAllDOFList(DOFOrder.NEFV);
 			for(int j=0;j<nDOFs;j++) {
-				DOF dofI = DOFs.at(j+1);
-				int nGlobalRow = dofI.getGlobalIndex();
+				int nGlobalRow = fe.getGlobalIndex(mesh, e, j+1);
 				for(int i=0;i<nDOFs;i++) {
-					DOF dofJ = DOFs.at(i+1);
-					int nGlobalCol = dofJ.getGlobalIndex();
+					int nGlobalCol = fe.getGlobalIndex(mesh, e, i+1);
 					stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
 				}
 				//Local load vector
@@ -180,17 +175,10 @@ public class DomainBoundaryAssemblerRaw {
 					//Check node type
 					NodeType nodeType = be.getBorderNodeType();
 					if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
-						
-						// Associate FiniteElement object with Element object
-						this.boundaryWF.getFiniteElement().assignTo(be);
-
-						DOFList beDOFs = be.getAllDOFList(DOFOrder.NEFV);
 						for(int j=0;j<nBeDOFs;j++) {
-							DOF beDOFI = beDOFs.at(j+1);
-							int nGlobalRow = beDOFI.getGlobalIndex();
+							int nGlobalRow = bfe.getGlobalIndex(mesh, be, j+1);
 							for(int i=0;i<nBeDOFs;i++) {
-								DOF beDOFJ = beDOFs.at(i+1);
-								int nGlobalCol = beDOFJ.getGlobalIndex();
+								int nGlobalCol = bfe.getGlobalIndex(mesh, be, i+1);
 								stiff.add(nGlobalRow, nGlobalCol, beA[j][i]);
 							}
 							//Local load vector
