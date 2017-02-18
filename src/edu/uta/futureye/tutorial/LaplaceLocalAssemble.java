@@ -57,7 +57,7 @@ public class LaplaceLocalAssemble {
 
 		// 2. Mark boundary types
 		HashMap<NodeType, MathFunc> mapNTF = new HashMap<NodeType, MathFunc>();
-		mapNTF.put(NodeType.Dirichlet, null);
+		mapNTF.put(NodeType.Dirichlet, null); //null => mark all boundary nodes
 		mesh.markBorderNode(mapNTF);
 
 		// 3. Weak form definition
