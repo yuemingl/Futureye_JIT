@@ -12,13 +12,13 @@ import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.function.MultiVarFunc;
-import edu.uta.futureye.function.VectorMathFuncBase;
+import edu.uta.futureye.function.VecMathFuncBase;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FXY;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
@@ -57,11 +57,11 @@ import edu.uta.futureye.util.container.ObjList;
  * @author liuyueming
  *
  */
-public class RaviartThomas2D0 extends VectorMathFuncBase implements VectorShapeFunction {
+public class RaviartThomas2D0 extends VecMathFuncBase implements VectorShapeFunction {
 	int funIndex = 0;
 	
-	private VectorMathFunc funCompose = null;
-	private VectorMathFunc funOuter = null;
+	private VecMathFunc funCompose = null;
+	private VecMathFunc funOuter = null;
 	private ObjList<String> innerVarNames = null;
 
 	public RaviartThomas2D0(int funID) {
@@ -155,7 +155,7 @@ public class RaviartThomas2D0 extends VectorMathFuncBase implements VectorShapeF
 	}
 
 	@Override
-	public MathFunc dot(VectorMathFunc b) {
+	public MathFunc dot(VecMathFunc b) {
 		return this.funCompose.dot(b);
 	}
 

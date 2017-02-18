@@ -11,7 +11,7 @@ import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 
 /**
  * 2D Q1/P0 Element
@@ -58,7 +58,7 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 	String[] argsOrder;
 	
 	public int nDOFs = 4+4+1;
-	VectorMathFunc[] shapeFuncs = new VectorMathFunc[nDOFs];
+	VecMathFunc[] shapeFuncs = new VecMathFunc[nDOFs];
 
 	public FEBilinearV_ConstantP() {
 		FX x1 = new FX("x1");
@@ -94,7 +94,7 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 	}
 
 	@Override
-	public VectorMathFunc[] getShapeFunctions() {
+	public VecMathFunc[] getShapeFunctions() {
 		return this.shapeFuncs;
 	}
 

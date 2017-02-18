@@ -9,7 +9,7 @@ import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 
 /**
  * P2/P1
@@ -65,7 +65,7 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 	String[] argsOrder;
 	
 	public int nDOFs = 2+2+1;
-	VectorMathFunc[] shapeFuncs = new VectorMathFunc[nDOFs];
+	VecMathFunc[] shapeFuncs = new VecMathFunc[nDOFs];
 
 	public FEQuadraticV_LinearPLine2D() {
 		FX x1 = new FX("x1");
@@ -103,7 +103,7 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 	}
 
 	@Override
-	public VectorMathFunc[] getShapeFunctions() {
+	public VecMathFunc[] getShapeFunctions() {
 		return this.shapeFuncs;
 	}
 

@@ -15,7 +15,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.function.operator.FAbs;
 import edu.uta.futureye.function.operator.FAcos;
 import edu.uta.futureye.function.operator.FAsin;
@@ -311,7 +311,7 @@ public class FMath {
 	}	
 	
 	
-	public static MathFunc dot(VectorMathFunc f, VectorMathFunc g) {
+	public static MathFunc dot(VecMathFunc f, VecMathFunc g) {
 		return f.dot(g);
 	}
 	
@@ -322,9 +322,9 @@ public class FMath {
 	 * @param fun
 	 * @return
 	 */
-	public static VectorMathFunc grad(MathFunc fun) {
+	public static VecMathFunc grad(MathFunc fun) {
 		List<String> names = fun.getVarNames();
-		VectorMathFunc rlt = new SpaceVectorFunction(names.size());
+		VecMathFunc rlt = new SpaceVectorFunction(names.size());
 		for(int i=0;i<names.size();i++)
 			rlt.set(i+1, fun.diff(names.get(i)));
 		return rlt;
@@ -337,8 +337,8 @@ public class FMath {
 	 * @param vars
 	 * @return
 	 */
-	public static VectorMathFunc grad(MathFunc fun, String ...varNames) {
-		VectorMathFunc rlt = new SpaceVectorFunction(varNames.length);
+	public static VecMathFunc grad(MathFunc fun, String ...varNames) {
+		VecMathFunc rlt = new SpaceVectorFunction(varNames.length);
 		for(int i=0;i<varNames.length;i++)
 			rlt.set(i+1, fun.diff(varNames[i]));
 		return rlt;
@@ -352,8 +352,8 @@ public class FMath {
 	 * @param varNames
 	 * @return
 	 */
-	public static VectorMathFunc grad(MathFunc fun,ObjList<String> varNames) {
-		VectorMathFunc rlt = new SpaceVectorFunction(varNames.size());
+	public static VecMathFunc grad(MathFunc fun,ObjList<String> varNames) {
+		VecMathFunc rlt = new SpaceVectorFunction(varNames.size());
 		for(int i=1;i<=varNames.size();i++)
 			rlt.set(i, fun.diff(varNames.at(i)));
 		return rlt;
@@ -365,7 +365,7 @@ public class FMath {
 	 * @param fun
 	 * @return
 	 */
-	public static MathFunc div(VectorMathFunc vFun) {
+	public static MathFunc div(VecMathFunc vFun) {
 		int dim = vFun.getDim();
 		MathFunc rlt = C0;
 		for(int i=1; i<=dim; i++) {
@@ -383,7 +383,7 @@ public class FMath {
 	 * @param varNames
 	 * @return
 	 */
-	public static MathFunc div(VectorMathFunc vFun,String ...varNames) {
+	public static MathFunc div(VecMathFunc vFun,String ...varNames) {
 		MathFunc rlt = new FC(0.0);
 		for(int i=0;i<varNames.length;i++) {
 			MathFunc fd = (MathFunc)vFun.get(i+1);
@@ -400,7 +400,7 @@ public class FMath {
 	 * @param varNames
 	 * @return
 	 */
-	public static MathFunc div(VectorMathFunc vFun,ObjList<String> varNames) {
+	public static MathFunc div(VecMathFunc vFun,ObjList<String> varNames) {
 		MathFunc rlt = new FC(0.0);
 		for(int i=1;i<=varNames.size();i++) {
 			MathFunc fd = (MathFunc)vFun.get(i);
@@ -409,15 +409,15 @@ public class FMath {
 		return rlt;
 	}
 	
-	public static MathFunc curl(VectorMathFunc vFun) {
+	public static MathFunc curl(VecMathFunc vFun) {
 		//TODO
 		return null;
 	}
-	public static MathFunc curl(VectorMathFunc vFun, String ...varNames) {
+	public static MathFunc curl(VecMathFunc vFun, String ...varNames) {
 		//TODO
 		return null;
 	}	
-	public static MathFunc curl(VectorMathFunc vFun, ObjList<String> varNames) {
+	public static MathFunc curl(VecMathFunc vFun, ObjList<String> varNames) {
 		//TODO
 		return null;
 	}

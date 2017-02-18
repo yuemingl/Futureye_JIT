@@ -16,7 +16,7 @@ import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
 import edu.uta.futureye.lib.element.FEQuadraticV_LinearPOld;
@@ -133,7 +133,7 @@ public class T10StokesBox {
 		weakForm.setF(new SpaceVectorFunction(C0,C0));
 		weakForm.setParam(C1);
 		//Robin:  k*u_n + d*u - p\vec{n} = 0
-		VectorMathFunc d = new SpaceVectorFunction(2);
+		VecMathFunc d = new SpaceVectorFunction(2);
 		d.set(1, C0);
 		d.set(2, C0);
 		weakForm.setRobin(d);
@@ -143,7 +143,7 @@ public class T10StokesBox {
 		assembler.assemble();
 		SparseBlockMatrix stiff = assembler.getStiffnessMatrix();
 		SparseBlockVector load = assembler.getLoadVector();
-		VectorMathFunc diri = new SpaceVectorFunction(3);
+		VecMathFunc diri = new SpaceVectorFunction(3);
 		diri.set(1, new MultiVarFunc("x","y") {
 					@Override
 					public double apply(Variable v) {

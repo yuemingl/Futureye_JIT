@@ -41,7 +41,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.NodeList;
@@ -369,7 +369,7 @@ public class Utils {
 	    return su;
 	}
 	
-	public static VectorMathFunc interpolateOnElement(VectorMathFunc fun, Element e) {
+	public static VecMathFunc interpolateOnElement(VecMathFunc fun, Element e) {
 		SpaceVectorFunction rlt = new SpaceVectorFunction(fun.getDim());
 		for(int i=1;i<=fun.getDim();i++) {
 			rlt.set(i, interpolateOnElement(fun.get(i),e));
@@ -962,7 +962,7 @@ public class Utils {
 			}
 		}
 	}
-	public static void imposeDirichletCondition(Matrix stiff, Vector load, VecFiniteElement fe, Mesh mesh, VectorMathFunc diri) {
+	public static void imposeDirichletCondition(Matrix stiff, Vector load, VecFiniteElement fe, Mesh mesh, VecMathFunc diri) {
 		ElementList eList = mesh.getElementList();
 		for(int i=1;i<=eList.size();i++) {
 			NodeList nodes = eList.at(i).nodes;

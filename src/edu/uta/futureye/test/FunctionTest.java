@@ -10,7 +10,7 @@ import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
 import edu.uta.futureye.function.MultiVarFunc;
-import edu.uta.futureye.function.VectorMathFuncBase;
+import edu.uta.futureye.function.VecMathFuncBase;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
@@ -24,7 +24,7 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ElementList;
@@ -221,7 +221,7 @@ public class FunctionTest {
 		varNames.add("x");
 		varNames.add("y");
 		
-		VectorMathFunc f = new VectorMathFuncBase(3,"x","y") {
+		VecMathFunc f = new VecMathFuncBase(3,"x","y") {
 			protected MathFunc[] data = new MathFunc[dim];
 			@Override
 			public void set(int index, MathFunc value) {
@@ -316,7 +316,7 @@ public class FunctionTest {
 		// System.out.println(f2._d("z")); //Exception
 
 		// f3 = (x+y, x*y, 1.0)
-		VectorMathFunc f3 = new SpaceVectorFunction(new MultiVarFunc("f3", "x",
+		VecMathFunc f3 = new SpaceVectorFunction(new MultiVarFunc("f3", "x",
 				"y") {
 			@Override
 			public double apply(Variable v) {

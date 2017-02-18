@@ -30,12 +30,12 @@ import static edu.uta.futureye.function.FMath.*;
  *
  */
 public class WeakFormStokes extends AbstractVectorWeakForm {
-	protected VectorMathFunc g_f = null;
+	protected VecMathFunc g_f = null;
 	protected MathFunc g_k = null;
 	//Robin:  k*u_n + d*u - p\vec{n} = 0
-	protected VectorMathFunc g_d = null;
+	protected VecMathFunc g_d = null;
 
-	public void setF(VectorMathFunc f) {
+	public void setF(VecMathFunc f) {
 		this.g_f = f;
 	}
 	
@@ -44,7 +44,7 @@ public class WeakFormStokes extends AbstractVectorWeakForm {
 	}
 	
 	//Robin:  k*u_n + d*u - p\vec{n} = 0
-	public void setRobin(VectorMathFunc d) {
+	public void setRobin(VecMathFunc d) {
 		this.g_d = d;
 	}
 	

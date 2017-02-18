@@ -18,7 +18,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerVector;
 import edu.uta.futureye.lib.element.FETrilinearV_ConstantP;
@@ -51,9 +51,9 @@ public class T11NavierStokesCylinder3D {
 	//Assembler
 	protected AssemblerVector assembler = null;
 	//Dirichlet boundary condition
-	protected VectorMathFunc diri = null;
+	protected VecMathFunc diri = null;
 	//Previous Velocity
-	protected VectorMathFunc U = new SpaceVectorFunction(3);
+	protected VecMathFunc U = new SpaceVectorFunction(3);
 	
 	//delta t
 	protected double dt = 0.02;

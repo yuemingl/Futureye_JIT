@@ -2,8 +2,12 @@ package edu.uta.futureye.core.intf;
 
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 
+/**
+ * Finite element with vector valued shape functions
+ *  
+ */
 public interface VecFiniteElement {
 	/**
 	 * Return the number of Degree of Freedom (DOF) of this finite element
@@ -15,7 +19,7 @@ public interface VecFiniteElement {
 	 * Return all the expression of shape functions
 	 * @return
 	 */
-	VectorMathFunc[] getShapeFunctions();
+	VecMathFunc[] getShapeFunctions();
 		
 	/**
 	 * Return the order of all the arguments

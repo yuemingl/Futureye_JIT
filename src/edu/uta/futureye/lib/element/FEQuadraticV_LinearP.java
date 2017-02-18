@@ -10,7 +10,7 @@ import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 
 /**
  * P2/P1 on triangle element
@@ -81,7 +81,7 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 	String[] argsOrder;
 	
 	public int nDOFs = 6+6+3;
-	VectorMathFunc[] shapeFuncs = new VectorMathFunc[nDOFs];
+	VecMathFunc[] shapeFuncs = new VecMathFunc[nDOFs];
 
 	public FEQuadraticV_LinearP() {
 		FX x1 = new FX("x1");
@@ -129,7 +129,7 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 	}
 
 	@Override
-	public VectorMathFunc[] getShapeFunctions() {
+	public VecMathFunc[] getShapeFunctions() {
 		return this.shapeFuncs;
 	}
 

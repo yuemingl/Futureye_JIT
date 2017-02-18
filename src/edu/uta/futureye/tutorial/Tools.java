@@ -14,7 +14,7 @@ import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.io.MeshWriter;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
@@ -90,7 +90,7 @@ public class Tools {
         //fun(x,y)=x^2+y^2
         MathFunc fun = FX.x.M(FX.x).A(FX.y.M(FX.y));
         plotFunction(mesh,".","testPlotFun.dat",fun);
-        VectorMathFunc gradFun = FMath.grad(fun);
+        VecMathFunc gradFun = FMath.grad(fun);
         plotFunction(mesh,".","testPlotFunGrad.dat",
         			gradFun.get(1),gradFun.get(2));
         

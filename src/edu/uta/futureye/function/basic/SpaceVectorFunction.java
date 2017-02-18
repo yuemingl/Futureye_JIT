@@ -3,13 +3,13 @@ package edu.uta.futureye.function.basic;
 import java.util.LinkedList;
 
 import edu.uta.futureye.algebra.intf.Vector;
-import edu.uta.futureye.function.VectorMathFuncBase;
+import edu.uta.futureye.function.VecMathFuncBase;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 
-public class SpaceVectorFunction extends VectorMathFuncBase {
+public class SpaceVectorFunction extends VecMathFuncBase {
 	protected MathFunc[] data = null;
 	
 	public SpaceVectorFunction(int dim) {
@@ -55,7 +55,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 	/////////////////////////////////////////////////////
 	
 	@Override
-	public VectorMathFunc set(VectorMathFunc v) {
+	public VecMathFunc set(VecMathFunc v) {
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = v.get(i);
 		}
@@ -64,7 +64,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 	}
 	
 	@Override
-	public VectorMathFunc set(double a, VectorMathFunc v) {
+	public VecMathFunc set(double a, VecMathFunc v) {
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = v.get(i).M(a);
 		}
@@ -72,7 +72,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 		return this;
 	}
 	
-	public VectorMathFunc inc(VectorMathFunc v) {
+	public VecMathFunc inc(VecMathFunc v) {
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = data[i-1].A(v.get(i));
 		}
@@ -80,7 +80,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 		return this;
 	}
 	
-	public VectorMathFunc inc(double a, VectorMathFunc g) {
+	public VecMathFunc inc(double a, VecMathFunc g) {
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = data[i-1].A(g.get(i).M(a));
 		}
@@ -89,7 +89,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 	}
 	
 	@Override
-	public VectorMathFunc scale(double a) {
+	public VecMathFunc scale(double a) {
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = data[i-1].M(a);
 		}
@@ -97,7 +97,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 	}
 	
 	@Override
-	public VectorMathFunc ax(double a) {
+	public VecMathFunc ax(double a) {
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = data[i-1].M(a);
 		}
@@ -105,7 +105,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 	}
 	
 	@Override
-	public VectorMathFunc axpy(double a, VectorMathFunc g) {
+	public VecMathFunc axpy(double a, VecMathFunc g) {
 		for(int i=1; i<=dim; i++) {
 			data[i-1] = data[i-1].M(a).A(g.get(i));
 		}
@@ -116,7 +116,7 @@ public class SpaceVectorFunction extends VectorMathFuncBase {
 	/////////////////////////////////////////////////////
 	
 	@Override
-	public VectorMathFunc copy() {
+	public VecMathFunc copy() {
 		SpaceVectorFunction rlt = new SpaceVectorFunction(dim);
 		varNames = new LinkedList<String>();
 		for(int i=0; i<=dim; i++) {

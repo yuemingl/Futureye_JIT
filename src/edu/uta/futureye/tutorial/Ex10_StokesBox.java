@@ -20,7 +20,7 @@ import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.UserDefFunc;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.lib.assembler.BasicVecAssembler;
@@ -102,7 +102,7 @@ public class Ex10_StokesBox {
 		// Weak form definition
 		FEBilinearV_ConstantP fe = new FEBilinearV_ConstantP();
 		MathFunc k = C1;
-		VectorMathFunc f = new SpaceVectorFunction(C0, C0);
+		VecMathFunc f = new SpaceVectorFunction(C0, C0);
 		VecWeakForm wf = new VecWeakForm(fe,
 				(u, v) ->
 					//  (v1_x,k*u1_x) + (v1_y,k*u1_y) 
@@ -118,10 +118,10 @@ public class Ex10_StokesBox {
 				);
 		wf.compile();
 		
-		VectorMathFunc d = new SpaceVectorFunction(2);
+		VecMathFunc d = new SpaceVectorFunction(2);
 		d.set(1, C0);
 		d.set(2, C0);
-		VectorMathFunc normal = new SpaceVectorFunction(2); //normal vector
+		VecMathFunc normal = new SpaceVectorFunction(2); //normal vector
 		normal.set(1, new UserDefFunc() {
 			//@Override
 			public double apply(AssembleParam ap, double... args) {
@@ -164,7 +164,7 @@ public class Ex10_StokesBox {
 			}
 		}
 
-		VectorMathFunc diri = new SpaceVectorFunction(3);
+		VecMathFunc diri = new SpaceVectorFunction(3);
 		diri.set(1, new MultiVarFunc("diri", "x", "y") {
 					@Override
 					public double apply(double... args) {

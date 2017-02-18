@@ -10,7 +10,7 @@ import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 
 public class FELinearV_ConstantPLine2D implements VecFiniteElement {
 	Line2DCoord coord;
@@ -19,7 +19,7 @@ public class FELinearV_ConstantPLine2D implements VecFiniteElement {
 	String[] argsOrder;
 	
 	public int nDOFs = 2+2+1;
-	VectorMathFunc[] shapeFuncs = new VectorMathFunc[nDOFs];
+	VecMathFunc[] shapeFuncs = new VecMathFunc[nDOFs];
 
 	public FELinearV_ConstantPLine2D() {
 		FX x1 = new FX("x1");
@@ -49,7 +49,7 @@ public class FELinearV_ConstantPLine2D implements VecFiniteElement {
 	}
 
 	@Override
-	public VectorMathFunc[] getShapeFunctions() {
+	public VecMathFunc[] getShapeFunctions() {
 		return this.shapeFuncs;
 	}
 

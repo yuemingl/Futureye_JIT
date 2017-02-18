@@ -14,7 +14,7 @@ import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssemblerScalar;
 import edu.uta.futureye.lib.element.FELinearTriangleOld;
@@ -64,7 +64,7 @@ public class T07ConvectionDiffusion {
 	//ConvectionDiffusion weak form
 	WeakFormConvectionDiffusion weakForm = new WeakFormConvectionDiffusion();
 	
-	VectorMathFunc v = null;
+	VecMathFunc v = null;
 	
 	//Time step size
 	double Dt;

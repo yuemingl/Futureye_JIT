@@ -21,7 +21,7 @@ import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.lib.assembler.AssembleParam;
 
 /**
- * Mathematical function interface
+ * Mathematical function interface (scalar valued)
  * 
  */
 public interface MathFunc {

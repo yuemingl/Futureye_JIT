@@ -7,7 +7,7 @@ import edu.uta.futureye.core.intf.LHSVecExpr;
 import edu.uta.futureye.core.intf.RHSVecExpr;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 
 public class VecWeakForm {
 	VecFiniteElement fe;
@@ -25,15 +25,15 @@ public class VecWeakForm {
 		this.jac = fe.getCoordTrans().getJacobian();
  
 		int nDOFs = this.fe.getNumberOfDOFs();
-		VectorMathFunc[] shapeFuncs = fe.getShapeFunctions();
+		VecMathFunc[] shapeFuncs = fe.getShapeFunctions();
 		Map<String, MathFunc> map = fe.getCoordTrans().getCoordTransMap();
 		matLHS = new MathFunc[nDOFs][nDOFs];
 		vecRHS = new MathFunc[nDOFs];
 
 		for(int j=0; j<nDOFs; j++) {
-			VectorMathFunc v = shapeFuncs[j];
+			VecMathFunc v = shapeFuncs[j];
 			for(int i=0; i<nDOFs; i++) {
-				VectorMathFunc u = shapeFuncs[i];
+				VecMathFunc u = shapeFuncs[i];
 				matLHS[j][i] = lhsExpr.apply(u, v).compose(map)*jac;
 				matLHS[j][i].setName("LHS"+i+""+j);
 			}

@@ -30,7 +30,7 @@ import edu.uta.futureye.core.intf.AssemblerOld;
 import edu.uta.futureye.core.intf.WeakFormOld;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.lib.element.FiniteElementType;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.container.DOFList;
@@ -288,7 +288,7 @@ public class AssemblerVector implements AssemblerOld {
 	 * 
 	 */
 	@Override
-	public void imposeDirichletCondition(VectorMathFunc diri) {
+	public void imposeDirichletCondition(VecMathFunc diri) {
 		ElementList eList = mesh.getElementList();
 		
 		int nRow = this.globalStiff.getRowDim();

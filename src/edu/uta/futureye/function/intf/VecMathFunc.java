@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2010, nkliuyueming@gmail.com. All rights reserved.
+ * 
+ * 
+ */
 package edu.uta.futureye.function.intf;
 
 import java.util.List;
@@ -7,7 +12,11 @@ import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 
-public interface VectorMathFunc {
+/**
+ * Vector valued mathematical function
+ *
+ */
+public interface VecMathFunc {
 	/**
 	 * Returns the value of vector function at <tt>v</tt>
 	 * <p>
@@ -91,7 +100,7 @@ public interface VectorMathFunc {
 	 * @param fInners
 	 * @return
 	 */
-	VectorMathFunc compose(Map<String,MathFunc> fInners);
+	VecMathFunc compose(Map<String,MathFunc> fInners);
 
 	///////////////////////////////////////////////
 	
@@ -102,7 +111,7 @@ public interface VectorMathFunc {
 	 * 
 	 * @param <code>\vec{g}(x)=(g1(x),g2(x),...,gn(x)</code>
 	 */
-	VectorMathFunc set(VectorMathFunc g);
+	VecMathFunc set(VecMathFunc g);
 	
 	/**
 	 * <code>fi(x)=a*gi(x), i=1...dim</code>
@@ -111,14 +120,14 @@ public interface VectorMathFunc {
 	 * 
 	 * @param <code>\vec{g}(x)=(g1(x),g2(x),...,gn(x)</code>
 	 */
-	VectorMathFunc set(double a, VectorMathFunc g);
+	VecMathFunc set(double a, VecMathFunc g);
 	
 	/**
 	 * <code>\vec{f}(x) = \vec{f}(x) + \vec{g}(x)</code>
 	 * 
 	 * @param <code>\vec{g}(x)=(g1(x), g2(x), ..., gn(x))</code>
 	 */
-	VectorMathFunc inc(VectorMathFunc g);
+	VecMathFunc inc(VecMathFunc g);
 	
 	/**
 	 * <code>\vec{f}(x) = \vec{f}(x) + a*\vec{g}(x)</code>
@@ -126,7 +135,7 @@ public interface VectorMathFunc {
 	 * @param a
 	 * @param <code>\vec{g}(x)=(g1(x), g2(x), ..., gn(x))</code>
 	 */
-	VectorMathFunc inc(double a, VectorMathFunc g);
+	VecMathFunc inc(double a, VecMathFunc g);
 	
 	/**
 	 * <code>\vec{f}(x) = a*\vec{f}(x)</code>
@@ -134,7 +143,7 @@ public interface VectorMathFunc {
 	 * @param a
 	 * @return
 	 */
-	VectorMathFunc scale(double a);
+	VecMathFunc scale(double a);
 	
 	/**
 	 * <code>\vec{f}(x) = a*\vec{f}(x)</code>
@@ -142,7 +151,7 @@ public interface VectorMathFunc {
 	 * @param a
 	 * @return
 	 */
-	VectorMathFunc ax(double a);
+	VecMathFunc ax(double a);
 	
 	/**
 	 * <code>\vec{f}(x) = a*\vec{f}(x) + \vec{g}(x)</code>
@@ -151,7 +160,7 @@ public interface VectorMathFunc {
 	 * @param <code>\vec{g}(x)=(g1(x), g2(x), ..., gn(x))</code>
 	 * @return
 	 */
-	VectorMathFunc axpy(double a, VectorMathFunc g);
+	VecMathFunc axpy(double a, VecMathFunc g);
 	
 	/**
 	 * Dot product, returns 
@@ -163,7 +172,7 @@ public interface VectorMathFunc {
 	 * @param <code>\vec{g}(x) = (g1(x), g2(x), ..., gn(x))</code>
 	 * @return
 	 */
-	MathFunc dot(VectorMathFunc g);
+	MathFunc dot(VecMathFunc g);
 	
 	/**
 	 * Dot product, returns
@@ -191,7 +200,7 @@ public interface VectorMathFunc {
 	 * @param g
 	 * @return
 	 */
-	VectorMathFunc A(VectorMathFunc g);
+	VecMathFunc A(VecMathFunc g);
 	
 	/**
 	 * Add
@@ -205,7 +214,7 @@ public interface VectorMathFunc {
 	 * @param v
 	 * @return
 	 */
-	VectorMathFunc A(Vector v);
+	VecMathFunc A(Vector v);
 	
 	/**
 	 * Subtract
@@ -219,7 +228,7 @@ public interface VectorMathFunc {
 	 * @param g
 	 * @return
 	 */
-	VectorMathFunc S(VectorMathFunc g);
+	VecMathFunc S(VecMathFunc g);
 	
 	/**
 	 *  Subtract
@@ -233,7 +242,7 @@ public interface VectorMathFunc {
 	 * @param v
 	 * @return
 	 */
-	VectorMathFunc S(Vector v);
+	VecMathFunc S(Vector v);
 	
 	/**
 	 *  Multiply (componentwise) with vector function
@@ -247,7 +256,7 @@ public interface VectorMathFunc {
 	 * @param g
 	 * @return
 	 */
-	VectorMathFunc M(VectorMathFunc g);
+	VecMathFunc M(VecMathFunc g);
 	
 	/**
 	 * Multiply (componentwise) with vector
@@ -261,7 +270,7 @@ public interface VectorMathFunc {
 	 * @param v
 	 * @return
 	 */
-	VectorMathFunc M(Vector v);	
+	VecMathFunc M(Vector v);	
 	
 	/**
 	 *  Divide (componentwise) by vector function
@@ -275,7 +284,7 @@ public interface VectorMathFunc {
 	 * @param g
 	 * @return
 	 */
-	VectorMathFunc D(VectorMathFunc g);
+	VecMathFunc D(VecMathFunc g);
 	
 	/**
 	 * Divide (componentwise) by vector
@@ -289,7 +298,7 @@ public interface VectorMathFunc {
 	 * @param v: a Vector
 	 * @return
 	 */
-	VectorMathFunc D(Vector v);
+	VecMathFunc D(Vector v);
 	
 	/////////////////////////////////////////////////
 	
@@ -299,7 +308,7 @@ public interface VectorMathFunc {
 	 * 
 	 * @return
 	 */
-	VectorMathFunc copy();
+	VecMathFunc copy();
 	
 	/**
 	 * return the expression of function
@@ -323,7 +332,7 @@ public interface VectorMathFunc {
 	 * function is returned by <code>toString()</code> method
 	 * @param name
 	 */
-	VectorMathFunc setFName(String name);
+	VecMathFunc setFName(String name);
 	
 	//////////////Operator overloading support through Java-OO//////////////////
 	/**
@@ -332,71 +341,71 @@ public interface VectorMathFunc {
 	 * MathFunc a = 5;
 	 * 
 	 */
-	VectorMathFunc valueOf(int v);
-	VectorMathFunc valueOf(long v);
-	VectorMathFunc valueOf(float v) ;
-	VectorMathFunc valueOf(double v);
+	VecMathFunc valueOf(int v);
+	VecMathFunc valueOf(long v);
+	VecMathFunc valueOf(float v) ;
+	VecMathFunc valueOf(double v);
 	
 	/**
 	 * Operator overload support:
 	 * a+b
 	 */
-	VectorMathFunc add(VectorMathFunc other);
-	VectorMathFunc add(int other);
-	VectorMathFunc addRev(int other);
-	VectorMathFunc add(long other);
-	VectorMathFunc addRev(long other);
-	VectorMathFunc add(float other);
-	VectorMathFunc addRev(float other);
-	VectorMathFunc add(double other);
-	VectorMathFunc addRev(double other);
+	VecMathFunc add(VecMathFunc other);
+	VecMathFunc add(int other);
+	VecMathFunc addRev(int other);
+	VecMathFunc add(long other);
+	VecMathFunc addRev(long other);
+	VecMathFunc add(float other);
+	VecMathFunc addRev(float other);
+	VecMathFunc add(double other);
+	VecMathFunc addRev(double other);
 	
 	/**
 	 * Operator overload support:
 	 * a-b
 	 */
-	VectorMathFunc subtract(VectorMathFunc other);
-	VectorMathFunc subtract(int other);
-	VectorMathFunc subtractRev(int other);
-	VectorMathFunc subtract(long other);
-	VectorMathFunc subtractRev(long other);
-	VectorMathFunc subtract(float other);
-	VectorMathFunc subtractRev(float other);
-	VectorMathFunc subtract(double other);
-	VectorMathFunc subtractRev(double other);
+	VecMathFunc subtract(VecMathFunc other);
+	VecMathFunc subtract(int other);
+	VecMathFunc subtractRev(int other);
+	VecMathFunc subtract(long other);
+	VecMathFunc subtractRev(long other);
+	VecMathFunc subtract(float other);
+	VecMathFunc subtractRev(float other);
+	VecMathFunc subtract(double other);
+	VecMathFunc subtractRev(double other);
 	
 	/**
 	 * Operator overload support:
 	 * a*b
 	 */
-	VectorMathFunc multiply(VectorMathFunc other);
-	VectorMathFunc multiply(int other);
-	VectorMathFunc multiplyRev(int other);
-	VectorMathFunc multiply(long other);
-	VectorMathFunc multiplyRev(long other);
-	VectorMathFunc multiply(float other);
-	VectorMathFunc multiplyRev(float other);
-	VectorMathFunc multiply(double other);
-	VectorMathFunc multiplyRev(double other);
+	VecMathFunc multiply(VecMathFunc other);
+	VecMathFunc multiply(int other);
+	VecMathFunc multiplyRev(int other);
+	VecMathFunc multiply(long other);
+	VecMathFunc multiplyRev(long other);
+	VecMathFunc multiply(float other);
+	VecMathFunc multiplyRev(float other);
+	VecMathFunc multiply(double other);
+	VecMathFunc multiplyRev(double other);
 	
 	/**
 	 * Operator overload support:
 	 * a/b
 	 */
-	VectorMathFunc divide(VectorMathFunc other);
-	VectorMathFunc divide(int other);
-	VectorMathFunc divideRev(int other);
-	VectorMathFunc divide(long other);
-	VectorMathFunc divideRev(long other);
-	VectorMathFunc divide(float other);
-	VectorMathFunc divideRev(float other);
-	VectorMathFunc divide(double other);
-	VectorMathFunc divideRev(double other);
+	VecMathFunc divide(VecMathFunc other);
+	VecMathFunc divide(int other);
+	VecMathFunc divideRev(int other);
+	VecMathFunc divide(long other);
+	VecMathFunc divideRev(long other);
+	VecMathFunc divide(float other);
+	VecMathFunc divideRev(float other);
+	VecMathFunc divide(double other);
+	VecMathFunc divideRev(double other);
 	
 	/**
 	 * Operator overload support:
 	 * -a
 	 */
-	VectorMathFunc negate();
+	VecMathFunc negate();
 	
 }

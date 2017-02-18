@@ -3,7 +3,7 @@ package edu.uta.futureye.test;
 import org.junit.Test;
 
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import static edu.uta.futureye.function.FMath.*;
 import static org.junit.Assert.*;
 
@@ -11,12 +11,12 @@ public class VectorMathFuncTest {
 	static double eps = 1e-6;
 	@Test
 	public void testBasic() {
-		VectorMathFunc f = new SpaceVectorFunction(x,y,z);
-		VectorMathFunc g = new SpaceVectorFunction(C(2),C(2),C(2));
+		VecMathFunc f = new SpaceVectorFunction(x,y,z);
+		VecMathFunc g = new SpaceVectorFunction(C(2),C(2),C(2));
 		
 		assertTrue(Math.abs(12.0-dot(f,g).apply(1,2,3))<eps);
 
-		VectorMathFunc h = null;
+		VecMathFunc h = null;
 		
 		h = f + g;
 		assertTrue(Math.abs(12.0-h[1].apply(10))<eps);

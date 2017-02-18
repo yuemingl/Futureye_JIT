@@ -4,14 +4,14 @@ import java.util.Map;
 
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.core.Element;
-import edu.uta.futureye.function.VectorMathFuncBase;
+import edu.uta.futureye.function.VecMathFuncBase;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.VariableArray;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.ScalarShapeFunction;
 import edu.uta.futureye.function.intf.ShapeFunction;
-import edu.uta.futureye.function.intf.VectorMathFunc;
+import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.function.intf.VectorShapeFunction;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.container.ObjList;
@@ -42,7 +42,7 @@ import edu.uta.futureye.util.container.ObjList;
  *
  * @author liuyueming
  */
-public class TrilinearV_ConstantP extends VectorMathFuncBase 
+public class TrilinearV_ConstantP extends VecMathFuncBase 
 								implements VectorShapeFunction {
 	//(u1,u2,u3,p)
 	protected SpaceVectorFunction sf = null;
@@ -161,7 +161,7 @@ public class TrilinearV_ConstantP extends VectorMathFuncBase
 	 * N13 =  (  0,   0,   0,NP)'
 	 *
 	 */
-	public class BilinearV_ConstantP extends VectorMathFuncBase 
+	public class BilinearV_ConstantP extends VecMathFuncBase 
 									implements VectorShapeFunction {
 		//(u1,u2,u3,p) 3D单元的边界单元不能直接使用2D的形函数，因为形函数需要向量dim=4，而2D的dim=3 (u1,u2, p)
 		protected SpaceVectorFunction sf = null;
@@ -246,7 +246,7 @@ public class TrilinearV_ConstantP extends VectorMathFuncBase
 	};
 
 	@Override
-	public MathFunc dot(VectorMathFunc b) {
+	public MathFunc dot(VecMathFunc b) {
 		return sf.dot(b);
 	}
 
