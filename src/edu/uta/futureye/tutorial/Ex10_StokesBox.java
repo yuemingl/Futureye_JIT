@@ -6,11 +6,17 @@ import static edu.uta.futureye.function.FMath.grad;
 
 import java.util.HashMap;
 
+import edu.uta.futureye.algebra.SparseBlockVector;
+import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.Vector;
+import edu.uta.futureye.algebra.solver.SchurComplementStokesSolver;
+import edu.uta.futureye.core.DOF;
+import edu.uta.futureye.core.DOFOrder;
 import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.UserDefFunc;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -20,6 +26,9 @@ import edu.uta.futureye.lib.assembler.AssembleParam;
 import edu.uta.futureye.lib.assembler.BasicVecAssembler;
 import edu.uta.futureye.lib.element.FEBilinearV_ConstantP;
 import edu.uta.futureye.lib.weakform.VecWeakForm;
+import edu.uta.futureye.util.Constant;
+import edu.uta.futureye.util.Utils;
+import edu.uta.futureye.util.container.DOFList;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.ObjIndex;
 
@@ -76,7 +85,8 @@ public class Ex10_StokesBox {
 		
 		//Mark border type
 		HashMap<NodeType, MathFunc> mapNTF_uv = new HashMap<NodeType, MathFunc>();
-		mapNTF_uv.put(NodeType.Dirichlet, null);
+		//mapNTF_uv.put(NodeType.Dirichlet, null);
+		mapNTF_uv.put(NodeType.Neumann, null);
 		
 		HashMap<NodeType, MathFunc> mapNTF_p = new HashMap<NodeType, MathFunc>();
 		mapNTF_p.put(NodeType.Neumann, null);
@@ -89,13 +99,11 @@ public class Ex10_StokesBox {
 			System.out.println(i+"  " + eList.at(i));
 		}
 
-		FEBilinearV_ConstantP fe = new FEBilinearV_ConstantP();
-		
 		// Weak form definition
+		FEBilinearV_ConstantP fe = new FEBilinearV_ConstantP();
 		MathFunc k = C1;
 		VectorMathFunc f = new SpaceVectorFunction(C0, C0);
-		VecWeakForm wf = new VecWeakForm(
-				fe,
+		VecWeakForm wf = new VecWeakForm(fe,
 				(u, v) ->
 					//  (v1_x,k*u1_x) + (v1_y,k*u1_y) 
 					//+ (v2_x,k*u2_x) + (v2_y,k*u2_y) 
@@ -132,58 +140,52 @@ public class Ex10_StokesBox {
 				return -1.0*n[2];
 			}
 		});
-		VecWeakForm wfb = new VecWeakForm(
-				fe.getBoundaryFE(),
+		VecWeakForm wfb = new VecWeakForm(fe.getBoundaryFE(),
 				(u, v) -> d[1]*u[1]*v[1] + d[2]*u[2]*v[2],
 				(v)    -> v[3]*(normal[1]*v[1]+normal[2]*v[2])
 				);
 		wfb.compile();
 		
+		BasicVecAssembler assembler = new BasicVecAssembler(mesh, wf);
+		assembler.assembleGlobal();
 		
-		BasicVecAssembler assembler = new BasicVecAssembler(wf);
-		assembler.assembleGlobal(mesh);
+		// Use BasicAssembler to assemble boundary elements
+		BasicVecAssembler boundaryAssembler = new BasicVecAssembler(mesh, wfb);
+		for(Element e : eList) {
+			for(Element be : e.getBorderElements()) {
+				//Check node type
+				////TODO how to check boundary type beside checking node type???
+				NodeType nodeType = be.getBorderNodeType();
+				if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
+					
+					boundaryAssembler.assembleGlobal(be, 
+							assembler.getGlobalStiffMatrix(), assembler.getGlobalLoadVector());
+				}
+			}
+		}
 
-		BasicVecAssembler boundaryAssembler = new BasicVecAssembler(wfb);
+		VectorMathFunc diri = new SpaceVectorFunction(3);
+		diri.set(1, new MultiVarFunc("diri", "x", "y") {
+					@Override
+					public double apply(double... args) {
+						double y = args[this.argIdx[1]];
+						if(Math.abs(y-3.0)<Constant.meshEps)
+							return 1.0;
+						else
+							return 0.0;
+					}
+				});
+		diri.set(2, C0);
+		diri.set(3, C0);
 		
-//		boundaryAssembler.assembleGlobal(mesh, 
-//				assembler.getGlobalStiffMatrix(), assembler.getGlobalLoadVector());
-
-//		for(Element e : mesh.getElementList()) {
-//			assembler.assembleLocal(e);
-//			double[][] A= assembler.getLocalStiffMatrix();
-//			System.out.println(A[0][0]);
-//			assembler.getLocalLoadVector();
-//		}
-////		
-//		//Assemble
-//		AssemblerVector assembler = new AssemblerVector(mesh, weakForm,fe);
-//		assembler.assemble();
-//		SparseBlockMatrix stiff = assembler.getStiffnessMatrix();
-//		SparseBlockVector load = assembler.getLoadVector();
-//		VectorMathFunc diri = new SpaceVectorFunction(3);
-//		diri.set(1, new MultiVarFunc("x","y") {
-//					@Override
-//					public double apply(Variable v) {
-//						double y = v.get("y");
-//						if(Math.abs(y-3.0)<Constant.meshEps)
-//							return 1.0;
-//						else
-//							return 0.0;
-//					}
-//
-//					@Override
-//					public double apply(double... args) {
-//						// TODO Auto-generated method stub
-//						return 0;
-//					}
-//				});
-//		diri.set(2, C0);
-//		diri.set(3, C0);
-//		assembler.imposeDirichletCondition(diri);
+		Matrix stiff = assembler.getGlobalStiffMatrix();
+		Vector load = assembler.getGlobalLoadVector();
+		Utils.imposeDirichletCondition(stiff, load, fe, mesh, diri);
 //		load.getBlock(1).print();
 //		load.getBlock(2).print();
 //		load.getBlock(3).print();
 //		
+		//TODO how to assemble SparseBlock Matrix and Vector???
 //		SchurComplementStokesSolver solver = 
 //			new SchurComplementStokesSolver(stiff,load);
 //		
@@ -197,9 +199,6 @@ public class Ex10_StokesBox {
 //	    
 //		Tools.plotVector(mesh, outputFolder, String.format("%s_uv.dat",file), 
 //				u.getBlock(1), u.getBlock(2));
-//		Tools.plotVector(meshOld, outputFolder, String.format("%s_p.dat",file), 
-//				u.getBlock(3));
-		
 	}
 	
 	public static void main(String[] args) {
