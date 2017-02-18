@@ -159,4 +159,16 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 	public int getTotalNumberOfDOFs(Mesh mesh) {
 		throw new UnsupportedOperationException("Call FEQuadraticV_LinearP.getTotalNumberOfDOFs() intstead");
 	}
+
+	@Override
+	public int getVVFComponentIndex(int localIndex) {
+		if(localIndex >= 1 && localIndex <= 3)
+			return 1;
+		else if(localIndex >= 4 && localIndex <= 6)
+			return 2;
+		else if(localIndex ==7 || localIndex == 8)
+			return 3;
+		else
+			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+	}
 }

@@ -191,4 +191,16 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 		int nNode  = mesh.getNodeList().size();
 		return 3*nNode;
 	}
+
+	@Override
+	public int getVVFComponentIndex(int localIndex) {
+		if(localIndex >= 1 && localIndex <= 6)
+			return 1;
+		else if(localIndex >= 7 && localIndex <= 12)
+			return 2;
+		else if(localIndex >=13 && localIndex <=15)
+			return 3;
+		else
+			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+	}
 }

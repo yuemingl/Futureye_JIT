@@ -105,5 +105,16 @@ public class FELinearV_ConstantPLine2D implements VecFiniteElement {
 	public int getTotalNumberOfDOFs(Mesh mesh) {
 		throw new UnsupportedOperationException("Call FEBilinearV_ConstantP.getTotalNumberOfDOFs() intstead");
 	}
-
+	
+	@Override
+	public int getVVFComponentIndex(int localIndex) {
+		if(localIndex >= 1 && localIndex <= 2)
+			return 1;
+		else if(localIndex >= 3 && localIndex <= 4)
+			return 2;
+		else if(localIndex == 5)
+			return 3;
+		else
+			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+	}
 }

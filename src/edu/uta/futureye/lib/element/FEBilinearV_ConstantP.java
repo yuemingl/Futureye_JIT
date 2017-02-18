@@ -157,4 +157,16 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 		int nElement = mesh.getElementList().size();
 		return 2*nNode+nElement;
 	}
+
+	@Override
+	public int getVVFComponentIndex(int localIndex) {
+		if(localIndex >= 1 && localIndex <= 4)
+			return 1;
+		else if(localIndex >= 5 && localIndex <= 8)
+			return 2;
+		else if(localIndex == 9)
+			return 3;
+		else
+			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+	}
 }
