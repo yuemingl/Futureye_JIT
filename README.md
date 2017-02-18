@@ -122,3 +122,5 @@ Upwind technique for 1D convection diffusion problem is supported by using user 
 		wf.compile();
 
 ```
+
+Click [here](https://github.com/yuemingl/Futureye_JIT/tree/master/src/edu/uta/futureye/tutorial) for more examples.
