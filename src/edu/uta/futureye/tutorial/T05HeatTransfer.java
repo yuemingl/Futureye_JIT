@@ -35,7 +35,7 @@ import edu.uta.futureye.util.container.ElementList;
  * @author liuyueming
  */
 public class T05HeatTransfer {
-	String outputFolder = "./tutorial/HeatTranfer";
+	String outputFolder = "HeatTranfer";
 	Mesh mesh = null;
 	
 	//Laplace2D weak form

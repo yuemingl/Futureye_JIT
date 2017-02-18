@@ -51,7 +51,7 @@ import static edu.uta.futureye.function.FMath.*;
  *
  */
 public class T11NavierStokesBox {
-	protected String outputFolder = "tutorial/NavierStokesBox";
+	protected String outputFolder = "NavierStokesBox";
 	protected String file = null;
 	
 	protected Mesh mesh = null;

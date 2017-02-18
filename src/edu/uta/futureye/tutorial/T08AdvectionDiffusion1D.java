@@ -279,8 +279,8 @@ public class T08AdvectionDiffusion1D {
         //7.Output results to an Techplot format file
         MeshWriter writer = new MeshWriter(mesh);
         MeshWriter writerEx = new MeshWriter(meshExact);
-        writer.writeTechplot("./tutorial/AdvectionDiffusion1D.dat", c1,c2,c2upwind,c3,c3upwind,c31);
-        writerEx.writeTechplot("./tutorial/AdvectionDiffusion1Dexact.dat", ce1,ce2,ce3);
+        writer.writeTechplot("AdvectionDiffusion1D.dat", c1,c2,c2upwind,c3,c3upwind,c31);
+        writerEx.writeTechplot("AdvectionDiffusion1Dexact.dat", ce1,ce2,ce3);
 	}
 
 }

@@ -364,7 +364,7 @@ public class LaplaceTestJIT3 {
 
         //7.Output results to an Techplot format file
         MeshWriter writer = new MeshWriter(mesh);
-        writer.writeTechplot("./tutorial/Laplace2D.dat", u);
+        writer.writeTechplot("Laplace2D.dat", u);
 
         this.mesh = mesh;
         this.u = u;

@@ -146,7 +146,7 @@ public class T09PlaneElasticDam {
 
       //7.Output results to an Techplot format file
       MeshWriter writer = new MeshWriter(mesh);
-      writer.writeTechplot("./tutorial/ElasticDam.dat", u.getBlock(1),
+      writer.writeTechplot("ElasticDam.dat", u.getBlock(1),
       		u.getBlock(2));	
       }
 

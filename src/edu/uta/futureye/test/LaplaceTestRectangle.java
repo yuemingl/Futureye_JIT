@@ -105,7 +105,7 @@ public class LaplaceTestRectangle {
 
 		// 7.Output results to an Techplot format file
 		MeshWriter writer = new MeshWriter(mesh);
-		writer.writeTechplot("./tutorial/Laplace2DRectangle.dat", u);
+		writer.writeTechplot("Laplace2DRectangle.dat", u);
 	}
 
 	
@@ -202,7 +202,7 @@ public class LaplaceTestRectangle {
 
 		// 7.Output results to an Techplot format file
 		MeshWriter writer = new MeshWriter(mesh);
-		writer.writeTechplot("./tutorial/Laplace2DRectangle.dat", u);
+		writer.writeTechplot("Laplace2DRectangle.dat", u);
 	}
 	
 	
@@ -284,7 +284,7 @@ public class LaplaceTestRectangle {
 
 		// 7.Output results to an Techplot format file
 		MeshWriter writer = new MeshWriter(mesh);
-		writer.writeTechplot("./tutorial/Laplace2DRectangle.dat", u);
+		writer.writeTechplot("Laplace2DRectangle.dat", u);
 	}
 	public static void main(String[] args) {
 		LaplaceTestRectangle ex1 = new LaplaceTestRectangle();

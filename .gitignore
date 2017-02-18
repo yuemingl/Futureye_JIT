@@ -37,6 +37,4 @@ local.properties
 
 *.class
 *.dat
-tutorial/*.dat
-
 *.mat

@@ -54,7 +54,7 @@ import edu.uta.futureye.util.container.ObjList;
  *
  */
 public class T11NavierStokesCylinder {
-	protected String outputFolder = "tutorial/NavierStokesCylinder";
+	protected String outputFolder = "NavierStokesCylinder";
 	protected String file = null;
 	
 	protected Mesh mesh = null;

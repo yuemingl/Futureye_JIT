@@ -42,7 +42,7 @@ import edu.uta.futureye.util.container.ObjIndex;
  *
  */
 public class T11NavierStokesBox3D {
-	protected String outputFolder = "tutorial/NavierStokesBox3D";
+	protected String outputFolder = "NavierStokesBox3D";
 	protected String file = null;
 	
 	protected Mesh mesh = null;

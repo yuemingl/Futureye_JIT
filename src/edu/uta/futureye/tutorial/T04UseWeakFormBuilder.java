@@ -112,7 +112,7 @@ public class T04UseWeakFormBuilder {
 
         //7.Output results to an Techplot format file
         MeshWriter writer = new MeshWriter(mesh);
-        writer.writeTechplot("./tutorial/UseWeakFormBuilder1.dat", u);
+        writer.writeTechplot("UseWeakFormBuilder1.dat", u);
 	}
 	
 	
@@ -233,7 +233,7 @@ public class T04UseWeakFormBuilder {
 
         //7.Output results to an Techplot format file
         MeshWriter writer = new MeshWriter(mesh);
-        writer.writeTechplot("./tutorial/UseWeakFormBuilder2.dat", u);
+        writer.writeTechplot("UseWeakFormBuilder2.dat", u);
 	}
 
 	
@@ -349,7 +349,7 @@ public class T04UseWeakFormBuilder {
 
         //7.Output results to an Techplot format file
         MeshWriter writer = new MeshWriter(mesh);
-        writer.writeTechplot("./tutorial/UseWeakFormBuilder3.dat", u);
+        writer.writeTechplot("UseWeakFormBuilder3.dat", u);
 	}
 	public static void main(String[] args) {
 		//triangleMesh();
