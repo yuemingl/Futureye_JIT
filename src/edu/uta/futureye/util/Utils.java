@@ -33,6 +33,7 @@ import edu.uta.futureye.core.geometry.GeoEntity2D;
 import edu.uta.futureye.core.geometry.GeoEntity3D;
 import edu.uta.futureye.core.geometry.Point;
 import edu.uta.futureye.core.intf.FiniteElement;
+import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.FMath;
 import edu.uta.futureye.function.Variable;
@@ -957,6 +958,21 @@ public class Utils {
 				if(n.getNodeType() == NodeType.Dirichlet) {
 					Variable v = Variable.createFrom(diri, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
 					setDirichlet(stiff, load, fe.getGlobalIndex(mesh, eList.at(i), j),diri.apply(v));
+				}
+			}
+		}
+	}
+	public static void imposeDirichletCondition(Matrix stiff, Vector load, VecFiniteElement fe, Mesh mesh, VectorMathFunc diri) {
+		ElementList eList = mesh.getElementList();
+		for(int i=1;i<=eList.size();i++) {
+			NodeList nodes = eList.at(i).nodes;
+			for(int j=1; j<=nodes.size(); j++) {
+				Node n = nodes.at(j);
+				if(n.getNodeType() == NodeType.Dirichlet) {
+					int fIdx = fe.getVVFComponentIndex(j+1);
+					MathFunc f = diri.get(fIdx);
+					Variable v = Variable.createFrom(f, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
+					setDirichlet(stiff, load, fe.getGlobalIndex(mesh, eList.at(i), j),f.apply(v));
 				}
 			}
 		}
