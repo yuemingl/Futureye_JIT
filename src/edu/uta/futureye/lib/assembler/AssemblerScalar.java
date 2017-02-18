@@ -50,7 +50,6 @@ public class AssemblerScalar implements AssemblerOld {
 		int dim = mesh.getNodeList().size();
 		globalStiff = new SparseMatrixRowMajor(dim,dim);
 		globalLoad = new SparseVectorHashMap(dim);
-
 	}
 	
 	@Override

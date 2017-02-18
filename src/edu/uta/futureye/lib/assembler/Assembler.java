@@ -87,7 +87,7 @@ public class Assembler {
 			this.assembleGlobal(e, stiff, load);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param e
@@ -97,7 +97,6 @@ public class Assembler {
 	public void assembleGlobal(Element e, Matrix stiff, Vector load) {
 		// Assemble locally
 		assembleLocal(e);
-		
 		FiniteElement fe = this.assembler.weakForm.getFiniteElement();
 		int nDOFs = fe.getNumberOfDOFs();
 
