@@ -22,11 +22,11 @@ public class VecWeakForm {
 
 	public VecWeakForm(VecFiniteElement fe, LHSVecExpr lhsExpr, RHSVecExpr rhsExpr) {
 		this.fe = fe;
-		this.jac = fe.getJacobian();
+		this.jac = fe.getCoordTrans().getJacobian();
  
 		int nDOFs = this.fe.getNumberOfDOFs();
 		VectorMathFunc[] shapeFuncs = fe.getShapeFunctions();
-		Map<String, MathFunc> map = fe.getCoordTransMap();
+		Map<String, MathFunc> map = fe.getCoordTrans().getCoordTransMap();
 		matLHS = new MathFunc[nDOFs][nDOFs];
 		vecRHS = new MathFunc[nDOFs];
 

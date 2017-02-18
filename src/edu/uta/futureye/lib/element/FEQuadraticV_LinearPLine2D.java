@@ -1,12 +1,10 @@
 package edu.uta.futureye.lib.element;
 
 import static edu.uta.futureye.function.FMath.C0;
-
-import java.util.Map;
-
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Line2DCoord;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.intf.CoordTrans;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
@@ -110,18 +108,8 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 	}
 
 	@Override
-	public Map<String, MathFunc> getCoordTransMap() {
-		return this.getCoordTransMap();
-	}
-
-	@Override
 	public String[] getArgsOrder() {
 		return this.argsOrder;
-	}
-
-	@Override
-	public MathFunc getJacobian() {
-		return this.getJacobian();
 	}
 
 	@Override
@@ -170,5 +158,10 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 			return 3;
 		else
 			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+	}
+	
+	@Override
+	public CoordTrans getCoordTrans() {
+		return this.coord;
 	}
 }

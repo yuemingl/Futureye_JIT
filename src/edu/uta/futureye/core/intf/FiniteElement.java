@@ -14,6 +14,7 @@ import edu.uta.futureye.function.intf.MathFunc;
 public interface FiniteElement {
 	/**
 	 * Return the number of degree of freedoms (DOFs) of this finite element
+	 * TODO: change to getDegreeOfFreedom() ???
 	 * @return
 	 */
 	int getNumberOfDOFs();
