@@ -62,6 +62,14 @@ public interface VecFiniteElement {
 	boolean isDOFCoupled(int idx1, int idx2);
 	
 	/**
+	 * Return the component index of the vector valued function by giving 
+	 * a local index of shape functions
+	 * @param localIndex
+	 * @return
+	 */
+	int getVVFComponentIndex(int localIndex);
+	
+	/**
 	 * Get the global index of a DEF
 	 * @param mesh
 	 * @param e
