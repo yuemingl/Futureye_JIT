@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2010, nkliuyueming@gmail.com. All rights reserved.
+ * 
+ * 
+ */
 package edu.uta.futureye.core.geometry;
 
 import edu.uta.futureye.util.container.ObjList;

@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2010, nkliuyueming@gmail.com. All rights reserved.
+ * 
+ * 
+ */
 package edu.uta.futureye.algebra.solver;
 
 import edu.uta.futureye.algebra.CompressedColMatrix;
@@ -9,8 +14,6 @@ import edu.uta.futureye.algebra.SparseBlockVector;
 import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.AlgebraMatrix;
-import edu.uta.futureye.algebra.intf.BlockMatrix;
-import edu.uta.futureye.algebra.intf.BlockVector;
 import edu.uta.futureye.algebra.intf.SparseMatrix;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.solver.external.SolverColt;

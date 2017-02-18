@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2010, nkliuyueming@gmail.com. All rights reserved.
+ * 
+ * 
+ */
 package edu.uta.futureye.core.intf;
 
 import edu.uta.futureye.core.Element;
@@ -6,7 +11,7 @@ import edu.uta.futureye.function.intf.VecMathFunc;
 
 /**
  * Finite element with vector valued shape functions
- *  
+ *
  */
 public interface VecFiniteElement {
 	/**

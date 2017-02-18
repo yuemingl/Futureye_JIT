@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2010, nkliuyueming@gmail.com. All rights reserved.
+ * 
+ * 
+ */
 package edu.uta.futureye.algebra.solver.external;
 
 import java.util.Map;

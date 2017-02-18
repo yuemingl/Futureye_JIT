@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2010, nkliuyueming@gmail.com. All rights reserved.
+ * 
+ * 
+ */
 package edu.uta.futureye.util;
 
 import org.apache.bcel.generic.ClassGen;

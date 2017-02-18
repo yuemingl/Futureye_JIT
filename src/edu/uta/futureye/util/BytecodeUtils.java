@@ -1,4 +1,9 @@
-	package edu.uta.futureye.util;
+/**
+ * Copyright (c) 2010, nkliuyueming@gmail.com. All rights reserved.
+ * 
+ * 
+ */
+package edu.uta.futureye.util;
 
 import static org.apache.bcel.Constants.ACC_PUBLIC;
 import static org.apache.bcel.Constants.ACC_STATIC;

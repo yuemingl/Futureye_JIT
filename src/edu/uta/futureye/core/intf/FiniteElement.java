@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2010, nkliuyueming@gmail.com. All rights reserved.
+ * 
+ * 
+ */
 package edu.uta.futureye.core.intf;
 
 import edu.uta.futureye.core.Element;
@@ -5,10 +10,12 @@ import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.function.intf.MathFunc;
 
 /**
- * An interface of a finite element which provides the information about
- * degree of freedoms, shape functions, local-to-global index and boundary elements.
- * A user defined finite element should implements all the functions in this 
- * interface.
+ * Finite element interface which provides the information about
+ * the degree of freedoms, shape functions, local-to-global index and 
+ * boundary elements.
+ * 
+ * A user defined finite element should implements the declared
+ * functions in this interface.
  *
  */
 public interface FiniteElement {
