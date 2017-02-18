@@ -12,6 +12,7 @@ import edu.uta.futureye.lib.weakform.VecWeakForm;
 import edu.uta.futureye.util.container.ElementList;
 
 public class BasicVecAssembler {
+	public Mesh mesh;
 	public VecWeakForm weakForm;
 	public double[][] A; // domain local stiff matrix
 	public double[] b;   // domain local load vector
@@ -21,12 +22,13 @@ public class BasicVecAssembler {
 	Matrix gA; // global stiff matrix
 	Vector gb; // global load vector
 
-	public BasicVecAssembler(VecWeakForm weakForm) {
+	public BasicVecAssembler(Mesh mesh, VecWeakForm weakForm) {
+		this.mesh = mesh;
 		this.weakForm = weakForm;
-		nDOFs = weakForm.getFiniteElement().getNumberOfDOFs();
-		A = new double[nDOFs][nDOFs];
-		b = new double[nDOFs];
-		params = new double[weakForm.getFiniteElement().getArgsOrder().length];
+		this.nDOFs = weakForm.getFiniteElement().getNumberOfDOFs();
+		this.A = new double[nDOFs][nDOFs];
+		this.b = new double[nDOFs];
+		this.params = new double[weakForm.getFiniteElement().getArgsOrder().length];
 	}
 	
 	/**
@@ -76,16 +78,14 @@ public class BasicVecAssembler {
 	 * Assemble global stiff matrix and load vector on a given mesh
 	 * new matrix and vector are allocated. Use <tt>getGlobalStiffMatrix()</tt> and
 	 * <tt>getGlobalLoadVector()</tt> to access them.
-	 * 
-	 * @param mesh
 	 */
-	public void assembleGlobal(Mesh mesh) {
+	public void assembleGlobal() {
 		int dim = this.weakForm.getFiniteElement().getTotalNumberOfDOFs(mesh);
 		
 		gA = new SparseMatrixRowMajor(dim,dim);
 		gb = new SparseVectorHashMap(dim);
 		
-		assembleGlobal(mesh, gA, gb);
+		assembleGlobal(gA, gb);
 	}
 	
 	/**
@@ -99,22 +99,42 @@ public class BasicVecAssembler {
 	 * @param stiff
 	 * @param load
 	 */
-	public void assembleGlobal(Mesh mesh, Matrix stiff, Vector load) {
+	public void assembleGlobal(Matrix stiff, Vector load) {
 		ElementList eList = mesh.getElementList();
 		VecFiniteElement fe = this.weakForm.getFiniteElement();
 		for(Element e : eList) {
 			assembleLocal(e);
-			
+
 			for(int j=0;j<nDOFs;j++) {
 				int nGlobalRow = fe.getGlobalIndex(mesh, e, j+1);
 				for(int i=0;i<nDOFs;i++) {
 					int nGlobalCol = fe.getGlobalIndex(mesh, e, i+1);
-					System.out.println("(j,i)=("+j+","+i+"); global=("+nGlobalRow+","+nGlobalCol+")");
+					//System.out.println("(j,i)=("+j+","+i+"); global=("+nGlobalRow+","+nGlobalCol+")");
 					stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
 				}
 				//Local load vector
 				load.add(nGlobalRow, b[j]);
 			}
+		}
+		//update gA and gb
+		this.gA = stiff;
+		this.gb = load;
+	}
+
+	public void assembleGlobal(Element e, Matrix stiff, Vector load) {
+		// Assemble locally
+		assembleLocal(e);
+		VecFiniteElement fe = this.weakForm.getFiniteElement();
+		int nDOFs = fe.getNumberOfDOFs();
+
+		// Get local-global indexing
+		for(int j=0;j<nDOFs;j++) {
+			int globalIdxJ = fe.getGlobalIndex(mesh, e, j+1);
+			for(int i=0;i<nDOFs;i++) {
+				int globalIdxI = fe.getGlobalIndex(mesh, e, i+1);
+				stiff.add(globalIdxJ, globalIdxI, A[j][i]);
+			}
+			load.add(globalIdxJ, b[j]);
 		}
 		//update gA and gb
 		this.gA = stiff;
