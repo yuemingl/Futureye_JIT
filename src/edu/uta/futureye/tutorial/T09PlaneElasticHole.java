@@ -29,8 +29,8 @@ public class T09PlaneElasticHole {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-      MeshReader reader = new MeshReader("elastic_hole.grd");
-//      MeshReader reader = new MeshReader("elastic_hole2.grd");
+      MeshReader reader = new MeshReader("grids/elastic_hole.grd");
+//      MeshReader reader = new MeshReader("grids/elastic_hole2.grd");
       Mesh mesh = reader.read2DMesh();
       //Compute geometry relationship of nodes and elements
       mesh.computeNodeBelongsToElements();

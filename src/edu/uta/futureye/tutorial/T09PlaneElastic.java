@@ -29,10 +29,10 @@ public class T09PlaneElastic {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-//        MeshReader reader = new MeshReader("patch_elastic_hand.grd");
-//        MeshReader reader = new MeshReader("patch_elastic.grd");
-//        MeshReader reader = new MeshReader("elastic.grd");
-        MeshReader reader = new MeshReader("elastic2.grd");
+//        MeshReader reader = new MeshReader("grids/patch_elastic_hand.grd");
+//        MeshReader reader = new MeshReader("grids/patch_elastic.grd");
+//        MeshReader reader = new MeshReader("grids/elastic.grd");
+        MeshReader reader = new MeshReader("grids/elastic2.grd");
         Mesh mesh = reader.read2DMesh();
         //Compute geometry relationship of nodes and elements
         mesh.computeNodeBelongsToElements();

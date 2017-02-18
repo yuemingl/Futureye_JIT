@@ -29,7 +29,7 @@ public class T09PlaneElasticDam {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-      MeshReader reader = new MeshReader("elastic_dam.grd");
+      MeshReader reader = new MeshReader("grids/elastic_dam.grd");
       Mesh mesh = reader.read2DMesh();
       //Compute geometry relationship of nodes and elements
       mesh.computeNodeBelongsToElements();

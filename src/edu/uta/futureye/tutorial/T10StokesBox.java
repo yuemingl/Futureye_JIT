@@ -62,7 +62,7 @@ public class T10StokesBox {
 	public static void box() {
 		//Read a triangle mesh from an input file
 		//[-3,3]*[-3,3]
-		String file = "stokes_box";
+		String file = "grids/stokes_box";
 		
 		MeshReader reader = new MeshReader(file+".grd");
 		MeshReader reader2 = new MeshReader(file+".grd");
