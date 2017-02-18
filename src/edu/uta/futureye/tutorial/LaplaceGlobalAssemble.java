@@ -80,7 +80,7 @@ public class LaplaceGlobalAssemble {
 
 		// 6. Output the result to a file with Techplot format
 		MeshWriter writer = new MeshWriter(mesh);
-		writer.writeTechplot("./tutorial/Laplace2D.dat", u);
+		writer.writeTechplot("Laplace2D.dat", u);
 	}
 
 	public static void main(String[] args) {

@@ -84,7 +84,7 @@ public class T03RawLaplace {
 			System.out.println(String.format("%.3f", u.get(i)));	
 	    
 	    MeshWriter writer = new MeshWriter(mesh);
-	    writer.writeTechplot("./tutorial/RawLaplace.dat", u);
+	    writer.writeTechplot("RawLaplace.dat", u);
 		
 	}
 	
