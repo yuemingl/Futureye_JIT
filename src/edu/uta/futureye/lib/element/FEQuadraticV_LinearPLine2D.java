@@ -6,9 +6,12 @@
 package edu.uta.futureye.lib.element;
 
 import static edu.uta.futureye.function.FMath.C0;
+import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Line2DCoord;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.core.intf.CoordTrans;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
@@ -69,20 +72,24 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 	//Construct a function with the coordinate of points in an element as parameters
 	String[] argsOrder;
 	
-	public int nDOFs = 2+2+1;
+	public int nDOFs = 3+3+2;
 	VecMathFunc[] shapeFuncs = new VecMathFunc[nDOFs];
 
 	public FEQuadraticV_LinearPLine2D() {
 		FX x1 = new FX("x1");
 		FX x2 = new FX("x2");
+		FX x3 = new FX("x3");
 		FX y1 = new FX("y1");
 		FX y2 = new FX("y2");
+		FX y3 = new FX("y3");
 		
+		coord = new Line2DCoord(x1,x2,y1,y2);
 		MathFunc r = coord.getCoordR();
 		
-		this.argsOrder = new String[]{x1,x2,y1,y2,r};
-		
-		
+		this.argsOrder = new String[]{x1, x2, x3,
+				y1, y2, y3,
+				r};
+
 		//shape function for velocity component
 		MathFunc NV1 = r*(r-1)/2;
 		MathFunc NV2 = (r+1)*r/2;
@@ -142,7 +149,7 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 			return nNode + e.nodes.at(localIndex-3).globalIndex;
 		} else if(localIndex>=7 && localIndex<=8) {
 			int nNode = mesh.getNodeList().size();
-			return 2*nNode + e.vertices().at(localIndex-8).globalNode().globalIndex;
+			return 2*nNode + e.vertices().at(localIndex-6).globalNode().globalIndex;
 		} else {
 			throw new RuntimeException("local index = "+localIndex+". It should be in 1...8");
 		}
@@ -168,5 +175,40 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 	@Override
 	public CoordTrans getCoordTrans() {
 		return this.coord;
+	}
+
+	@Override
+	public int getNumberOfNOFs(Mesh mesh, int nVVFComponentIndex) {
+		throw new UnsupportedOperationException("Call FEQuadraticV_LinearP.getNumberOfNOFs(...) intstead");
+	}
+
+	@Override
+	public NodeType getDOFType(Element e, int localIndex) {
+		if(localIndex >= 1 && localIndex <= 3)
+			return e.nodes.at(localIndex).getNodeType(1);
+		else if(localIndex >= 4 && localIndex <= 6)
+			return e.nodes.at(localIndex-3).getNodeType(2);
+		else if(localIndex >=7 && localIndex <=8)
+			return e.vertices().at(localIndex-6).globalNode().getNodeType(3);
+		else
+			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+	}
+
+	@Override
+	public DOF getDOF(int localIndex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public GeoEntity getGeoEntity(Element e, int localIndex) {
+		if(localIndex >= 1 && localIndex <= 3)
+			return e.nodes.at(localIndex);
+		else if(localIndex >= 4 && localIndex <= 6)
+			return e.nodes.at(localIndex-3);
+		else if(localIndex >=7 && localIndex <=8)
+			return e.getGeoEntity1D();
+		else
+			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
 	}
 }

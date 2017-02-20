@@ -7,15 +7,21 @@ package edu.uta.futureye.lib.element;
 
 
 import static edu.uta.futureye.function.FMath.C0;
+import sun.font.EAttribute;
+import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.TriAreaCoord;
+import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.core.intf.CoordTrans;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VecMathFunc;
+import edu.uta.futureye.util.FutureyeException;
+import edu.uta.futureye.util.container.VertexList;
 
 /**
  * P2/P1 on triangle element
@@ -92,17 +98,27 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 		FX x1 = new FX("x1");
 		FX x2 = new FX("x2");
 		FX x3 = new FX("x3");
+		FX x4 = new FX("x4");
+		FX x5 = new FX("x5");
+		FX x6 = new FX("x6");
+		
 		FX y1 = new FX("y1");
 		FX y2 = new FX("y2");
 		FX y3 = new FX("y3");
+		FX y4 = new FX("y4");
+		FX y5 = new FX("y5");
+		FX y6 = new FX("y6");
 
-		this.coord = new TriAreaCoord(x1, x2, x3, y1, y2, y3);
+		this.coord = new TriAreaCoord(x1, x2, x3,
+				y1, y2, y3);
 		
 		MathFunc r = coord.getCoordR();
 		MathFunc s = coord.getCoordS();
 		MathFunc t = coord.getCoordT();
 		
-		argsOrder = new String[]{"x1","x2","x3","y1","y2","y3","r","s","t"};
+		argsOrder = new String[]{x1,x2,x3,x4,x5,x6,
+				y1,y2,y3,y4,y5,y6,
+				r,s,"t"};
 		
 		//shape functions
 		MathFunc NV1 = (2*r-1)*r;
@@ -186,6 +202,15 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 	}
 
 	@Override
+	public int getNumberOfNOFs(Mesh mesh, int nVVFComponentIndex) {
+		int nNode  = mesh.getNodeList().size();
+		if(nVVFComponentIndex >= 1 || nVVFComponentIndex <= 2)
+			return nNode;
+		else
+			throw new RuntimeException("nVVFComponentIndex should be 1, 2 or 3");
+	}
+
+	@Override
 	public int getVVFComponentIndex(int localIndex) {
 		if(localIndex >= 1 && localIndex <= 6)
 			return 1;
@@ -201,4 +226,55 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 	public CoordTrans getCoordTrans() {
 		return this.coord;
 	}
+
+	@Override
+	public NodeType getDOFType(Element e, int localIndex) {
+		if(localIndex >= 1 && localIndex <= 6)
+			return e.nodes.at(localIndex).getNodeType(1);
+		else if(localIndex >= 7 && localIndex <= 12)
+			return e.nodes.at(localIndex-6).getNodeType(2);
+		else if(localIndex >=13 && localIndex <=15)
+			return e.vertices().at(localIndex-12).globalNode().getNodeType(3);
+		else
+			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+	}
+
+	@Override
+	public GeoEntity getGeoEntity(Element e, int localIndex) {
+		if(localIndex >= 1 && localIndex <= 6)
+			return e.nodes.at(localIndex);
+		else if(localIndex >= 7 && localIndex <= 12)
+			return e.nodes.at(localIndex-6);
+		else if(localIndex >=13 && localIndex <=15)
+			return e.getGeoEntity2D();
+		else
+			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+	}
+
+	@Override
+	public DOF getDOF(int localIndex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+//	//@Override
+//	public DOF getDOF(Mesh mesh, Element e, int localIndex) {
+//		if(localIndex >= 1 && localIndex <= 6) {
+//			DOF dof_u1 = new DOF(
+//					localIndex,
+//					this.getGlobalIndex(mesh, e, localIndex),
+//					null); //no shape functions.
+//			
+//			dof_u1.setOwner(enty);
+//			dof_u1.setVVFComponent(1);
+//			return dof_u1;
+//		}
+//		else if(localIndex >= 7 && localIndex <= 12)
+//			return 2;
+//		else if(localIndex >=13 && localIndex <=15)
+//			return 3;
+//		else
+//			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+//			
+//	}
 }

@@ -8,9 +8,12 @@ package edu.uta.futureye.lib.element;
 
 import static edu.uta.futureye.function.FMath.C0;
 import static edu.uta.futureye.function.FMath.C1;
+import sun.font.EAttribute;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.RectAreaCoord;
+import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.core.intf.CoordTrans;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.basic.FX;
@@ -149,6 +152,18 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 		int nElement = mesh.getElementList().size();
 		return 2*nNode+nElement;
 	}
+	
+	@Override
+	public int getNumberOfNOFs(Mesh mesh, int nVVFComponentIndex) {
+		int nNode  = mesh.getNodeList().size();
+		int nElement = mesh.getElementList().size();
+		if(nVVFComponentIndex == 1 || nVVFComponentIndex == 2)
+			return 2*nNode;
+		else if(nVVFComponentIndex == 3)
+			return nElement;
+		else
+			throw new RuntimeException("nVVFComponentIndex should be 1, 2 or 3");
+	}
 
 	@Override
 	public int getVVFComponentIndex(int localIndex) {
@@ -165,5 +180,17 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 	@Override
 	public CoordTrans getCoordTrans() {
 		return this.coord;
+	}
+
+	@Override
+	public NodeType getDOFType(Element e, int localIndex) {
+		if(localIndex >= 1 && localIndex <= 4)
+			return e.nodes.at(localIndex).getNodeType(1);
+		else if(localIndex >= 5 && localIndex <= 8)
+			return e.nodes.at(localIndex-6).getNodeType(2);
+		else if(localIndex == 9)
+			return ???;
+		else
+			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
 	}
 }
