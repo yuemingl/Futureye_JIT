@@ -5,7 +5,9 @@
  */
 package edu.uta.futureye.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.bcel.generic.ALOAD;
@@ -91,6 +93,12 @@ public class TriAreaCoord implements CoordTrans {
 	 * @return 1-r-s
 	 */
 	public MathFunc getCoordT() {
+//		MathFunc t = 1 - r - s;
+//		t.setName("t");
+//		List<String> varNames = new ArrayList<>();
+//		varNames.add("t");
+//		t.setVarNames(varNames);
+//		System.out.println(t);
 		return 1 - r - s;
 	}
 
