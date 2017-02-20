@@ -487,7 +487,7 @@ public class Element {
 				}
 				entity.addFace(fl);
 			}
-			this.geoEntity = entity;			
+			this.geoEntity = entity;
 			
 		} else {
 			FutureyeException ex = new FutureyeException("Error: Node dim should be 1,2,3 dim="+eleDim);

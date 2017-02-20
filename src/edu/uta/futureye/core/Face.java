@@ -59,10 +59,10 @@ public class Face extends GeoEntity2D<EdgeLocal,NodeLocal> {
 	 * 
 	 * @return
 	 */
-    public NodeType getBorderType() {
-    	return getBorderType(1);                  
-    }
-    
+	public NodeType getBorderType() {
+		return getBorderType(1);
+	}
+
 	/**
 	 * For vector valued problems, return boundary type of component <tt>nVVFComponent</tt>
 	 * <p>
@@ -72,15 +72,18 @@ public class Face extends GeoEntity2D<EdgeLocal,NodeLocal> {
 	 * @param nVVFComponent
 	 * @return
 	 */
-    public NodeType getBorderType(int nVVFComponent) {
-    	NodeType nt1 = this.vertices.at(1).globalNode().getNodeType(nVVFComponent);
-    	for(int i=2;i<this.vertices.size();i++) {
-    		NodeType nt2 = this.vertices.at(2).globalNode().getNodeType(nVVFComponent);
-    	   	if(nt1 != nt2) return null;                  
-    	}
-    	return nt1;                  
-    }
-    
+	public NodeType getBorderType(int nVVFComponent) {
+		NodeType nt1 = this.vertices.at(1).globalNode()
+				.getNodeType(nVVFComponent);
+		for (int i = 2; i < this.vertices.size(); i++) {
+			NodeType nt2 = this.vertices.at(2).globalNode()
+					.getNodeType(nVVFComponent);
+			if (nt1 != nt2)
+				return null;
+		}
+		return nt1;
+	}
+
 	public boolean isBorderFace() {
 		//顶点对应的NodeLocal是非Inner即可，也就是说只要有一个是Inner说明该面不是边界面
 		ObjList<Vertex> vs = this.getVertices();
