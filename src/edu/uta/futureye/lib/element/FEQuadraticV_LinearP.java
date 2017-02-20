@@ -202,10 +202,12 @@ public class FEQuadraticV_LinearP implements VecFiniteElement {
 	}
 
 	@Override
-	public int getNumberOfNOFs(Mesh mesh, int nVVFComponentIndex) {
+	public int getNumberOfDOFs(Mesh mesh, int nVVFComponentIndex) {
 		int nNode  = mesh.getNodeList().size();
-		if(nVVFComponentIndex >= 1 || nVVFComponentIndex <= 2)
+		if(nVVFComponentIndex >= 1 && nVVFComponentIndex <= 2)
 			return nNode;
+		else if(nVVFComponentIndex == 3)
+			return mesh.nVertex;
 		else
 			throw new RuntimeException("nVVFComponentIndex should be 1, 2 or 3");
 	}
