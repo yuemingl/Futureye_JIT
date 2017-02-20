@@ -5,8 +5,11 @@
  */
 package edu.uta.futureye.core.intf;
 
+import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
+import edu.uta.futureye.core.NodeType;
+import edu.uta.futureye.core.geometry.GeoEntity;
 import edu.uta.futureye.function.intf.VecMathFunc;
 
 /**
@@ -15,7 +18,7 @@ import edu.uta.futureye.function.intf.VecMathFunc;
  */
 public interface VecFiniteElement {
 	/**
-	 * Return the number of Degree of Freedom (DOF) of this finite element
+	 * Return the number of Degree of Freedoms (DOFs) of this finite element
 	 * @return
 	 */
 	int getNumberOfDOFs();
@@ -25,7 +28,14 @@ public interface VecFiniteElement {
 	 * @return
 	 */
 	VecMathFunc[] getShapeFunctions();
-		
+	
+	/**
+	 * Return the geometry entity on element e giving the local index of shape function
+	 * @param localIndex
+	 * @return
+	 */
+	NodeType getDOFType(Element e, int localIndex);
+
 	/**
 	 * Return the order of all the arguments
 	 * @return
@@ -48,8 +58,8 @@ public interface VecFiniteElement {
 	boolean isDOFCoupled(int idx1, int idx2);
 	
 	/**
-	 * Return the component index of the vector valued function by giving 
-	 * a local index of shape functions
+	 * Return the index of component of the vector valued function by giving 
+	 * a local index of a shape function
 	 * @param localIndex
 	 * @return
 	 */
@@ -62,14 +72,26 @@ public interface VecFiniteElement {
 	 * @param localIndex
 	 * @return
 	 */
-	public int getGlobalIndex(Mesh mesh, Element e, int localIndex);
+	int getGlobalIndex(Mesh mesh, Element e, int localIndex);
 	
 	/**
-	 * Get the total number of DOFs on a given mesh for this finite element
+	 * Get all the degree of freedoms (DOF) on a given mesh for this finite element
 	 * @param mesh
 	 * @return
 	 */
-	public int getTotalNumberOfDOFs(Mesh mesh);
+	int getTotalNumberOfDOFs(Mesh mesh);
+	
+	/**
+	 * Get the degree of freedoms (DOF) for the given vector valued function (VVF) component
+	 * on a given mesh for this finite element. For example,
+	 * 1 - the degree of freedoms for the velocity component v
+	 * 2 - the degree of freedoms for the velocity component u
+	 * 3 - the degree of freedoms for the pressure component p
+	 * @param mesh
+	 * @param nVVFComponentIndex
+	 * @return
+	 */
+	int getNumberOfNOFs(Mesh mesh, int nVVFComponentIndex);
 	
 	/**
 	 * Return the coordinate transformation object used in this finite element
@@ -78,5 +100,19 @@ public interface VecFiniteElement {
 	 */
 	//CoordTrans getCoordTrans(int index);
 	CoordTrans getCoordTrans();
-
+	
+	/**
+	 * Return the ODF object at the given local index
+	 * @param localIndex
+	 * @return
+	 */
+	DOF getDOF(int localIndex);
+	
+	/**
+	 * Return the geometry entity at the given local index
+	 * @param e
+	 * @param localIndex
+	 * @return
+	 */
+	GeoEntity getGeoEntity(Element e, int localIndex);
 }
