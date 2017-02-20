@@ -124,9 +124,8 @@ Upwind technique for 1D convection diffusion problem is supported by using user 
 ```
 
 ## Stokes Equation on A Box ##
-<img src='https://github.com/yuemingl/Futureye_JIT/tree/master/images/Ex10_StokesBoxTirQuad.png' />
-
-```
+<img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Ex10_StokesBoxTirQuad.png' />
+```java
 /**
  * Problem:
  *   -\Nabla{k*\Nabla{\vec{u}} + \Nabla{p} = \vec{f}
