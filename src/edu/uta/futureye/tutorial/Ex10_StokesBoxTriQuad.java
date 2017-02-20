@@ -52,7 +52,7 @@ import edu.uta.futureye.util.container.ObjIndex;
  *   
  *   (\Nabla{\vec{v}},k*\Nabla{\vec{u}}) - (div{\vec{v}},p) 
  *                   + (q,div{\vec{u}}) = (\vec{v},\vec{f})
- *
+ * or written in component-wise:
  *   (v1_x,k*u1_x) + (v1_y,k*u1_y) + (v2_x,k*u2_x) + (v2_y,k*u2_y) 
  *                   - (v1_x+v2_y,p) + (q,u1_x+u2_y) = (v1*f1+v2*f2)      
  *
@@ -63,7 +63,7 @@ import edu.uta.futureye.util.container.ObjIndex;
  * @author liuyueming
  *
  */
-public class Ex10_StokesBoxTirQuad {
+public class Ex10_StokesBoxTriQuad {
 	public static String outputFolder = ".";
 	
 	public static void box() {
@@ -244,8 +244,8 @@ public class Ex10_StokesBoxTirQuad {
 		for(int i=1;i<=u.getDim();i++) {
 			System.out.println(String.format("%.3f", u.get(i)));
 		}
-//		Tools.plotVector(mesh, outputFolder, String.format("%s_uv.dat",file), 
-//				u.getBlock(1), u.getBlock(2));
+		Tools.plotVector(mesh, outputFolder, String.format("%s_uv.dat",file), 
+				u.getBlock(1), u.getBlock(2));
 	}
 	
 	public static void main(String[] args) {
