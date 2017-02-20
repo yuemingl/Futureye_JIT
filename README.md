@@ -123,4 +123,46 @@ Upwind technique for 1D convection diffusion problem is supported by using user 
 
 ```
 
+## Stokes Equation on A Box ##
+<img src='https://github.com/yuemingl/Futureye_JIT/tree/master/images/Ex10_StokesBoxTirQuad.png' />
+
+```
+/**
+ * Problem:
+ *   -\Nabla{k*\Nabla{\vec{u}} + \Nabla{p} = \vec{f}
+ *   div{\vec{u}} = 0
+ * 
+ * Each dim:
+ *   -k*(u1_xx+u1_yy) + p_x = f1
+ *   -k*(u2_xx+u2_yy) + p_y = f2
+ *   u1_x+u2_y              = 0
+
+ * Weak form:
+ *   find \vec{u} \in H_0^1(div;\Omega), p \in L_2(\Omega)
+ *   such that, for all \vec{v} \in H_0^1(div;\Omega), q \in L_2(\Omega)
+ *   
+ *   (\Nabla{\vec{v}},k*\Nabla{\vec{u}}) - (div{\vec{v}},p) 
+ *                   + (q,div{\vec{u}}) = (\vec{v},\vec{f})
+ *
+ *   (v1_x,k*u1_x) + (v1_y,k*u1_y) + (v2_x,k*u2_x) + (v2_y,k*u2_y) 
+ *                   - (v1_x+v2_y,p) + (q,u1_x+u2_y) = (v1*f1+v2*f2)      
+ *
+ * where
+ *   \vec{u}=(u1,u2): velocity vector field    
+ *   \vec{f}=(f1,f2): body force
+ *   
+ *
+ */
+ 		// Weak form definition
+		FEQuadraticV_LinearP fe = new FEQuadraticV_LinearP();
+		MathFunc k = C1;
+		VecMathFunc f = new SpaceVectorFunction(C0, C0);
+		VecWeakForm wf = new VecWeakForm(fe,
+				(u, v) -> k * grad(u[1],"x","y" ).dot(grad(v[1],"x","y")) //   (v1_x,k*u1_x) + (v1_y,k*u1_y)
+						+ k * grad(u[2],"x","y" ).dot(grad(v[2],"x","y")) // + (v2_x,k*u2_x) + (v2_y,k*u2_y) 
+						- (v[1].diff("x")+v[2].diff("y"))*u[3]            // - (v1_x+v2_y,p) //where p=u[3]
+						+ v[3]*(u[1].diff("x")+u[2].diff("y")),           // + (q,u1_x+u2_y) //where q=v[3]
+				(v)-> v[1]*f[1] + v[2]*f[2]);
+		wf.compile();
+ ```
 Click [here](https://github.com/yuemingl/Futureye_JIT/tree/master/src/edu/uta/futureye/tutorial) for more examples.
