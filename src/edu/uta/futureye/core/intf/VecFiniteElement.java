@@ -91,7 +91,7 @@ public interface VecFiniteElement {
 	 * @param nVVFComponentIndex
 	 * @return
 	 */
-	int getNumberOfNOFs(Mesh mesh, int nVVFComponentIndex);
+	int getNumberOfDOFs(Mesh mesh, int nVVFComponentIndex);
 	
 	/**
 	 * Return the coordinate transformation object used in this finite element

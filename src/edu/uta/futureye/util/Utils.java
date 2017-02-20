@@ -939,6 +939,9 @@ public class Utils {
 	public static void setDirichlet(Matrix stiff, Vector load, int matIndex, double value) {
 		int row = matIndex;
 		int col = matIndex;
+		
+		System.out.println("setDirichlet===>idx="+matIndex+"; val="+value);
+
 		stiff.set(row, col, 1.0);
 		load.set(row,value);
 		for(int r=1;r<=stiff.getRowDim();r++) {
@@ -962,22 +965,26 @@ public class Utils {
 				Node n = nodes.at(j);
 				if(n.getNodeType() == NodeType.Dirichlet) {
 					Variable v = Variable.createFrom(diri, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
-					setDirichlet(stiff, load, fe.getGlobalIndex(mesh, eList.at(i), j),diri.apply(v));
+					double vv = diri.apply(v);
+					//System.out.println("===>"+vv);
+					setDirichlet(stiff, load, fe.getGlobalIndex(mesh, eList.at(i), j), vv);
 				}
 			}
 		}
 	}
+	
 	public static void imposeDirichletCondition(Matrix stiff, Vector load, VecFiniteElement fe, Mesh mesh, VecMathFunc diri) {
-		ElementList eList = mesh.getElementList();
-		for(int i=1;i<=eList.size();i++) {
-			NodeList nodes = eList.at(i).nodes;
-			for(int j=1; j<=nodes.size(); j++) {
-				Node n = nodes.at(j);
-				if(n.getNodeType() == NodeType.Dirichlet) {
-					int fIdx = fe.getVVFComponentIndex(j+1);
+		int nDOFs = fe.getNumberOfDOFs();
+		for(Element e : mesh.getElementList()) {
+			for(int localIndex=1; localIndex<=nDOFs; localIndex++) {
+				if(fe.getDOFType(e, localIndex) == NodeType.Dirichlet) {
+					int fIdx = fe.getVVFComponentIndex(localIndex);
 					MathFunc f = diri.get(fIdx);
+					Node n = (Node)fe.getGeoEntity(e, localIndex);
 					Variable v = Variable.createFrom(f, n, n.globalIndex); //bugfix 11/27/2013 Variable.createFrom(diri, n, 0);
-					setDirichlet(stiff, load, fe.getGlobalIndex(mesh, eList.at(i), j),f.apply(v));
+					double vv = f.apply(v);
+					//System.out.println("===>"+vv);
+					setDirichlet(stiff, load, fe.getGlobalIndex(mesh, e, localIndex), vv);
 				}
 			}
 		}

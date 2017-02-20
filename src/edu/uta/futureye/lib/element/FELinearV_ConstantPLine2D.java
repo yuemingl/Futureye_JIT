@@ -107,7 +107,7 @@ public class FELinearV_ConstantPLine2D implements VecFiniteElement {
 	}
 
 	@Override
-	public int getNumberOfNOFs(Mesh mesh, int nVVFComponentIndex) {
+	public int getNumberOfDOFs(Mesh mesh, int nVVFComponentIndex) {
 		throw new UnsupportedOperationException("Call FEBilinearV_ConstantP.getNumberOfNOFs(...) intstead");
 	}
 

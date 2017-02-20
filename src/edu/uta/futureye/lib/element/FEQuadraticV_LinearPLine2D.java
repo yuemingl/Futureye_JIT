@@ -178,7 +178,7 @@ public class FEQuadraticV_LinearPLine2D implements VecFiniteElement {
 	}
 
 	@Override
-	public int getNumberOfNOFs(Mesh mesh, int nVVFComponentIndex) {
+	public int getNumberOfDOFs(Mesh mesh, int nVVFComponentIndex) {
 		throw new UnsupportedOperationException("Call FEQuadraticV_LinearP.getNumberOfNOFs(...) intstead");
 	}
 

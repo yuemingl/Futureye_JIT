@@ -58,13 +58,15 @@ public class BasicVecAssembler {
 						new AssembleParam(e, -1, j+1), params, coords.length, 5);
 			}
 		} else if(e.vertices().size() == 3) {
+			
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
 					A[j][i] = FOIntegrate.intOnTriangleRefElement(weakForm.getCompiledLHS()[j][i], 
-							new AssembleParam(e, i+1, j+1), params, coords.length, 2);//Laplace Test: 2=80.839 3=80.966, 4=80.967
+							new AssembleParam(e, i+1, j+1), params, coords.length, 5); //TODO use high order for high order element???
+					//Laplace Test: 2=80.839 3=80.966, 4=80.967
 				}
 				b[j] = FOIntegrate.intOnTriangleRefElement(weakForm.getCompiledRHS()[j], 
-						new AssembleParam(e, -1, j+1), params, coords.length, 2);
+						new AssembleParam(e, -1, j+1), params, coords.length, 5);
 			}
 		} else if(e.vertices().size() == 4) {
 			for(int j=0; j<nDOFs; j++) {
@@ -114,8 +116,12 @@ public class BasicVecAssembler {
 				int nGlobalRow = fe.getGlobalIndex(mesh, e, j+1);
 				for(int i=0;i<nDOFs;i++) {
 					int nGlobalCol = fe.getGlobalIndex(mesh, e, i+1);
-					//System.out.println("(j,i)=("+j+","+i+"); global=("+nGlobalRow+","+nGlobalCol+")");
-					stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
+					if(nGlobalRow==917) {
+						System.out.println("(i,j)=("+i+","+j+"); global=("+nGlobalRow+","+nGlobalCol+"); value="+A[j][i]);
+					}
+					//if(Math.abs(A[j][i])>1e-3) {
+						stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
+					//}
 				}
 				//Local load vector
 				load.add(nGlobalRow, b[j]);
