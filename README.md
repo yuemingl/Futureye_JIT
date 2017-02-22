@@ -124,32 +124,37 @@ Upwind technique for 1D convection diffusion problem is supported by using user 
 ```
 
 ## Stokes Equation on A Box ##
+Equation:
+<img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Stokes_Problem.png' width=200 height=69 />
+
+Weak form:
+<img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Stokes_Problem_Weakform.png' width=344 height=61 />
+
+Solution:
 <img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Ex10_StokesBoxTirQuad.png' width=350 height=300 />
+Code:
 ```java
 /**
- * Problem:
- *   -\Nabla{k*\Nabla{\vec{u}} + \Nabla{p} = \vec{f}
- *   div{\vec{u}} = 0
- * 
- * Each dim:
+ * Stokes problem is defined as
+ *  -\nabla\cdot(k\nabla{\vec{u}}) + \nabla{p} = \vec{f}\\
+ *  div~{\vec{u}} = 0
+ *
+ *  or written explicitly in each dimension:
  *   -k*(u1_xx+u1_yy) + p_x = f1
  *   -k*(u2_xx+u2_yy) + p_y = f2
  *   u1_x+u2_y              = 0
-
- * Weak form:
+ * The weak form is
  *   find \vec{u} \in H_0^1(div;\Omega), p \in L_2(\Omega)
  *   such that, for all \vec{v} \in H_0^1(div;\Omega), q \in L_2(\Omega)
  *   
- *   (\Nabla{\vec{v}},k*\Nabla{\vec{u}}) - (div{\vec{v}},p) 
- *                   + (q,div{\vec{u}}) = (\vec{v},\vec{f})
- * or written in component-wise:
+ *   (\nabla{\vec{v}},k\nabla{\vec{u}}) - (div~{\vec{v}},p) 
+ *                   + (q,div~{\vec{u}}) = (\vec{v},\vec{f})
+ *   or written explicitly:
  *   (v1_x,k*u1_x) + (v1_y,k*u1_y) + (v2_x,k*u2_x) + (v2_y,k*u2_y) 
- *                   - (v1_x+v2_y,p) + (q,u1_x+u2_y) = (v1*f1+v2*f2)      
- *
+ *                 - (v1_x+v2_y,p) + (q,u1_x+u2_y) = (v1*f1+v2*f2)
  * where
- *   \vec{u}=(u1,u2): velocity vector field    
+ *   \vec{u}=(u1,u2): velocity vector field
  *   \vec{f}=(f1,f2): body force
- *   
  *
  */
  		// Weak form definition
