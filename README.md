@@ -166,3 +166,12 @@ VecWeakForm wf = new VecWeakForm(fe,
 wf.compile();
  ```
 Click [here](https://github.com/yuemingl/Futureye_JIT/tree/master/src/edu/uta/futureye/tutorial) for more examples.
+
+### Citing Our Papers ###
+
+If you were using Futureye_JIT for academic research, you are encouraged to cite the following papers:
+
+[Y. Liu, P. Zhang, M. Qiu, "Fast Numerical Evaluation for Symbolic Expressions in Java", 17th IEEE International Conference on High Performance and Communications (HPCC 2015), New York, USA, August 24-26, 2015.](http://ieeexplore.ieee.org/document/7336223/)
+
+[Y. Liu, P. Zhang, M. Qiu, "SNC: A Cloud Service Platform for Symbolic-Numeric Computation using Just-In-Time Compilation", IEEE Transactions on Cloud Computing, 2017](http://ieeexplore.ieee.org/abstract/document/7828007/)
+
