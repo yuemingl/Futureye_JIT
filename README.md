@@ -13,11 +13,12 @@ FuturEye_JIT is suitable for various purposes:
 *Engineering: Futureye_JIT is designed to be robust and efficient. Industry level of applications can be easily built with it. 
 
 ### Laplace Example ###
-<img src='https://lh6.googleusercontent.com/_Cil2MFH7iLM/TN19jeWDEdI/AAAAAAAAABg/WI64bT_jUAY/s800/FutureEyeFirstTest2.png.jpg' />
+
 
 ### Solution ###
-Mesh, solution contour and 3D view:
-<img src='https://lh5.googleusercontent.com/_Cil2MFH7iLM/TN19jH3fdUI/AAAAAAAAABc/bjKllifWW0g/s288/FutureEyeFirstTest.png.jpg' /><img src='https://lh3.googleusercontent.com/_Cil2MFH7iLM/TN19j0Dy4pI/AAAAAAAAABk/OTdlyX_Paio/s288/FutureEyeFirstTest3D.png.jpg' />
+|Equation| Contour Plot | 3D Plot |
+| --- | --- | --- |
+| <img src='https://lh6.googleusercontent.com/_Cil2MFH7iLM/TN19jeWDEdI/AAAAAAAAABg/WI64bT_jUAY/s800/FutureEyeFirstTest2.png.jpg' />| <img src='https://lh5.googleusercontent.com/_Cil2MFH7iLM/TN19jH3fdUI/AAAAAAAAABc/bjKllifWW0g/s288/FutureEyeFirstTest.png.jpg' /> | <img src='https://lh3.googleusercontent.com/_Cil2MFH7iLM/TN19j0Dy4pI/AAAAAAAAABk/OTdlyX_Paio/s288/FutureEyeFirstTest3D.png.jpg' /> |
 
 ### Code ###
 
@@ -124,14 +125,11 @@ Upwind technique for 1D convection diffusion problem is supported by using user 
 ```
 
 ## Stokes Equation on A Box ##
-Equation:
-<img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Stokes_Problem.png' width=200 height=69 />
+| Equation  | Weak form | Solution |
+| --- | --- | --- |
+| <img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Stokes_Problem.png'/> | <img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Stokes_Problem_Weakform.png'/> |<img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Ex10_StokesBoxTirQuad.png'/> |
 
-Weak form:
-<img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Stokes_Problem_Weakform.png' width=344 height=61 />
 
-Solution:
-<img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Ex10_StokesBoxTirQuad.png' width=350 height=300 />
 Code:
 ```java
 /**
