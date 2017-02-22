@@ -14,9 +14,9 @@ import static edu.uta.futureye.function.FMath.*;
 /**
  * <blockquote><pre>
  * Problem:
- * -\nabla{k*\nabla{\vec{u}} 
+ * -\nabla({k\nabla{\vec{u}}})
  * 		+ \vec{U}\cdot\nabla\vec{u}
- * 		+ c*\vec{u} 
+ * 		+ c\vec{u} 
  * 		+ \nabla{p} 
  * 		= \vec{f}
  * div{\vec{u}} = 0
