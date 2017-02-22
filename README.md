@@ -14,8 +14,6 @@ FuturEye_JIT is suitable for various purposes:
 
 ### Laplace Example ###
 
-
-### Solution ###
 |Equation| Contour Plot | 3D Plot |
 | --- | --- | --- |
 | <img src='https://lh6.googleusercontent.com/_Cil2MFH7iLM/TN19jeWDEdI/AAAAAAAAABg/WI64bT_jUAY/s800/FutureEyeFirstTest2.png.jpg' />| <img src='https://lh5.googleusercontent.com/_Cil2MFH7iLM/TN19jH3fdUI/AAAAAAAAABc/bjKllifWW0g/s288/FutureEyeFirstTest.png.jpg' /> | <img src='https://lh3.googleusercontent.com/_Cil2MFH7iLM/TN19j0Dy4pI/AAAAAAAAABk/OTdlyX_Paio/s288/FutureEyeFirstTest3D.png.jpg' /> |
@@ -130,7 +128,7 @@ Upwind technique for 1D convection diffusion problem is supported by using user 
 | <img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Stokes_Problem.png'/> | <img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Stokes_Problem_Weakform.png'/> |<img src='https://github.com/yuemingl/Futureye_JIT/blob/master/images/Ex10_StokesBoxTirQuad.png'/> |
 
 
-Code:
+### Code ###
 ```java
 /**
  * Stokes problem is defined as
