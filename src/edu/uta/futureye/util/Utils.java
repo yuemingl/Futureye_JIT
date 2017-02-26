@@ -940,7 +940,7 @@ public class Utils {
 		int row = matIndex;
 		int col = matIndex;
 		
-		System.out.println("setDirichlet===>idx="+matIndex+"; val="+value);
+		//System.out.println("setDirichlet===>idx="+matIndex+"; val="+value);
 
 		stiff.set(row, col, 1.0);
 		load.set(row,value);

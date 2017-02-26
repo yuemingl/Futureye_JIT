@@ -7,7 +7,6 @@ package edu.uta.futureye.lib.element;
 
 
 import static edu.uta.futureye.function.FMath.C0;
-import sun.font.EAttribute;
 import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
@@ -20,8 +19,6 @@ import edu.uta.futureye.function.basic.FX;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VecMathFunc;
-import edu.uta.futureye.util.FutureyeException;
-import edu.uta.futureye.util.container.VertexList;
 
 /**
  * P2/P1 on triangle element

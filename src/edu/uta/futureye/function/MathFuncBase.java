@@ -287,7 +287,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 				for(int i=0; i<args.size(); i++) {
 					argsMap.put(args[i], i);
 				}
-				System.out.println("JIT compileWithASM(): "+this.getName()+"("+argsMap+")"+" = "+this.getExpr());
+				//System.out.println("JIT compileWithASM(): "+this.getName()+"("+argsMap+")"+" = "+this.getExpr());
 			} else {
 				StringBuilder sb = new StringBuilder();
 				sb.append("(");
@@ -301,7 +301,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 				String expr = this.getExpr();
 				if(expr.length()>50)
 					expr = expr.substring(0,50);
-				System.out.println("JIT compileWithASM: "+this.getName()+sb.toString()+" = "+expr);
+				//System.out.println("JIT compileWithASM: "+this.getName()+sb.toString()+" = "+expr);
 			}
 
 			Map<MathFunc, Integer> refsMap = BytecodeUtils.getFuncRefsMap(this);

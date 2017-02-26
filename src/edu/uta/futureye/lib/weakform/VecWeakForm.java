@@ -57,7 +57,7 @@ public class VecWeakForm {
 		crhs = new CompiledFunc[nDOFs];
 		for(int j=0; j<nDOFs; j++) {
 			for(int i=0; i<nDOFs; i++) {
-				System.out.println("compile:"+i+"_"+j);
+				//System.out.println("compile:"+i+"_"+j);
 				clhs[j][i] = matLHS[j][i].compileWithASM(argsOrder);
 			}
 			crhs[j] = vecRHS[j].compileWithASM(argsOrder);

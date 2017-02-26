@@ -22,13 +22,13 @@ public interface VecFiniteElement {
 	 * @return
 	 */
 	int getNumberOfDOFs();
-	
+
 	/**
 	 * Return all the expression of shape functions
 	 * @return
 	 */
 	VecMathFunc[] getShapeFunctions();
-	
+
 	/**
 	 * Return the geometry entity on element e giving the local index of shape function
 	 * @param localIndex
@@ -41,13 +41,13 @@ public interface VecFiniteElement {
 	 * @return
 	 */
 	String[] getArgsOrder();
-		
+
 	/**
 	 * Return the boundary FiniteElement object associated with the current VecFiniteElement object
 	 * @return
 	 */
 	VecFiniteElement getBoundaryFE();
-	
+
 	/**
 	 * check if the dot product of two vector valued shape functions equals 0 by
 	 * providing the inedx of DOF.
@@ -56,7 +56,7 @@ public interface VecFiniteElement {
 	 * @return
 	 */
 	boolean isDOFCoupled(int idx1, int idx2);
-	
+
 	/**
 	 * Return the index of component of the vector valued function by giving 
 	 * a local index of a shape function
@@ -64,7 +64,7 @@ public interface VecFiniteElement {
 	 * @return
 	 */
 	int getVVFComponentIndex(int localIndex);
-	
+
 	/**
 	 * Get the global index of a DEF
 	 * @param mesh
@@ -73,14 +73,14 @@ public interface VecFiniteElement {
 	 * @return
 	 */
 	int getGlobalIndex(Mesh mesh, Element e, int localIndex);
-	
+
 	/**
 	 * Get all the degree of freedoms (DOF) on a given mesh for this finite element
 	 * @param mesh
 	 * @return
 	 */
 	int getTotalNumberOfDOFs(Mesh mesh);
-	
+
 	/**
 	 * Get the degree of freedoms (DOF) for the given vector valued function (VVF) component
 	 * on a given mesh for this finite element. For example,
@@ -100,14 +100,14 @@ public interface VecFiniteElement {
 	 */
 	//CoordTrans getCoordTrans(int index);
 	CoordTrans getCoordTrans();
-	
+
 	/**
 	 * Return the ODF object at the given local index
 	 * @param localIndex
 	 * @return
 	 */
 	DOF getDOF(int localIndex);
-	
+
 	/**
 	 * Return the geometry entity at the given local index
 	 * @param e

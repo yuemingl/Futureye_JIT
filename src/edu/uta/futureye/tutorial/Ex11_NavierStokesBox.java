@@ -1,5 +1,9 @@
 package edu.uta.futureye.tutorial;
 
+import static edu.uta.futureye.function.FMath.C;
+import static edu.uta.futureye.function.FMath.C0;
+import static edu.uta.futureye.function.FMath.grad;
+
 import java.util.HashMap;
 
 import edu.uta.futureye.algebra.SparseBlockMatrix;
@@ -9,7 +13,6 @@ import edu.uta.futureye.algebra.SparseVectorHashMap;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.SchurComplementStokesSolver;
-import edu.uta.futureye.util.DataReader;
 import edu.uta.futureye.core.Edge;
 import edu.uta.futureye.core.EdgeLocal;
 import edu.uta.futureye.core.Element;
@@ -22,29 +25,21 @@ import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.UserDefFunc;
 import edu.uta.futureye.function.Variable;
-import edu.uta.futureye.function.basic.FC;
 import edu.uta.futureye.function.basic.SpaceVectorFunction;
 import edu.uta.futureye.function.basic.Vector2MathFunc;
 import edu.uta.futureye.function.intf.MathFunc;
 import edu.uta.futureye.function.intf.VecMathFunc;
 import edu.uta.futureye.io.MeshReader;
 import edu.uta.futureye.lib.assembler.AssembleParam;
-import edu.uta.futureye.lib.assembler.AssemblerVector;
 import edu.uta.futureye.lib.assembler.BasicVecAssembler;
-import edu.uta.futureye.lib.element.FEBilinearV_ConstantP;
-import edu.uta.futureye.lib.element.FEBilinearV_ConstantPOld;
 import edu.uta.futureye.lib.element.FEQuadraticV_LinearP;
-import edu.uta.futureye.lib.element.FEQuadraticV_LinearPOld;
-import edu.uta.futureye.lib.element.FiniteElementType;
 import edu.uta.futureye.lib.weakform.VecWeakForm;
-import edu.uta.futureye.lib.weakform.WeakFormNavierStokes2D;
 import edu.uta.futureye.util.Constant;
 import edu.uta.futureye.util.FutureyeException;
 import edu.uta.futureye.util.Utils;
 import edu.uta.futureye.util.container.ElementList;
 import edu.uta.futureye.util.container.ObjIndex;
 import edu.uta.futureye.util.container.ObjList;
-import static edu.uta.futureye.function.FMath.*;
 
 
 /**
@@ -155,8 +150,6 @@ public class Ex11_NavierStokesBox {
 		//Geometry relationship
 		mesh.computeNodeBelongsToElements();
 		
-		ElementList eList = mesh.getElementList();
-		
 		//Mark border type
 		HashMap<NodeType, MathFunc> mapNTF_uv = new HashMap<NodeType, MathFunc>();
 		mapNTF_uv.put(NodeType.Dirichlet, null);
@@ -168,20 +161,32 @@ public class Ex11_NavierStokesBox {
 		mesh.markBorderNode(3,mapNTF_p);
 
 		diri = new SpaceVectorFunction(3);
-		diri.set(1, new MultiVarFunc("diri", "x", "y") {
-					@Override
-					public double apply(double... args) {
-						double y = args[this.argIdx[1]];
-						if(Math.abs(y-1.0)<Constant.meshEps)
-							return 1.0;
-						else
-							return 0.0;
-					}
-				});
+		if(testCaseNo == 1)
+			diri.set(1, new MultiVarFunc("diri", "x", "y") {
+						@Override
+						public double apply(double... args) {
+							double y = args[this.argIdx[1]];
+							if(Math.abs(y-3.0)<Constant.meshEps)
+								return 1.0;
+							else
+								return 0.0;
+						}
+					});
+		else
+			diri.set(1, new MultiVarFunc("diri", "x", "y") {
+				@Override
+				public double apply(double... args) {
+					double y = args[this.argIdx[1]];
+					if(Math.abs(y-1.0)<Constant.meshEps)
+						return 1.0;
+					else
+						return 0.0;
+				}
+			});
 		diri.set(2, C0);
 		diri.set(3, C0);
 	}
-	
+
 	/**
 	 * Solve the steady Navier-Stokes equation iteratively 
 	 * by passing the previous solution uk as the convection speed.
@@ -246,7 +251,6 @@ public class Ex11_NavierStokesBox {
 				);
 		wfb.compile();
 		
-		
 		//Define block stiff matrix and block load vector before assembly
 		int vvfDim = 3;
 		int[] dims = new int[vvfDim];
@@ -265,7 +269,23 @@ public class Ex11_NavierStokesBox {
 		BasicVecAssembler assembler = new BasicVecAssembler(mesh, wf);
 		//the block matrix and vector are used as normal matrix and vector
 		assembler.assembleGlobal(stiff, load); 
-
+		
+		// Use BasicAssembler to assemble boundary elements
+		BasicVecAssembler boundaryAssembler = new BasicVecAssembler(mesh, wfb);
+		for(Element e : mesh.getElementList()) {
+			for(Element be : e.getBorderElements()) {
+				//Check node type
+				////TODO how to check boundary type beside checking node type???
+				int nBeDOF = bfe.getNumberOfDOFs();
+				for(int i=0; i<nBeDOF; i++) {
+					int nVVFIdx = bfe.getVVFComponentIndex(i+1);
+					NodeType nodeType = be.getBorderNodeType(nVVFIdx);
+					if(nodeType == NodeType.Neumann || nodeType == NodeType.Robin) {
+						boundaryAssembler.assembleGlobal(be, stiff, load);
+					}
+				}
+			}
+		}
 		
 		Utils.imposeDirichletCondition(stiff, load, fe, mesh, diri);
 		
@@ -274,29 +294,27 @@ public class Ex11_NavierStokesBox {
 		//solver.setCGInit(0.5);
 		//solver.debug = true;
 		return solver.solve2D();
-		
-	}	
-	
-	public void run(int startTimeStep, int testCaseNo) {
+	}
+
+	public void run(int testCaseNo) {
+		//read mesh and set boundary condiitons
 		init(testCaseNo);
-		
-		SparseBlockVector u = null;
-		
 		//initial velocity
 		SpaceVectorFunction uk = new SpaceVectorFunction(2);
 		uk.set(1, C0);
 		uk.set(2, C0);
-		
+		//solution u
+		SparseBlockVector u = null;
 		for(int iter=0; iter<this.maxNonlinearIter; iter++) {
+			//solve the system with uk as the convection velocity
 			u = nonlinearIterSteady(iter, uk);
-			
 			//Compute norm of delta_u (not including delta_v)
 			int dim = u.getBlock(1).getDim();
 			SparseVector delta_u = new SparseVectorHashMap(dim);
 			for(int i=1;i<=dim;i++)
 				delta_u.set(i, 
 						u.getBlock(1).get(i)-uk.get(1).apply(new Variable().setIndex(i)));
-			
+
 //			uk.set(1, new Vector2MathFunc(u.getBlock(1), mesh, "x","y"));
 //			uk.set(2, new Vector2MathFunc(u.getBlock(2), mesh, "x","y"));
 			uk.set(1, new Vector2MathFunc(u.getBlock(1)));
@@ -314,25 +332,11 @@ public class Ex11_NavierStokesBox {
 		}
 	}
 	
-	/**
-	 * args[0]: test case number
-	 * args[1]: is steady
-	 * args[2]: delta t
-	 * args[3]: start time step
-	 * args[4]: max start time step
-	 * 
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		Ex11_NavierStokesBox NSB = new Ex11_NavierStokesBox();
-		int startTimeStep = 0;
-		int testCaseNo = 1;
-		
-		System.out.println("testCaseNo="+testCaseNo);
 		System.out.println("mu="+NSB.nu);
 		System.out.println("maxNonlinearIter="+NSB.maxNonlinearIter);
 		System.out.println("nonlinearError="+NSB.nonlinearError);
-		
-		NSB.run(startTimeStep,testCaseNo);
+		NSB.run(1);
 	}
 }

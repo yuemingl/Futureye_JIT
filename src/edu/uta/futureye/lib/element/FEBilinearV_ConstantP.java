@@ -9,6 +9,7 @@ package edu.uta.futureye.lib.element;
 import static edu.uta.futureye.function.FMath.C0;
 import static edu.uta.futureye.function.FMath.C1;
 import sun.font.EAttribute;
+import edu.uta.futureye.core.DOF;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.NodeType;
@@ -192,5 +193,23 @@ public class FEBilinearV_ConstantP implements VecFiniteElement {
 			return ???;
 		else
 			throw new RuntimeException("local index should be in the range of [1,"+(shapeFuncs.length+1)+"]");
+	}
+
+	@Override
+	public int getNumberOfDOFs(Mesh mesh, int nVVFComponentIndex) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public DOF getDOF(int localIndex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public GeoEntity getGeoEntity(Element e, int localIndex) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
