@@ -61,6 +61,9 @@ public class BasicVecAssembler {
 			
 			for(int j=0; j<nDOFs; j++) {
 				for(int i=0; i<nDOFs; i++) {
+					
+					//this.weakForm.getFiniteElement().getGeoEntity(e, i);
+					
 					A[j][i] = FOIntegrate.intOnTriangleRefElement(weakForm.getCompiledLHS()[j][i], 
 							new AssembleParam(e, i+1, j+1), params, coords.length, 5); //TODO use high order for high order element???
 					//Laplace Test: 2=80.839 3=80.966, 4=80.967
@@ -116,9 +119,9 @@ public class BasicVecAssembler {
 				int nGlobalRow = fe.getGlobalIndex(mesh, e, j+1);
 				for(int i=0;i<nDOFs;i++) {
 					int nGlobalCol = fe.getGlobalIndex(mesh, e, i+1);
-					if(nGlobalRow==917) {
-						System.out.println("(i,j)=("+i+","+j+"); global=("+nGlobalRow+","+nGlobalCol+"); value="+A[j][i]);
-					}
+//					if(nGlobalRow==917) {
+//						System.out.println("(i,j)=("+i+","+j+"); global=("+nGlobalRow+","+nGlobalCol+"); value="+A[j][i]);
+//					}
 					//if(Math.abs(A[j][i])>1e-3) {
 						stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
 					//}

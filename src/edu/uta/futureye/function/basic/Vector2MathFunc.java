@@ -9,7 +9,9 @@ import edu.uta.futureye.util.Tools;
 import edu.uta.futureye.core.Element;
 import edu.uta.futureye.core.Mesh;
 import edu.uta.futureye.core.Node;
+import edu.uta.futureye.core.TriAreaCoord;
 import edu.uta.futureye.core.geometry.Point;
+import edu.uta.futureye.core.intf.CoordTrans;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.Variable;
 import edu.uta.futureye.function.intf.MathFunc;
@@ -215,8 +217,47 @@ public class Vector2MathFunc extends MultiVarFunc {
 
 	@Override
 	public double apply(AssembleParam ap, double... args) {
-		int index = ap.node.getIndex();
+		
+		Element e = ap.element;
+		int i1 = e.nodes.at(1).globalIndex;
+		int i2 = e.nodes.at(2).globalIndex;
+		int i3 = e.nodes.at(3).globalIndex;
+		double v1 = this.vec.get(i1);
+		double v2 = this.vec.get(i2);
+		double v3 = this.vec.get(i3);
+		int startIdx = 12;
+		return v1*args[startIdx] + v2*args[startIdx+1] + v3*args[startIdx+2];
+		/*
+		for(int i=1;i<=e.nodes.size();i++) {
+			f[i-1] = vec.get(e.nodes.at(i).globalIndex);
+		}
+		
+		
+		CoordTrans coord = ap.fe.getCoordTrans();
+		MathFunc r = coord.getCoordR();
+		MathFunc s = coord.getCoordS();
+		MathFunc t = coord.getCoordT();
+		TriAreaCoord coord;
+		
+		
+		
+		args[startIndex]
+
+		//shape functions
+		MathFunc NV1 = (2*r-1)*r;
+		MathFunc NV2=  (2*s-1)*s;
+		MathFunc NV3 = (2*t-1)*t;
+		MathFunc NV4 = 4*r*s;
+		MathFunc NV5 = 4*s*t;
+		MathFunc NV6 = 4*r*t;
+
+		
+		int index = 0;
+		if(null != ap.node)
+			index = ap.node.getIndex();
 		int nDim = vec.getDim();
+		
+		
 		if(mesh == null) { //完全依靠index来求值
 			if(index > 0 && index <= nDim)
 				return vec.get(index);//注：下标错位会造成结果出现随机混乱
@@ -251,7 +292,8 @@ public class Vector2MathFunc extends MultiVarFunc {
 				}
 
 				//先找到包含v的坐标的单元，在单元内进行插值
-				Element e = mesh.getElementByCoord(coord);
+				//Element e = mesh.getElementByCoord(coord);
+				Element e = ap.element;
 				if(e == null) {
 					if(this.defaultFunction == null) {
 						StringBuilder sb = new StringBuilder();
@@ -289,6 +331,7 @@ public class Vector2MathFunc extends MultiVarFunc {
 				return vec.get(index);
 			}
 		}
+		*/
 	}
 
 	@Override
