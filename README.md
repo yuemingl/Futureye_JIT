@@ -167,6 +167,10 @@ wf.compile();
  ```
 Click [here](https://github.com/yuemingl/Futureye_JIT/tree/master/src/edu/uta/futureye/tutorial) for more examples.
 
+### If you are a NetBeans user ###
+check out here:
+[Futureye_JIT with NetBeans IDE](https://github.com/yuemingl/Futureye_JIT/blob/master/NetBeans.md)
+
 ### Citing Our Papers ###
 
 If you were using Futureye_JIT for academic research, you are encouraged to cite the following papers:
