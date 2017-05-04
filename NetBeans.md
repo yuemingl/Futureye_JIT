@@ -1,8 +1,8 @@
-If you are using NetBeans, download the latest release of Futureye_JIT jar file from [releases link](https://github.com/yuemingl/Futureye_JIT/releases). Add the jar file to your Libraries (Linbraries->Add Jar/Folder...). 
+If you are using NetBeans, download the latest release of Futureye_JIT jar file from this [releases link](https://github.com/yuemingl/Futureye_JIT/releases). Add the jar file to your Libraries (Linbraries->Add Jar/Folder...). 
 
-Operator overloading may not be supported in the latest version (8.2) of NetBeans (Check it here https://github.com/amelentev/java-oo). However, operator overloading is NOT required to use Futureye_JIT. You just replace +,-,*,/ with function A(),S(),M(),D().
+Operator overloading may not be supported in the latest version (8.2) of NetBeans (Check it here https://github.com/amelentev/java-oo). However, operator overloading is NOT required to use Futureye_JIT. You just replace +,-,*,/ with functions A(),S(),M(),D().
 
-Before running the example below, copy the folder 'grids' to you project folder.
+Before running the example (I just replaced +,-,*,/ with functions A(),S(),M(),D() of the example LaplaceGlobalAssemble) below, copy the folder 'grids' to you project folder.
 
 ```java
 /*
