@@ -239,7 +239,7 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 			clsName = this.getClass().getSimpleName();
 		clsName = clsName + java.util.UUID.randomUUID().toString().replaceAll("-", "");
 		
-		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>(FuncClassLoader.class.getClassLoader());
+		FuncClassLoader<CompiledFunc> fcl = new FuncClassLoader<CompiledFunc>(CompiledFunc.class.getClassLoader());
 		ClassGen genClass = BytecodeUtils.genClass(this, varNames, clsName, true, false);
 		CompiledFunc func = fcl.newInstance(genClass);
 		
