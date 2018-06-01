@@ -122,9 +122,9 @@ public class BasicVecAssembler {
 //					if(nGlobalRow==917) {
 //						System.out.println("(i,j)=("+i+","+j+"); global=("+nGlobalRow+","+nGlobalCol+"); value="+A[j][i]);
 //					}
-					//if(Math.abs(A[j][i])>1e-3) {
+					if(Math.abs(A[j][i])>1e-8) {
 						stiff.add(nGlobalRow, nGlobalCol, A[j][i]);
-					//}
+					}
 				}
 				//Local load vector
 				load.add(nGlobalRow, b[j]);

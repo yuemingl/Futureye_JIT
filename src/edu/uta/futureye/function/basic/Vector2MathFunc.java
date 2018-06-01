@@ -225,7 +225,6 @@ public class Vector2MathFunc extends MultiVarFunc {
 		double v1 = this.vec.get(i1);
 		double v2 = this.vec.get(i2);
 		double v3 = this.vec.get(i3);
-		
 		int startIdx = 12;
 		return v1*args[startIdx] + v2*args[startIdx+1] + v3*args[startIdx+2];
 		

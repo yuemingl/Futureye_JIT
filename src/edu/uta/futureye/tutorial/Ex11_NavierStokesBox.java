@@ -10,6 +10,7 @@ import edu.uta.futureye.algebra.SparseBlockMatrix;
 import edu.uta.futureye.algebra.SparseBlockVector;
 import edu.uta.futureye.algebra.SparseMatrixRowMajor;
 import edu.uta.futureye.algebra.SparseVectorHashMap;
+import edu.uta.futureye.algebra.intf.Matrix;
 import edu.uta.futureye.algebra.intf.SparseVector;
 import edu.uta.futureye.algebra.intf.Vector;
 import edu.uta.futureye.algebra.solver.SchurComplementStokesSolver;
@@ -21,6 +22,7 @@ import edu.uta.futureye.core.Node;
 import edu.uta.futureye.core.NodeLocal;
 import edu.uta.futureye.core.NodeType;
 import edu.uta.futureye.core.Vertex;
+import edu.uta.futureye.core.intf.FiniteElement;
 import edu.uta.futureye.core.intf.VecFiniteElement;
 import edu.uta.futureye.function.MultiVarFunc;
 import edu.uta.futureye.function.UserDefFunc;
@@ -199,7 +201,7 @@ public class Ex11_NavierStokesBox {
 		// Weak form definition
 		FEQuadraticV_LinearP fe = new FEQuadraticV_LinearP();
 		MathFunc k = C(nu);
-		VecMathFunc fU = uk;
+		VecMathFunc U = uk;
 		MathFunc fc = C0;
 		VecMathFunc f = new SpaceVectorFunction(C0, C0);
 		VecWeakForm wf = new VecWeakForm(fe,
@@ -213,8 +215,8 @@ public class Ex11_NavierStokesBox {
 					
 					return k * grad_u1.dot(grad_v1)  //   (v1_x,k*u1_x) + (v1_y,k*u1_y)
 						 + k * grad_u2.dot(grad_v2)  // + (v2_x,k*u2_x) + (v2_y,k*u2_y)
-						 + fU.dot(grad_u1)*v[1]      // + (U1*u1_x,v1)+(U2*u1_y,v1)
-						 + fU.dot(grad_u2)*v[2]      // + (U1*u2_x,v2)+(U2*u2_y,v2)
+						 + U.dot(grad_u1)*v[1]      // + (U1*u1_x,v1)+(U2*u1_y,v1)
+						 + U.dot(grad_u2)*v[2]      // + (U1*u2_x,v2)+(U2*u2_y,v2)
 						 + fc * (u[1]*v[1]+u[2]*v[2])// + c*[(u1,v1)+(u2,v2)]
 						 - div_v*u[3]                // - (v1_x+v2_y,p) //where p=u[3]
 						 + v[3]*div_u;               // + (q,u1_x+u2_y) //where q=v[3]
@@ -289,6 +291,10 @@ public class Ex11_NavierStokesBox {
 		
 		Utils.imposeDirichletCondition(stiff, load, fe, mesh, diri);
 		
+		Element e = mesh.getElementList().at(1);
+		printData(mesh, fe, e, stiff, load);
+		
+		
 		SchurComplementStokesSolver solver = 
 			new SchurComplementStokesSolver(stiff,load);
 		//solver.setCGInit(0.5);
@@ -317,6 +323,9 @@ public class Ex11_NavierStokesBox {
 
 //			uk.set(1, new Vector2MathFunc(u.getBlock(1), mesh, "x","y"));
 //			uk.set(2, new Vector2MathFunc(u.getBlock(2), mesh, "x","y"));
+			SparseVector u1 = u.getBlock(1);
+			SparseVector u2 = u.getBlock(2);
+			
 			uk.set(1, new Vector2MathFunc(u.getBlock(1)));
 			uk.set(2, new Vector2MathFunc(u.getBlock(2)));
 
@@ -330,6 +339,23 @@ public class Ex11_NavierStokesBox {
 				break;
 			}
 		}
+	}
+	
+	public void printData(Mesh mesh, VecFiniteElement fe, Element e, 
+			Matrix stiff, Vector load) {
+		for(int i=1; i<=fe.getNumberOfDOFs(); i++) {
+			int gi = fe.getGlobalIndex(mesh, e, i);
+			for(int j=1; j<=fe.getNumberOfDOFs(); j++) {
+				int gj = fe.getGlobalIndex(mesh, e, j);
+				System.out.print(String.format("%.6f", stiff.get(gi, gj))+"  ");
+			}
+			System.out.println();
+		}
+		for(int j=1; j<=fe.getNumberOfDOFs(); j++) {
+			int gj = fe.getGlobalIndex(mesh, e, j);
+			System.out.println(String.format("%.6f", load.get(gj)));
+		}
+		
 	}
 	
 	public static void main(String[] args) {
