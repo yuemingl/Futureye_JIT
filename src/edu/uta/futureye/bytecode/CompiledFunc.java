@@ -24,6 +24,10 @@ public abstract class CompiledFunc {
 	 */
 	public abstract double apply(AssembleParam ap, double ...args);
 	
+	public double call(AssembleParam ap, double ...args) {
+		return apply(ap, args);
+	}
+
 	/**
 	 * A simplified method for applying a function without 
 	 * parameters AssembleParam
@@ -34,6 +38,10 @@ public abstract class CompiledFunc {
 		return apply(null, args);
 	}
 	
+	public double call(double ...args) {
+		return apply(null, args);
+	}
+
 	/**
 	 * Set the references to functions before compilation for
 	 * further calling from apply(...)

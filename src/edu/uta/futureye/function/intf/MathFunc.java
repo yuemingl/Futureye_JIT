@@ -393,6 +393,26 @@ public interface MathFunc {
 	MathFunc addRev(double other);
 	
 	/**
+	 * Operator overloading support for Groovy
+	 * a+b
+	 */
+	default MathFunc plus(MathFunc other) {
+		return add(other);
+	}
+	default MathFunc plus(int other) {
+		return add(other);
+	}
+	default MathFunc plus(long other) {
+		return add(other);
+	}
+	default MathFunc plus(float other) {
+		return add(other);
+	}
+	default MathFunc plus(double other) {
+		return add(other);
+	}
+	
+	/**
 	 * Operator overload support:
 	 * a-b
 	 */
@@ -405,6 +425,27 @@ public interface MathFunc {
 	MathFunc subtractRev(float other);
 	MathFunc subtract(double other);
 	MathFunc subtractRev(double other);
+	
+	/**
+	 * Operator overloading support for Groovy:
+	 * a-b
+	 */
+	default MathFunc minus(MathFunc other) {
+		return subtract(other);
+	}
+	default MathFunc minus(int other) {
+		return subtract(other);
+	}
+	default MathFunc minus(long other) {
+		return subtract(other);
+	}
+	default MathFunc minus(float other) {
+		return subtract(other);
+	}
+	default MathFunc minus(double other) {
+		return subtract(other);
+	}
+
 	
 	/**
 	 * Operator overload support:
@@ -433,7 +474,27 @@ public interface MathFunc {
 	MathFunc divideRev(float other);
 	MathFunc divide(double other);
 	MathFunc divideRev(double other);
-	
+
+	/**
+	 * Operator overloading support for Groovy:
+	 * a/b
+	 */
+	default MathFunc div(MathFunc other) {
+		return divide(other);
+	}
+	default MathFunc div(int other) {
+		return divide(other);
+	}
+	default MathFunc div(long other) {
+		return divide(other);
+	}
+	default MathFunc div(float other) {
+		return divide(other);
+	}
+	default MathFunc div(double other) {
+		return divide(other);
+	}
+
 	/**
 	 * Operator overload support:
 	 * -a
