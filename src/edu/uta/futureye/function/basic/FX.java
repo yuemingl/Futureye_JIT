@@ -176,5 +176,9 @@ public class FX extends MathFuncBase {
 	public boolean isReal() {
 		return false;
 	}
-
+	
+	@Override
+	public String getName() {
+		return varName;
+	}
 }

@@ -2,6 +2,7 @@ package edu.uta.futureye.function.basic;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionFactory;
@@ -98,6 +99,11 @@ public class FXY extends MultiVarFunc{
 	}
 	
 	public String getExpr() {
-		return this.toString();
+		return toString();
+	}
+	
+	@Override
+	public String getName() {
+		return this.fName;
 	}
 }

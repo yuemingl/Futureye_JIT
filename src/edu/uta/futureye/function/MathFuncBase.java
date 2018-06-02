@@ -510,12 +510,12 @@ public abstract class MathFuncBase implements MathFunc, Cloneable {
 	/////////////////////////////////////////////////////////////
 	@Override
 	public String getName() {
-		return "[Undefined expressin. Please override 'String getName()']";
+		throw new RuntimeException("Please override 'String getName()' for the class "+this.getClass().getName());
 	}
 	
 	@Override
 	public String getExpr() {
-		return "[Undefined expressin. Please override 'String getExpr()']";
+		throw new RuntimeException("Please override 'String getExpr()' for the class "+this.getClass().getName());
 	}
 	
 	@Override

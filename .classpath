@@ -15,8 +15,8 @@
 	<classpathentry kind="lib" path="lib/netlib-java-0.9.3.jar"/>
 	<classpathentry kind="lib" path="lib/ujmp-complete-0.2.5.jar"/>
 	<classpathentry kind="lib" path="lib/xerbla.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/bcel-5.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/asm-5.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/EJML-core-0.30.jar"/>
 	<classpathentry kind="lib" path="lib/EJML-dense64-0.30.jar"/>
