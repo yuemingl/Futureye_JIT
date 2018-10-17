@@ -179,3 +179,5 @@ If you were using Futureye_JIT for academic research, you are encouraged to cite
 
 [Y. Liu, P. Zhang, M. Qiu, "SNC: A Cloud Service Platform for Symbolic-Numeric Computation using Just-In-Time Compilation", IEEE Transactions on Cloud Computing, 2017](http://ieeexplore.ieee.org/abstract/document/7828007/)
 
+### News ###
+(Oct. 2018) FuturEye and SymJava are integrated in Symplegma, a JVM implementation for numerical methods in computational mechanics. Please find out the details [here](https://fosscomm2018.gr/fs2018/talk/7FXTCV/) in FOSSCOMM 2018 conference (Free and Open Source Software Communities Meeting) which is the pan-Hellenic conference of free and open source software communities.
